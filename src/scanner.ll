@@ -62,7 +62,7 @@
 %option noyywrap nounput noinput batch
 
 id    [a-zA-Z][a-zA-Z_0-9]*
-int   [0-9]+
+int   -?[0-9]+
 str   '[^']*'
 blank [ \t\r]
 /* TODO */
@@ -83,10 +83,14 @@ comment #.*$
 {comment}       loc.step();
 
 "+"             return yy::parser::make_PLUS(loc);
+"-"             return yy::parser::make_MINUS(loc);
+"*"             return yy::parser::make_WILDCARD(loc);
+"/"             return yy::parser::make_SLASH(loc);
+"%"             return yy::parser::make_MOD(loc);
 "("             return yy::parser::make_LPAREN(loc);
 ")"             return yy::parser::make_RPAREN(loc);
-"{"             return yy::parser::make_LBLOCK(loc);
-"}"             return yy::parser::make_RBLOCK(loc);
+"{"             return yy::parser::make_LBRACE(loc);
+"}"             return yy::parser::make_RBRACE(loc);
 "="             return yy::parser::make_EQ(loc);
 ";"             return yy::parser::make_STOP(loc);
 

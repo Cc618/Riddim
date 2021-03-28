@@ -38,20 +38,21 @@
 
 %define api.token.prefix {TOK_}
 %token
-    EQ  "="
-    // MINUS   "-"
-    PLUS    "+"
-    // STAR    "*"
-    // SLASH   "/"
-    LPAREN  "("
-    RPAREN  ")"
-    LBLOCK  "{"
-    RBLOCK  "}"
+    EQ          "="
+    MINUS       "-"
+    PLUS        "+"
+    WILDCARD    "*"
+    SLASH       "/"
+    MOD         "%"
+    LPAREN      "("
+    RPAREN      ")"
+    LBRACE      "{"
+    RBRACE      "}"
     // TODO : Line feed
-    STOP    ";"
-    IF      "if"
+    STOP        ";"
+    IF          "if"
     // TODO
-    DEBUG   "@debug"
+    DEBUG       "@debug"
 ;
 
 %token <str_t> ID "id"
@@ -62,10 +63,11 @@
 %nterm <Set*> set
 %nterm <Exp*> exp
 %nterm <Const*> const
+%nterm <BinExp*> binexp
 %nterm stop
 
-// %left "+" "-";
-// %left "*" "/" "%";
+%left "+" "-";
+%left "*" "/" "%";
 
 %start module;
 
@@ -86,6 +88,14 @@ set: ID "=" exp stop { $$ = new Set(@1.begin.line, $1, $3); }
     ;
 
 exp: const { $$ = $1; }
+    | binexp { $$ = $1; }
+    ;
+
+binexp : exp "+" exp { $$ = new BinExp(@1.begin.line, $1, '+', $3); }
+    |  exp "-" exp { $$ = new BinExp(@1.begin.line, $1, '-', $3); }
+    |  exp "*" exp { $$ = new BinExp(@1.begin.line, $1, '*', $3); }
+    |  exp "/" exp { $$ = new BinExp(@1.begin.line, $1, '/', $3); }
+    |  exp "%" exp { $$ = new BinExp(@1.begin.line, $1, '%', $3); }
     ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }

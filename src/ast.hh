@@ -49,7 +49,7 @@ struct Stmt : public ASTNode {
     using ASTNode::ASTNode;
 };
 
-// TODO
+// TODO : ExpStmt
 struct Set : public Stmt {
     str_t id;
     Exp *exp;
@@ -76,6 +76,20 @@ struct Const : public Exp {
 
     Const(line_t fileline, long long val);
     Const(line_t fileline, const str_t &val);
+
+    virtual void debug(int indent=0) override;
+};
+
+// + * etc.
+struct BinExp : public Exp {
+    // '+' '*' etc.
+    char op;
+    Exp *left;
+    Exp *right;
+
+    BinExp(line_t fileline, Exp *left, char op, Exp *right);
+
+    ~BinExp();
 
     virtual void debug(int indent=0) override;
 };

@@ -4,6 +4,7 @@
 
 using namespace std;
 
+// --- Utils ---
 // Returns the indentation (for debug)
 inline string str_indent(int indent) { return string(indent * 2, ' '); }
 
@@ -13,6 +14,7 @@ inline string str_indent(int indent) { return string(indent * 2, ' '); }
         cout << str_indent(indent) << #cls << "()" << endl;                    \
     }
 
+// --- Utils ---
 Module::~Module() { delete content; }
 
 void Module::debug(int indent) {
@@ -21,6 +23,7 @@ void Module::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+// --- Stmts ---
 Block::~Block() {
     for (auto stmt : stmts)
         delete stmt;
@@ -35,6 +38,7 @@ void Block::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+// --- Exps ---
 Set::~Set() { delete exp; }
 
 void Set::debug(int indent) {
@@ -63,4 +67,19 @@ void Const::debug(int indent) {
         break;
     }
     cout << str_indent(indent) << "Set(" << strval << ")" << endl;
+}
+
+BinExp::BinExp(line_t fileline, Exp *left, char op, Exp *right)
+    : Exp(fileline), left(left), op(op), right(right) {}
+
+BinExp::~BinExp() {
+    delete left;
+    delete right;
+}
+
+void BinExp::debug(int indent) {
+    cout << str_indent(indent) << op << "(" << endl;
+    left->debug(indent + 1);
+    right->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
 }
