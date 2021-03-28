@@ -97,9 +97,8 @@ comment #.*$
 {int}           return make_INT(yytext, loc);
 {str}           return make_STR(yytext, loc);
 {id}            return yy::parser::make_ID(yytext, loc);
-.                    {
-    throw yy::parser::syntax_error
-        (loc, "invalid character: " + std::string(yytext));
+.               {
+    lexer_error(loc, str_t("Invalid token: ") + yytext);
 }
 <<EOF>>         return yy::parser::make_YYEOF(loc);
 %%

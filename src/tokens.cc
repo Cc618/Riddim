@@ -3,14 +3,18 @@
 using namespace std;
 using namespace yy;
 
+void lexer_error(const yy::parser::location_type &loc, const std::string &msg) {
+    throw LexerError{loc.begin.line, loc.begin.column,
+            loc.end.line, loc.end.column, msg};
+}
+
 parser::symbol_type make_INT(const str_t &s,
                              const parser::location_type &loc) {
     errno = 0;
     long n = strtol(s.c_str(), NULL, 10);
 
-    // TODO : Err
     if (errno == ERANGE)
-        throw parser::syntax_error(loc, "Invalid integer " + s);
+        lexer_error(loc, str_t("Invalid integer: ") + s);
 
     return parser::make_INT(n, loc);
 }

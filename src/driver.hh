@@ -4,6 +4,7 @@
 
 #include "ast.hh"
 #include "parser.hh"
+#include "utils.hh"
 #include <string>
 
 // Declare yylex
@@ -22,6 +23,9 @@ public:
     void scan_begin();
 
     void scan_end();
+
+    void error(int begin_line, int begin_col, int end_line, int end_col,
+               const str_t &msg);
 
 public:
     // Current file being parsed

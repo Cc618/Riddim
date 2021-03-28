@@ -19,7 +19,7 @@
 }
 
 // The parsing context.
-%param { Driver& drv }
+%param { Driver& driver }
 
 %locations
 
@@ -73,8 +73,8 @@
 
 %%
 module: block_content {
-            drv.module = new Module(@$.begin.line);
-            drv.module->content = $1; }
+            driver.module = new Module(@$.begin.line);
+            driver.module->content = $1; }
     ;
 
 block_content: %empty { $$ = new Block(@$.begin.line); }
@@ -107,5 +107,5 @@ stop: STOP
 %%
 
 void yy::parser::error(const location_type &l, const std::string &m) {
-    std::cerr << l << ": " << m << '\n';
+    driver.error(l.begin.line, l.begin.column, l.end.line, l.end.column, m);
 }
