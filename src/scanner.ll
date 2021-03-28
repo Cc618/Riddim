@@ -61,11 +61,10 @@
 
 %option noyywrap nounput noinput batch
 
-id    [a-zA-Z][a-zA-Z_0-9]*
+id    [a-zA-Z_][a-zA-Z_0-9]*
 int   -?[0-9]+
-str   '[^']*'
+str   '(\\.|[^'])*'
 blank [ \t\r]
-/* TODO */
 comment #.*$
 
 %{
@@ -78,8 +77,9 @@ comment #.*$
     yy::location& loc = drv.location;
     loc.step();
 %}
+
 {blank}+        loc.step();
-\n+             loc.lines(yyleng);loc.step ();
+\n+             loc.lines(yyleng); loc.step();
 {comment}       loc.step();
 
 "+"             return yy::parser::make_PLUS(loc);
