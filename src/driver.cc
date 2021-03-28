@@ -17,6 +17,7 @@ int Driver::parse(const string &f) {
     // TODO : Try catch
     yy::parser parse(*this);
     int res = parse();
+    if (res == 0) module->filename = f;
 
     scan_end();
 

@@ -13,6 +13,7 @@
     #include <vector>
     #include <iostream>
     #include "ast.hh"
+    #include "utils.hh"
 
     class Driver;
 }
@@ -30,6 +31,7 @@
 
 %code {
     #include "driver.hh"
+
     // TODO
     using namespace std;
 }
@@ -52,8 +54,8 @@
     DEBUG   "@debug"
 ;
 
-%token <std::string> ID "id"
-%token <std::string> STR "string"
+%token <str_t> ID "id"
+%token <str_t> STR "string"
 %token <int> INT "int"
 %nterm <Block*> block_content
 %nterm <Stmt*> stmt
@@ -68,24 +70,26 @@
 %start module;
 
 %%
-module: block_content { drv.module = new Module(); drv.module->content = $1; }
+module: block_content {
+            drv.module = new Module(@$.begin.line);
+            drv.module->content = $1; }
     ;
 
-block_content: %empty { $$ = new Block(); }
+block_content: %empty { $$ = new Block(@$.begin.line); }
     | block_content stmt { $$ = $1; $$->stmts.push_back($2); }
     ;
 
 stmt: set { $$ = $1; }
     ;
 
-set: ID "=" exp stop { $$ = new Set($1, $3); }
+set: ID "=" exp stop { $$ = new Set(@1.begin.line, $1, $3); }
     ;
 
 exp: const { $$ = $1; }
     ;
 
-const: INT { $$ = new Const($1); }
-    | STR { $$ = new Const($1); }
+const: INT { $$ = new Const(@1.begin.line, $1); }
+    | STR { $$ = new Const(@1.begin.line, $1); }
     ;
 
 stop: STOP

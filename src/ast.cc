@@ -1,4 +1,5 @@
 #include "ast.hh"
+#include "utils.hh"
 #include <iostream>
 
 using namespace std;
@@ -38,25 +39,27 @@ Set::~Set() { delete exp; }
 
 void Set::debug(int indent) {
     cout << str_indent(indent) << "Set(" << endl;
+    cout << str_indent(indent + 1) << "line=" << fileline << endl;
     cout << str_indent(indent + 1) << "id=" << id << endl;
     exp->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 
-Const::Const(long long val) : type(Int), val(val) {}
+Const::Const(line_t fileline, long long val)
+    : Exp(fileline), type(Int), val(val) {}
 
-Const::Const(const std::string &val) : type(Str), val(val) {}
+Const::Const(line_t fileline, const str_t &val)
+    : Exp(fileline), type(Str), val(val) {}
 
 void Const::debug(int indent) {
-    string strval = "???";
-    switch (type)
-    {
+    str_t strval = "???";
+    switch (type) {
     case Int:
         strval = to_string(get<long long>(val));
         break;
 
     case Str:
-        strval = "'" + get<string>(val) + "'";
+        strval = string_repr(get<str_t>(val));
         break;
     }
     cout << str_indent(indent) << "Set(" << strval << ")" << endl;
