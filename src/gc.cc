@@ -11,12 +11,7 @@ static Object *last_allocated_object = nullptr;
 
 void init_gc_data(Object *obj) {
     // Insert this object to the gc linked list
-    if (last_allocated_object)
-        last_allocated_object->gc_data.next = obj;
-
-    obj->gc_data = GcData{
-        last_allocated_object,
-        last_allocated_object ? last_allocated_object->gc_data.next : nullptr};
+    obj->gc_data = GcData{last_allocated_object};
 
     last_allocated_object = obj;
 }
@@ -39,30 +34,34 @@ void garbage_collect(Object *parent) {
     }
 
     // Sweep by iterating through the gc list
-    auto node = last_allocated_object;
+    Object *node = last_allocated_object;
+
+    // To set last_allocated_object to the last alive object
     Object *last_alive_object = nullptr;
+
+    // Next alive node
+    Object *next_node = nullptr;
 
     while (node) {
         auto prev_node = node->gc_data.prev;
 
         // Not alive, delete it
         if (!node->gc_data.alive) {
-            auto next_node = node->gc_data.next;
-
             // Remove it from the linked list
             if (next_node)
                 next_node->gc_data.prev = prev_node;
 
-            if (prev_node)
-                prev_node->gc_data.next = next_node;
-
             delete node;
         } else {
             // This object is alive
-            if (!last_alive_object) last_alive_object = node;
+            if (!last_alive_object)
+                last_alive_object = node;
 
             // Reset flags
             node->gc_data.alive = false;
+
+            // This is the new next node
+            next_node = node;
         }
 
         // Next iteration

@@ -10,8 +10,6 @@ Object::Object() {
 
 Object::~Object() { cout << "Object deleted" << endl; }
 
-
-// TODO
 void testObjects() {
     Object *parent = new Object();
 
