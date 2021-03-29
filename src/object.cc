@@ -23,6 +23,11 @@ Object::~Object() {
     // TODO : Call delete function (of the type)
 }
 
+void Object::traverse_objects(const fn_visit_object_t &visit) {
+    if (type->fn_traverse_objects)
+        type->fn_traverse_objects(this, visit);
+}
+
 // --- Type ---
 static int type_global_id = 0;
 
@@ -61,7 +66,7 @@ struct TestObject : public Object {
 
 struct TestType : public Type {
     TestType() : Type("TestType") {
-        traverse_objects = [this](Object *self,
+        fn_traverse_objects = [this](Object *self,
                                   function<void(Object * o)> visit) -> void {
             for (auto child : ((TestObject *)self)->children)
                 visit(child);

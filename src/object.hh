@@ -11,6 +11,12 @@
 void testObjects();
 
 struct Type;
+struct Object;
+
+// Function that calls the visitor on all objects to traverse
+typedef std::function<void(Object *child)> fn_visit_object_t;
+typedef std::function<void(Object *obj, const fn_visit_object_t &visit)>
+    fn_traverse_objects_t;
 
 // A global object can't be destroyed by the garbage collector
 // where local objects can (global objects can't be instanced
@@ -28,14 +34,12 @@ struct Object {
 
     virtual ~Object();
 
+    // Wrappers of Type::fn_*
+    void traverse_objects(const fn_visit_object_t &visit);
+
 protected:
     Object();
 };
-
-// Function that calls the visitor on all objects to traverse
-typedef std::function<void(Object *obj,
-                           std::function<void(Object *child)> visit)>
-    fn_traverse_objects_t;
 
 // Every type must have a unique instance of this class
 struct Type : public Object {
@@ -46,7 +50,8 @@ struct Type : public Object {
     str_t name;
 
     // The tp_traverse function
-    fn_traverse_objects_t traverse_objects;
+    // Can be empty
+    fn_traverse_objects_t fn_traverse_objects;
 
     // TODO :
     // fn_unary_t fn_new;
