@@ -15,6 +15,14 @@ struct Object {
     // TODO
     std::vector<Object *> children;
 
-    Object();
+    // Can't be deleted by the GC
+    static Object *Global();
+
+    // Normal object
+    static Object *Local();
+
     ~Object();
+
+private:
+    Object();
 };

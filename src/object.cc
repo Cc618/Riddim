@@ -4,22 +4,34 @@
 
 using namespace std;
 
-Object::Object() {
-    init_gc_data(this);
+Object *Object::Global() {
+    return new Object();
 }
 
-Object::~Object() { cout << "Object deleted" << endl; }
+Object *Object::Local() {
+    auto o = new Object();
+    init_gc_data(o);
+
+    return o;
+}
+
+Object::Object() {}
+
+Object::~Object() {
+    // TODO : Delete function (of the type)
+    cout << "Object deleted" << endl;
+}
 
 void testObjects() {
-    Object *parent = new Object();
+    Object *parent = Object::Global();
 
-    Object *a = new Object();
-    Object *b = new Object();
-    Object *c = new Object();
-    Object *d = new Object();
+    Object *a = Object::Local();
+    Object *b = Object::Local();
+    Object *c = Object::Local();
+    Object *d = Object::Local();
 
-    Object *e = new Object();
-    Object *f = new Object();
+    Object *e = Object::Local();
+    Object *f = Object::Global();
 
     parent->children.insert(parent->children.begin(), {a,b,c});
     c->children.push_back(d);
