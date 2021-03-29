@@ -8,12 +8,10 @@ struct Object;
 struct GcData {
     // Previous allocated object, nullptr if first one
     // Singly linked list
-    Object *prev;
+    Object *prev = nullptr;
 
     // The marked flag, if true then we don't delete it
     bool alive = false;
-
-    GcData(Object *prev) : prev(prev) {}
 };
 
 // Inits the gc_data field of an object

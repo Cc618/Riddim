@@ -1,17 +1,14 @@
 #include "gc.hh"
 #include "object.hh"
 #include <vector>
-// TODO
-#include <iostream>
 
 using namespace std;
 
-// TODO : When GC is done, update it to the first object ?
 static Object *last_allocated_object = nullptr;
 
 void init_gc_data(Object *obj) {
     // Insert this object to the gc linked list
-    obj->gc_data = GcData{last_allocated_object};
+    obj->gc_data.prev = last_allocated_object;
 
     last_allocated_object = obj;
 }
