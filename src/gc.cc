@@ -23,11 +23,12 @@ void garbage_collect(Object *parent) {
         to_mark.pop_back();
 
         // Add all objects that can be accessed from obj
-        for (auto child : obj->children)
+        obj->type->traverse_objects(obj, [&to_mark](Object *child) {
             if (!child->gc_data.alive) {
                 child->gc_data.alive = true;
                 to_mark.push_back(child);
             }
+        });
     }
 
     // Sweep by iterating through the gc list

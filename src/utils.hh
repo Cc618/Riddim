@@ -3,10 +3,16 @@
 // Some utility functions and definitions
 
 #include <string>
+#include <functional>
+
+struct Object;
 
 typedef std::string str_t;
 typedef long long int_t;
 typedef unsigned int line_t;
+
+typedef std::function<Object *(Object *)> fn_unary_t;
+typedef std::function<Object *(Object *, Object *)> fn_binary_t;
 
 // Returns a string representation of this string
 // (Escapes chars...)
