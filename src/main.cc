@@ -1,9 +1,17 @@
 #include "driver.hh"
+// TODO
+#include "object.hh"
 #include <iostream>
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    testObjects();
+    cout << "Done" << endl;
+
+    return 0;
+
+    /*
     int res;
     Driver driver;
 
@@ -32,4 +40,5 @@ int main(int argc, char *argv[]) {
     }
 
     return res;
+    */
 }
