@@ -15,11 +15,15 @@ void init_program() {
 }
 
 static void init_types() {
-    // TODO
-    // Type::class_type = ...;
-    // Object::class_type = ...;
-    // Object::class_type = ...;
+    // TODO : Add functions like fn_str
 
+    // Type
+    Type::class_type = new Type("Type");
+    // Was not initialized
+    Type::class_type->type = Type::class_type;
+
+    // Object
+    Object::class_type = new Type("Object");
 }
 
 static void init_objects() {

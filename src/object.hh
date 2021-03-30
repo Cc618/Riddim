@@ -18,10 +18,9 @@ typedef std::function<void(Object *child)> fn_visit_object_t;
 typedef std::function<void(Object *obj, const fn_visit_object_t &visit)>
     fn_traverse_objects_t;
 
-// A global object can't be destroyed by the garbage collector
-// where local objects can (global objects can't be instanced
-// from Riddim itself)
 struct Object {
+    // This attribute designs the type of this object
+    // It is present also on other classes such as Type
     static Type *class_type;
 
     GcData gc_data;
@@ -33,7 +32,7 @@ struct Object {
     // Wrappers of Type::fn_*
     void traverse_objects(const fn_visit_object_t &visit);
 
-    Object();
+    Object(Type *type);
 };
 
 // Every type must have a unique instance of this class
@@ -63,6 +62,8 @@ struct Type : public Object {
     // fn_binary_t fn_mod;
     // fn_unary_t fn_call;
     // Map *attrs; // Can't be written if starts by @
+
+    // TODO : Overload operator == (check ids)
 
     // A type is always global
     Type(const str_t &name);
