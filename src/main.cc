@@ -1,13 +1,16 @@
 #include "driver.hh"
 // TODO
 #include "object.hh"
+#include "init.hh"
 #include <iostream>
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    init_program();
     testObjects();
     cout << "Done" << endl;
+    end_program();
 
     return 0;
 

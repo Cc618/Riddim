@@ -24,6 +24,7 @@ void garbage_collect(Object *parent) {
 
         // Add all objects that can be accessed from obj
         obj->traverse_objects([&to_mark](Object *child) {
+            // Not visited, mark it as alive
             if (!child->gc_data.alive) {
                 child->gc_data.alive = true;
                 to_mark.push_back(child);

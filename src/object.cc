@@ -5,22 +5,14 @@
 using namespace std;
 
 // --- Object ---
-// TODO : Out of memory exception
-Object *Object::Global() { return new Object(); }
+Object::Object() {
+    init_gc_data(this);
 
-// TODO : Out of memory exception
-Object *Object::Local() {
-    auto o = new Object();
-
-    init_gc_data(o);
-
-    return o;
+    // TODO : Call new function (of the type) ?
 }
 
-Object::Object() {}
-
 Object::~Object() {
-    // TODO : Call delete function (of the type)
+    // TODO : Call delete function (of the type) ?
 }
 
 void Object::traverse_objects(const fn_visit_object_t &visit) {
@@ -33,27 +25,13 @@ static int type_global_id = 0;
 
 Type::Type(const str_t &name) : name(name) { id = ++type_global_id; }
 
+// --- Globals ---
+Type *Type::class_type = nullptr;
+Type *Object::class_type = nullptr;
+
 // --- TODO ---
-// struct MyType : public Type {
-//     MyType() : Type("MyType") {
-//         traverse_objects = [this](Object *self, function<void(Object * o)> visit) -> void {
-//             visit(a);
-//             visit(b);
-//             visit(c);
-//         };
-
-//         a = Object::Local();
-//         b = Object::Local();
-//         c = Object::Local();
-//     }
-
-//     Object *a, *b, *c;
-// };
-
 struct TestObject : public Object {
     TestObject(const str_t &id = "?", Type *type = nullptr) : id(id) {
-        init_gc_data(this);
-
         this->type = type;
     }
 
@@ -66,8 +44,8 @@ struct TestObject : public Object {
 
 struct TestType : public Type {
     TestType() : Type("TestType") {
-        fn_traverse_objects = [this](Object *self,
-                                  function<void(Object * o)> visit) -> void {
+        fn_traverse_objects = [](Object *self,
+                                     function<void(Object * o)> visit) -> void {
             for (auto child : ((TestObject *)self)->children)
                 visit(child);
         };
@@ -92,6 +70,7 @@ void testObjects() {
     parent->children.insert(parent->children.begin(), {a, b, c});
     c->children.push_back(d);
     d->children.push_back(c);
+
     e->children.push_back(f);
 
     cout << "Collecting garbages" << endl;
