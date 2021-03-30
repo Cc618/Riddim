@@ -5,6 +5,7 @@
 // from it except unreferenced objects)
 
 #include "object.hh"
+#include "error.hh"
 #include <vector>
 
 struct Program : public Object {

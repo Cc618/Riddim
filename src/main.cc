@@ -8,9 +8,11 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
     init_program();
+
     testObjects();
-    cout << "Done" << endl;
+
     end_program();
+    cout << "Done" << endl;
 
     return 0;
 
