@@ -1,4 +1,5 @@
 #include "object.hh"
+#include "program.hh"
 // TODO
 #include <iostream>
 
@@ -24,6 +25,9 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
 static int type_global_id = 0;
 
 Type::Type(const str_t &name) : Object(Type::class_type), name(name) {
+    // Register this type to the program
+    if (Program::instance) Program::instance->types.push_back(this);
+
     id = ++type_global_id;
 }
 
@@ -62,8 +66,8 @@ void testObjects() {
     test_type = new TestType();
     auto parent = new TestObject("root");
 
-    // Will be deleted otherwise
-    parent->children.push_back(test_type);
+    // Keep parent and its children alive
+    Program::instance->globals.push_back(parent);
 
     auto a = new TestObject("a");
     auto b = new TestObject("b");
@@ -79,8 +83,8 @@ void testObjects() {
 
     e->children.push_back(f);
 
-    cout << "Collecting garbages" << endl;
-    garbage_collect(parent);
+    // cout << "Collecting garbages" << endl;
+    // garbage_collect(parent);
 
     // --- Object Test ---
     // auto type = new MyType();
