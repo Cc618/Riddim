@@ -19,7 +19,7 @@ typedef std::function<void(Object *obj, const fn_visit_object_t &visit)>
     fn_traverse_objects_t;
 
 struct Object {
-    // This attribute designs the type of this object
+    // This attribute describes the type of this object
     // It is present also on other classes such as Type
     static Type *class_type;
 
@@ -33,6 +33,11 @@ struct Object {
     void traverse_objects(const fn_visit_object_t &visit);
 
     Object(Type *type);
+
+    // This static function inits the static attribute class_type
+    // It is present on other objects such as Type
+    // This function should be called in init_types
+    static void init_class_type();
 };
 
 // Every type must have a unique instance of this class
@@ -67,4 +72,6 @@ struct Type : public Object {
 
     // A type is always global
     Type(const str_t &name);
+
+    static void init_class_type();
 };

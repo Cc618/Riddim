@@ -1,7 +1,7 @@
 #include "init.hh"
+#include "gc.hh"
 #include "object.hh"
 #include "program.hh"
-#include "gc.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -16,20 +16,17 @@ void init_program() {
 }
 
 // Gathers every types declared within init_types
-static std::vector<Type*> types;
+static std::vector<Type *> types;
 
 static void init_types() {
     // TODO : Add functions like fn_str
 
     // Type
-    Type::class_type = new Type("Type");
-    // Was not initialized
-    Type::class_type->type = Type::class_type;
-
+    Type::init_class_type();
     types.push_back(Type::class_type);
 
     // Object
-    Object::class_type = new Type("Object");
+    Object::init_class_type();
     types.push_back(Object::class_type);
 
     // Program
@@ -37,11 +34,7 @@ static void init_types() {
     types.push_back(Program::class_type);
 }
 
-static void init_objects() {
-    Program *program = new Program(types);
-}
+static void init_objects() { Program *program = new Program(types); }
 
 // --- End ---
-void end_program() {
-    garbage_collect(Program::instance);
-}
+void end_program() { garbage_collect(Program::instance); }

@@ -6,6 +6,8 @@
 using namespace std;
 
 // --- Object ---
+Type *Object::class_type = nullptr;
+
 Object::Object(Type *type) : type(type) {
     init_gc_data(this);
 
@@ -21,8 +23,14 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
         type->fn_traverse_objects(this, visit);
 }
 
+void Object::init_class_type() {
+    class_type = new Type("Object");
+}
+
 // --- Type ---
 static int type_global_id = 0;
+
+Type *Type::class_type = nullptr;
 
 Type::Type(const str_t &name) : Object(Type::class_type), name(name) {
     // Register this type to the program
@@ -31,9 +39,12 @@ Type::Type(const str_t &name) : Object(Type::class_type), name(name) {
     id = ++type_global_id;
 }
 
-// --- Globals ---
-Type *Type::class_type = nullptr;
-Type *Object::class_type = nullptr;
+void Type::init_class_type() {
+    class_type = new Type("Type");
+
+    // Was not initialized
+    class_type->type = class_type;
+}
 
 // --- TODO ---
 struct TestType;
