@@ -20,4 +20,21 @@ struct Error : public Object {
 };
 
 // Some factories for commonly used errors
-Error *AssertError(error_msg_t msg);
+extern Type *AssertError;
+Error *NewAssertError(error_msg_t msg);
+
+// Throws an error and updates the error indicator
+void throw_error(Object *error);
+
+// Clears the current error
+void clear_error();
+
+// Checks whether the current error is of this type
+bool is_error(Type *type);
+
+// Checks whehter an error occured
+bool on_error();
+
+// If !assertion, returns true and throws the AssertError with this message
+// !!! Don't forget to return from the function
+bool err_assert(bool assertion, const str_t &msg);

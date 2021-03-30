@@ -68,7 +68,8 @@ struct Type : public Object {
     // fn_unary_t fn_call;
     // Map *attrs; // Can't be written if starts by @
 
-    // TODO : Overload operator == (check ids)
+    // Compares the unique identifier
+    bool operator==(const Type &other) const;
 
     // A type is always global
     Type(const str_t &name);

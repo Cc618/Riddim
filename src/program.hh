@@ -12,9 +12,9 @@ struct Program : public Object {
     static Program *instance;
     static Type *class_type;
 
-    // TODO : Exceptions, modules
     std::vector<Type *> types;
     std::vector<Object *> globals;
+    Object *current_error;
 
     Program(const std::vector<Type *> &types);
 

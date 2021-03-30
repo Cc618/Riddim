@@ -21,5 +21,7 @@ void Program::init_class_type() {
 
         for (auto child : program->globals)
             visit(child);
+
+        if (program->current_error) visit(program->current_error);
     };
 }

@@ -46,6 +46,10 @@ void Type::init_class_type() {
     class_type->type = class_type;
 }
 
+bool Type::operator==(const Type &other) const {
+    return id == other.id;
+}
+
 // --- TODO ---
 struct TestType;
 static TestType *test_type = nullptr;
