@@ -20,8 +20,14 @@ struct Error : public Object {
 };
 
 // Some factories for commonly used errors
-extern Type *AssertError;
-Error *NewAssertError(error_msg_t msg);
+#define NEW_ERROR(TYPE) \
+    extern Type *TYPE; \
+    Error *New##TYPE(error_msg_t msg);
+
+NEW_ERROR(AssertError);
+NEW_ERROR(InternalError);
+
+#undef NEW_ERROR
 
 // Throws an error and updates the error indicator
 void throw_error(Object *error);
@@ -35,6 +41,18 @@ bool is_error(Type *type);
 // Checks whehter an error occured
 bool on_error();
 
+// Shows the current error
+void dump_error();
+
 // If !assertion, returns true and throws the AssertError with this message
 // !!! Don't forget to return from the function
 bool err_assert(bool assertion, const str_t &msg);
+
+// !!! Don't forget to return from the function
+void throw_str(Type *error_type, const str_t &msg);
+
+// !!! Don't forget to return from the function
+void throw_fmt(Type *error_type, const char *fmt, const char *args...);
+
+// An error that can't be caught in Riddim
+void internal_error(const str_t &msg);

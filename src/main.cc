@@ -2,6 +2,7 @@
 // TODO
 #include "object.hh"
 #include "init.hh"
+#include "error.hh"
 #include <iostream>
 
 using namespace std;
@@ -9,9 +10,27 @@ using namespace std;
 int main(int argc, char *argv[]) {
     init_program();
 
-    testObjects();
+    // Check for initialization errors
+    if (on_error()) {
+        cerr << "Failed to initialize the program" << endl;
+
+        dump_error();
+    }
+
+    try {
+        testObjects();
+    } catch (...) {
+        throw_str(InternalError, "Internal error");
+    }
+
+    if (on_error()) {
+        cerr << "Uncaught error" << endl;
+
+        dump_error();
+    }
 
     end_program();
+
     cout << "Done" << endl;
 
     return 0;

@@ -98,6 +98,8 @@ void testObjects() {
 
     e->children.push_back(f);
 
+    if (err_assert(1 == 42, "Wow 1 != 42 ???")) return;
+
     // cout << "Collecting garbages" << endl;
     // garbage_collect(parent);
 
