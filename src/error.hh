@@ -24,6 +24,8 @@ struct Error : public Object {
     extern Type *TYPE;                                                         \
     Error *New##TYPE(error_msg_t msg);
 
+// !!! Don't forget to update the documentation when adding an error
+
 // Zero division...
 NEW_ERROR(ArithmeticError);
 
