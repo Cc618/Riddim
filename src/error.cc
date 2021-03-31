@@ -75,9 +75,6 @@ DECL_ERROR(TypeError);
 
 #undef DECL_ERROR
 
-// TODO 1 : Debug flags
-#define DEBUG_ERRORS
-
 void throw_error(Object *error) {
 #ifdef DEBUG_ERRORS
     cerr << "New error thrown of type "
