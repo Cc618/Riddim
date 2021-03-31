@@ -2,6 +2,7 @@
 #include "program.hh"
 #include <iostream>
 #include <memory>
+#include <cstdarg>
 
 using namespace std;
 
@@ -110,7 +111,28 @@ void throw_str(Type *error_type, const str_t &msg) {
     throw_error(error);
 }
 
-// TODO 1 : Throw fmt
+// !!! Don't forget to return from the function
+void throw_fmt(Type *error_type, const char *fmt, ...) {
+    va_list arg_list;
+
+    // Get size and check errors
+    va_start(arg_list, fmt);
+    int size = vsnprintf(nullptr, 0, fmt, arg_list) + 1;
+    va_end(arg_list);
+
+    if (size <= 0)
+        internal_error("throw_fmt : Invalid format");
+
+    // Format
+    auto buf = make_unique<char[]>(size);
+    va_start(arg_list, fmt);
+    vsnprintf(buf.get(), size, fmt, arg_list);
+    va_end(arg_list);
+
+    // Throw
+    str_t formatted_msg(buf.get(), buf.get() + size - 1);
+    throw_str(error_type, formatted_msg);
+}
 
 void internal_error(const str_t &msg) {
     cerr << "Fatal error : " << msg << endl;
