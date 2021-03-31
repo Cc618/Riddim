@@ -20,12 +20,45 @@ struct Error : public Object {
 };
 
 // Some factories for commonly used errors
-#define NEW_ERROR(TYPE) \
-    extern Type *TYPE; \
+#define NEW_ERROR(TYPE)                                                        \
+    extern Type *TYPE;                                                         \
     Error *New##TYPE(error_msg_t msg);
 
+// Zero division...
+NEW_ERROR(ArithmeticError);
+
+// False assertion
 NEW_ERROR(AssertError);
+
+// Import not found
+NEW_ERROR(ImportError);
+
+// Out of bounds / key not found on a collection
+NEW_ERROR(IndexError);
+
+// An error thrown only in the C++ API (ex: invalid format on throw error)
+// This error can be thrown outside of the Riddim code execution
 NEW_ERROR(InternalError);
+
+// Invalid use of iterator
+NEW_ERROR(IterError);
+
+// Out of memory
+NEW_ERROR(MemoryError);
+
+// Local / attribute / global variable not found
+NEW_ERROR(NameError);
+
+// This method is not implemented yet
+NEW_ERROR(NotImplementedError);
+
+// Null reference
+NEW_ERROR(NullError);
+
+// Invalid type
+NEW_ERROR(TypeError);
+
+// TODO : File IO errors
 
 #undef NEW_ERROR
 

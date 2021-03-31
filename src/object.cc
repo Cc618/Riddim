@@ -100,6 +100,8 @@ void testObjects() {
 
     if (err_assert(1 == 42, "Wow 1 != 42 ???")) return;
 
+    cout << "This shouldn't be displayed !!!" << endl;
+
     // cout << "Collecting garbages" << endl;
     // garbage_collect(parent);
 

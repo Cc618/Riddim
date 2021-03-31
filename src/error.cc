@@ -39,8 +39,19 @@ void Error::init_class_type() {
         return error; \
     }
 
+DECL_ERROR(ArithmeticError);
 DECL_ERROR(AssertError);
+DECL_ERROR(ImportError);
+DECL_ERROR(IndexError);
 DECL_ERROR(InternalError);
+DECL_ERROR(IterError);
+DECL_ERROR(MemoryError);
+DECL_ERROR(NameError);
+DECL_ERROR(NotImplementedError);
+DECL_ERROR(NullError);
+DECL_ERROR(TypeError);
+
+#undef DECL_ERROR
 
 void throw_error(Object *error) { Program::instance->current_error = error; }
 
