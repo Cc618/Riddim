@@ -88,8 +88,8 @@ bool err_assert(bool assertion, const str_t &msg);
 // !!! Don't forget to return from the function
 void throw_str(Type *error_type, const str_t &msg);
 
-// !!! Don't forget to return from the function
 // Throw string and format it like in printf
+// !!! Don't forget to return from the function
 void throw_fmt(Type *error_type, const char *fmt, ...);
 
 // An error that can't be caught in Riddim

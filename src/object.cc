@@ -2,6 +2,7 @@
 #include "error.hh"
 #include "program.hh"
 #include "str.hh"
+#include "hash.hh"
 #include <iostream>
 
 using namespace std;
@@ -112,6 +113,7 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 #include "map.hh"
 #include "int.hh"
 #include "str.hh"
+#include "debug.hh"
 
 struct TestType;
 static TestType *test_type = nullptr;
@@ -160,7 +162,18 @@ void testObjects() {
     Str *str = new Str("Hello Riddim !!!");
 
     // print(str->index(new Int(-2)));
-    throw_error(new Int(42));
+    // throw_error(new Int(42));
+
+    cout << hash_int(42) << endl;
+    cout << hash_int(43) << endl;
+    cout << hash_combine(hash_int(42), 43) << endl;
+    vector<int_t> a = {3,42,6,92,24,58};
+    cout << hash_iterator(a.begin(), a.end()) << endl;
+    a.push_back(38);
+    cout << hash_iterator(a.begin(), a.end()) << endl;
+    a.pop_back();
+    a.pop_back();
+    cout << hash_iterator(a.begin(), a.end()) << endl;
 
     /*
     HashMap *map = new HashMap();

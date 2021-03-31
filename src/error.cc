@@ -141,7 +141,6 @@ void throw_str(Type *error_type, const str_t &msg) {
     throw_error(error);
 }
 
-// !!! Don't forget to return from the function
 void throw_fmt(Type *error_type, const char *fmt, ...) {
     va_list arg_list;
 

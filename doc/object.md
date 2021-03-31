@@ -9,6 +9,7 @@
 | Object | Does nothing particular in the Riddim side, it is the base class for every objects in C++ |
 | Type | Describes the type of any object, every type is unique |
 | Program | Contains every global objects and informations such as error state, it is the root used in the garbage collector algorithm |
+| *Error | An exception (see [Errors](error.md) for all types) |
 | Int | An integer |
 | Str | A string of characters |
 | HashMap | A collection that serves as a mapping between keys and values, mappings are made given the hash of the key |
