@@ -159,10 +159,8 @@ void testObjects() {
     Int *integer = new Int(42);
     Str *str = new Str("Hello Riddim !!!");
 
-    // integer->index(str); : NameError
-    Int::class_type->fn_str = decltype(Int::class_type->fn_str)();
-    print(integer->type);
-    // print(str);
+    // print(str->index(new Int(-2)));
+    throw_error(new Int(42));
 
     /*
     HashMap *map = new HashMap();

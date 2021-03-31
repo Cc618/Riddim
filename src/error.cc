@@ -1,28 +1,52 @@
 #include "error.hh"
+#include "debug.hh"
 #include "program.hh"
+#include "str.hh"
 #include <cstdarg>
 #include <iostream>
 #include <memory>
 
 using namespace std;
 
+// Dumps this error on out
+// This function cannot throw another error
+void dump_error_object(Object *error, ostream &out);
+
 Type *Error::class_type = nullptr;
 
 Error::Error(error_msg_t msg) : Object(Error::class_type), msg(msg) {}
 
 void Error::init_class_type() {
-    auto error_traverse = [](Object *self, const fn_visit_object_t &visit) {
+    auto error_traverse_objects = [](Object *self,
+                                     const fn_visit_object_t &visit) {
         Error *obj = reinterpret_cast<Error *>(self);
 
         // TODO : Visit msg
     };
 
+    // @str
+    auto error_str = [](Object *self) -> Object * {
+        Error *me = reinterpret_cast<Error *>(self);
+
+        auto result = new (nothrow) Str(me->type->name + "(" + me->msg + ")");
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // Default type
     class_type = new Type("Error");
-    class_type->fn_traverse_objects = error_traverse;
+    class_type->fn_traverse_objects = error_traverse_objects;
+    class_type->fn_str = error_str;
 
     MemoryError = new Type("MemoryError");
-    MemoryError->fn_traverse_objects = error_traverse;
+    MemoryError->fn_traverse_objects = error_traverse_objects;
+    MemoryError->fn_str = error_str;
 
     // Now, we can throw memory errors
     // Other error types
@@ -32,7 +56,8 @@ void Error::init_class_type() {
         THROW_MEMORY_ERROR;                                                    \
         return;                                                                \
     }                                                                          \
-    TYPE->fn_traverse_objects = error_traverse;
+    TYPE->fn_traverse_objects = error_traverse_objects;                        \
+    TYPE->fn_str = error_str;
 
     INIT_ERROR(ArithmeticError);
     INIT_ERROR(AssertError);
@@ -77,8 +102,8 @@ DECL_ERROR(TypeError);
 
 void throw_error(Object *error) {
 #ifdef DEBUG_ERRORS
-    cerr << "New error thrown of type "
-         << (error ? error->type->name : "nullptr") << endl;
+    debug_err("New thrown error");
+    dump_error_object(error, cerr);
 #endif
 
     Program::instance->current_error = error;
@@ -96,9 +121,7 @@ void dump_error() {
     if (!on_error())
         return;
 
-    // TODO : Call str()
-    cerr << "Error of type " << Program::instance->current_error->type->name
-         << endl;
+    dump_error_object(Program::instance->current_error, cerr);
 }
 
 bool err_assert(bool assertion, const str_t &msg) {
@@ -145,4 +168,26 @@ void internal_error(const str_t &msg) {
     cerr << "Fatal error : " << msg << endl;
 
     exit(-1);
+}
+
+void dump_error_object(Object *error, ostream &out) {
+
+    if (!error)
+        out << "nullptr" << endl;
+    else {
+        // Borrow the current error
+        auto current_error = Program::instance->current_error;
+        Program::instance->current_error = nullptr;
+
+        auto msg = error->str();
+
+        // If another error happened
+        if (!msg || msg->type != Str::class_type)
+            out << error->class_type->name << "()" << endl;
+        else
+            out << reinterpret_cast<Str *>(msg)->data << endl;
+
+        // Set again this error
+        Program::instance->current_error = current_error;
+    }
 }

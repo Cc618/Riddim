@@ -36,7 +36,7 @@ void Str::init_class_type() {
             }
 
             // Build string with one char
-            auto result = new (nothrow) Str(str_t(me->data[index], 1));
+            auto result = new (nothrow) Str(str_t(1, me->data[index]));
 
             if (!result) {
                 THROW_MEMORY_ERROR;

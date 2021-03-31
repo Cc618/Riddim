@@ -1,10 +1,11 @@
 # Objects
 <!-- TODO : Abstract -->
-<!-- TODO : Builtin objects -->
+<!-- TODO : C++ init -->
 
 ## Types
 ### Builtins
 | Type | Description |
+| ---- | ----------- |
 | Object | Does nothing particular in the Riddim side, it is the base class for every objects in C++ |
 | Type | Describes the type of any object, every type is unique |
 | Program | Contains every global objects and informations such as error state, it is the root used in the garbage collector algorithm |

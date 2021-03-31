@@ -78,6 +78,7 @@ bool is_error(Type *type);
 bool on_error();
 
 // Shows the current error
+// This function can't throw other errors
 void dump_error();
 
 // If !assertion, returns true and throws the AssertError with this message
