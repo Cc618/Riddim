@@ -36,8 +36,12 @@ static void init_types() {
     init_program_instance();
 
     // Update this macro
+    // Now we can raise exceptions
 #undef INIT_TYPE
-#define INIT_TYPE(TYPE) TYPE::init_class_type();
+#define INIT_TYPE(TYPE)                                                        \
+    TYPE::init_class_type();                                                   \
+    if (on_error())                                                            \
+        return;
 
     INIT_TYPE(Error);
 

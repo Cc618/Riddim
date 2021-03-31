@@ -1,5 +1,7 @@
 #include "program.hh"
 
+using namespace std;
+
 Program *Program::instance = nullptr;
 Type *Program::class_type = nullptr;
 

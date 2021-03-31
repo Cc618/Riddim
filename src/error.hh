@@ -16,6 +16,7 @@ struct Error : public Object {
 
     Error(error_msg_t msg);
 
+    // Can throw
     static void init_class_type();
 };
 
@@ -91,3 +92,5 @@ void throw_fmt(Type *error_type, const char *fmt, const char *args...);
 
 // An error that can't be caught in Riddim
 void internal_error(const str_t &msg);
+
+#define THROW_MEMORY_ERROR throw_str(MemoryError, "Failed to allocate memory");

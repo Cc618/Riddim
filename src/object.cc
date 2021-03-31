@@ -1,6 +1,6 @@
 #include "object.hh"
 #include "program.hh"
-// TODO
+#include "error.hh"
 #include <iostream>
 
 using namespace std;

@@ -20,25 +20,46 @@ void Error::init_class_type() {
     class_type = new Type("Error");
     class_type->fn_traverse_objects = error_traverse;
 
+    MemoryError = new Type("MemoryError");
+    MemoryError->fn_traverse_objects = error_traverse;
+
+    // Now, we can throw memory errors
     // Other error types
 #define INIT_ERROR(TYPE)                                                       \
-    TYPE = new Type(#TYPE);                                                    \
+    TYPE = new (nothrow) Type(#TYPE);                                          \
+    if (!TYPE) {                                                               \
+        THROW_MEMORY_ERROR;                                                    \
+        return;                                                                \
+    }                                                                          \
     TYPE->fn_traverse_objects = error_traverse;
 
+    INIT_ERROR(ArithmeticError);
     INIT_ERROR(AssertError);
+    INIT_ERROR(ImportError);
+    INIT_ERROR(IndexError);
+    INIT_ERROR(InternalError);
+    INIT_ERROR(IterError);
+    INIT_ERROR(NameError);
+    INIT_ERROR(NotImplementedError);
+    INIT_ERROR(NullError);
+    INIT_ERROR(TypeError);
 
 #undef INIT_ERROR
 }
 
-
-#define DECL_ERROR(TYPE) \
-    Type *TYPE = nullptr; \
-    Error *New##TYPE(error_msg_t msg) { \
-        auto error = new Error(msg); \
-        error->type = TYPE; \
-        return error; \
+#define DECL_ERROR(TYPE)                                                       \
+    Type *TYPE = nullptr;                                                      \
+    Error *New##TYPE(error_msg_t msg) {                                        \
+        auto error = new (nothrow) Error(msg);                                 \
+        if (!error) {                                                          \
+            THROW_MEMORY_ERROR;                                                \
+            return nullptr;                                                    \
+        }                                                                      \
+        error->type = TYPE;                                                    \
+        return error;                                                          \
     }
 
+// Can return nullptr on throw
 DECL_ERROR(ArithmeticError);
 DECL_ERROR(AssertError);
 DECL_ERROR(ImportError);
@@ -64,10 +85,12 @@ bool is_error(Type *type) {
 bool on_error() { return Program::instance->current_error; }
 
 void dump_error() {
-    if (!on_error()) return;
+    if (!on_error())
+        return;
 
     // TODO : Call str()
-    cerr << "Error of type " << Program::instance->current_error->type->name << endl;
+    cerr << "Error of type " << Program::instance->current_error->type->name
+         << endl;
 }
 
 bool err_assert(bool assertion, const str_t &msg) {
@@ -88,8 +111,8 @@ void throw_str(Type *error_type, const str_t &msg) {
 }
 
 // !!! Don't forget to return from the function
-template<typename ... Args>
-void throw_fmt(Type *error_type, const char *fmt, Args ... args) {
+template <typename... Args>
+void throw_fmt(Type *error_type, const char *fmt, Args... args) {
     // Get size and check errors
     int size = snprintf(nullptr, 0, fmt, args...) + 1;
 
