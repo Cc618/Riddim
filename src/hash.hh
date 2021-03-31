@@ -13,6 +13,11 @@ int_t hash_int(const int_t &val);
 // Hash of a string
 int_t hash_str(const str_t &val);
 
+inline size_t hash_sz(const int_t &val) {
+    // TODO Big Int : Update (hash again)
+    return static_cast<size_t>(val);
+}
+
 // Hashes (base, val)
 int_t hash_combine(const int_t &base, const int_t &val);
 

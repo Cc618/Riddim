@@ -165,33 +165,33 @@ void print(Object *o) {
 }
 
 void testObjects() {
-    Int *integer = new Int(42);
-    Str *str = new Str("Hello Riddim !!!");
+    // Int *integer = new Int(42);
+    // Str *str = new Str("Hello Riddim !!!");
 
-    // print(str->index(new Int(-2)));
-    // throw_error(new Int(42));
+    // // print(str->index(new Int(-2)));
+    // // throw_error(new Int(42));
 
-    print((new Int(42))->hash());
-    print((new Int(42))->hash());
-    print((new Int(43))->hash());
-    print((new Int(0x7fffffff'ffffffff))->hash());
-    print((new Int(-1))->hash());
+    // print((new Int(42))->hash());
+    // print((new Int(42))->hash());
+    // print((new Int(43))->hash());
+    // print((new Int(0x7fffffff'ffffffff))->hash());
+    // print((new Int(-1))->hash());
 
-    print((new Str("Hello"))->hash());
-    print((new Str("Hello"))->hash());
-    print((new Str("Hello "))->hash());
-    print((new Str("Hell"))->hash());
+    // print((new Str("Hello"))->hash());
+    // print((new Str("Hello"))->hash());
+    // print((new Str("Hello "))->hash());
+    // print((new Str("Hell"))->hash());
 
-    /*
     HashMap *map = new HashMap();
-    Object *key = new Type("Key");
-    Object *value = new Type("Value");
 
-    map->data[key] = value;
+    map->fn_setindex(new Int(42), new Str("Not OK"));
+    map->fn_setindex(new Int(42), new Str("Ok"));
+    map->fn_setindex(new Int(43), new Str("Ok (2)"));
 
-    cout << "Index 1 : " << map->fn_index(key) << endl;
-    cout << "Index 2 : " << map->fn_index(value) << endl;
-    cerr << "Error : " << ((Error *)Program::instance->current_error)->msg
-         << endl;
-    */
+    print(map);
+
+    // cout << "Index 1 : " << map->fn_index(key) << endl;
+    // cout << "Index 2 : " << map->fn_index(value) << endl;
+    // cerr << "Error : " << ((Error *)Program::instance->current_error)->msg
+    //      << endl;
 }

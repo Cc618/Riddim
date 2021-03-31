@@ -96,3 +96,12 @@ void throw_fmt(Type *error_type, const char *fmt, ...);
 void internal_error(const str_t &msg);
 
 #define THROW_MEMORY_ERROR throw_str(MemoryError, "Failed to allocate memory");
+
+// TODO : Check whether we throw TypeError in another way
+// Args are types
+#define THROW_TYPE_ERROR(CURRENT, EXPECTED)                                    \
+    throw_fmt(TypeError, "Got type '%s' but expected type '%s'",               \
+              (CURRENT)->name, (EXPECTED)->name)
+#define THROW_TYPE_ERROR_PREF(PREF, CURRENT, EXPECTED)                                    \
+    throw_fmt(TypeError, "%s : Got type '%s' but expected type '%s'",               \
+              PREF, (CURRENT)->name, (EXPECTED)->name)
