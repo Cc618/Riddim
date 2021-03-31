@@ -64,6 +64,7 @@ struct Type : public Object {
 
     // Used for hash tables etc...
     // Returns an Int
+    // TODO
     fn_unary_t fn_hash;
 
     // String representation

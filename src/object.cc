@@ -54,6 +54,7 @@ Object *Object::hash() {
 }
 
 Object *Object::str() {
+    // TODO : Default, return Type()
     if (!type->fn_str) {
         THROW_NOBUILTIN(str)
 
@@ -89,6 +90,8 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 
 // --- TODO ---
 #include "map.hh"
+#include "int.hh"
+#include "str.hh"
 
 struct TestType;
 static TestType *test_type = nullptr;
@@ -115,7 +118,32 @@ struct TestType : public Type {
     ~TestType() { cout << "TestType deleted" << endl; }
 };
 
+void print(Object *o) {
+    auto result = o->str();
+
+    // TODO : Errors
+    if (!result) {
+        cout << "Can't find @str method" << endl;
+        return;
+    }
+    if (result->type != Str::class_type) {
+        cout << "Invalid @str type" << endl;
+        return;
+    }
+
+    // TODO : Type of result error
+    cout << reinterpret_cast<Str*>(result)->data << endl;
+}
+
 void testObjects() {
+    Int *integer = new Int(42);
+    Str *str = new Str("Hello Riddim !!!");
+
+    // integer->index(str); : NameError
+    print(integer);
+    print(str);
+
+    /*
     HashMap *map = new HashMap();
     Object *key = new Type("Key");
     Object *value = new Type("Value");
@@ -126,4 +154,5 @@ void testObjects() {
     cout << "Index 2 : " << map->fn_index(value) << endl;
     cerr << "Error : " << ((Error *)Program::instance->current_error)->msg
          << endl;
+    */
 }

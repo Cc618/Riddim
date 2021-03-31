@@ -1,5 +1,6 @@
 #include "init.hh"
 #include "int.hh"
+#include "str.hh"
 #include "error.hh"
 #include "gc.hh"
 #include "object.hh"
@@ -46,6 +47,7 @@ static void init_types() {
         return;
 
     INIT_TYPE(Error);
+    INIT_TYPE(Str);
     INIT_TYPE(Int);
     INIT_TYPE(HashMap);
 

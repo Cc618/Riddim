@@ -1,8 +1,8 @@
 #include "error.hh"
 #include "program.hh"
+#include <cstdarg>
 #include <iostream>
 #include <memory>
-#include <cstdarg>
 
 using namespace std;
 
@@ -75,7 +75,17 @@ DECL_ERROR(TypeError);
 
 #undef DECL_ERROR
 
-void throw_error(Object *error) { Program::instance->current_error = error; }
+// TODO 1 : Debug flags
+#define DEBUG_ERRORS
+
+void throw_error(Object *error) {
+#ifdef DEBUG_ERRORS
+    cerr << "New error thrown of type "
+         << (error ? error->type->name : "nullptr") << endl;
+#endif
+
+    Program::instance->current_error = error;
+}
 
 void clear_error() { Program::instance->current_error = nullptr; }
 
