@@ -14,10 +14,10 @@ struct Error : public Object {
 
     error_msg_t msg;
 
-    Error(error_msg_t msg);
-
     // Can throw
     static void init_class_type();
+
+    Error(error_msg_t msg);
 };
 
 // Some factories for commonly used errors
