@@ -16,7 +16,7 @@ int_t hash_int(const int_t &val) {
 }
 
 int_t hash_str(const str_t &val) {
-    static hash<str_t> hfun;
+    constexpr hash<str_t> hfun;
 
     return int_t(hfun(val) & HASH_MASK);
 }

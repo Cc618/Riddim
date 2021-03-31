@@ -16,6 +16,11 @@ int_t hash_str(const str_t &val);
 // Hashes (base, val)
 int_t hash_combine(const int_t &base, const int_t &val);
 
+template <typename T>
+inline int_t hash_ptr(const T *ptr) {
+    return hash_int(int_t(reinterpret_cast<long long>(ptr)));
+}
+
 // Hashes a C++ iterator of int_t
 // Returns 0 if empty
 template <typename ForwardIterator>

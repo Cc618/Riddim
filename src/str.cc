@@ -1,6 +1,7 @@
 #include "str.hh"
 #include "error.hh"
 #include "int.hh"
+#include "hash.hh"
 
 using namespace std;
 
@@ -52,6 +53,22 @@ void Str::init_class_type() {
             return nullptr;
         }
     };
+
+    // @hash
+    class_type->fn_hash = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Str *>(self);
+
+        auto result = new (nothrow) Int(hash_str(me->data));
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
 
     // @str
     class_type->fn_str = [](Object *self) { return self; };

@@ -1,8 +1,9 @@
 #include "object.hh"
 #include "error.hh"
+#include "hash.hh"
 #include "program.hh"
 #include "str.hh"
-#include "hash.hh"
+#include "int.hh"
 #include <iostream>
 
 using namespace std;
@@ -10,9 +11,7 @@ using namespace std;
 // --- Object ---
 Type *Object::class_type = nullptr;
 
-void Object::init_class_type() {
-    class_type = new Type("Object");
-}
+void Object::init_class_type() { class_type = new Type("Object"); }
 
 Object::Object(Type *type) : type(type) {
     init_gc_data(this);
@@ -45,10 +44,18 @@ Object *Object::index(Object *args) {
 }
 
 Object *Object::hash() {
+    // Default hash using the object memory address and its type
     if (!type->fn_hash) {
-        THROW_NOBUILTIN(hash);
+        auto result =
+            new (nothrow) Int(hash_combine(hash_ptr(this), hash_ptr(type)));
 
-        return nullptr;
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
     }
 
     return type->fn_hash(this);
@@ -93,7 +100,7 @@ void Type::init_class_type() {
     class_type->type = class_type;
 
     // @str
-    class_type->fn_str = [](Object *self) -> Object* {
+    class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Type *>(self);
         auto result = new (nothrow) Str("Type(" + me->name + ")");
 
@@ -110,10 +117,10 @@ void Type::init_class_type() {
 bool Type::operator==(const Type &other) const { return id == other.id; }
 
 // --- TODO ---
-#include "map.hh"
-#include "int.hh"
-#include "str.hh"
 #include "debug.hh"
+#include "int.hh"
+#include "map.hh"
+#include "str.hh"
 
 struct TestType;
 static TestType *test_type = nullptr;
@@ -154,7 +161,7 @@ void print(Object *o) {
     }
 
     // TODO : Type of result error
-    cout << reinterpret_cast<Str*>(result)->data << endl;
+    cout << reinterpret_cast<Str *>(result)->data << endl;
 }
 
 void testObjects() {
@@ -164,16 +171,16 @@ void testObjects() {
     // print(str->index(new Int(-2)));
     // throw_error(new Int(42));
 
-    cout << hash_int(42) << endl;
-    cout << hash_int(43) << endl;
-    cout << hash_combine(hash_int(42), 43) << endl;
-    vector<int_t> a = {3,42,6,92,24,58};
-    cout << hash_iterator(a.begin(), a.end()) << endl;
-    a.push_back(38);
-    cout << hash_iterator(a.begin(), a.end()) << endl;
-    a.pop_back();
-    a.pop_back();
-    cout << hash_iterator(a.begin(), a.end()) << endl;
+    print((new Int(42))->hash());
+    print((new Int(42))->hash());
+    print((new Int(43))->hash());
+    print((new Int(0x7fffffff'ffffffff))->hash());
+    print((new Int(-1))->hash());
+
+    print((new Str("Hello"))->hash());
+    print((new Str("Hello"))->hash());
+    print((new Str("Hello "))->hash());
+    print((new Str("Hell"))->hash());
 
     /*
     HashMap *map = new HashMap();
