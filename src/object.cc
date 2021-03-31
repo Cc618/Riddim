@@ -1,6 +1,7 @@
 #include "object.hh"
 #include "error.hh"
 #include "program.hh"
+#include "str.hh"
 #include <iostream>
 
 using namespace std;
@@ -10,7 +11,6 @@ Type *Object::class_type = nullptr;
 
 void Object::init_class_type() {
     class_type = new Type("Object");
-    // TODO : Str
 }
 
 Object::Object(Type *type) : type(type) {
@@ -56,9 +56,15 @@ Object *Object::hash() {
 Object *Object::str() {
     // TODO : Default, return Type()
     if (!type->fn_str) {
-        THROW_NOBUILTIN(str)
+        auto result = new (nothrow) Str(type->name + "()");
 
-        return nullptr;
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
     }
 
     return type->fn_str(this);
@@ -84,6 +90,20 @@ void Type::init_class_type() {
 
     // Was not initialized
     class_type->type = class_type;
+
+    // @str
+    class_type->fn_str = [](Object *self) -> Object* {
+        auto me = reinterpret_cast<Type *>(self);
+        auto result = new (nothrow) Str("Type(" + me->name + ")");
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
 }
 
 bool Type::operator==(const Type &other) const { return id == other.id; }
@@ -140,8 +160,9 @@ void testObjects() {
     Str *str = new Str("Hello Riddim !!!");
 
     // integer->index(str); : NameError
-    print(integer);
-    print(str);
+    Int::class_type->fn_str = decltype(Int::class_type->fn_str)();
+    print(integer->type);
+    // print(str);
 
     /*
     HashMap *map = new HashMap();

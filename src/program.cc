@@ -1,4 +1,5 @@
 #include "program.hh"
+#include "str.hh"
 
 using namespace std;
 
@@ -28,6 +29,20 @@ void Program::init_class_type() {
             visit(child);
 
         if (program->current_error) visit(program->current_error);
+    };
+
+    // @str
+    class_type->fn_str = [](Object *self) -> Object* {
+        // TODO : Display modules, types...
+        auto result = new (nothrow) Str("Program()");
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
     };
 }
 

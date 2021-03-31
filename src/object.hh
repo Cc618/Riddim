@@ -56,6 +56,7 @@ struct Type : public Object {
     // Complete name
     str_t name;
 
+    // Builtin methods : Use wrappers within Object
     // The tp_traverse function
     fn_traverse_objects_t fn_traverse_objects;
 
