@@ -4,8 +4,11 @@ Program *Program::instance = nullptr;
 Type *Program::class_type = nullptr;
 
 Program::Program(const std::vector<Type *> &types)
-    : Object(Program::class_type), types(types) {
+    : Object(Program::class_type) {
     instance = this;
+
+    // Register types
+    for (auto type : types) Program::add_type(type);
 }
 
 void Program::init_class_type() {
@@ -24,4 +27,8 @@ void Program::init_class_type() {
 
         if (program->current_error) visit(program->current_error);
     };
+}
+
+void Program::add_type(Type *type) {
+    Program::instance->types.push_back(type);
 }

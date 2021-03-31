@@ -12,11 +12,16 @@ struct Program : public Object {
     static Program *instance;
     static Type *class_type;
 
-    std::vector<Type *> types;
     std::vector<Object *> globals;
     Object *current_error;
 
     Program(const std::vector<Type *> &types);
 
     static void init_class_type();
+
+    // Registers a new type
+    static void add_type(Type *type);
+
+private:
+    std::vector<Type *> types;
 };

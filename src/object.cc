@@ -34,7 +34,7 @@ Type *Type::class_type = nullptr;
 
 Type::Type(const str_t &name) : Object(Type::class_type), name(name) {
     // Register this type to the program
-    if (Program::instance) Program::instance->types.push_back(this);
+    if (Program::instance) Program::add_type(this);
 
     id = ++type_global_id;
 }
