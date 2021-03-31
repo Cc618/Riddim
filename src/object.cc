@@ -51,6 +51,8 @@ bool Type::operator==(const Type &other) const {
 }
 
 // --- TODO ---
+#include "map.hh"
+
 struct TestType;
 static TestType *test_type = nullptr;
 
@@ -77,35 +79,13 @@ struct TestType : public Type {
 };
 
 void testObjects() {
-    // --- GC test ---
-    test_type = new TestType();
-    auto parent = new TestObject("root");
+    HashMap *map = new HashMap();
+    Object *key = new Type("Key");
+    Object *value = new Type("Value");
 
-    // Keep parent and its children alive
-    Program::instance->globals.push_back(parent);
+    map->data[key] = value;
 
-    auto a = new TestObject("a");
-    auto b = new TestObject("b");
-    auto c = new TestObject("c");
-    auto d = new TestObject("d");
-
-    auto e = new TestObject("e");
-    auto f = new TestObject("f");
-
-    parent->children.insert(parent->children.begin(), {a, b, c});
-    c->children.push_back(d);
-    d->children.push_back(c);
-
-    e->children.push_back(f);
-
-    if (err_assert(1 == 42, "Wow 1 != 42 ???")) return;
-
-    cout << "This shouldn't be displayed !!!" << endl;
-
-    // cout << "Collecting garbages" << endl;
-    // garbage_collect(parent);
-
-    // --- Object Test ---
-    // auto type = new MyType();
-    // type->traverse_objects([](Object *o) { cout << o << endl; });
+    cout << "Index 1 : " << map->fn_index(key) << endl;
+    cout << "Index 2 : " << map->fn_index(value) << endl;
+    cerr << "Error : " << ((Error*)Program::instance->current_error)->msg << endl;
 }

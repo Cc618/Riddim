@@ -110,23 +110,7 @@ void throw_str(Type *error_type, const str_t &msg) {
     throw_error(error);
 }
 
-// !!! Don't forget to return from the function
-template <typename... Args>
-void throw_fmt(Type *error_type, const char *fmt, Args... args) {
-    // Get size and check errors
-    int size = snprintf(nullptr, 0, fmt, args...) + 1;
-
-    if (size <= 0)
-        internal_error("throw_fmt : Invalid format");
-
-    // Format
-    auto buf = make_unique<char[]>(size);
-    snprintf(buf.get(), size, fmt, args...);
-
-    // Throw
-    str_t formatted_msg(buf.get(), buf.get() + size - 1);
-    throw_str(error_type, formatted_msg);
-}
+// TODO 1 : Throw fmt
 
 void internal_error(const str_t &msg) {
     cerr << "Fatal error : " << msg << endl;

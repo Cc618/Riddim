@@ -3,6 +3,7 @@
 #include "gc.hh"
 #include "object.hh"
 #include "program.hh"
+#include "map.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -44,6 +45,7 @@ static void init_types() {
         return;
 
     INIT_TYPE(Error);
+    INIT_TYPE(HashMap);
 
 #undef INIT_TYPE
 }
