@@ -1,6 +1,8 @@
 #pragma once
 
 // Map objects, they are equivalent to dicts in Python
+// Defines also AttrObject, an object that allows custom attributes (using an
+// HashMap)
 
 #include "object.hh"
 #include <map>
@@ -17,11 +19,9 @@ struct HashMap : public Object {
 
     HashMap();
 
-    // TODO : As type lambda ?
     // Can throw
     Object *get(Object *key);
 
-    // TODO : As slot
     // Can throw
     void set(Object *key, Object *value);
 
@@ -32,4 +32,21 @@ private:
     // Returns the iterator associated to the key
     // Can throw (returns data.end() on error)
     hmap_t::iterator find(Object *key);
+};
+
+// An object that can contains attributes
+// These attributes are set /
+struct AttrObject : public Object {
+    static Type *class_type;
+
+    HashMap *data;
+
+    // Constructor
+    static AttrObject *New();
+
+    // Can throw
+    static void init_class_type();
+
+protected:
+    AttrObject();
 };

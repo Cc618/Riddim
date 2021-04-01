@@ -1,9 +1,9 @@
 #include "object.hh"
 #include "error.hh"
 #include "hash.hh"
+#include "int.hh"
 #include "program.hh"
 #include "str.hh"
-#include "int.hh"
 #include <iostream>
 
 using namespace std;
@@ -28,10 +28,21 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
         type->fn_traverse_objects(this, visit);
 }
 
-// Throws a NameError that says no such builtin method
-#define THROW_NOBUILTIN(METHOD)                                                \
-    throw_fmt(NameError, "Type '%s' has no @" #METHOD " method",               \
-              type->name.c_str());
+Object *Object::getattr(Object *name) {
+    if (!type->fn_getattr) {
+        auto name_str = name->str();
+
+        if (!name_str || name_str->type != Str::class_type) {
+            clear_error();
+            throw_fmt(NameError, "No such attribute for type %s", type);
+        } else
+            THROW_ATTR_ERROR(type, reinterpret_cast<Str *>(name_str)->data);
+
+        return nullptr;
+    }
+
+    return type->fn_getattr(this, name);
+}
 
 Object *Object::getitem(Object *args) {
     if (!type->fn_getitem) {
@@ -61,6 +72,22 @@ Object *Object::hash() {
     return type->fn_hash(this);
 }
 
+Object *Object::setattr(Object *name, Object *value) {
+    if (!type->fn_setattr) {
+        auto name_str = name->str();
+
+        if (!name_str || name_str->type != Str::class_type) {
+            clear_error();
+            throw_fmt(NameError, "No such attribute for type %s", type);
+        } else
+            THROW_ATTR_ERROR(type, reinterpret_cast<Str *>(name_str)->data);
+
+        return nullptr;
+    }
+
+    return type->fn_setattr(this, name, value);
+}
+
 Object *Object::setitem(Object *key, Object *value) {
     if (!type->fn_setitem) {
         THROW_NOBUILTIN(setitem);
@@ -69,7 +96,6 @@ Object *Object::setitem(Object *key, Object *value) {
     }
 
     return type->fn_setitem(this, key, value);
-
 }
 
 Object *Object::str() {
@@ -159,6 +185,11 @@ struct TestType : public Type {
 };
 
 void print(Object *o) {
+    if (!o) {
+        cout << "nullptr" << endl;
+        return;
+    }
+
     auto result = o->str();
 
     // TODO : Errors
@@ -176,34 +207,19 @@ void print(Object *o) {
 }
 
 void testObjects() {
-    // Int *integer = new Int(42);
-    // Str *str = new Str("Hello Riddim !!!");
+    // HashMap *map = new HashMap();
 
-    // // print(str->index(new Int(-2)));
-    // // throw_error(new Int(42));
+    // print(map->setitem(new Int(42), new Str("Not OK")));
+    // map->setitem(new Int(42), new Str("Ok"));
+    // map->setitem(new Int(43), new Str("Ok (2)"));
+    // print(map->getitem(new Int(42)));
 
-    // print((new Int(42))->hash());
-    // print((new Int(42))->hash());
-    // print((new Int(43))->hash());
-    // print((new Int(0x7fffffff'ffffffff))->hash());
-    // print((new Int(-1))->hash());
+    AttrObject *o = AttrObject::New();
+    o->setattr(new Str("a"), new Int(618));
+    o->setattr(new Str("b"), new Int(314));
 
-    // print((new Str("Hello"))->hash());
-    // print((new Str("Hello"))->hash());
-    // print((new Str("Hello "))->hash());
-    // print((new Str("Hell"))->hash());
-
-    HashMap *map = new HashMap();
-
-    print(map->setitem(new Int(42), new Str("Not OK")));
-    map->setitem(new Int(42), new Str("Ok"));
-    map->setitem(new Int(43), new Str("Ok (2)"));
-    print(map->getitem(new Int(42)));
-
-    print(map);
-
-    // cout << "Index 1 : " << map->fn_index(key) << endl;
-    // cout << "Index 2 : " << map->fn_index(value) << endl;
-    // cerr << "Error : " << ((Error *)Program::instance->current_error)->msg
-    //      << endl;
+    print(o);
+    print(o->getattr(new Str("a")));
+    print(o->getattr(new Str("ab")));
+    clear_error();
 }

@@ -95,13 +95,27 @@ void throw_fmt(Type *error_type, const char *fmt, ...);
 // An error that can't be caught in Riddim
 void internal_error(const str_t &msg);
 
+// TODO : Error colors
 #define THROW_MEMORY_ERROR throw_str(MemoryError, "Failed to allocate memory");
 
 // TODO : Check whether we throw TypeError in another way
 // Args are types
 #define THROW_TYPE_ERROR(CURRENT, EXPECTED)                                    \
-    throw_fmt(TypeError, "Got type '%s' but expected type '%s'",               \
-              (CURRENT)->name, (EXPECTED)->name)
-#define THROW_TYPE_ERROR_PREF(PREF, CURRENT, EXPECTED)                                    \
-    throw_fmt(TypeError, "%s : Got type '%s' but expected type '%s'",               \
-              PREF, (CURRENT)->name, (EXPECTED)->name)
+    throw_fmt(TypeError, "Got type %s but expected type %s",               \
+              (CURRENT)->name.c_str(), (EXPECTED)->name.c_str())
+
+// Invalid type with prefix
+#define THROW_TYPE_ERROR_PREF(PREF, CURRENT, EXPECTED)                         \
+    throw_fmt(TypeError, "%s : Got type %s but expected type %s", PREF,    \
+              (CURRENT)->name.c_str(), (EXPECTED)->name.c_str())
+
+// Attribute not found
+// ATTR is a string and TYPE is a type
+#define THROW_ATTR_ERROR(TYPE, ATTR)                                           \
+    throw_fmt(NameError, "Attribute %s not found for type %s",             \
+              (ATTR).c_str(), (TYPE)->name.c_str())
+
+// Throws a NameError that says no such builtin method
+#define THROW_NOBUILTIN(METHOD)                                                \
+    throw_fmt(NameError, "Type %s has no @" #METHOD " method",               \
+              type->name.c_str());

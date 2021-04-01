@@ -52,6 +52,7 @@ static void init_types() {
     INIT_TYPE(Int);
     INIT_TYPE(Null);
     INIT_TYPE(HashMap);
+    INIT_TYPE(AttrObject);
 
 #undef INIT_TYPE
 }

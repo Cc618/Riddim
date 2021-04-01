@@ -41,8 +41,10 @@ struct Object {
     // See Type::fn_* for more details
     // Can throw and return nullptr (except for traverse_objects)
     void traverse_objects(const fn_visit_object_t &visit);
+    Object *getattr(Object *name);
     Object *getitem(Object *key);
     Object *hash();
+    Object *setattr(Object *name, Object *value);
     Object *setitem(Object *key, Object *value);
     Object *str();
 };
@@ -61,12 +63,18 @@ struct Type : public Object {
     // The tp_traverse function
     fn_traverse_objects_t fn_traverse_objects;
 
+    // Get map attribute (not read only)
+    fn_binary_t fn_getattr;
+
     // Subscript getter, example : obj[42]
     fn_binary_t fn_getitem;
 
     // Used for hash tables etc...
     // Returns an Int
     fn_unary_t fn_hash;
+
+    // Set map attribute (not read only)
+    fn_ternary_t fn_setattr;
 
     // Subscript setter, example : obj[42] = 2
     fn_ternary_t fn_setitem;

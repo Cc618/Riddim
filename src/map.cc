@@ -2,11 +2,12 @@
 #include "error.hh"
 #include "hash.hh"
 #include "int.hh"
-#include "str.hh"
 #include "null.hh"
+#include "str.hh"
 
 using namespace std;
 
+// --- HashMap ---
 Type *HashMap::class_type = nullptr;
 
 HashMap::HashMap() : Object(HashMap::class_type) {}
@@ -32,11 +33,12 @@ void HashMap::init_class_type() {
 
     // TODO : Hash
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
-        auto me = reinterpret_cast<HashMap*>(self);
+        auto me = reinterpret_cast<HashMap *>(self);
 
         auto result = me->get(key);
 
-        if (!result) return nullptr;
+        if (!result)
+            return nullptr;
 
         return result;
     };
@@ -104,12 +106,14 @@ void HashMap::init_class_type() {
         return result_str;
     };
 
-    class_type->fn_setitem = [](Object *self, Object *key, Object *value) -> Object * {
-        auto me = reinterpret_cast<HashMap*>(self);
+    class_type->fn_setitem = [](Object *self, Object *key,
+                                Object *value) -> Object * {
+        auto me = reinterpret_cast<HashMap *>(self);
 
         me->set(key, value);
 
-        if (on_error()) return nullptr;
+        if (on_error())
+            return nullptr;
 
         return null;
     };
@@ -178,3 +182,116 @@ hmap_t::iterator HashMap::find(Object *key) {
 
     return data.find(h_key);
 }
+
+// --- AttrObject ---
+Type *AttrObject::class_type = nullptr;
+
+AttrObject *AttrObject::New() {
+    auto o = new (nothrow) AttrObject();
+    if (o) {
+        o->data = new (nothrow) HashMap();
+    }
+
+    if (!o || !o->data) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return o;
+}
+
+void AttrObject::init_class_type() {
+    class_type = new (nothrow) Type("AttrObject");
+    if (!class_type) {
+        THROW_MEMORY_ERROR;
+        return;
+    }
+
+    class_type->fn_traverse_objects = [](Object *self,
+                                         const fn_visit_object_t &visit) {
+        AttrObject *me = reinterpret_cast<AttrObject *>(self);
+
+        visit(me->data);
+    };
+
+    class_type->fn_getattr = [](Object *self, Object *name) -> Object * {
+        auto me = reinterpret_cast<AttrObject *>(self);
+
+        auto result = me->data->getitem(name);
+
+        // Change error to AttrError
+        if (!result) {
+            clear_error();
+
+            auto name_str = name->str();
+
+            if (!name_str || name_str->type != Str::class_type) {
+                clear_error();
+                throw_fmt(NameError, "No such attribute for type %s",
+                          self->type);
+            } else
+                THROW_ATTR_ERROR(self->type,
+                                 reinterpret_cast<Str *>(name_str)->data);
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
+    // TODO : Hash
+    // @str
+    class_type->fn_str = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<AttrObject *>(self);
+
+        str_t result = "AttrObject";
+
+        auto attrs = me->data->str();
+
+        // Don't display attributes
+        if (!attrs || attrs->type != Str::class_type) {
+            clear_error();
+            result += "{}";
+        } else
+            result += reinterpret_cast<Str *>(attrs)->data;
+
+        auto result_str = new (nothrow) Str(result);
+
+        if (!result_str) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result_str;
+    };
+
+    class_type->fn_setattr = [](Object *self, Object *name,
+                                Object *value) -> Object * {
+        auto me = reinterpret_cast<AttrObject *>(self);
+
+        auto result = me->data->setitem(name, value);
+
+        // Change error to AttrError
+        if (!result) {
+            clear_error();
+
+            auto name_str = name->str();
+
+            if (!name_str || name_str->type != Str::class_type) {
+                clear_error();
+                throw_fmt(NameError, "No such attribute for type %s",
+                          self->type);
+            } else
+                THROW_ATTR_ERROR(self->type,
+                                 reinterpret_cast<Str *>(name_str)->data);
+
+            return nullptr;
+        }
+
+        return result;
+    };
+}
+
+AttrObject::AttrObject() : Object(AttrObject::class_type) {}

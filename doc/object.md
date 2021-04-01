@@ -19,7 +19,9 @@
 <!-- TODO : Update if str changed etc... -->
 | Name | Description | Expected Return Type | Example |
 | ---- | ----------- | -------------------- | ------- |
+| @getattr | Get map attribute (not a read only attribute) | | a.foo which is a.@getattr('foo') |
 | @getitem | Index / subscript getter | | a[42] which is a.@getitem(42) |
+| @hash | Hash respresentation | Int | |
+| @setattr | Set map attribute (not a read only attribute) | | a.foo = 42 which is a.@setattr('foo', 42) |
 | @setitem | Index / subscript setter | Null | a[42] = 2 which is a.@setitem(42, 2) |
 | @str | String representation | Str | @str(Int) which returns 'Type(Int)' |
-| @hash | Hash respresentation | Int | |
