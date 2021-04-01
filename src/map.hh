@@ -19,6 +19,10 @@ struct HashMap : public Object {
 
     HashMap();
 
+    // Returns the iterator associated to the key
+    // Can throw (returns data.end() on error)
+    hmap_t::iterator find(Object *key);
+
     // Can throw
     Object *get(Object *key);
 
@@ -27,11 +31,6 @@ struct HashMap : public Object {
 
     // Can throw
     static void init_class_type();
-
-private:
-    // Returns the iterator associated to the key
-    // Can throw (returns data.end() on error)
-    hmap_t::iterator find(Object *key);
 };
 
 // An object that can contains attributes

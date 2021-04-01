@@ -10,10 +10,18 @@ struct Frame : public Object {
     Frame *previous;
     HashMap *vars;
 
-    Frame();
+    // Fetch the first variable named "name"
+    // This is the main method to resolve variable / function names at runtime
+    // Returns nullptr if not found with a name error (throws)
+    // TODO lambda : Return frame where the variable belong to too (to save it)
+    Object *fetch(Object *name);
 
-    // TODO : fn_in
+    // Can throw
+    static Frame *New(Frame *previous = nullptr);
 
     // Can throw
     static void init_class_type();
+
+private:
+    Frame(Frame *previous);
 };

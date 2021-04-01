@@ -97,24 +97,29 @@ void internal_error(const str_t &msg);
 // TODO : Error colors
 #define THROW_MEMORY_ERROR throw_str(MemoryError, "Failed to allocate memory");
 
+// Variable not found
+// VAR is a string and TYPE is a type
+#define THROW_NAME_ERROR(VAR)                                                 \
+    throw_fmt(NameError, "Symbol %s not found", (VAR).c_str())
+
 // TODO : Check whether we throw TypeError in another way
 // Args are types
 #define THROW_TYPE_ERROR(CURRENT, EXPECTED)                                    \
-    throw_fmt(TypeError, "Got type %s but expected type %s",               \
+    throw_fmt(TypeError, "Got type %s but expected type %s",                   \
               (CURRENT)->name.c_str(), (EXPECTED)->name.c_str())
 
 // Invalid type with prefix
 #define THROW_TYPE_ERROR_PREF(PREF, CURRENT, EXPECTED)                         \
-    throw_fmt(TypeError, "%s : Got type %s but expected type %s", PREF,    \
+    throw_fmt(TypeError, "%s : Got type %s but expected type %s", PREF,        \
               (CURRENT)->name.c_str(), (EXPECTED)->name.c_str())
 
 // Attribute not found
 // ATTR is a string and TYPE is a type
 #define THROW_ATTR_ERROR(TYPE, ATTR)                                           \
-    throw_fmt(NameError, "Attribute %s not found for type %s",             \
-              (ATTR).c_str(), (TYPE)->name.c_str())
+    throw_fmt(NameError, "Attribute %s not found for type %s", (ATTR).c_str(), \
+              (TYPE)->name.c_str())
 
 // Throws a NameError that says no such builtin method
 #define THROW_NOBUILTIN(METHOD)                                                \
-    throw_fmt(NameError, "Type %s has no @" #METHOD " method",               \
+    throw_fmt(NameError, "Type %s has no @" #METHOD " method",                 \
               type->name.c_str());

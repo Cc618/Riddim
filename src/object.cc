@@ -219,9 +219,24 @@ void print(Object *o) {
 }
 
 void testObjects() {
-    HashMap *map = new HashMap();
-    map->setitem(new Int(1), new Int(2));
+    // HashMap *map = new HashMap();
+    // map->setitem(new Int(1), new Int(2));
 
-    print(map->in(new Int(1)));
-    print(map->in(new Int(2)));
+    // print(map->in(new Int(1)));
+    // print(map->in(new Int(2)));
+
+    auto frame = Frame::New();
+
+    frame->vars->setitem(new Str("a"), new Int(42));
+    frame->vars->setitem(new Str("b"), new Int(618));
+
+    auto framefn = Frame::New(frame);
+
+    framefn->vars->setitem(new Str("b"), new Int(1));
+    framefn->vars->setitem(new Str("c"), new Int(2));
+
+    print(framefn->fetch(new Str("c")));
+    print(framefn->fetch(new Str("b")));
+    print(framefn->fetch(new Str("a")));
+    print(framefn->fetch(new Str("d")));
 }
