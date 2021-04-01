@@ -19,11 +19,11 @@ struct HashMap : public Object {
 
     // TODO : As type lambda ?
     // Can throw
-    Object *getitem(Object *key);
+    Object *get(Object *key);
 
     // TODO : As slot
     // Can throw
-    void setitem(Object *key, Object *value);
+    void set(Object *key, Object *value);
 
     // Can throw
     static void init_class_type();

@@ -1,11 +1,12 @@
 #include "init.hh"
-#include "int.hh"
-#include "str.hh"
 #include "error.hh"
 #include "gc.hh"
+#include "int.hh"
+#include "map.hh"
+#include "null.hh"
 #include "object.hh"
 #include "program.hh"
-#include "map.hh"
+#include "str.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -49,6 +50,7 @@ static void init_types() {
     INIT_TYPE(Error);
     INIT_TYPE(Str);
     INIT_TYPE(Int);
+    INIT_TYPE(Null);
     INIT_TYPE(HashMap);
 
 #undef INIT_TYPE
@@ -56,7 +58,11 @@ static void init_types() {
 
 static void init_program_instance() { Program *program = new Program(types); }
 
-static void init_objects() {}
+static void init_objects() {
+    Null::init_singleton();
+
+    if (on_error()) return;
+}
 
 // --- End ---
 void end_program() { garbage_collect(Program::instance); }

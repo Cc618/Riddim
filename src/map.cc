@@ -3,6 +3,7 @@
 #include "hash.hh"
 #include "int.hh"
 #include "str.hh"
+#include "null.hh"
 
 using namespace std;
 
@@ -30,6 +31,16 @@ void HashMap::init_class_type() {
     };
 
     // TODO : Hash
+    class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
+        auto me = reinterpret_cast<HashMap*>(self);
+
+        auto result = me->get(key);
+
+        if (!result) return nullptr;
+
+        return result;
+    };
+
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashMap *>(self);
@@ -96,16 +107,15 @@ void HashMap::init_class_type() {
     class_type->fn_setitem = [](Object *self, Object *key, Object *value) -> Object * {
         auto me = reinterpret_cast<HashMap*>(self);
 
-        me->setitem(key, value);
+        me->set(key, value);
 
         if (on_error()) return nullptr;
 
-        // TODO 1 : Return null
-        return nullptr;
+        return null;
     };
 }
 
-Object *HashMap::getitem(Object *key) {
+Object *HashMap::get(Object *key) {
     auto it = find(key);
 
     if (it == data.end()) {
@@ -131,7 +141,7 @@ Object *HashMap::getitem(Object *key) {
     return (*it).second.second;
 }
 
-void HashMap::setitem(Object *key, Object *value) {
+void HashMap::set(Object *key, Object *value) {
     auto h = key->hash();
 
     // Error

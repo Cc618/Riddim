@@ -35,7 +35,7 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
 
 Object *Object::getitem(Object *args) {
     if (!type->fn_getitem) {
-        THROW_NOBUILTIN(index);
+        THROW_NOBUILTIN(getitem);
 
         return nullptr;
     }
@@ -63,7 +63,7 @@ Object *Object::hash() {
 
 Object *Object::setitem(Object *key, Object *value) {
     if (!type->fn_setitem) {
-        THROW_NOBUILTIN(index);
+        THROW_NOBUILTIN(setitem);
 
         return nullptr;
     }
@@ -195,9 +195,10 @@ void testObjects() {
 
     HashMap *map = new HashMap();
 
-    map->setitem(new Int(42), new Str("Not OK"));
+    print(map->setitem(new Int(42), new Str("Not OK")));
     map->setitem(new Int(42), new Str("Ok"));
     map->setitem(new Int(43), new Str("Ok (2)"));
+    print(map->getitem(new Int(42)));
 
     print(map);
 
