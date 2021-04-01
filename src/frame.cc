@@ -18,7 +18,7 @@ void Frame::init_class_type() {
                                          const fn_visit_object_t &visit) {
         Frame *me = reinterpret_cast<Frame *>(self);
 
-        visit(me->scope);
+        visit(me->vars);
         visit(me->previous);
     };
 }

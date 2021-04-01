@@ -159,6 +159,7 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 #include "map.hh"
 #include "str.hh"
 #include "frame.hh"
+#include "bool.hh"
 
 struct TestType;
 static TestType *test_type = nullptr;
@@ -221,4 +222,7 @@ void testObjects() {
 
     // cout << "Message :" << endl;
     // print(err->getattr(new Str("msg")));
+
+    print(istrue);
+    print(isfalse);
 }

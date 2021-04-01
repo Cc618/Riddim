@@ -8,6 +8,7 @@
 #include "program.hh"
 #include "str.hh"
 #include "frame.hh"
+#include "bool.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -55,6 +56,7 @@ static void init_types() {
     INIT_TYPE(HashMap);
     INIT_TYPE(AttrObject);
     INIT_TYPE(Frame);
+    INIT_TYPE(Bool);
 
 #undef INIT_TYPE
 }
@@ -63,6 +65,10 @@ static void init_program_instance() { Program *program = new Program(types); }
 
 static void init_objects() {
     Null::init_singleton();
+
+    if (on_error()) return;
+
+    Bool::init_class_objects();
 
     if (on_error()) return;
 }

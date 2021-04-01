@@ -8,7 +8,7 @@ struct Frame : public Object {
     static Type *class_type;
 
     Frame *previous;
-    HashMap *scope;
+    HashMap *vars;
 
     Frame();
 
