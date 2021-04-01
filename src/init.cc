@@ -7,6 +7,7 @@
 #include "object.hh"
 #include "program.hh"
 #include "str.hh"
+#include "frame.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -53,6 +54,7 @@ static void init_types() {
     INIT_TYPE(Null);
     INIT_TYPE(HashMap);
     INIT_TYPE(AttrObject);
+    INIT_TYPE(Frame);
 
 #undef INIT_TYPE
 }

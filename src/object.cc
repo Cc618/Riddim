@@ -158,6 +158,7 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 #include "int.hh"
 #include "map.hh"
 #include "str.hh"
+#include "frame.hh"
 
 struct TestType;
 static TestType *test_type = nullptr;
@@ -207,24 +208,17 @@ void print(Object *o) {
 }
 
 void testObjects() {
-    // HashMap *map = new HashMap();
+    // AttrObject *o = AttrObject::New();
+    // o->setattr(new Str("a"), new Int(618));
+    // o->setattr(new Str("b"), new Int(314));
 
-    // print(map->setitem(new Int(42), new Str("Not OK")));
-    // map->setitem(new Int(42), new Str("Ok"));
-    // map->setitem(new Int(43), new Str("Ok (2)"));
-    // print(map->getitem(new Int(42)));
+    // print(o);
+    // print(o->getattr(new Str("a")));
+    // print(o->getattr(new Str("ab")));
 
-    AttrObject *o = AttrObject::New();
-    o->setattr(new Str("a"), new Int(618));
-    o->setattr(new Str("b"), new Int(314));
+    // auto err = Program::instance->current_error;
+    // Program::instance->current_error = nullptr;
 
-    print(o);
-    print(o->getattr(new Str("a")));
-    print(o->getattr(new Str("ab")));
-
-    auto err = Program::instance->current_error;
-    Program::instance->current_error = nullptr;
-
-    cout << "Message :" << endl;
-    print(err->getattr(new Str("msg")));
+    // cout << "Message :" << endl;
+    // print(err->getattr(new Str("msg")));
 }
