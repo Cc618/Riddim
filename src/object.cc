@@ -72,6 +72,16 @@ Object *Object::hash() {
     return type->fn_hash(this);
 }
 
+Object *Object::in(Object *val) {
+    if (!type->fn_in) {
+        THROW_NOBUILTIN(in);
+
+        return nullptr;
+    }
+
+    return type->fn_in(this, val);
+}
+
 Object *Object::setattr(Object *name, Object *value) {
     if (!type->fn_setattr) {
         auto name_str = name->str();
@@ -209,20 +219,9 @@ void print(Object *o) {
 }
 
 void testObjects() {
-    // AttrObject *o = AttrObject::New();
-    // o->setattr(new Str("a"), new Int(618));
-    // o->setattr(new Str("b"), new Int(314));
+    HashMap *map = new HashMap();
+    map->setitem(new Int(1), new Int(2));
 
-    // print(o);
-    // print(o->getattr(new Str("a")));
-    // print(o->getattr(new Str("ab")));
-
-    // auto err = Program::instance->current_error;
-    // Program::instance->current_error = nullptr;
-
-    // cout << "Message :" << endl;
-    // print(err->getattr(new Str("msg")));
-
-    print(istrue);
-    print(isfalse);
+    print(map->in(new Int(1)));
+    print(map->in(new Int(2)));
 }

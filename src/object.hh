@@ -44,6 +44,7 @@ struct Object {
     Object *getattr(Object *name);
     Object *getitem(Object *key);
     Object *hash();
+    Object *in(Object *value);
     Object *setattr(Object *name, Object *value);
     Object *setitem(Object *key, Object *value);
     Object *str();
@@ -72,6 +73,10 @@ struct Type : public Object {
     // Used for hash tables etc...
     // Returns an Int
     fn_unary_t fn_hash;
+
+    // Whether an object is within a collection
+    // Returns a Bool
+    fn_binary_t fn_in;
 
     // Set map attribute (not read only)
     fn_ternary_t fn_setattr;
