@@ -92,9 +92,20 @@ void HashMap::init_class_type() {
 
         return result_str;
     };
+
+    class_type->fn_setitem = [](Object *self, Object *key, Object *value) -> Object * {
+        auto me = reinterpret_cast<HashMap*>(self);
+
+        me->setitem(key, value);
+
+        if (on_error()) return nullptr;
+
+        // TODO 1 : Return null
+        return nullptr;
+    };
 }
 
-Object *HashMap::fn_index(Object *key) {
+Object *HashMap::getitem(Object *key) {
     auto it = find(key);
 
     if (it == data.end()) {
@@ -120,7 +131,7 @@ Object *HashMap::fn_index(Object *key) {
     return (*it).second.second;
 }
 
-void HashMap::fn_setindex(Object *key, Object *value) {
+void HashMap::setitem(Object *key, Object *value) {
     auto h = key->hash();
 
     // Error

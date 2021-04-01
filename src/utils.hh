@@ -13,6 +13,7 @@ typedef unsigned int line_t;
 
 typedef std::function<Object *(Object *)> fn_unary_t;
 typedef std::function<Object *(Object *, Object *)> fn_binary_t;
+typedef std::function<Object *(Object *, Object *, Object *)> fn_ternary_t;
 
 // Returns a string representation of this string
 // (Escapes chars...)

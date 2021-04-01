@@ -19,6 +19,7 @@
 <!-- TODO : Update if str changed etc... -->
 | Name | Description | Expected Return Type | Example |
 | ---- | ----------- | -------------------- | ------- |
-| @index | Indexing |  | a[42] which is a.@index(42) | |
+| @getitem | Index / subscript getter | | a[42] which is a.@getitem(42) |
+| @setitem | Index / subscript setter | Null | a[42] = 2 which is a.@setitem(42, 2) |
 | @str | String representation | Str | @str(Int) which returns 'Type(Int)' |
 | @hash | Hash respresentation | Int | |

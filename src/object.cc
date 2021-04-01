@@ -33,14 +33,14 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
     throw_fmt(NameError, "Type '%s' has no @" #METHOD " method",               \
               type->name.c_str());
 
-Object *Object::index(Object *args) {
-    if (!type->fn_index) {
+Object *Object::getitem(Object *args) {
+    if (!type->fn_getitem) {
         THROW_NOBUILTIN(index);
 
         return nullptr;
     }
 
-    return type->fn_index(this, args);
+    return type->fn_getitem(this, args);
 }
 
 Object *Object::hash() {
@@ -59,6 +59,17 @@ Object *Object::hash() {
     }
 
     return type->fn_hash(this);
+}
+
+Object *Object::setitem(Object *key, Object *value) {
+    if (!type->fn_setitem) {
+        THROW_NOBUILTIN(index);
+
+        return nullptr;
+    }
+
+    return type->fn_setitem(this, key, value);
+
 }
 
 Object *Object::str() {
@@ -184,9 +195,9 @@ void testObjects() {
 
     HashMap *map = new HashMap();
 
-    map->fn_setindex(new Int(42), new Str("Not OK"));
-    map->fn_setindex(new Int(42), new Str("Ok"));
-    map->fn_setindex(new Int(43), new Str("Ok (2)"));
+    map->setitem(new Int(42), new Str("Not OK"));
+    map->setitem(new Int(42), new Str("Ok"));
+    map->setitem(new Int(43), new Str("Ok (2)"));
 
     print(map);
 

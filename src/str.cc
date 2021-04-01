@@ -19,7 +19,7 @@ void Str::init_class_type() {
     }
 
     // @index
-    class_type->fn_index = [](Object *self, Object *key) -> Object* {
+    class_type->fn_getitem = [](Object *self, Object *key) -> Object* {
         Str *me = reinterpret_cast<Str *>(self);
 
         // TODO : Slice

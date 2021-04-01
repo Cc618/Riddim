@@ -19,17 +19,17 @@ struct HashMap : public Object {
 
     // TODO : As type lambda ?
     // Can throw
-    Object *fn_index(Object *key);
+    Object *getitem(Object *key);
 
     // TODO : As slot
     // Can throw
-    void fn_setindex(Object *key, Object *value);
-
-    // Returns the iterator associated to the key
-    // Can throw (returns data.end() on error)
-    hmap_t::iterator find(Object *key);
-
+    void setitem(Object *key, Object *value);
 
     // Can throw
     static void init_class_type();
+
+private:
+    // Returns the iterator associated to the key
+    // Can throw (returns data.end() on error)
+    hmap_t::iterator find(Object *key);
 };
