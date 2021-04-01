@@ -4,7 +4,6 @@
 
 #include "object.hh"
 
-// TODO : Use a String object / with a __dict__ ?
 typedef str_t error_msg_t;
 
 // Default error, can be instantiated but it is

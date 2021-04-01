@@ -24,6 +24,35 @@ void Error::init_class_type() {
         // TODO : Visit msg
     };
 
+    // @getattr
+    auto error_getattr = [](Object *self, Object *name) -> Object * {
+        Error *me = reinterpret_cast<Error *>(self);
+
+        if (name->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("@getattr", name->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(name)->data;
+
+        if (attr == "msg") {
+            auto result = new (nothrow) Str(me->msg);
+
+            if (!result) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return result;
+        }
+
+        THROW_ATTR_ERROR(me->type, attr);
+
+        return nullptr;
+    };
+
     // @str
     auto error_str = [](Object *self) -> Object * {
         Error *me = reinterpret_cast<Error *>(self);
@@ -39,14 +68,17 @@ void Error::init_class_type() {
         return result;
     };
 
+#define SETUP_ERROR(TYPE)                                                      \
+    TYPE->fn_traverse_objects = error_traverse_objects;                        \
+    TYPE->fn_str = error_str;                                                  \
+    TYPE->fn_getattr = error_getattr;
+
     // Default type
     class_type = new Type("Error");
-    class_type->fn_traverse_objects = error_traverse_objects;
-    class_type->fn_str = error_str;
+    SETUP_ERROR(class_type);
 
     MemoryError = new Type("MemoryError");
-    MemoryError->fn_traverse_objects = error_traverse_objects;
-    MemoryError->fn_str = error_str;
+    SETUP_ERROR(MemoryError);
 
     // Now, we can throw memory errors
     // Other error types
@@ -56,8 +88,7 @@ void Error::init_class_type() {
         THROW_MEMORY_ERROR;                                                    \
         return;                                                                \
     }                                                                          \
-    TYPE->fn_traverse_objects = error_traverse_objects;                        \
-    TYPE->fn_str = error_str;
+    SETUP_ERROR(TYPE)
 
     INIT_ERROR(ArithmeticError);
     INIT_ERROR(AssertError);

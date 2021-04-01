@@ -221,5 +221,10 @@ void testObjects() {
     print(o);
     print(o->getattr(new Str("a")));
     print(o->getattr(new Str("ab")));
-    clear_error();
+
+    auto err = Program::instance->current_error;
+    Program::instance->current_error = nullptr;
+
+    cout << "Message :" << endl;
+    print(err->getattr(new Str("msg")));
 }

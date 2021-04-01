@@ -14,4 +14,6 @@ struct Str : public Object {
     static void init_class_type();
 
     Str(const str_t &data);
+
+    // TODO : @setitem
 };
