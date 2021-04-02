@@ -32,8 +32,8 @@
 %code {
     #include "driver.hh"
 
-    // TODO
     using namespace std;
+    using namespace ast;
 }
 
 %define api.token.prefix {TOK_}
@@ -58,12 +58,12 @@
 %token <str_t> ID "id"
 %token <str_t> STR "string"
 %token <int> INT "int"
-%nterm <Block*> block_content
-%nterm <Stmt*> stmt
-%nterm <Set*> set
-%nterm <Exp*> exp
-%nterm <Const*> const
-%nterm <BinExp*> binexp
+%nterm <ast::Block*> block_content
+%nterm <ast::Stmt*> stmt
+%nterm <ast::Set*> set
+%nterm <ast::Exp*> exp
+%nterm <ast::Const*> const
+%nterm <ast::BinExp*> binexp
 %nterm stop
 
 %left "+" "-";

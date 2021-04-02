@@ -1,14 +1,15 @@
 #include "init.hh"
+#include "bool.hh"
 #include "error.hh"
+#include "frame.hh"
 #include "gc.hh"
 #include "int.hh"
 #include "map.hh"
+#include "module.hh"
 #include "null.hh"
 #include "object.hh"
 #include "program.hh"
 #include "str.hh"
-#include "frame.hh"
-#include "bool.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -57,6 +58,7 @@ static void init_types() {
     INIT_TYPE(AttrObject);
     INIT_TYPE(Frame);
     INIT_TYPE(Bool);
+    INIT_TYPE(Module);
 
 #undef INIT_TYPE
 }
@@ -66,12 +68,16 @@ static void init_program_instance() { Program *program = new Program(types); }
 static void init_objects() {
     Null::init_singleton();
 
-    if (on_error()) return;
+    if (on_error())
+        return;
 
     Bool::init_class_objects();
 
-    if (on_error()) return;
+    if (on_error())
+        return;
 }
 
 // --- End ---
-void end_program() { garbage_collect(Program::instance); }
+void end_program() {
+    garbage_collect(nullptr);
+}

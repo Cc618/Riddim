@@ -8,6 +8,8 @@
 #include "ast.hh"
 #include "tokens.hh"
 #include "utils.hh"
+
+using namespace ast;
 %}
 
 %{

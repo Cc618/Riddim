@@ -28,6 +28,9 @@ void Program::init_class_type() {
         for (auto child : program->globals)
             visit(child);
 
+        for (auto child : program->modules)
+            visit(child);
+
         if (program->current_error) visit(program->current_error);
     };
 
@@ -48,4 +51,8 @@ void Program::init_class_type() {
 
 void Program::add_type(Type *type) {
     Program::instance->types.push_back(type);
+}
+
+void Program::add_module(Module *mod) {
+    Program::instance->modules.push_back(mod);
 }

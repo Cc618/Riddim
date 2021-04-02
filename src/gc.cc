@@ -14,22 +14,28 @@ void init_gc_data(Object *obj) {
 }
 
 void garbage_collect(Object *parent) {
-    // Mark using an iterative DFS
-    vector<Object *> to_mark;
-    to_mark.push_back(parent);
-    parent->gc_data.alive = true;
-    while (!to_mark.empty()) {
-        auto obj = to_mark.back();
-        to_mark.pop_back();
+    // parent can be nullptr at the destruction of the interpreter
+    if (parent) {
+        // Mark using an iterative DFS
+        vector<Object *> to_mark;
+        to_mark.push_back(parent);
+        parent->gc_data.alive = true;
+        while (!to_mark.empty()) {
+            auto obj = to_mark.back();
+            to_mark.pop_back();
 
-        // Add all objects that can be accessed from obj
-        obj->traverse_objects([&to_mark](Object *child) {
-            // Not visited, mark it as alive
-            if (!child->gc_data.alive) {
-                child->gc_data.alive = true;
-                to_mark.push_back(child);
-            }
-        });
+            // Add all objects that can be accessed from obj
+            obj->traverse_objects([&to_mark](Object *child) {
+                if (!child)
+                    return;
+
+                // Not visited, mark it as alive
+                if (!child->gc_data.alive) {
+                    child->gc_data.alive = true;
+                    to_mark.push_back(child);
+                }
+            });
+        }
     }
 
     // Sweep by iterating through the gc list

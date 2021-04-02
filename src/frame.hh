@@ -10,6 +10,7 @@ struct Frame : public Object {
     Frame *previous;
     HashMap *vars;
 
+    // It is like the getitem function
     // Fetch the first variable named "name"
     // This is the main method to resolve variable / function names at runtime
     // Returns nullptr if not found with a name error (throws)

@@ -170,31 +170,7 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 #include "str.hh"
 #include "frame.hh"
 #include "bool.hh"
-
-struct TestType;
-static TestType *test_type = nullptr;
-
-struct TestObject : public Object {
-    TestObject(const str_t &id = "?") : Object((Type *)test_type), id(id) {}
-
-    ~TestObject() { cout << id << " deleted" << endl; }
-
-    str_t id;
-
-    vector<Object *> children;
-};
-
-struct TestType : public Type {
-    TestType() : Type("TestType") {
-        fn_traverse_objects = [](Object *self,
-                                 function<void(Object * o)> visit) -> void {
-            for (auto child : ((TestObject *)self)->children)
-                visit(child);
-        };
-    }
-
-    ~TestType() { cout << "TestType deleted" << endl; }
-};
+#include "module.hh"
 
 void print(Object *o) {
     if (!o) {
@@ -219,24 +195,29 @@ void print(Object *o) {
 }
 
 void testObjects() {
-    // HashMap *map = new HashMap();
-    // map->setitem(new Int(1), new Int(2));
+    // auto frame = Frame::New();
 
-    // print(map->in(new Int(1)));
-    // print(map->in(new Int(2)));
+    // frame->vars->setitem(new Str("a"), new Int(42));
+    // frame->vars->setitem(new Str("b"), new Int(618));
 
-    auto frame = Frame::New();
+    // auto framefn = Frame::New(frame);
 
-    frame->vars->setitem(new Str("a"), new Int(42));
-    frame->vars->setitem(new Str("b"), new Int(618));
+    // framefn->vars->setitem(new Str("b"), new Int(1));
+    // framefn->vars->setitem(new Str("c"), new Int(2));
 
-    auto framefn = Frame::New(frame);
+    // print(framefn->fetch(new Str("c")));
+    // print(framefn->fetch(new Str("b")));
+    // print(framefn->fetch(new Str("a")));
+    // print(framefn->fetch(new Str("d")));
 
-    framefn->vars->setitem(new Str("b"), new Int(1));
-    framefn->vars->setitem(new Str("c"), new Int(2));
+    auto mod = Module::New("mymod");
+    Program::add_module(mod);
+    Program::instance->main_module = mod;
 
-    print(framefn->fetch(new Str("c")));
-    print(framefn->fetch(new Str("b")));
-    print(framefn->fetch(new Str("a")));
-    print(framefn->fetch(new Str("d")));
+    mod->setitem(new Str("a"), new Int(618));
+
+    // Shouldn't throw errors
+    garbage_collect(Program::instance);
+
+    print(mod->frame);
 }

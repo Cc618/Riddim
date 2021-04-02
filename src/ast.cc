@@ -4,6 +4,7 @@
 
 using namespace std;
 
+namespace ast {
 // --- Utils ---
 // Returns the indentation (for debug)
 inline string str_indent(int indent) { return string(indent * 2, ' '); }
@@ -83,3 +84,4 @@ void BinExp::debug(int indent) {
     right->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
+} // namespace ast

@@ -1,20 +1,21 @@
 #pragma once
 
+#include "utils.hh"
 #include <string>
 #include <variant>
 #include <vector>
-#include "utils.hh"
 
+namespace ast {
 struct ASTNode {
     // Line of the start of this node in the source file
     line_t fileline;
 
-    ASTNode(line_t fileline=0) : fileline(fileline) {}
+    ASTNode(line_t fileline = 0) : fileline(fileline) {}
 
     virtual ~ASTNode() = default;
 
     // Prints recursively all nodes
-    virtual void debug(int indent=0) = 0;
+    virtual void debug(int indent = 0) = 0;
 };
 
 struct Block;
@@ -32,7 +33,7 @@ struct Module : public ASTNode {
 
     virtual ~Module();
 
-    virtual void debug(int indent=0) override;
+    virtual void debug(int indent = 0) override;
 };
 
 struct Block : public ASTNode {
@@ -42,7 +43,7 @@ struct Block : public ASTNode {
 
     virtual ~Block();
 
-    virtual void debug(int indent=0) override;
+    virtual void debug(int indent = 0) override;
 };
 
 struct Stmt : public ASTNode {
@@ -54,11 +55,12 @@ struct Set : public Stmt {
     str_t id;
     Exp *exp;
 
-    Set(line_t fileline, const str_t &id, Exp *exp) : Stmt(fileline), id(id), exp(exp) {}
+    Set(line_t fileline, const str_t &id, Exp *exp)
+        : Stmt(fileline), id(id), exp(exp) {}
 
     virtual ~Set();
 
-    virtual void debug(int indent=0) override;
+    virtual void debug(int indent = 0) override;
 };
 
 struct Exp : public ASTNode {
@@ -77,7 +79,7 @@ struct Const : public Exp {
     Const(line_t fileline, long long val);
     Const(line_t fileline, const str_t &val);
 
-    virtual void debug(int indent=0) override;
+    virtual void debug(int indent = 0) override;
 };
 
 // + * etc.
@@ -91,5 +93,6 @@ struct BinExp : public Exp {
 
     ~BinExp();
 
-    virtual void debug(int indent=0) override;
+    virtual void debug(int indent = 0) override;
 };
+} // namespace ast

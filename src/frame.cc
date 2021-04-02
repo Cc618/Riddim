@@ -69,6 +69,26 @@ void Frame::init_class_type() {
         Frame *me = reinterpret_cast<Frame *>(self);
 
         visit(me->vars);
+
+        // Can be nullptr
         visit(me->previous);
+    };
+
+    class_type->fn_getitem = [](Object *self, Object *key) -> Object* {
+        Frame *me = reinterpret_cast<Frame *>(self);
+
+        return me->fetch(key);
+    };
+
+    class_type->fn_setitem = [](Object *self, Object *key, Object *value) -> Object* {
+        Frame *me = reinterpret_cast<Frame *>(self);
+
+        return me->vars->setitem(key, value);
+    };
+
+    class_type->fn_str = [](Object *self) -> Object* {
+        Frame *me = reinterpret_cast<Frame *>(self);
+
+        return me->vars->str();
     };
 }
