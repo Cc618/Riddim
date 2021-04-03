@@ -223,11 +223,11 @@ void testObjects() {
 
     frame->start_lineno = 11;
     frame->code = {
-        11, 12, 13,
-        21, 22,
+        11, 12, 13, // 11
+        21, 22,     // 12
 
-        41,
-        51
+        41,         // 14
+        51          // 15
     };
 
     frame->line_deltas = {
