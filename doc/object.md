@@ -22,10 +22,10 @@
 <!-- TODO : Update if str changed etc... -->
 | Name | Description | Expected Return Type | Example |
 | ---- | ----------- | -------------------- | ------- |
-| @copy | Deep copy / clone | | |
+| @copy | Deep copy / clone (by default it is the identity function) | | |
 | @getattr | Get map attribute (not a read only attribute) | | a.foo which is a.@getattr('foo') |
 | @getitem | Index / subscript getter | | a[42] which is a.@getitem(42) |
-| @hash | Hash respresentation | Int | |
+| @hash | Hash representation (by default, the address of the reference is returned) | Int | |
 | @setattr | Set map attribute (not a read only attribute) | | a.foo = 42 which is a.@setattr('foo', 42) |
 | @setitem | Index / subscript setter | Null | a[42] = 2 which is a.@setitem(42, 2) |
-| @str | String representation | Str | @str(Int) which returns 'Type(Int)' |
+| @str | String representation (by default it returns 'TypeName()' | Str | @str(Int) which returns 'Type(Int)' |
