@@ -92,3 +92,16 @@ void Frame::init_class_type() {
         return me->vars->str();
     };
 }
+
+size_t Frame::lineof(size_t offset) {
+    size_t l = start_lineno;
+
+    for (auto it = line_deltas.begin(); it != line_deltas.end(); ++it) {
+        const auto &[off, delta] = *it;
+
+        if (off <= offset) l += delta;
+        else break;
+    }
+
+    return l;
+}

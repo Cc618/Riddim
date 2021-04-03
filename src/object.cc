@@ -211,6 +211,7 @@ void testObjects() {
     // print(framefn->fetch(new Str("d")));
 
     auto mod = Module::New("mymod");
+    auto frame = mod->frame;
     Program::add_module(mod);
     Program::instance->main_module = mod;
 
@@ -219,5 +220,25 @@ void testObjects() {
     // Shouldn't throw errors
     garbage_collect(Program::instance);
 
-    print(mod->frame);
+
+    frame->start_lineno = 11;
+    frame->code = {
+        11, 12, 13,
+        21, 22,
+
+        41,
+        51
+    };
+
+    frame->line_deltas = {
+        { 3, 1 },
+        { 5, 2 },
+        { 6, 1 },
+    };
+
+    cout << frame->lineof(0) << endl;
+    cout << frame->lineof(2) << endl;
+    cout << frame->lineof(3) << endl;
+    cout << frame->lineof(frame->code.size() - 2) << endl;
+    cout << frame->lineof(frame->code.size() - 1) << endl;
 }
