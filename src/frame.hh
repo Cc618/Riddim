@@ -4,6 +4,7 @@
 // and gathers also the code to interpret
 
 #include "map.hh"
+#include "vec.hh"
 #include <vector>
 
 // Code fragment
@@ -18,6 +19,9 @@ struct Frame : public Object {
     // Instruction pointer (counter)
     size_t ip;
     code_t code;
+
+    // Constants, to be copied
+    Vec *consts;
 
     // File info
     size_t start_lineno;
@@ -37,6 +41,12 @@ struct Frame : public Object {
 
     // Returns the line number of the instruction at offset 'offset' within code
     size_t lineof(size_t offset);
+
+    // Pushes a new constant to consts and returns its index
+    size_t add_const(Object *cst);
+
+    // Spawns (copies) the constant at index i
+    Object *spawn_const(size_t i);
 
     // Can throw
     static Frame *New(Frame *previous = nullptr);

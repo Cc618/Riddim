@@ -17,6 +17,7 @@
 | Str | A string of characters |
 | Vec | A collection that contiguously stores items and has a dynamic length |
 | HashMap | A collection that serves as a mapping between keys and values, mappings are made given the hash of the key |
+| AttrObject | An object that can contain custom attributes |
 
 ### Default methods
 <!-- TODO : Abstract -->

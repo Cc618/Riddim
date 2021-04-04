@@ -1,7 +1,7 @@
 #include "frame.hh"
 #include "bool.hh"
-#include "str.hh"
 #include "error.hh"
+#include "str.hh"
 
 using namespace std;
 
@@ -54,6 +54,14 @@ Frame *Frame::New(Frame *previous) {
         return nullptr;
     }
 
+    o->consts = new (nothrow) Vec();
+
+    if (!o->consts) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
     return o;
 }
 
@@ -69,24 +77,26 @@ void Frame::init_class_type() {
         Frame *me = reinterpret_cast<Frame *>(self);
 
         visit(me->vars);
+        visit(me->consts);
 
         // Can be nullptr
         visit(me->previous);
     };
 
-    class_type->fn_getitem = [](Object *self, Object *key) -> Object* {
+    class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         Frame *me = reinterpret_cast<Frame *>(self);
 
         return me->fetch(key);
     };
 
-    class_type->fn_setitem = [](Object *self, Object *key, Object *value) -> Object* {
+    class_type->fn_setitem = [](Object *self, Object *key,
+                                Object *value) -> Object * {
         Frame *me = reinterpret_cast<Frame *>(self);
 
         return me->vars->setitem(key, value);
     };
 
-    class_type->fn_str = [](Object *self) -> Object* {
+    class_type->fn_str = [](Object *self) -> Object * {
         Frame *me = reinterpret_cast<Frame *>(self);
 
         return me->vars->str();
@@ -99,9 +109,27 @@ size_t Frame::lineof(size_t offset) {
     for (auto it = line_deltas.begin(); it != line_deltas.end(); ++it) {
         const auto &[off, delta] = *it;
 
-        if (off <= offset) l += delta;
-        else break;
+        if (off <= offset)
+            l += delta;
+        else
+            break;
     }
 
     return l;
+}
+
+size_t Frame::add_const(Object *cst) {
+    consts->data.push_back(cst);
+
+    return consts->data.size() - 1;
+}
+
+Object *Frame::spawn_const(size_t i) {
+    if (i >= consts->data.size()) {
+        THROW_OUT_OF_BOUNDS(consts->data.size(), i);
+
+        return nullptr;
+    }
+
+    return consts->data[i]->copy();
 }
