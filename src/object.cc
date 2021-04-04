@@ -28,6 +28,14 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
         type->fn_traverse_objects(this, visit);
 }
 
+Object *Object::copy() {
+    if (!type->fn_copy) {
+        return this;
+    }
+
+    return type->fn_copy(this);
+}
+
 Object *Object::getattr(Object *name) {
     if (!type->fn_getattr) {
         auto name_str = name->str();
@@ -197,16 +205,32 @@ void print(Object *o) {
 
 void testObjects() {
     auto vec = new Vec();
-    vec->data.push_back(new Int(1));
+    auto a = new Int(1);
+    auto b = new Str("3");
+    vec->data.push_back(a);
+    vec->data.push_back(b);
     vec->data.push_back(new Int(2));
-    vec->data.push_back(new Int(3));
 
     print(vec);
-
-    print(vec->in(new Int(1)));
-    print(vec->in(new Int(0)));
-
-    print(vec->getitem(new Int(0)));
-    print(vec->setitem(new Int(0), new Str("First")));
+    a->data = 42;
     print(vec);
+    auto aclone = (Int*)a->copy();
+    aclone->data = 28;
+    print(vec);
+
+    auto bclone = (Str*)b->copy();
+    bclone->data = "???";
+
+    auto vecclone = (Vec*)vec->copy();
+    vecclone->data.push_back(new Int(618));
+
+    print(vec);
+    print(vecclone);
+
+    // print(vec->in(new Int(1)));
+    // print(vec->in(new Int(0)));
+
+    // print(vec->getitem(new Int(0)));
+    // print(vec->setitem(new Int(0), new Str("First")));
+    // print(vec);
 }

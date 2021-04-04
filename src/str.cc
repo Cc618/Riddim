@@ -18,6 +18,22 @@ void Str::init_class_type() {
         return;
     }
 
+    // @copy
+    class_type->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Str *>(self);
+
+        auto result = new (nothrow) Str(me->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
+
     // @index
     class_type->fn_getitem = [](Object *self, Object *key) -> Object* {
         Str *me = reinterpret_cast<Str *>(self);

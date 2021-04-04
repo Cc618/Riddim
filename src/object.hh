@@ -41,12 +41,24 @@ struct Object {
     // See Type::fn_* for more details
     // Can throw and return nullptr (except for traverse_objects)
     void traverse_objects(const fn_visit_object_t &visit);
+
+    // Returns this if there is no custom handler
+    Object *copy();
+
     Object *getattr(Object *name);
+
     Object *getitem(Object *key);
+
+    // Returns the reference if there is no custom handler
     Object *hash();
+
     Object *in(Object *value);
+
     Object *setattr(Object *name, Object *value);
+
     Object *setitem(Object *key, Object *value);
+
+    // Returns ObjectType() by default
     Object *str();
 };
 
@@ -63,6 +75,9 @@ struct Type : public Object {
     // Builtin methods : Use wrappers within Object
     // The tp_traverse function
     fn_traverse_objects_t fn_traverse_objects;
+
+    // Returns a deep copy of this object
+    fn_unary_t fn_copy;
 
     // Get map attribute (not read only)
     fn_binary_t fn_getattr;
@@ -91,7 +106,6 @@ struct Type : public Object {
     // TODO : + doc
     // fn_unary_t fn_init;
     // fn_unary_t fn_del;
-    // fn_binary_t fn_in;
     // fn_binary_t fn_cmp;
     // fn_binary_t fn_add;
     // fn_binary_t fn_sub;
@@ -99,7 +113,6 @@ struct Type : public Object {
     // fn_binary_t fn_div;
     // fn_binary_t fn_mod;
     // fn_unary_t fn_call;
-    // Map *attrs; // Can't be written if starts by @
 
     // A type is always global
     Type(const str_t &name);

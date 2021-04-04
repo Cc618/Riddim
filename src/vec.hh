@@ -13,7 +13,7 @@ struct Vec : public Object {
 
     vec_t data;
 
-    Vec();
+    Vec(const vec_t &data = {});
 
     // Can throw
     static void init_class_type();

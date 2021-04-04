@@ -18,6 +18,21 @@ void Int::init_class_type() {
         return;
     }
 
+    // @copy
+    class_type->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Int *>(self);
+
+        auto result = new (nothrow) Int(me->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @hash
     class_type->fn_hash = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Int *>(self);

@@ -10,7 +10,7 @@ using namespace std;
 
 Type *Vec::class_type = nullptr;
 
-Vec::Vec() : Object(Vec::class_type) {}
+Vec::Vec(const vec_t &data) : Object(Vec::class_type), data(data) {}
 
 void Vec::init_class_type() {
     class_type = new (nothrow) Type("Vec");
@@ -29,17 +29,32 @@ void Vec::init_class_type() {
     };
 
     // TODO : Hash
+
+    // @copy
+    class_type->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Vec *>(self);
+
+        auto result = new (nothrow) Vec(me->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     class_type->fn_in = [](Object *self, Object *val) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
         // TODO : Override equal operator
         bool result =
-            find_if(me->data.begin(), me->data.end(),
-                    [val](Object *o) -> bool {
-                        // TODO : Unsafe (no error handling), rm (see todo above)
-                        return reinterpret_cast<Int *>(o->hash())->data ==
-                               reinterpret_cast<Int *>(val->hash())->data;
-                    }) != me->data.end();
+            find_if(me->data.begin(), me->data.end(), [val](Object *o) -> bool {
+                // TODO : Unsafe (no error handling), rm (see todo above)
+                return reinterpret_cast<Int *>(o->hash())->data ==
+                       reinterpret_cast<Int *>(val->hash())->data;
+            }) != me->data.end();
 
         auto ret = new (nothrow) Bool(result);
 

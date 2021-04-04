@@ -15,6 +15,7 @@
 | Bool | Boolean (true or false) |
 | Int | An integer |
 | Str | A string of characters |
+| Vec | A collection that contiguously stores items and has a dynamic length |
 | HashMap | A collection that serves as a mapping between keys and values, mappings are made given the hash of the key |
 
 ### Default methods
@@ -22,7 +23,7 @@
 <!-- TODO : Update if str changed etc... -->
 | Name | Description | Expected Return Type | Example |
 | ---- | ----------- | -------------------- | ------- |
-| @copy | Deep copy / clone (by default it is the identity function) | | |
+| @copy | Shallow copy / clone (by default it is the identity function) | | |
 | @getattr | Get map attribute (not a read only attribute) | | a.foo which is a.@getattr('foo') |
 | @getitem | Index / subscript getter | | a[42] which is a.@getitem(42) |
 | @hash | Hash representation (by default, the address of the reference is returned) | Int | |
