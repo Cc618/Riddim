@@ -17,7 +17,7 @@ struct HashMap : public Object {
 
     hmap_t data;
 
-    HashMap();
+    HashMap(const hmap_t &data = {});
 
     // Returns the iterator associated to the key
     // Can throw (returns data.end() on error)
@@ -47,5 +47,5 @@ struct AttrObject : public Object {
     static void init_class_type();
 
 protected:
-    AttrObject();
+    AttrObject(HashMap *data = nullptr);
 };

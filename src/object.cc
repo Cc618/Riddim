@@ -204,33 +204,11 @@ void print(Object *o) {
 }
 
 void testObjects() {
-    auto vec = new Vec();
-    auto a = new Int(1);
-    auto b = new Str("3");
-    vec->data.push_back(a);
-    vec->data.push_back(b);
-    vec->data.push_back(new Int(2));
-
-    print(vec);
-    a->data = 42;
-    print(vec);
-    auto aclone = (Int*)a->copy();
-    aclone->data = 28;
-    print(vec);
-
-    auto bclone = (Str*)b->copy();
-    bclone->data = "???";
-
-    auto vecclone = (Vec*)vec->copy();
-    vecclone->data.push_back(new Int(618));
-
-    print(vec);
-    print(vecclone);
-
-    // print(vec->in(new Int(1)));
-    // print(vec->in(new Int(0)));
-
-    // print(vec->getitem(new Int(0)));
-    // print(vec->setitem(new Int(0), new Str("First")));
-    // print(vec);
+    auto o = AttrObject::New();
+    o->setattr(new Str("a"), new Int(314));
+    print(o);
+    auto o2 = (AttrObject*)o->copy();
+    o2->setattr(new Str("a"), new Int(628));
+    print(o2);
+    print(o);
 }

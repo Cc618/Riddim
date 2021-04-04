@@ -1,17 +1,18 @@
 #include "map.hh"
+#include "bool.hh"
 #include "error.hh"
 #include "hash.hh"
 #include "int.hh"
 #include "null.hh"
 #include "str.hh"
-#include "bool.hh"
 
 using namespace std;
 
 // --- HashMap ---
 Type *HashMap::class_type = nullptr;
 
-HashMap::HashMap() : Object(HashMap::class_type) {}
+HashMap::HashMap(const hmap_t &data)
+    : Object(HashMap::class_type), data(data) {}
 
 void HashMap::init_class_type() {
     class_type = new (nothrow) Type("HashMap");
@@ -30,6 +31,21 @@ void HashMap::init_class_type() {
             visit(k);
             visit(v);
         }
+    };
+
+    // @copy
+    class_type->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<HashMap *>(self);
+
+        auto result = new (nothrow) HashMap(me->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
     };
 
     // TODO : Hash
@@ -205,6 +221,7 @@ Type *AttrObject::class_type = nullptr;
 
 AttrObject *AttrObject::New() {
     auto o = new (nothrow) AttrObject();
+
     if (o) {
         o->data = new (nothrow) HashMap();
     }
@@ -258,11 +275,41 @@ void AttrObject::init_class_type() {
     };
 
     // TODO : Hash
+    // @copy
+    class_type->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<AttrObject *>(self);
+
+        auto data_copy = me->data->copy();
+
+        if (!data_copy) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        if (data_copy->type != HashMap::class_type) {
+            THROW_TYPE_ERROR_PREF("AttrObject.@copy", data_copy->type,
+                                  HashMap::class_type);
+
+            return nullptr;
+        }
+
+        auto result = new (nothrow) AttrObject(reinterpret_cast<HashMap*>(data_copy));
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<AttrObject *>(self);
 
-        str_t result = "AttrObject";
+        str_t result = "AttrObject(";
 
         auto attrs = me->data->str();
 
@@ -273,7 +320,7 @@ void AttrObject::init_class_type() {
         } else
             result += reinterpret_cast<Str *>(attrs)->data;
 
-        auto result_str = new (nothrow) Str(result);
+        auto result_str = new (nothrow) Str(result + ")");
 
         if (!result_str) {
             THROW_MEMORY_ERROR;
@@ -311,4 +358,5 @@ void AttrObject::init_class_type() {
     };
 }
 
-AttrObject::AttrObject() : Object(AttrObject::class_type) {}
+AttrObject::AttrObject(HashMap *data)
+    : Object(AttrObject::class_type), data(data) {}
