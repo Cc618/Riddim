@@ -10,6 +10,7 @@
 #include "object.hh"
 #include "program.hh"
 #include "str.hh"
+#include "vec.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -59,6 +60,7 @@ static void init_types() {
     INIT_TYPE(Frame);
     INIT_TYPE(Bool);
     INIT_TYPE(Module);
+    INIT_TYPE(Vec);
 
 #undef INIT_TYPE
 }

@@ -99,7 +99,7 @@ void internal_error(const str_t &msg);
 
 // Variable not found
 // VAR is a string and TYPE is a type
-#define THROW_NAME_ERROR(VAR)                                                 \
+#define THROW_NAME_ERROR(VAR)                                                  \
     throw_fmt(NameError, "Symbol %s not found", (VAR).c_str())
 
 // TODO : Check whether we throw TypeError in another way
@@ -123,3 +123,9 @@ void internal_error(const str_t &msg);
 #define THROW_NOBUILTIN(METHOD)                                                \
     throw_fmt(NameError, "Type %s has no @" #METHOD " method",                 \
               type->name.c_str());
+
+// LEN and IDX are ints
+#define THROW_OUT_OF_BOUNDS(LEN, IDX)                                          \
+    throw_fmt(IndexError,                                                      \
+              "Index %d out of bounds for a collection of size %d", (LEN),     \
+              (IDX));

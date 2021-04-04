@@ -69,7 +69,7 @@ void HashMap::init_class_type() {
         if (me->data.size() == 0)
             result = "{}";
         else {
-            result = "{ ";
+            result = "{";
             bool isfirst = true;
             for (const auto &[h, kv] : me->data) {
                 const auto &[k, v] = kv;
@@ -109,7 +109,7 @@ void HashMap::init_class_type() {
                           reinterpret_cast<Str *>(v_str)->data;
             }
 
-            result += " }";
+            result += "}";
         }
 
         auto result_str = new (nothrow) Str(result);

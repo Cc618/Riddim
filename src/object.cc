@@ -171,6 +171,7 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 #include "frame.hh"
 #include "bool.hh"
 #include "module.hh"
+#include "vec.hh"
 
 void print(Object *o) {
     if (!o) {
@@ -195,50 +196,17 @@ void print(Object *o) {
 }
 
 void testObjects() {
-    // auto frame = Frame::New();
+    auto vec = new Vec();
+    vec->data.push_back(new Int(1));
+    vec->data.push_back(new Int(2));
+    vec->data.push_back(new Int(3));
 
-    // frame->vars->setitem(new Str("a"), new Int(42));
-    // frame->vars->setitem(new Str("b"), new Int(618));
+    print(vec);
 
-    // auto framefn = Frame::New(frame);
+    print(vec->in(new Int(1)));
+    print(vec->in(new Int(0)));
 
-    // framefn->vars->setitem(new Str("b"), new Int(1));
-    // framefn->vars->setitem(new Str("c"), new Int(2));
-
-    // print(framefn->fetch(new Str("c")));
-    // print(framefn->fetch(new Str("b")));
-    // print(framefn->fetch(new Str("a")));
-    // print(framefn->fetch(new Str("d")));
-
-    auto mod = Module::New("mymod");
-    auto frame = mod->frame;
-    Program::add_module(mod);
-    Program::instance->main_module = mod;
-
-    mod->setitem(new Str("a"), new Int(618));
-
-    // Shouldn't throw errors
-    garbage_collect(Program::instance);
-
-
-    frame->start_lineno = 11;
-    frame->code = {
-        11, 12, 13, // 11
-        21, 22,     // 12
-
-        41,         // 14
-        51          // 15
-    };
-
-    frame->line_deltas = {
-        { 3, 1 },
-        { 5, 2 },
-        { 6, 1 },
-    };
-
-    cout << frame->lineof(0) << endl;
-    cout << frame->lineof(2) << endl;
-    cout << frame->lineof(3) << endl;
-    cout << frame->lineof(frame->code.size() - 2) << endl;
-    cout << frame->lineof(frame->code.size() - 1) << endl;
+    print(vec->getitem(new Int(0)));
+    print(vec->setitem(new Int(0), new Str("First")));
+    print(vec);
 }
