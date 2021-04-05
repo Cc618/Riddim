@@ -73,6 +73,23 @@ void interpret(Frame *frame) {
 
         auto instruction = frame->code[ip];
         switch (instruction) {
+        case BinAdd: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto sm = tos1->add(tos);
+
+            if (!sm) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(sm);
+
+            NEXT(0);
+        }
+
         case LoadConst: {
             auto val_off = ARG(1);
             CHECK_CONST(val_off);

@@ -28,6 +28,16 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
         type->fn_traverse_objects(this, visit);
 }
 
+Object *Object::add(Object *o) {
+    if (!type->fn_add) {
+        THROW_NOBUILTIN(add);
+
+        return nullptr;
+    }
+
+    return type->fn_add(this, o);
+}
+
 Object *Object::copy() {
     if (!type->fn_copy) {
         return this;
@@ -212,33 +222,19 @@ void testObjects() {
     auto frame = Frame::New();
 
     auto zero = frame->add_const(new Int(0));
-    auto one = frame->add_const(new Int(1));
+    auto one = frame->add_const(new Str("one")); // new Int(1));
     auto fnull = frame->add_const(null);
     auto a = frame->add_const(new Str("Hello"));
     auto aname = frame->add_const(new Str("a"));
 
     frame->code = {
-        // a = "Hello"
-        LoadConst, a,
-        StoreVar, aname,
-
-        // a[0]
-        LoadVar, aname,
-        LoadConst, zero,
-        LoadIndex,
-
-        // 'H' is the TOS
-
-        // a[1] = 'H'
-        LoadVar, aname,
+        // 1 + 1
         LoadConst, one,
-        StoreIndex,
-
-        Pop,
+        LoadConst, a,
+        BinAdd,
 
         // return a
-        // LoadVar, aname,
-        // LoadConst, fnull,
+        LoadConst, fnull,
         Return,
     };
 

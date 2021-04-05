@@ -42,6 +42,8 @@ struct Object {
     // Can throw and return nullptr (except for traverse_objects)
     void traverse_objects(const fn_visit_object_t &visit);
 
+    Object *add(Object *o);
+
     // Returns this if there is no custom handler
     Object *copy();
 
@@ -75,6 +77,9 @@ struct Type : public Object {
     // Builtin methods : Use wrappers within Object
     // The tp_traverse function
     fn_traverse_objects_t fn_traverse_objects;
+
+    // + operator, returns the sum
+    fn_binary_t fn_add;
 
     // Returns a deep copy of this object
     fn_unary_t fn_copy;

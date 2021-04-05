@@ -19,6 +19,27 @@ void Str::init_class_type() {
         return;
     }
 
+    // @add
+    class_type->fn_add = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Str *>(self);
+
+        if (o->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("Str.@add", o->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto result = new (nothrow) Str(me->data + reinterpret_cast<Str*>(o)->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Str *>(self);

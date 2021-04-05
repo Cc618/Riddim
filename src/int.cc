@@ -18,6 +18,27 @@ void Int::init_class_type() {
         return;
     }
 
+    // @add
+    class_type->fn_add = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Int *>(self);
+
+        if (o->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Int.@add", o->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        auto result = new (nothrow) Int(me->data + reinterpret_cast<Int*>(o)->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
