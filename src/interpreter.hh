@@ -20,6 +20,11 @@ enum OpCode : opcode_t {
     // - id_offset : Offset of the name of the symbol (constant)
     // - push 1
     LoadVar,
+    // Pops the TOS
+    // - pop 1
+    Pop,
+    // Returns from the function (or exit the module)
+    Return,
     // Stores indexed (or key mapped) value
     // TOS1[TOS] = TOS2
     // - pop 2
@@ -28,13 +33,9 @@ enum OpCode : opcode_t {
     // - id_offset : Offset of the name of the symbol (constant)
     // - pop 1
     StoreVar,
-    // Returns from the function (or exit the module)
-    Return,
     // TODO : Remove
     // Prints the stack
     DebugStack,
-    // // Pop TOS
-    // Pop,
     // // Replaces TOS1, TOS2 by TOS1 + TOS2
     // // TOS = TOS2 + TOS1
     // Add,

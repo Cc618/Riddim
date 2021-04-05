@@ -120,6 +120,17 @@ void interpret(Frame *frame) {
             NEXT(1);
         }
 
+        case Pop: {
+            CHECK_STACKLEN(1);
+            obj_stack.pop_back();
+            NEXT(0);
+        }
+
+        case Return: {
+            // Dispatch return
+            return;
+        }
+
         case StoreIndex: {
             CHECK_STACKLEN(3);
 
@@ -152,11 +163,6 @@ void interpret(Frame *frame) {
             frame->setitem(name, val);
 
             NEXT(1);
-        }
-
-        case Return: {
-            // Dispatch return
-            return;
         }
 
         // TODO : Rm

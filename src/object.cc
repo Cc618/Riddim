@@ -232,9 +232,9 @@ void testObjects() {
         // a[1] = 'H'
         LoadVar, aname,
         LoadConst, one,
-        DebugStack,
         StoreIndex,
-        DebugStack,
+
+        Pop,
 
         // return a
         // LoadVar, aname,
