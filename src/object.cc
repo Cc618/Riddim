@@ -248,10 +248,11 @@ void testObjects() {
         BinAdd, // 2 + 1
         BinMul, // 3 * 1
         BinMul, // "Hello" * 3
+        Dup,
         StoreVar, aname,
 
-        // return a
-        LoadConst, fnull,
+        // return TOS
+        // LoadConst, fnull,
         Return,
     };
 

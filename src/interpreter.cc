@@ -107,6 +107,14 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case Dup: {
+            CHECK_STACKLEN(1);
+
+            obj_stack.push_back(obj_stack.back());
+
+            NEXT(0);
+        }
+
         case LoadConst: {
             auto val_off = ARG(1);
             CHECK_CONST(val_off);
