@@ -67,6 +67,39 @@ void Vec::init_class_type() {
         return ret;
     };
 
+    class_type->fn_mul = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Vec *>(self);
+
+        if (o->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Vec.@mul", o->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        int_t multiplier = reinterpret_cast<Int *>(o)->data;
+
+        if (multiplier < 0) {
+            THROW_ARITHMETIC_ERROR("*", "Product requires a positive number");
+
+            return nullptr;
+        }
+
+        vec_t data;
+        data.reserve(me->data.size() * multiplier);
+        for (size_t i = 0; i < multiplier; ++i)
+            data.insert(data.end(), me->data.begin(), me->data.end());
+
+        auto result = new (nothrow) Vec(data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 

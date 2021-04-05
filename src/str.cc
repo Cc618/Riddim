@@ -126,6 +126,7 @@ void Str::init_class_type() {
         }
 
         str_t data;
+        data.reserve(me->data.size() * multiplier);
         for (size_t i = 0; i < multiplier; ++i)
             data += me->data;
 

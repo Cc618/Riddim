@@ -237,6 +237,9 @@ void testObjects() {
     auto a = frame->add_const(new Str("Hello"));
     auto aname = frame->add_const(new Str("a"));
 
+    print((new Vec({new Int(1), new Int(2), new Int(3)}))->mul(new Int(3)));
+    print((new Vec({new Int(1), new Int(2), new Int(3)}))->mul(new Int(0)));
+
     frame->code = {
         // "Hello" * 3
         LoadConst, a,
