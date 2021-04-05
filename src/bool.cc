@@ -1,6 +1,7 @@
 #include "bool.hh"
 #include "error.hh"
 #include "str.hh"
+#include "program.hh"
 
 using namespace std;
 
@@ -49,4 +50,7 @@ void Bool::init_class_objects() {
 
         return;
     }
+
+    Program::instance->globals.push_back(istrue);
+    Program::instance->globals.push_back(isfalse);
 }

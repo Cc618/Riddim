@@ -211,4 +211,7 @@ void testObjects() {
     o2->setattr(new Str("a"), new Int(628));
     print(o2);
     print(o);
+
+    garbage_collect(Program::instance);
+    cout << "---" << endl;
 }
