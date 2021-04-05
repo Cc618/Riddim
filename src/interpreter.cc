@@ -9,13 +9,28 @@
 using namespace std;
 using namespace OpCode;
 
+// Pops the top of the stack and returns its value
+inline Object *pop_top() {
+    auto top = Program::instance->obj_stack.back();
+    Program::instance->obj_stack.pop_back();
+
+    return top;
+}
+
 void interpret(Frame *frame) {
 #define NEXT(NARGS)                                                            \
     ip += (NARGS) + 1;                                                         \
     continue;
 #define ARG(N) code[ip + (N)]
 #define PUSH(OBJ) obj_stack.push_back(OBJ);
-#define POP() obj_stack.pop_back();
+// TODO : Trace
+#define POPTOP(VAR)                                                            \
+    if (obj_stack.empty()) {                                                   \
+        throw_fmt(InternalError, "Stack empty for instruction %d",             \
+                  instruction);                                                \
+        DISPATCH_ERROR;                                                        \
+    }                                                                          \
+    auto VAR = pop_top();
 #define CHECK_CONST(OFF)                                                       \
     if ((OFF) >= consts.size()) {                                              \
         throw_fmt(InternalError,                                               \
@@ -48,11 +63,6 @@ void interpret(Frame *frame) {
         switch (instruction) {
         case LoadConst: {
             auto val_off = ARG(1);
-            NEXT(1);
-        }
-
-        case Return: {
-            auto val_off = ARG(1);
             CHECK_CONST(val_off);
 
             auto val = GET_CONST(val_off);
@@ -63,13 +73,58 @@ void interpret(Frame *frame) {
 
             PUSH(val);
 
+            NEXT(1);
+        }
+
+        case LoadVar: {
+            auto name_off = ARG(1);
+            CHECK_CONST(name_off);
+
+            auto name = GET_CONST(name_off);
+
+            if (!name) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(frame->fetch(name));
+
+            NEXT(1);
+        }
+
+        case StoreVar: {
+            auto name_off = ARG(1);
+            CHECK_CONST(name_off);
+
+            auto name = GET_CONST(name_off);
+
+            if (!name) {
+                DISPATCH_ERROR;
+            }
+
+            if (name->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("interpret", name->type, Str::class_type);
+                DISPATCH_ERROR;
+            }
+
+            POPTOP(val);
+
+            frame->setitem(name, val);
+
+            NEXT(1);
+        }
+
+        case Return: {
+            // Dispatch return
             return;
         }
 
+        // TODO : Rm
         case DebugStack: {
             cout << "Stack (" << obj_stack.size() << ") :" << endl;
             for (auto o : obj_stack) {
-                cout << (o ? reinterpret_cast<Str*>(o->str())->data : "nullptr") << endl;
+                cout << (o ? reinterpret_cast<Str *>(o->str())->data
+                           : "nullptr")
+                     << endl;
             }
 
             NEXT(0);

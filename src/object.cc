@@ -211,14 +211,26 @@ void testObjects() {
     auto frame = Frame::New();
 
     auto a = frame->add_const(new Str("a"));
+    auto id_a = frame->add_const(new Str("a"));
     auto b = frame->add_const(new Str("b"));
     auto c = frame->add_const(new Str("c"));
+    auto id_c = frame->add_const(new Str("c"));
     auto fnull = frame->add_const(null);
 
     frame->code = {
-        DebugStack,
+        // a = b = 'a'
+        LoadConst, a,
+        StoreVar, id_a,
+        LoadConst, b,
+        StoreVar, id_a,
+
+        // c = a
+        LoadVar, id_a,
+        StoreVar, id_c,
+
+        // return
+        LoadConst, fnull,
         Return,
-        fnull,
     };
 
     interpret(frame);
@@ -229,7 +241,10 @@ void testObjects() {
         return;
     }
 
-    cout << "End stack :" << endl;
+    cout << "* End frame : " << endl;
+    print(frame);
+
+    cout << "* End stack :" << endl;
     for (auto o : Program::instance->obj_stack) {
         print(o);
     }
