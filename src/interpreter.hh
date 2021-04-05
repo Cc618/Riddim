@@ -21,6 +21,7 @@ enum OpCode : opcode_t {
     // - push 1
     LoadVar,
     // Stores indexed (or key mapped) value
+    // TOS1[TOS] = TOS2
     // - pop 2
     StoreIndex,
     // Stores the TOS to a variable

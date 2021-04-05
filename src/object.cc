@@ -212,6 +212,7 @@ void testObjects() {
     auto frame = Frame::New();
 
     auto zero = frame->add_const(new Int(0));
+    auto one = frame->add_const(new Int(1));
     auto fnull = frame->add_const(null);
     auto a = frame->add_const(new Str("Hello"));
     auto aname = frame->add_const(new Str("a"));
@@ -221,12 +222,22 @@ void testObjects() {
         LoadConst, a,
         StoreVar, aname,
 
-        // b[0]
+        // a[0]
         LoadVar, aname,
         LoadConst, zero,
         LoadIndex,
 
-        // return
+        // 'H' is the TOS
+
+        // a[1] = 'H'
+        LoadVar, aname,
+        LoadConst, one,
+        DebugStack,
+        StoreIndex,
+        DebugStack,
+
+        // return a
+        // LoadVar, aname,
         // LoadConst, fnull,
         Return,
     };
@@ -243,9 +254,9 @@ void testObjects() {
     print(frame);
 
     cout << "* End stack :" << endl;
-    int stki = 0;
+    int stki = Program::instance->obj_stack.size();
     for (auto o : Program::instance->obj_stack) {
-        cout << ++stki << ". ";
+        cout << --stki << ". ";
         print(o);
     }
 }

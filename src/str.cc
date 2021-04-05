@@ -1,7 +1,8 @@
 #include "str.hh"
 #include "error.hh"
-#include "int.hh"
 #include "hash.hh"
+#include "int.hh"
+#include "null.hh"
 
 using namespace std;
 
@@ -33,9 +34,8 @@ void Str::init_class_type() {
         return result;
     };
 
-
     // @index
-    class_type->fn_getitem = [](Object *self, Object *key) -> Object* {
+    class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         Str *me = reinterpret_cast<Str *>(self);
 
         // TODO : Slice
@@ -85,6 +85,45 @@ void Str::init_class_type() {
         return result;
     };
 
+    // @setitem
+    class_type->fn_setitem = [](Object *self, Object *key,
+                                Object *value) -> Object * {
+        Str *me = reinterpret_cast<Str *>(self);
+
+        // TODO : Slice
+        if (key->type == Int::class_type) {
+            // TODO index : Index mapping (-1)
+            int_t index = reinterpret_cast<Int *>(key)->data;
+
+            // Outside of bounds
+            if (index < 0 || index >= me->data.size()) {
+                throw_fmt(
+                    IndexError,
+                    "Index '%lld' outside of bounds for Str of length '%zu'",
+                    (long long)index, me->data.size());
+
+                return nullptr;
+            }
+
+            str_t val;
+
+            // TODO : Char
+            if (value->type == Str::class_type) {
+                val = reinterpret_cast<Str *>(value)->data;
+            } else
+                THROW_TYPE_ERROR_PREF("Str.@setitem", value->type,
+                                      Str::class_type);
+
+            me->data = me->data.substr(0, index) + val + me->data.substr(index + 1);
+
+            return null;
+        } else {
+            throw_fmt(TypeError, "Invalid type '%s' to index Str",
+                      key->type->name.c_str());
+
+            return nullptr;
+        }
+    };
 
     // @str
     class_type->fn_str = [](Object *self) { return self; };

@@ -50,7 +50,7 @@ void interpret(Frame *frame) {
     }
 
 // TODO : Restore stack
-#define DISPATCH_ERROR continue;
+#define DISPATCH_ERROR return;
 
 // Check stack length and throw on error
 #define CHECK_STACKLEN(LEN)                                                    \
@@ -162,8 +162,9 @@ void interpret(Frame *frame) {
         // TODO : Rm
         case DebugStack: {
             cout << "Stack (" << obj_stack.size() << ") :" << endl;
+            int staki = obj_stack.size();
             for (auto o : obj_stack) {
-                cout << (o ? reinterpret_cast<Str *>(o->str())->data
+                cout << --staki << ". " << (o ? reinterpret_cast<Str *>(o->str())->data
                            : "nullptr")
                      << endl;
             }
