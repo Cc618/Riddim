@@ -22,6 +22,7 @@ void interpret(Frame *frame) {
     ip += (NARGS) + 1;                                                         \
     continue;
 #define ARG(N) code[ip + (N)]
+#define TOP obj_stack.back();
 #define PUSH(OBJ) obj_stack.push_back(OBJ);
 // TODO : Trace
 #define POPTOP(VAR)                                                            \
@@ -45,11 +46,18 @@ void interpret(Frame *frame) {
 #define CHECK_MEMORY(OBJ)                                                      \
     if (!obj) {                                                                \
         THROW_MEMORY_ERROR;                                                    \
-        return;                                                                \
+        DISPATCH_ERROR;                                                        \
     }
 
 // TODO : Restore stack
 #define DISPATCH_ERROR continue;
+
+// Check stack length and throw on error
+#define CHECK_STACKLEN(LEN)                                                    \
+    if (obj_stack.size() < (LEN)) {                                            \
+        THROW_STACK_TOOSMALL(LEN);                                             \
+        DISPATCH_ERROR;                                                        \
+    }
 
     auto &ip = frame->ip;
     auto &code = frame->code;
@@ -59,6 +67,10 @@ void interpret(Frame *frame) {
     ip = 0;
 
     while (42) {
+        if (on_error()) {
+            DISPATCH_ERROR;
+        }
+
         auto instruction = frame->code[ip];
         switch (instruction) {
         case LoadConst: {
@@ -76,6 +88,23 @@ void interpret(Frame *frame) {
             NEXT(1);
         }
 
+        case LoadIndex: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto newtos = tos1->getitem(tos);
+
+            if (!newtos) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(newtos);
+
+            NEXT(0);
+        }
+
         case LoadVar: {
             auto name_off = ARG(1);
             CHECK_CONST(name_off);
@@ -89,6 +118,18 @@ void interpret(Frame *frame) {
             PUSH(frame->fetch(name));
 
             NEXT(1);
+        }
+
+        case StoreIndex: {
+            CHECK_STACKLEN(3);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+            auto tos2 = TOP(obj_stack);
+
+            tos1->setitem(tos, tos2);
+
+            NEXT(0);
         }
 
         case StoreVar: {

@@ -129,3 +129,8 @@ void internal_error(const str_t &msg);
     throw_fmt(IndexError,                                                      \
               "Index %d out of bounds for a collection of size %d", (LEN),     \
               (IDX));
+
+#define THROW_STACK_TOOSMALL(MINLEN)                                           \
+    throw_fmt(InternalError,                                                   \
+              "Object stack of length %d too small (%d items needed)",         \
+              (Program::instance->obj_stack.size()), (MINLEN));

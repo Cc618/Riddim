@@ -208,28 +208,26 @@ void print(Object *o) {
 using namespace OpCode;
 
 void testObjects() {
+    // TODO : Test with previous frame
     auto frame = Frame::New();
 
-    auto a = frame->add_const(new Str("a"));
-    auto id_a = frame->add_const(new Str("a"));
-    auto b = frame->add_const(new Str("b"));
-    auto c = frame->add_const(new Str("c"));
-    auto id_c = frame->add_const(new Str("c"));
+    auto zero = frame->add_const(new Int(0));
     auto fnull = frame->add_const(null);
+    auto a = frame->add_const(new Str("Hello"));
+    auto aname = frame->add_const(new Str("a"));
 
     frame->code = {
-        // a = b = 'a'
+        // a = "Hello"
         LoadConst, a,
-        StoreVar, id_a,
-        LoadConst, b,
-        StoreVar, id_a,
+        StoreVar, aname,
 
-        // c = a
-        LoadVar, id_a,
-        StoreVar, id_c,
+        // b[0]
+        LoadVar, aname,
+        LoadConst, zero,
+        LoadIndex,
 
         // return
-        LoadConst, fnull,
+        // LoadConst, fnull,
         Return,
     };
 
@@ -245,7 +243,9 @@ void testObjects() {
     print(frame);
 
     cout << "* End stack :" << endl;
+    int stki = 0;
     for (auto o : Program::instance->obj_stack) {
+        cout << ++stki << ". ";
         print(o);
     }
 }
