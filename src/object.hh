@@ -56,6 +56,8 @@ struct Object {
 
     Object *in(Object *value);
 
+    Object *mul(Object *o);
+
     Object *setattr(Object *name, Object *value);
 
     Object *setitem(Object *key, Object *value);
@@ -80,6 +82,9 @@ struct Type : public Object {
 
     // + operator, returns the sum
     fn_binary_t fn_add;
+
+    // * operator, returns the product
+    fn_binary_t fn_mul;
 
     // Returns a deep copy of this object
     fn_unary_t fn_copy;

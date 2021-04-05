@@ -100,6 +100,16 @@ Object *Object::in(Object *val) {
     return type->fn_in(this, val);
 }
 
+Object *Object::mul(Object *o) {
+    if (!type->fn_mul) {
+        THROW_NOBUILTIN(mul);
+
+        return nullptr;
+    }
+
+    return type->fn_mul(this, o);
+}
+
 Object *Object::setattr(Object *name, Object *value) {
     if (!type->fn_setattr) {
         auto name_str = name->str();
@@ -222,16 +232,23 @@ void testObjects() {
     auto frame = Frame::New();
 
     auto zero = frame->add_const(new Int(0));
-    auto one = frame->add_const(new Str("one")); // new Int(1));
+    auto one = frame->add_const(new Int(1));
     auto fnull = frame->add_const(null);
     auto a = frame->add_const(new Str("Hello"));
     auto aname = frame->add_const(new Str("a"));
 
     frame->code = {
-        // 1 + 1
-        LoadConst, one,
+        // "Hello" * 3
         LoadConst, a,
-        BinAdd,
+        LoadConst, one,
+        LoadConst, one,
+        LoadConst, one,
+        LoadConst, one,
+        BinAdd, // 1 + 1
+        BinAdd, // 2 + 1
+        BinMul, // 3 * 1
+        BinMul, // "Hello" * 3
+        StoreVar, aname,
 
         // return a
         LoadConst, fnull,

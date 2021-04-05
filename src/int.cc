@@ -69,6 +69,27 @@ void Int::init_class_type() {
         return result;
     };
 
+    // @mul
+    class_type->fn_mul = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Int *>(self);
+
+        if (o->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Int.@mul", o->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        auto result = new (nothrow) Int(me->data * reinterpret_cast<Int*>(o)->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Int *>(self);

@@ -29,7 +29,8 @@ void Str::init_class_type() {
             return nullptr;
         }
 
-        auto result = new (nothrow) Str(me->data + reinterpret_cast<Str*>(o)->data);
+        auto result =
+            new (nothrow) Str(me->data + reinterpret_cast<Str *>(o)->data);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -106,6 +107,39 @@ void Str::init_class_type() {
         return result;
     };
 
+    // @mul
+    class_type->fn_mul = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Str *>(self);
+
+        if (o->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Str.@mul", o->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        int_t multiplier = reinterpret_cast<Int *>(o)->data;
+
+        if (multiplier < 0) {
+            THROW_ARITHMETIC_ERROR("*", "Product requires a positive number");
+
+            return nullptr;
+        }
+
+        str_t data;
+        for (size_t i = 0; i < multiplier; ++i)
+            data += me->data;
+
+        auto result = new (nothrow) Str(data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @setitem
     class_type->fn_setitem = [](Object *self, Object *key,
                                 Object *value) -> Object * {
@@ -135,7 +169,8 @@ void Str::init_class_type() {
                 THROW_TYPE_ERROR_PREF("Str.@setitem", value->type,
                                       Str::class_type);
 
-            me->data = me->data.substr(0, index) + val + me->data.substr(index + 1);
+            me->data =
+                me->data.substr(0, index) + val + me->data.substr(index + 1);
 
             return null;
         } else {

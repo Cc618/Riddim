@@ -119,6 +119,10 @@ void internal_error(const str_t &msg);
     throw_fmt(NameError, "Attribute %s not found for type %s", (ATTR).c_str(), \
               (TYPE)->name.c_str())
 
+// Arithmetic error
+#define THROW_ARITHMETIC_ERROR(OP, MSG)                                        \
+    throw_fmt(ArithmeticError, "Operator %s : %s", (OP), (MSG))
+
 // Throws a NameError that says no such builtin method
 #define THROW_NOBUILTIN(METHOD)                                                \
     throw_fmt(NameError, "Type %s has no @" #METHOD " method",                 \

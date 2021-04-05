@@ -90,6 +90,23 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case BinMul: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto prod = tos1->mul(tos);
+
+            if (!prod) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(prod);
+
+            NEXT(0);
+        }
+
         case LoadConst: {
             auto val_off = ARG(1);
             CHECK_CONST(val_off);

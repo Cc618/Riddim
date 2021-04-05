@@ -11,6 +11,9 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push TOS1 + TOS
     BinAdd,
+    // - pop 2
+    // - push TOS1 * TOS
+    BinMul,
     // Loads a const value on the TOS
     // - const_offset : The const object offset
     // - push 1
