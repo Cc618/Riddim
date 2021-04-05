@@ -7,8 +7,8 @@
 #include "vec.hh"
 #include <vector>
 
-// Code fragment
-typedef std::vector<size_t> code_t;
+typedef size_t opcode_t;
+typedef std::vector<opcode_t> code_t;
 
 struct Frame : public Object {
     static Type *class_type;

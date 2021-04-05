@@ -17,6 +17,7 @@ struct Program : public Object {
     Module *main_module;
     std::vector<Object *> globals;
     Object *current_error;
+    std::vector<Object *> obj_stack;
 
     Program(const std::vector<Type *> &types);
 

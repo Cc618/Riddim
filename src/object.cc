@@ -180,6 +180,8 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 #include "bool.hh"
 #include "module.hh"
 #include "vec.hh"
+#include "interpreter.hh"
+#include "null.hh"
 
 void print(Object *o) {
     if (!o) {
@@ -203,15 +205,32 @@ void print(Object *o) {
     cout << reinterpret_cast<Str *>(result)->data << endl;
 }
 
-void testObjects() {
-    auto o = AttrObject::New();
-    o->setattr(new Str("a"), new Int(314));
-    print(o);
-    auto o2 = (AttrObject*)o->copy();
-    o2->setattr(new Str("a"), new Int(628));
-    print(o2);
-    print(o);
+using namespace OpCode;
 
-    garbage_collect(Program::instance);
+void testObjects() {
+    auto frame = Frame::New();
+
+    auto a = frame->add_const(new Str("a"));
+    auto b = frame->add_const(new Str("b"));
+    auto c = frame->add_const(new Str("c"));
+    auto fnull = frame->add_const(null);
+
+    frame->code = {
+        DebugStack,
+        Return,
+        fnull,
+    };
+
+    interpret(frame);
     cout << "---" << endl;
+
+    if (on_error()) {
+        cerr << ">>> On error !!!" << endl;
+        return;
+    }
+
+    cout << "End stack :" << endl;
+    for (auto o : Program::instance->obj_stack) {
+        print(o);
+    }
 }
