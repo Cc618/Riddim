@@ -16,6 +16,10 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push compare(TOS1, TOS, op)
     BinCmp,
+    // Is type
+    // - pop 2
+    // - push TOS1->type == TOS
+    BinIs,
     // - pop 2
     // - push TOS1 * TOS
     BinMul,

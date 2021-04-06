@@ -281,6 +281,7 @@ void testObjects() {
     auto zero = frame->add_const(new Int(0));
     auto one = frame->add_const(new Int(1));
     auto fnull = frame->add_const(null);
+    auto tnull = frame->add_const(Null::class_type);
     auto a = frame->add_const(new Str("Hello"));
     auto aname = frame->add_const(new Str("a"));
     // auto myfn = frame->add_const(fn);
@@ -289,20 +290,15 @@ void testObjects() {
 
     // --- Code ---
     frame->code = {
-        // 1 != 0
-        LoadConst, one,
-        LoadConst, zero,
-        BinCmp, (opcode_t)CmpOp::NotEqual,
+        // null is Null
+        LoadConst, fnull,
+        LoadConst, tnull,
+        BinIs,
 
-        // 1 < 0
+        // one is Null
         LoadConst, one,
-        LoadConst, zero,
-        BinCmp, (opcode_t)CmpOp::Lesser,
-
-        // 1 >= 0
-        LoadConst, one,
-        LoadConst, zero,
-        BinCmp, (opcode_t)CmpOp::GreaterEqual,
+        LoadConst, tnull,
+        BinIs,
 
         // return TOS
         // LoadConst, fnull,

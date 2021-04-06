@@ -110,6 +110,24 @@ void interpret(Frame *frame) {
             NEXT(1);
         }
 
+        case BinIs: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            // Verify type
+            if (tos->type != Type::class_type) {
+                THROW_TYPE_ERROR_PREF("is", tos->type, Type::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            PUSH(tos1->type == tos ? istrue : isfalse);
+
+            NEXT(0);
+        }
+
         case BinMul: {
             CHECK_STACKLEN(2);
 
