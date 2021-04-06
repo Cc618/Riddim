@@ -44,6 +44,8 @@ struct Object {
 
     Object *add(Object *o);
 
+    Object *call(Object *args, Object *kwargs);
+
     // Returns this if there is no custom handler
     Object *copy();
 
@@ -83,8 +85,10 @@ struct Type : public Object {
     // + operator, returns the sum
     fn_binary_t fn_add;
 
-    // * operator, returns the product
-    fn_binary_t fn_mul;
+    // Functor call
+    // If the function doesn't return, null is returned
+    // (not nullptr)
+    fn_ternary_t fn_call;
 
     // Returns a deep copy of this object
     fn_unary_t fn_copy;
@@ -102,6 +106,9 @@ struct Type : public Object {
     // Whether an object is within a collection
     // Returns a Bool
     fn_binary_t fn_in;
+
+    // * operator, returns the product
+    fn_binary_t fn_mul;
 
     // Set map attribute (not read only)
     fn_ternary_t fn_setattr;

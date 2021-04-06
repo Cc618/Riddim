@@ -38,6 +38,16 @@ Object *Object::add(Object *o) {
     return type->fn_add(this, o);
 }
 
+Object *Object::call(Object *args, Object *kwargs) {
+    if (!type->fn_call) {
+        THROW_NOBUILTIN(call);
+
+        return nullptr;
+    }
+
+    return type->fn_call(this, args, kwargs);
+}
+
 Object *Object::copy() {
     if (!type->fn_copy) {
         return this;
