@@ -284,21 +284,28 @@ void testObjects() {
     auto tnull = frame->add_const(Null::class_type);
     auto a = frame->add_const(new Str("Hello"));
     auto aname = frame->add_const(new Str("a"));
+    auto ok = frame->add_const(new Str("OK"));
+    auto nok = frame->add_const(new Str("Not OK"));
     // auto myfn = frame->add_const(fn);
     // auto myfnargs = frame->add_const(args);
     // auto myfnkw = frame->add_const(kw);
 
     // --- Code ---
     frame->code = {
-        // null is Null
-        LoadConst, fnull,
-        LoadConst, tnull,
-        BinIs,
-
-        // one is Null
+        // Size : 8
+        // if 1 > 0
         LoadConst, one,
-        LoadConst, tnull,
-        BinIs,
+        LoadConst, zero,
+        BinCmp, (opcode_t)CmpOp::Greater,
+        JmpFalse, 8 + 4,
+
+        // Size : 4
+        // OK
+        LoadConst, ok,
+        Jmp, 8 + 4 + 2,
+
+        // Size : 2
+        LoadConst, nok,
 
         // return TOS
         // LoadConst, fnull,

@@ -25,6 +25,11 @@ enum OpCode : opcode_t {
     BinMul,
     // Duplicates the TOS
     Dup,
+    // Jump at offset
+    Jmp,
+    // Jump if TOS is false
+    // - pop 1
+    JmpFalse,
     // Loads a const value on the TOS
     // - const_offset : The const object offset
     // - push 1

@@ -1,8 +1,8 @@
 #include "interpreter.hh"
+#include "bool.hh"
 #include "debug.hh"
 #include "error.hh"
 #include "program.hh"
-#include "bool.hh"
 
 // TODO
 #include <iostream>
@@ -22,6 +22,9 @@ void interpret(Frame *frame) {
 #define NEXT(NARGS)                                                            \
     ip += (NARGS) + 1;                                                         \
     continue;
+#define JMP(OFFSET)                                                            \
+    ip = (OFFSET);                                                             \
+    continue
 #define ARG(N) code[ip + (N)]
 #define TOP obj_stack.back();
 #define PUSH(OBJ) obj_stack.push_back(OBJ);
@@ -153,6 +156,32 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case Jmp: {
+            auto offset = ARG(1);
+
+            JMP(offset);
+        }
+
+        case JmpFalse: {
+            CHECK_STACKLEN(1);
+
+            auto offset = ARG(1);
+
+            POPTOP(tos);
+
+            if (tos->type != Bool::class_type) {
+                THROW_TYPE_ERROR_PREF("Jmp", tos->type, Bool::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            if (reinterpret_cast<Bool *>(tos)->data) {
+                NEXT(1);
+            } else {
+                JMP(offset);
+            }
+        }
+
         case LoadConst: {
             auto val_off = ARG(1);
             CHECK_CONST(val_off);
@@ -268,7 +297,8 @@ void interpret(Frame *frame) {
             cout << "Stack (" << obj_stack.size() << ") :" << endl;
             int staki = obj_stack.size();
             for (auto o : obj_stack) {
-                cout << --staki << ". " << (o ? reinterpret_cast<Str *>(o->str())->data
+                cout << --staki << ". "
+                     << (o ? reinterpret_cast<Str *>(o->str())->data
                            : "nullptr")
                      << endl;
             }
