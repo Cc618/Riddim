@@ -212,6 +212,7 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 #include "vec.hh"
 #include "interpreter.hh"
 #include "null.hh"
+#include "function.hh"
 
 void print(Object *o) {
     if (!o) {
@@ -238,52 +239,63 @@ void print(Object *o) {
 using namespace OpCode;
 
 void testObjects() {
-    // TODO : Test with previous frame
-    auto frame = Frame::New();
+    auto fn = new Function([](Object *thisfn, Object *args, Object *kwargs) -> Object* {
+        print(args);
+        print(kwargs);
 
-    auto zero = frame->add_const(new Int(0));
-    auto one = frame->add_const(new Int(1));
-    auto fnull = frame->add_const(null);
-    auto a = frame->add_const(new Str("Hello"));
-    auto aname = frame->add_const(new Str("a"));
+        return new Int(42);
+    });
 
-    print((new Vec({new Int(1), new Int(2), new Int(3)}))->mul(new Int(3)));
-    print((new Vec({new Int(1), new Int(2), new Int(3)}))->mul(new Int(0)));
+    auto kw = new HashMap();
+    kw->setitem(new Str("kw1"), new Str("v1"));
+    kw->setitem(new Str("kw2"), new Str("v2"));
 
-    frame->code = {
-        // "Hello" * 3
-        LoadConst, a,
-        LoadConst, one,
-        LoadConst, one,
-        LoadConst, one,
-        LoadConst, one,
-        BinAdd, // 1 + 1
-        BinAdd, // 2 + 1
-        BinMul, // 3 * 1
-        BinMul, // "Hello" * 3
-        Dup,
-        StoreVar, aname,
+    print(fn->call(new Vec({new Int(1), new Int(2)}), kw));
 
-        // return TOS
-        // LoadConst, fnull,
-        Return,
-    };
 
-    interpret(frame);
-    cout << "---" << endl;
+    // // TODO : Test with previous frame
+    // auto frame = Frame::New();
 
-    if (on_error()) {
-        cerr << ">>> On error !!!" << endl;
-        return;
-    }
+    // auto zero = frame->add_const(new Int(0));
+    // auto one = frame->add_const(new Int(1));
+    // auto fnull = frame->add_const(null);
+    // auto a = frame->add_const(new Str("Hello"));
+    // auto aname = frame->add_const(new Str("a"));
 
-    cout << "* End frame : " << endl;
-    print(frame);
+    // frame->code = {
+    //     // "Hello" * 3
+    //     LoadConst, a,
+    //     LoadConst, one,
+    //     LoadConst, one,
+    //     LoadConst, one,
+    //     LoadConst, one,
+    //     BinAdd, // 1 + 1
+    //     BinAdd, // 2 + 1
+    //     BinMul, // 3 * 1
+    //     BinMul, // "Hello" * 3
+    //     Dup,
+    //     StoreVar, aname,
 
-    cout << "* End stack :" << endl;
-    int stki = Program::instance->obj_stack.size();
-    for (auto o : Program::instance->obj_stack) {
-        cout << --stki << ". ";
-        print(o);
-    }
+    //     // return TOS
+    //     // LoadConst, fnull,
+    //     Return,
+    // };
+
+    // interpret(frame);
+    // cout << "---" << endl;
+
+    // if (on_error()) {
+    //     cerr << ">>> On error !!!" << endl;
+    //     return;
+    // }
+
+    // cout << "* End frame : " << endl;
+    // print(frame);
+
+    // cout << "* End stack :" << endl;
+    // int stki = Program::instance->obj_stack.size();
+    // for (auto o : Program::instance->obj_stack) {
+    //     cout << --stki << ". ";
+    //     print(o);
+    // }
 }

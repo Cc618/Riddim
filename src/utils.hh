@@ -13,8 +13,9 @@ typedef std::string str_t;
 typedef long long int_t;
 typedef unsigned int line_t;
 
-typedef Vec args_t;
-typedef HashMap kwargs_t;
+// To be able to use the :: operator
+#define args_t Vec
+#define kwargs_t HashMap
 
 typedef std::function<Object *(Object *)> fn_unary_t;
 typedef std::function<Object *(Object *, Object *)> fn_binary_t;
