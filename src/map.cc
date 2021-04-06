@@ -49,22 +49,17 @@ void HashMap::init_class_type() {
     };
 
     // TODO : Hash
+
+    // @in
     class_type->fn_in = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<HashMap *>(self);
 
         auto result = me->find(key) != me->data.end();
 
-        auto ret = new (nothrow) Bool(result);
-
-        if (!ret) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        return ret;
+        return result ? istrue : isfalse;
     };
 
+    // @getitem
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<HashMap *>(self);
 

@@ -19,5 +19,6 @@ struct Null : public Object {
     // Can throw
     static void init_singleton();
 
+protected:
     Null();
 };

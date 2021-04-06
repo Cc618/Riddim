@@ -14,8 +14,6 @@ struct Bool : public Object {
 
     bool data;
 
-    Bool(bool data);
-
     // TODO : fn_istrue
 
     // Can throw
@@ -23,4 +21,7 @@ struct Bool : public Object {
 
     // Can throw
     static void init_class_objects();
+
+protected:
+    Bool(bool data);
 };

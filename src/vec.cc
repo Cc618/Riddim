@@ -56,15 +56,7 @@ void Vec::init_class_type() {
                        reinterpret_cast<Int *>(val->hash())->data;
             }) != me->data.end();
 
-        auto ret = new (nothrow) Bool(result);
-
-        if (!ret) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        return ret;
+        return result ? istrue : isfalse;
     };
 
     class_type->fn_mul = [](Object *self, Object *o) -> Object * {
