@@ -48,6 +48,24 @@ Object *Object::call(Object *args, Object *kwargs) {
     return type->fn_call(this, args, kwargs);
 }
 
+Object *Object::cmp(Object *o) {
+    if (!type->fn_cmp) {
+        bool iseq = this == o;
+
+        auto result = new (nothrow) Int(iseq ? 0 : -1);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    }
+
+    return type->fn_cmp(this, o);
+}
+
 Object *Object::copy() {
     if (!type->fn_copy) {
         return this;
@@ -239,6 +257,20 @@ void print(Object *o) {
 using namespace OpCode;
 
 void testObjects() {
+    // --- Test ---
+    print((new Int(1))->cmp(new Int(1)));
+    print((new Int(1))->cmp(new Int(2)));
+    print((new Int(1))->cmp(new Int(-1)));
+
+    print((new Int(1))->cmp(new Str("")));
+
+    print((new Str("hello"))->cmp(new Str("hello")));
+    print((new Str("hello"))->cmp(new Str("hello1")));
+    print((new Str("hello"))->cmp(new Str("hell")));
+
+    return;
+
+
     // --- Init ---
     auto fn = new Function([](Object *thisfn, Object *args, Object *kwargs) -> Object* {
         print(args);
@@ -269,6 +301,7 @@ void testObjects() {
 
     // --- Code ---
     frame->code = {
+        // fn(*args, *kw)
         LoadConst, myfn,
         LoadConst, myfnargs,
         LoadConst, myfnkw,

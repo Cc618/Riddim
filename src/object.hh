@@ -46,6 +46,9 @@ struct Object {
 
     Object *call(Object *args, Object *kwargs);
 
+    // Compares references by default
+    Object *cmp(Object *o);
+
     // Returns this if there is no custom handler
     Object *copy();
 
@@ -90,6 +93,12 @@ struct Type : public Object {
     // (not nullptr)
     // The kwargs can be null
     fn_ternary_t fn_call;
+
+    // <=> operator, compares to another object
+    // Returns < 0 if lesser or different, > 0 if greater, 0 if equal
+    // * Should return not equal with null
+    // * Should return lesser if not equal (if there is no specific order)
+    fn_binary_t fn_cmp;
 
     // Returns a deep copy of this object
     fn_unary_t fn_copy;

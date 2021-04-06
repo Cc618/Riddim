@@ -28,7 +28,32 @@ void Int::init_class_type() {
             return nullptr;
         }
 
-        auto result = new (nothrow) Int(me->data + reinterpret_cast<Int*>(o)->data);
+        auto result =
+            new (nothrow) Int(me->data + reinterpret_cast<Int *>(o)->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
+    // @cmp
+    class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Int *>(self);
+
+        int_t res;
+
+        if (o->type != Int::class_type) {
+            res = -1;
+        } else {
+            auto other = reinterpret_cast<Int *>(o)->data;
+            res = me->data > other ? 1 : me->data < other ? -1 : 0;
+        }
+
+        auto result = new (nothrow) Int(res);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -79,7 +104,8 @@ void Int::init_class_type() {
             return nullptr;
         }
 
-        auto result = new (nothrow) Int(me->data * reinterpret_cast<Int*>(o)->data);
+        auto result =
+            new (nothrow) Int(me->data * reinterpret_cast<Int *>(o)->data);
 
         if (!result) {
             THROW_MEMORY_ERROR;

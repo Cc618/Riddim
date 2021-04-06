@@ -27,6 +27,7 @@
 | @add | + operator | | 2 + 2 |
 | @mul | * operator | | 2 * 2 |
 | @call | Call operator (for functor like objects) | | f(2, a=22) |
+| @cmp | Comparison, returns 0 on equality, < 0 if lesser or on inequality and > 0 if greater | Int | 1 <=> 2 returns -1 |
 | @copy | Shallow copy / clone (by default it is the identity function) | | |
 | @getattr | Get map attribute (not a read only attribute) | | a.foo which is a.@getattr('foo') |
 | @getitem | Index / subscript getter | | a[42] which is a.@getitem(42) |

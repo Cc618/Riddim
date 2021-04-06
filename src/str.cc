@@ -3,6 +3,7 @@
 #include "hash.hh"
 #include "int.hh"
 #include "null.hh"
+#include <cstring>
 
 using namespace std;
 
@@ -31,6 +32,30 @@ void Str::init_class_type() {
 
         auto result =
             new (nothrow) Str(me->data + reinterpret_cast<Str *>(o)->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
+    // @cmp
+    class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Str *>(self);
+
+        int_t res;
+
+        if (o->type != Str::class_type) {
+            res = -1;
+        } else {
+            auto other = reinterpret_cast<Str *>(o)->data;
+            res = strcmp(me->data.c_str(), other.c_str());
+        }
+
+        auto result = new (nothrow) Int(res);
 
         if (!result) {
             THROW_MEMORY_ERROR;
