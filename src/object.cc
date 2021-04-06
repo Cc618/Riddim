@@ -292,20 +292,9 @@ void testObjects() {
 
     // --- Code ---
     frame->code = {
-        // Size : 8
-        // if 1 > 0
+        // typeof 1
         LoadConst, one,
-        LoadConst, zero,
-        BinCmp, (opcode_t)CmpOp::Greater,
-        JmpFalse, 8 + 4,
-
-        // Size : 4
-        // OK
-        LoadConst, ok,
-        Jmp, 8 + 4 + 2,
-
-        // Size : 2
-        LoadConst, nok,
+        UnaTypeOf,
 
         // return TOS
         // LoadConst, fnull,

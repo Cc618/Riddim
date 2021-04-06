@@ -58,6 +58,9 @@ enum OpCode : opcode_t {
     // - pop 3
     // - push TOS2(args=TOS1, kwargs=TOS)
     TerCall,
+    // - pop 1
+    // - push TOS->type
+    UnaTypeOf,
     // TODO : Remove
     // Prints the stack
     DebugStack,

@@ -292,6 +292,16 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case UnaTypeOf: {
+            CHECK_STACKLEN(1);
+
+            POPTOP(tos);
+
+            PUSH(tos->type);
+
+            NEXT(0);
+        }
+
         // TODO : Rm
         case DebugStack: {
             cout << "Stack (" << obj_stack.size() << ") :" << endl;
