@@ -88,6 +88,7 @@ struct Type : public Object {
     // Functor call
     // If the function doesn't return, null is returned
     // (not nullptr)
+    // The kwargs can be null
     fn_ternary_t fn_call;
 
     // Returns a deep copy of this object

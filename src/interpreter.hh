@@ -41,6 +41,9 @@ enum OpCode : opcode_t {
     // - id_offset : Offset of the name of the symbol (constant)
     // - pop 1
     StoreVar,
+    // - pop 3
+    // - push TOS2(args=TOS1, kwargs=TOS)
+    TerCall,
     // TODO : Remove
     // Prints the stack
     DebugStack,
