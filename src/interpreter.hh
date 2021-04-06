@@ -11,8 +11,13 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push TOS1 + TOS
     BinAdd,
-    // Compares two values
+    // Applies boolean operation
     // - op : The boolean operation
+    // - pop 2
+    // - push bool_binop(TOS1, TOS, op)
+    BinBool,
+    // Compares two values
+    // - op : The boolean comparison
     // - pop 2
     // - push compare(TOS1, TOS, op)
     BinCmp,

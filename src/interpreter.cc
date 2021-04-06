@@ -94,6 +94,25 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case BinBool: {
+            CHECK_STACKLEN(2);
+
+            auto op = ARG(1);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto result = bool_binop(tos1, tos, static_cast<BoolBinOp>(op));
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(1);
+        }
+
         case BinCmp: {
             CHECK_STACKLEN(2);
 

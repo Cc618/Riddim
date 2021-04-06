@@ -280,6 +280,8 @@ void testObjects() {
     // --- Init Vars ---
     auto zero = frame->add_const(new Int(0));
     auto one = frame->add_const(new Int(1));
+    auto otrue = frame->add_const(istrue);
+    auto ofalse = frame->add_const(isfalse);
     auto fnull = frame->add_const(null);
     auto tnull = frame->add_const(Null::class_type);
     auto a = frame->add_const(new Str("Hello"));
@@ -292,9 +294,29 @@ void testObjects() {
 
     // --- Code ---
     frame->code = {
-        // typeof 1
-        LoadConst, one,
-        UnaTypeOf,
+        LoadConst, otrue,
+        LoadConst, ofalse,
+        BinBool, (opcode_t)BoolBinOp::And,
+
+        LoadConst, ofalse,
+        LoadConst, otrue,
+        BinBool, (opcode_t)BoolBinOp::And,
+
+        LoadConst, otrue,
+        LoadConst, otrue,
+        BinBool, (opcode_t)BoolBinOp::And,
+
+        LoadConst, ofalse,
+        LoadConst, otrue,
+        BinBool, (opcode_t)BoolBinOp::Or,
+
+        LoadConst, otrue,
+        LoadConst, otrue,
+        BinBool, (opcode_t)BoolBinOp::Or,
+
+        LoadConst, ofalse,
+        LoadConst, ofalse,
+        BinBool, (opcode_t)BoolBinOp::Or,
 
         // return TOS
         // LoadConst, fnull,

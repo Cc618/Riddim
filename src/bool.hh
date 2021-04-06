@@ -16,14 +16,23 @@ enum class CmpOp : opcode_t {
     LesserEqual,
     GreaterEqual,
     Equal,
-    NotEqual
-    // TODO : TypeEqual ?
+    NotEqual,
 };
 
 // Compares a with b
 // Uses a->cmp
 // Can throw
 Bool *compare(Object *a, Object *b, CmpOp op);
+
+enum class BoolBinOp : opcode_t {
+    And,
+    Or,
+};
+
+// Applies a op b
+// * a and b are Bools
+// Can throw
+Bool *bool_binop(Object *a, Object *b, BoolBinOp op);
 
 struct Bool : public Object {
     static Type *class_type;

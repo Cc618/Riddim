@@ -1,8 +1,8 @@
 #include "bool.hh"
 #include "error.hh"
-#include "str.hh"
-#include "program.hh"
 #include "int.hh"
+#include "program.hh"
+#include "str.hh"
 
 using namespace std;
 
@@ -25,11 +25,10 @@ Bool *compare(Object *a, Object *b, CmpOp op) {
         return nullptr;
     }
 
-    int_t threeway = reinterpret_cast<Int*>(result)->data;
+    int_t threeway = reinterpret_cast<Int *>(result)->data;
     bool ret;
 
-    switch (op)
-    {
+    switch (op) {
     case CmpOp::Equal:
         ret = threeway == 0;
         break;
@@ -61,6 +60,41 @@ Bool *compare(Object *a, Object *b, CmpOp op) {
     }
 
     return ret ? istrue : isfalse;
+}
+
+Bool *bool_binop(Object *a, Object *b, BoolBinOp op) {
+    if (a->type != Bool::class_type) {
+        THROW_TYPE_ERROR_PREF("bool_binop", a->type, Bool::class_type);
+
+        return nullptr;
+    }
+
+    if (b->type != Bool::class_type) {
+        THROW_TYPE_ERROR_PREF("bool_binop", b->type, Bool::class_type);
+
+        return nullptr;
+    }
+
+    bool result;
+    bool aval = reinterpret_cast<Bool *>(a)->data;
+    bool bval = reinterpret_cast<Bool *>(b)->data;
+
+    switch (op) {
+    case BoolBinOp::And:
+        result = aval && bval;
+        break;
+
+    case BoolBinOp::Or:
+        result = aval || bval;
+        break;
+
+    default:
+        throw_fmt(InternalError, "bool_binop: Invalid BoolBinOp %d", op);
+
+        return nullptr;
+    }
+
+    return result ? istrue : isfalse;
 }
 
 Bool::Bool(bool data) : Object(Bool::class_type), data(data) {}
