@@ -9,6 +9,21 @@ struct Bool;
 extern Bool *istrue;
 extern Bool *isfalse;
 
+enum class CmpOp {
+    Lesser,
+    Greater,
+    LesserEqual,
+    GreaterEqual,
+    Equal,
+    NotEqual
+    // TODO : TypeEqual ?
+};
+
+// Compares a with b
+// Uses a->cmp
+// Can throw
+Bool *compare(Object *a, Object *b, CmpOp op);
+
 struct Bool : public Object {
     static Type *class_type;
 

@@ -258,15 +258,15 @@ using namespace OpCode;
 
 void testObjects() {
     // --- Test ---
-    print((new Int(1))->cmp(new Int(1)));
-    print((new Int(1))->cmp(new Int(2)));
-    print((new Int(1))->cmp(new Int(-1)));
+    print(compare(new Int(1), new Int(1), CmpOp::Equal));
+    print(compare(new Int(1), new Int(1), CmpOp::NotEqual));
+    print(compare(new Int(1), new Int(1), CmpOp::LesserEqual));
+    print(compare(new Int(1), new Int(1), CmpOp::GreaterEqual));
+    print(compare(new Int(1), new Int(1), CmpOp::Lesser));
+    print(compare(new Int(1), new Int(1), CmpOp::Greater));
 
-    print((new Int(1))->cmp(new Str("")));
-
-    print((new Str("hello"))->cmp(new Str("hello")));
-    print((new Str("hello"))->cmp(new Str("hello1")));
-    print((new Str("hello"))->cmp(new Str("hell")));
+    print(compare(new Int(2), new Int(1), CmpOp::Greater));
+    print(compare(new Int(1), new Int(2), CmpOp::Lesser));
 
     return;
 
