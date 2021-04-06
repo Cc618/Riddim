@@ -311,6 +311,22 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case UnaNot: {
+            CHECK_STACKLEN(1);
+
+            POPTOP(tos);
+
+            auto result = bool_not(tos);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(0);
+        }
+
         case UnaTypeOf: {
             CHECK_STACKLEN(1);
 

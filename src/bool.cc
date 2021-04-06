@@ -11,6 +11,43 @@ Type *Bool::class_type = nullptr;
 Bool *istrue = nullptr;
 Bool *isfalse = nullptr;
 
+
+static string bool_cmpop_str(CmpOp op) {
+    switch (op) {
+    case CmpOp::Equal:
+        return "==";
+
+    case CmpOp::NotEqual:
+        return "!=";
+
+    case CmpOp::Lesser:
+        return "<";
+
+    case CmpOp::Greater:
+        return ">";
+
+    case CmpOp::LesserEqual:
+        return "<=";
+
+    case CmpOp::GreaterEqual:
+        return ">=";
+    }
+
+    return "<unknown CmpOp>";
+}
+
+static string bool_binop_str(BoolBinOp op) {
+    switch (op) {
+    case BoolBinOp::And:
+        return "and";
+
+    case BoolBinOp::Or:
+        return "or";
+    }
+
+    return "<unknown BoolBinOp>";
+}
+
 Bool *compare(Object *a, Object *b, CmpOp op) {
     auto result = a->cmp(b);
 
@@ -20,7 +57,7 @@ Bool *compare(Object *a, Object *b, CmpOp op) {
     }
 
     if (result->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF("compare", result->type, Int::class_type);
+        THROW_TYPE_ERROR_PREF(bool_cmpop_str(op).c_str(), result->type, Int::class_type);
 
         return nullptr;
     }
@@ -64,13 +101,13 @@ Bool *compare(Object *a, Object *b, CmpOp op) {
 
 Bool *bool_binop(Object *a, Object *b, BoolBinOp op) {
     if (a->type != Bool::class_type) {
-        THROW_TYPE_ERROR_PREF("bool_binop", a->type, Bool::class_type);
+        THROW_TYPE_ERROR_PREF(bool_binop_str(op).c_str(), a->type, Bool::class_type);
 
         return nullptr;
     }
 
     if (b->type != Bool::class_type) {
-        THROW_TYPE_ERROR_PREF("bool_binop", b->type, Bool::class_type);
+        THROW_TYPE_ERROR_PREF(bool_binop_str(op).c_str(), b->type, Bool::class_type);
 
         return nullptr;
     }
@@ -95,6 +132,16 @@ Bool *bool_binop(Object *a, Object *b, BoolBinOp op) {
     }
 
     return result ? istrue : isfalse;
+}
+
+Bool *bool_not(Object *o) {
+    if (o->type != Bool::class_type) {
+        THROW_TYPE_ERROR_PREF("not", o->type, Bool::class_type);
+
+        return nullptr;
+    }
+
+    return reinterpret_cast<Bool *>(o)->data ? isfalse : istrue;
 }
 
 Bool::Bool(bool data) : Object(Bool::class_type), data(data) {}

@@ -34,6 +34,11 @@ enum class BoolBinOp : opcode_t {
 // Can throw
 Bool *bool_binop(Object *a, Object *b, BoolBinOp op);
 
+// Negates / inverse the boolean
+// * o is Bool
+// Can throw
+Bool *bool_not(Object *o);
+
 struct Bool : public Object {
     static Type *class_type;
 

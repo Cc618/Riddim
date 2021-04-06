@@ -294,29 +294,10 @@ void testObjects() {
 
     // --- Code ---
     frame->code = {
-        LoadConst, otrue,
-        LoadConst, ofalse,
-        BinBool, (opcode_t)BoolBinOp::And,
-
-        LoadConst, ofalse,
-        LoadConst, otrue,
-        BinBool, (opcode_t)BoolBinOp::And,
-
-        LoadConst, otrue,
-        LoadConst, otrue,
-        BinBool, (opcode_t)BoolBinOp::And,
-
-        LoadConst, ofalse,
-        LoadConst, otrue,
-        BinBool, (opcode_t)BoolBinOp::Or,
-
-        LoadConst, otrue,
-        LoadConst, otrue,
-        BinBool, (opcode_t)BoolBinOp::Or,
-
         LoadConst, ofalse,
         LoadConst, ofalse,
         BinBool, (opcode_t)BoolBinOp::Or,
+        UnaNot,
 
         // return TOS
         // LoadConst, fnull,

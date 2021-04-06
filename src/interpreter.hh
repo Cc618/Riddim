@@ -64,6 +64,9 @@ enum OpCode : opcode_t {
     // - push TOS2(args=TOS1, kwargs=TOS)
     TerCall,
     // - pop 1
+    // - push not TOS (must be bool)
+    UnaNot,
+    // - pop 1
     // - push TOS->type
     UnaTypeOf,
     // TODO : Remove
