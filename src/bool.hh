@@ -3,13 +3,14 @@
 // Boolean data type
 
 #include "object.hh"
+#include "interpreter.hh"
 
 struct Bool;
 
 extern Bool *istrue;
 extern Bool *isfalse;
 
-enum class CmpOp {
+enum class CmpOp : opcode_t {
     Lesser,
     Greater,
     LesserEqual,

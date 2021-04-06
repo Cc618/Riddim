@@ -258,33 +258,21 @@ using namespace OpCode;
 
 void testObjects() {
     // --- Test ---
-    print(compare(new Int(1), new Int(1), CmpOp::Equal));
-    print(compare(new Int(1), new Int(1), CmpOp::NotEqual));
-    print(compare(new Int(1), new Int(1), CmpOp::LesserEqual));
-    print(compare(new Int(1), new Int(1), CmpOp::GreaterEqual));
-    print(compare(new Int(1), new Int(1), CmpOp::Lesser));
-    print(compare(new Int(1), new Int(1), CmpOp::Greater));
-
-    print(compare(new Int(2), new Int(1), CmpOp::Greater));
-    print(compare(new Int(1), new Int(2), CmpOp::Lesser));
-
-    return;
-
 
     // --- Init ---
-    auto fn = new Function([](Object *thisfn, Object *args, Object *kwargs) -> Object* {
-        print(args);
-        print(kwargs);
+    // > Function
+    // auto fn = new Function([](Object *thisfn, Object *args, Object *kwargs) -> Object* {
+    //     print(args);
+    //     print(kwargs);
 
-        return new Int(42);
-    });
+    //     return new Int(42);
+    // });
 
-    auto kw = new HashMap();
-    kw->setitem(new Str("kw1"), new Str("v1"));
-    kw->setitem(new Str("kw2"), new Str("v2"));
+    // auto kw = new HashMap();
+    // kw->setitem(new Str("kw1"), new Str("v1"));
+    // kw->setitem(new Str("kw2"), new Str("v2"));
 
-    auto args = new Vec({new Int(1), new Int(2)});
-
+    // auto args = new Vec({new Int(1), new Int(2)});
 
     // TODO : Test with previous frame
     auto frame = Frame::New();
@@ -295,17 +283,26 @@ void testObjects() {
     auto fnull = frame->add_const(null);
     auto a = frame->add_const(new Str("Hello"));
     auto aname = frame->add_const(new Str("a"));
-    auto myfn = frame->add_const(fn);
-    auto myfnargs = frame->add_const(args);
-    auto myfnkw = frame->add_const(kw);
+    // auto myfn = frame->add_const(fn);
+    // auto myfnargs = frame->add_const(args);
+    // auto myfnkw = frame->add_const(kw);
 
     // --- Code ---
     frame->code = {
-        // fn(*args, *kw)
-        LoadConst, myfn,
-        LoadConst, myfnargs,
-        LoadConst, myfnkw,
-        TerCall,
+        // 1 != 0
+        LoadConst, one,
+        LoadConst, zero,
+        BinCmp, (opcode_t)CmpOp::NotEqual,
+
+        // 1 < 0
+        LoadConst, one,
+        LoadConst, zero,
+        BinCmp, (opcode_t)CmpOp::Lesser,
+
+        // 1 >= 0
+        LoadConst, one,
+        LoadConst, zero,
+        BinCmp, (opcode_t)CmpOp::GreaterEqual,
 
         // return TOS
         // LoadConst, fnull,

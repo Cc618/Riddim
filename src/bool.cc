@@ -35,7 +35,7 @@ Bool *compare(Object *a, Object *b, CmpOp op) {
         break;
 
     case CmpOp::NotEqual:
-        ret = threeway == -1;
+        ret = threeway != 0;
         break;
 
     case CmpOp::Lesser:

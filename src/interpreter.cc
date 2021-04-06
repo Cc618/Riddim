@@ -2,6 +2,7 @@
 #include "debug.hh"
 #include "error.hh"
 #include "program.hh"
+#include "bool.hh"
 
 // TODO
 #include <iostream>
@@ -88,6 +89,25 @@ void interpret(Frame *frame) {
             PUSH(sm);
 
             NEXT(0);
+        }
+
+        case BinCmp: {
+            CHECK_STACKLEN(2);
+
+            auto op = ARG(1);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto result = compare(tos1, tos, static_cast<CmpOp>(op));
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(1);
         }
 
         case BinMul: {
