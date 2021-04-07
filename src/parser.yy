@@ -3,7 +3,7 @@
 %defines
 
 %define api.token.raw
-
+%define api.token.prefix {TOK_}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
@@ -18,7 +18,22 @@
     class Driver;
 }
 
-// The parsing context.
+%code top {
+    #include "driver.hh"
+
+	static inline yy::parser::symbol_type yylex(Driver &driver) {
+        return driver.next_token();
+    }
+
+    // #include "driver.hh"
+
+    // // Replace the yylex function by up::Scanner::Next
+	// static inline yy::parser::symbol_type yylex(Driver &driver) {
+	// 	return driver.next_token();
+    // }
+}
+
+// Parsing context
 %param { Driver& driver }
 
 %locations
@@ -36,8 +51,8 @@
     using namespace ast;
 }
 
-%define api.token.prefix {TOK_}
 %token
+    EOF 0       "<<EOF>>"
     EQ          "="
     MINUS       "-"
     PLUS        "+"
@@ -48,11 +63,8 @@
     RPAREN      ")"
     LBRACE      "{"
     RBRACE      "}"
-    // TODO : Line feed
-    STOP        ";"
+    STOP        "<LF>"
     IF          "if"
-    // TODO
-    DEBUG       "@debug"
 ;
 
 %token <str_t> ID "id"
@@ -75,7 +87,8 @@
 %%
 module: block_content {
             driver.module = new Module(@$.begin.line);
-            driver.module->content = $1; }
+            driver.module->content = $1;
+        }
     ;
 
 block_content: %empty { $$ = new Block(@$.begin.line); }

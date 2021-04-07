@@ -36,11 +36,9 @@ int Driver::parse(const string &f) {
 }
 
 void Driver::scan_begin() {
-    // TODO : Disable
-    if (file.empty() || file == "-")
-        yyin = stdin;
-    else if (!(yyin = fopen(file.c_str(), "r"))) {
-        cerr << "cannot open " << file << ": " << strerror(errno) << endl;
+    if (!(yyin = fopen(file.c_str(), "r"))) {
+        cerr << "Error : Cannot open " << file << " : " << strerror(errno)
+             << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -51,3 +49,31 @@ void Driver::error(int begin_line, int begin_col, int end_line, int end_col,
                    const str_t &msg) {
     parse_error(file, begin_line, begin_col, end_line, end_col, msg);
 }
+
+#define parse yy::parser
+parse::symbol_type Driver::next_token() {
+
+    static bool ended = false;
+    static parse::location_type eof_pos;
+
+    if (ended) {
+        ended = false;
+
+        return parse::symbol_type(parse::token::TOK_EOF, eof_pos);
+    }
+
+    // Fetch next token
+    auto tok = raw_yylex(*this);
+
+    // Check if end of file
+    if (tok.kind() == parse::token::TOK_EOF) {
+        ended = true;
+        eof_pos = tok.location;
+
+        // Add stop at the end of file
+        return parse::symbol_type(parse::token::TOK_STOP, eof_pos);
+    }
+
+    return tok;
+}
+#undef parse

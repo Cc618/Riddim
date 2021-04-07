@@ -75,14 +75,18 @@ comment #.*$
 %}
 %%
 %{
-    // Every time yylex is called.
+    // Every time yylex is called
     yy::location& loc = drv.location;
     loc.step();
 %}
 
 {blank}+        loc.step();
-\n+             loc.lines(yyleng); loc.step();
 {comment}       loc.step();
+
+\n+             {
+    loc.lines(yyleng);
+    return yy::parser::make_STOP(loc);
+}
 
 "+"             return yy::parser::make_PLUS(loc);
 "-"             return yy::parser::make_MINUS(loc);
@@ -94,7 +98,6 @@ comment #.*$
 "{"             return yy::parser::make_LBRACE(loc);
 "}"             return yy::parser::make_RBRACE(loc);
 "="             return yy::parser::make_EQ(loc);
-";"             return yy::parser::make_STOP(loc);
 
 {int}           return make_INT(yytext, loc);
 {str}           return make_STR(yytext, loc);
@@ -102,5 +105,5 @@ comment #.*$
 .               {
     lexer_error(loc, str_t("Invalid token: ") + yytext);
 }
-<<EOF>>         return yy::parser::make_YYEOF(loc);
+<<EOF>>         return yy::parser::make_EOF(loc);
 %%
