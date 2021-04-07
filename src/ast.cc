@@ -39,6 +39,17 @@ void Block::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+ExpStmt::ExpStmt(Exp *exp) : Stmt(exp->fileline), exp(exp) {}
+
+ExpStmt::~ExpStmt() { delete exp; }
+
+void ExpStmt::debug(int indent) {
+    cout << str_indent(indent) << "ExpStmt(" << endl;
+    cout << str_indent(indent + 1) << "line=" << fileline << endl;
+    exp->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 // --- Exps ---
 Set::~Set() { delete exp; }
 

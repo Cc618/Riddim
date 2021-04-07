@@ -60,6 +60,7 @@
 %token <int> INT "int"
 %nterm <ast::Block*> block_content
 %nterm <ast::Stmt*> stmt
+%nterm <ast::ExpStmt*> expstmt
 %nterm <ast::Set*> set
 %nterm <ast::Exp*> exp
 %nterm <ast::Const*> const
@@ -81,14 +82,18 @@ block_content: %empty { $$ = new Block(@$.begin.line); }
     | block_content stmt { $$ = $1; $$->stmts.push_back($2); }
     ;
 
-stmt: set { $$ = $1; }
+stmt: expstmt { $$ = $1; }
     ;
 
-set: ID "=" exp stop { $$ = new Set(@1.begin.line, $1, $3); }
+expstmt: exp stop { $$ = new ExpStmt($1); }
     ;
 
 exp: const { $$ = $1; }
     | binexp { $$ = $1; }
+    | set { $$ = $1; }
+    ;
+
+set: ID "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
     ;
 
 binexp : exp "+" exp { $$ = new BinExp(@1.begin.line, $1, '+', $3); }

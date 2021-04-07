@@ -1,5 +1,4 @@
 #include "driver.hh"
-// TODO
 #include "object.hh"
 #include "init.hh"
 #include "error.hh"
@@ -8,35 +7,34 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    // --- Objects ---
-    init_program();
+    // // --- Objects ---
+    // init_program();
 
-    // Check for initialization errors
-    if (on_error()) {
-        cerr << "Failed to initialize the program" << endl;
+    // // Check for initialization errors
+    // if (on_error()) {
+    //     cerr << "Failed to initialize the program" << endl;
 
-        dump_error();
-    }
+    //     dump_error();
+    // }
 
-    try {
-        testObjects();
-    } catch (...) {
-        throw_str(InternalError, "Internal error");
-    }
+    // try {
+    //     testObjects();
+    // } catch (...) {
+    //     throw_str(InternalError, "Internal error");
+    // }
 
-    if (on_error()) {
-        cerr << "Uncaught error" << endl;
+    // if (on_error()) {
+    //     cerr << "Uncaught error" << endl;
 
-        dump_error();
-    }
+    //     dump_error();
+    // }
 
-    end_program();
+    // end_program();
 
-    cout << "Done" << endl;
+    // cout << "Done" << endl;
 
-    return 0;
+    // return 0;
 
-    /*
     int res;
     Driver driver;
 
@@ -65,5 +63,4 @@ int main(int argc, char *argv[]) {
     }
 
     return res;
-    */
 }

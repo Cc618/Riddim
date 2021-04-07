@@ -36,6 +36,7 @@ struct Module : public ASTNode {
     virtual void debug(int indent = 0) override;
 };
 
+// --- Stmts ---
 struct Block : public ASTNode {
     std::vector<Stmt *> stmts;
 
@@ -50,21 +51,33 @@ struct Stmt : public ASTNode {
     using ASTNode::ASTNode;
 };
 
-// TODO : ExpStmt
-struct Set : public Stmt {
-    str_t id;
+// A statement made of an expression
+struct ExpStmt : public Stmt {
     Exp *exp;
 
-    Set(line_t fileline, const str_t &id, Exp *exp)
-        : Stmt(fileline), id(id), exp(exp) {}
+    ExpStmt(Exp *exp);
 
-    virtual ~Set();
+    virtual ~ExpStmt();
 
     virtual void debug(int indent = 0) override;
 };
 
+// --- Exps ---
 struct Exp : public ASTNode {
     using ASTNode::ASTNode;
+};
+
+// Assignment
+struct Set : public Exp {
+    str_t id;
+    Exp *exp;
+
+    Set(line_t fileline, const str_t &id, Exp *exp)
+        : Exp(fileline), id(id), exp(exp) {}
+
+    virtual ~Set();
+
+    virtual void debug(int indent = 0) override;
 };
 
 // Literal
