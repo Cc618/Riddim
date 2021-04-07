@@ -5,6 +5,9 @@
 #include <variant>
 #include <vector>
 
+struct Module;
+#define ModuleObject Module
+
 namespace ast {
 struct ASTNode {
     // Line of the start of this node in the source file
@@ -16,6 +19,11 @@ struct ASTNode {
 
     // Prints recursively all nodes
     virtual void debug(int indent = 0) = 0;
+
+    // Generates the code of this node (and its children) for this module
+    // * Note that every body of this function is declared in codegen.cc NOT
+    // ast.cc
+    virtual void gen_code(ModuleObject *module) = 0;
 };
 
 struct Block;
@@ -23,17 +31,19 @@ struct Stmt;
 struct Set;
 struct Exp;
 
-struct Module : public ASTNode {
+struct AstModule : public ASTNode {
     // TODO
     // Can be nullptr if there is no body (empty file)
     Block *content = nullptr;
     str_t filename;
 
-    Module(line_t fileline) : ASTNode(fileline) {}
+    AstModule(line_t fileline) : ASTNode(fileline) {}
 
-    virtual ~Module();
+    virtual ~AstModule();
 
     virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
 };
 
 // --- Stmts ---
@@ -45,6 +55,8 @@ struct Block : public ASTNode {
     virtual ~Block();
 
     virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
 };
 
 struct Stmt : public ASTNode {
@@ -60,6 +72,8 @@ struct ExpStmt : public Stmt {
     virtual ~ExpStmt();
 
     virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
 };
 
 // --- Exps ---
@@ -78,6 +92,8 @@ struct Set : public Exp {
     virtual ~Set();
 
     virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
 };
 
 // Literal
@@ -87,12 +103,14 @@ struct Const : public Exp {
         Str,
     } type;
 
-    std::variant<str_t, long long> val;
+    std::variant<str_t, int_t> val;
 
-    Const(line_t fileline, long long val);
+    Const(line_t fileline, int_t val);
     Const(line_t fileline, const str_t &val);
 
     virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
 };
 
 // + * etc.
@@ -107,5 +125,7 @@ struct BinExp : public Exp {
     ~BinExp();
 
     virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
 };
 } // namespace ast

@@ -66,7 +66,7 @@ parse::symbol_type Driver::next_token() {
     auto tok = raw_yylex(*this);
 
     // Check if end of file
-    if (tok.kind() == parse::token::TOK_EOF) {
+    if (tok.kind() == parse::symbol_kind::S_YYEOF) {
         ended = true;
         eof_pos = tok.location;
 

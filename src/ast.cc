@@ -16,10 +16,10 @@ inline string str_indent(int indent) { return string(indent * 2, ' '); }
     }
 
 // --- Utils ---
-Module::~Module() { delete content; }
+AstModule::~AstModule() { delete content; }
 
-void Module::debug(int indent) {
-    cout << str_indent(indent) << "Module(" << endl;
+void AstModule::debug(int indent) {
+    cout << str_indent(indent) << "AstModule(" << endl;
     if (content)
         content->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;

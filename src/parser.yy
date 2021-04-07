@@ -79,12 +79,12 @@
 
 %%
 module: block_content {
-            driver.module = new Module(@$.begin.line);
+            driver.module = new AstModule(@$.begin.line);
             driver.module->content = $1;
         }
     | stop {
             // Empty
-            driver.module = new Module(@$.begin.line);
+            driver.module = new AstModule(@$.begin.line);
         }
     ;
 

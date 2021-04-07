@@ -5,8 +5,8 @@ using namespace std;
 
 Type *Module::class_type = nullptr;
 
-Module::Module(Str *name, Frame *frame)
-    : Object(Module::class_type), name(name), frame(frame) {}
+Module::Module(Str *name, Frame *frame, const str_t &filepath)
+    : Object(Module::class_type), name(name), frame(frame), filepath(filepath) {}
 
 void Module::init_class_type() {
     class_type = new (nothrow) Type("Module");
@@ -51,7 +51,7 @@ void Module::init_class_type() {
     };
 }
 
-Module *Module::New(const str_t &name) {
+Module *Module::New(const str_t &name, const str_t &filepath) {
     auto namestr = new (nothrow) Str(name);
 
     if (!namestr) {
@@ -65,7 +65,7 @@ Module *Module::New(const str_t &name) {
     if (!frame)
         return nullptr;
 
-    auto me = new (nothrow) Module(namestr, frame);
+    auto me = new (nothrow) Module(namestr, frame, filepath);
 
     if (!me) {
         THROW_MEMORY_ERROR;

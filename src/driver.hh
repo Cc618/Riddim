@@ -35,5 +35,5 @@ public:
     std::string file;
     yy::location location;
 
-    ast::Module *module;
+    ast::AstModule *module;
 };
