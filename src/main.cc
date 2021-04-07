@@ -8,6 +8,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    // --- Objects ---
     init_program();
 
     // Check for initialization errors

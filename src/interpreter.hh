@@ -63,7 +63,6 @@ enum OpCode : opcode_t {
     // Stores indexed (or key mapped) value
     // TOS1[TOS] = TOS2
     // - pop 2
-    // TODO : pop 1
     StoreIndex,
     // Stores the TOS to a variable
     // - id_offset : Offset of the name of the symbol (constant)
@@ -81,12 +80,6 @@ enum OpCode : opcode_t {
     // TODO : Remove
     // Prints the stack
     DebugStack,
-    // // Replaces TOS1, TOS2 by TOS1 + TOS2
-    // // TOS = TOS2 + TOS1
-    // Add,
-    // // Pop TOS, if false then jumps to location
-    // // - loc, size_t : Location
-    // JmpFalse,
 };
 } // namespace OpCode
 
