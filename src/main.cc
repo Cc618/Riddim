@@ -5,6 +5,7 @@
 #include "codegen.hh"
 #include "module.hh"
 #include "frame.hh"
+#include "interpreter.hh"
 #include <iostream>
 
 using namespace std;
@@ -33,6 +34,10 @@ Module *gen_module(Driver &driver) {
     // TODO : Module name not file path
     // Generate code
     auto module = Module::New(driver.file, driver.file);
+
+    // Empty
+    if (!ast) return module;
+
     gen_module_code(ast, module);
 
     // TODO : Handle errors
@@ -40,38 +45,10 @@ Module *gen_module(Driver &driver) {
     // Delete all ast nodes
     delete ast;
 
-    return 0;
+    return module;
 }
 
 int main(int argc, char *argv[]) {
-    // // --- Objects ---
-    // init_program();
-
-    // // Check for initialization errors
-    // if (on_error()) {
-    //     cerr << "Failed to initialize the program" << endl;
-
-    //     dump_error();
-    // }
-
-    // try {
-    //     testObjects();
-    // } catch (...) {
-    //     throw_str(InternalError, "Internal error");
-    // }
-
-    // if (on_error()) {
-    //     cerr << "Uncaught error" << endl;
-
-    //     dump_error();
-    // }
-
-    // end_program();
-
-    // cout << "Done" << endl;
-
-    // return 0;
-
     int res = 0;
     Driver driver;
 
@@ -111,10 +88,15 @@ int main(int argc, char *argv[]) {
         // The exception is thrown to
         if (!module) goto on_internal_error;
 
-        // Interpret code
-
         // TODO
-        // testObjects();
+        cout << "Interpreting code" << endl;
+        cout << reinterpret_cast<Str*>(module->frame->consts->str())->data << endl;
+        testObjects(module);
+
+        // Interpret code
+        // TODO : Only main module
+        // interpret(module->frame);
+
 
         // Error but we don't want to go within the catch block
     on_internal_error:;

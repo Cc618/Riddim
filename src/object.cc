@@ -256,70 +256,74 @@ void print(Object *o) {
 
 using namespace OpCode;
 
-void testObjects() {
-    // --- Test ---
+void testObjects(Module *module) {
+    auto frame = module->frame;
 
-    // --- Init ---
-    // > Function
-    // auto fn = new Function([](Object *thisfn, Object *args, Object *kwargs) -> Object* {
-    //     print(args);
-    //     print(kwargs);
+    cout << frame->code.size() << " Op codes" << endl;
 
-    //     return new Int(42);
-    // });
+    // // --- Test ---
 
-    // auto kw = new HashMap();
-    // kw->setitem(new Str("kw1"), new Str("v1"));
-    // kw->setitem(new Str("kw2"), new Str("v2"));
+    // // --- Init ---
+    // // > Function
+    // // auto fn = new Function([](Object *thisfn, Object *args, Object *kwargs) -> Object* {
+    // //     print(args);
+    // //     print(kwargs);
 
-    // auto args = new Vec({new Int(1), new Int(2)});
+    // //     return new Int(42);
+    // // });
 
-    // TODO : Test with previous frame
-    auto frame = Frame::New();
+    // // auto kw = new HashMap();
+    // // kw->setitem(new Str("kw1"), new Str("v1"));
+    // // kw->setitem(new Str("kw2"), new Str("v2"));
 
-    auto attrobj_data = AttrObject::New();
+    // // auto args = new Vec({new Int(1), new Int(2)});
 
-    // --- Init Vars ---
-    auto zero = frame->add_const(new Int(0));
-    auto one = frame->add_const(new Int(1));
-    auto otrue = frame->add_const(istrue);
-    auto ofalse = frame->add_const(isfalse);
-    auto fnull = frame->add_const(null);
-    auto tnull = frame->add_const(Null::class_type);
-    auto a = frame->add_const(new Str("hello"));
-    auto aname = frame->add_const(new Str("a"));
-    auto ok = frame->add_const(new Str("OK"));
-    auto nok = frame->add_const(new Str("Not OK"));
-    auto attrobj = frame->add_const(attrobj_data);
-    // auto myfn = frame->add_const(fn);
-    // auto myfnargs = frame->add_const(args);
-    // auto myfnkw = frame->add_const(kw);
+    // // TODO : Test with previous frame
+    // auto frame = Frame::New();
 
-    // --- Code ---
-    frame->code = {
-        // hello = AttrObject()
-        LoadConst, attrobj,
-        StoreVar, a,
+    // auto attrobj_data = AttrObject::New();
 
-        // hello.a = true
-        LoadConst, otrue,
-        LoadVar, a,
-        StoreAttr, aname,
+    // // --- Init Vars ---
+    // auto zero = frame->add_const(new Int(0));
+    // auto one = frame->add_const(new Int(1));
+    // auto otrue = frame->add_const(istrue);
+    // auto ofalse = frame->add_const(isfalse);
+    // auto fnull = frame->add_const(null);
+    // auto tnull = frame->add_const(Null::class_type);
+    // auto a = frame->add_const(new Str("hello"));
+    // auto aname = frame->add_const(new Str("a"));
+    // auto ok = frame->add_const(new Str("OK"));
+    // auto nok = frame->add_const(new Str("Not OK"));
+    // auto attrobj = frame->add_const(attrobj_data);
+    // // auto myfn = frame->add_const(fn);
+    // // auto myfnargs = frame->add_const(args);
+    // // auto myfnkw = frame->add_const(kw);
 
-        Pop,
+    // // --- Code ---
+    // frame->code = {
+    //     // hello = AttrObject()
+    //     LoadConst, attrobj,
+    //     StoreVar, a,
 
-        // hello.a (which is true)
-        LoadVar, a,
-        LoadAttr, aname,
+    //     // hello.a = true
+    //     LoadConst, otrue,
+    //     LoadVar, a,
+    //     StoreAttr, aname,
 
-        // // Load attrobj.a
-        // LoadConst, attrobj,
-        // LoadAttr, aname,
+    //     Pop,
 
-        // return TOS
-        // LoadConst, fnull,
-        Return,
-    };
+    //     // hello.a (which is true)
+    //     LoadVar, a,
+    //     LoadAttr, aname,
+
+    //     // // Load attrobj.a
+    //     // LoadConst, attrobj,
+    //     // LoadAttr, aname,
+
+    //     // return TOS
+    //     // LoadConst, fnull,
+    //     Return,
+    // };
 
     // --- Runtime ---
     interpret(frame);

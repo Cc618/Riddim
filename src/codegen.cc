@@ -3,6 +3,8 @@
 #include "interpreter.hh"
 #include "module.hh"
 #include "int.hh"
+#include "null.hh"
+#include "bool.hh"
 #include "str.hh"
 #include "error.hh"
 #include <iostream>
@@ -16,29 +18,33 @@ using namespace ast;
     return
 
 void gen_module_code(AstModule *ast, ModuleObject *module) {
-    ast->content->gen_code(module);
+    ast->gen_code(module);
 }
 
 void AstModule::gen_code(ModuleObject *module) {
-    code_t &code = module->frame->code;
+    content->gen_code(module);
 
-    // TODO
-    // code.push_back();
+    // Return null at the end
+    auto &code = module->frame->code;
+    auto off_null = module->frame->add_const(null);
+    code.push_back(LoadConst);
+    code.push_back(off_null);
+    code.push_back(Return);
 }
 
 // --- Stmts ---
 void Block::gen_code(ModuleObject *module) {
-    code_t &code = module->frame->code;
-
-    // TODO
-    // code.push_back();
+    for (auto stmt : stmts) stmt->gen_code(module);
 }
 
 void ExpStmt::gen_code(ModuleObject *module) {
     code_t &code = module->frame->code;
 
-    // TODO
-    // code.push_back();
+    // Generate expression
+    exp->gen_code(module);
+
+    // Remove result
+    code.push_back(Pop);
 }
 
 // --- Exps ---

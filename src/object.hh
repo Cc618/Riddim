@@ -8,7 +8,8 @@
 #include <vector>
 
 // TODO
-void testObjects();
+struct Module;
+void testObjects(Module *module);
 
 struct Type;
 struct Object;
