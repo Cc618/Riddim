@@ -20,7 +20,8 @@ Module::~Module() { delete content; }
 
 void Module::debug(int indent) {
     cout << str_indent(indent) << "Module(" << endl;
-    content->debug(indent + 1);
+    if (content)
+        content->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 

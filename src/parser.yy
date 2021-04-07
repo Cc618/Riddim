@@ -24,13 +24,6 @@
 	static inline yy::parser::symbol_type yylex(Driver &driver) {
         return driver.next_token();
     }
-
-    // #include "driver.hh"
-
-    // // Replace the yylex function by up::Scanner::Next
-	// static inline yy::parser::symbol_type yylex(Driver &driver) {
-	// 	return driver.next_token();
-    // }
 }
 
 // Parsing context
@@ -89,6 +82,10 @@ module: block_content {
             driver.module = new Module(@$.begin.line);
             driver.module->content = $1;
         }
+    | stop {
+            // Empty
+            driver.module = new Module(@$.begin.line);
+        }
     ;
 
 block_content: %empty { $$ = new Block(@$.begin.line); }
@@ -121,6 +118,7 @@ const: INT { $$ = new Const(@1.begin.line, $1); }
     ;
 
 stop: STOP
+    | stop STOP
     ;
 %%
 

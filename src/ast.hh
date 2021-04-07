@@ -23,10 +23,10 @@ struct Stmt;
 struct Set;
 struct Exp;
 
-// TODO : Location
-// TODO : Memory leaks
 struct Module : public ASTNode {
-    Block *content;
+    // TODO
+    // Can be nullptr if there is no body (empty file)
+    Block *content = nullptr;
     str_t filename;
 
     Module(line_t fileline) : ASTNode(fileline) {}
