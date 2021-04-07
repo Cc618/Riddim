@@ -9,6 +9,16 @@
 #include "error.hh"
 #include <iostream>
 
+// TODO : Check nothrow on new
+// TODO : Gencode bool for error
+
+// TODO : Rm debug
+#define PUSH_CODE(DATA) module->frame->code.push_back(DATA); \
+    cout << "> " << #DATA << endl;
+
+#define ADD_CONST(DATA) module->frame->add_const(DATA); \
+    // cout << "* " << #DATA << endl;
+
 using namespace OpCode;
 using namespace std;
 using namespace ast;
@@ -25,11 +35,10 @@ void AstModule::gen_code(ModuleObject *module) {
     content->gen_code(module);
 
     // Return null at the end
-    auto &code = module->frame->code;
-    auto off_null = module->frame->add_const(null);
-    code.push_back(LoadConst);
-    code.push_back(off_null);
-    code.push_back(Return);
+    PUSH_CODE(LoadConst);
+    auto off_null = ADD_CONST(null);
+    PUSH_CODE(off_null);
+    PUSH_CODE(Return);
 }
 
 // --- Stmts ---
@@ -38,25 +47,32 @@ void Block::gen_code(ModuleObject *module) {
 }
 
 void ExpStmt::gen_code(ModuleObject *module) {
-    code_t &code = module->frame->code;
-
     // Generate expression
     exp->gen_code(module);
 
     // Remove result
-    code.push_back(Pop);
+    PUSH_CODE(Pop);
 }
 
 // --- Exps ---
 void Set::gen_code(ModuleObject *module) {
-    code_t &code = module->frame->code;
+    exp->gen_code(module);
 
-    // TODO
-    // code.push_back();
+    PUSH_CODE(StoreVar);
+
+    auto const_id = new (nothrow) Str(id);
+
+    if (!const_id) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    auto off_id = ADD_CONST(const_id);
+    PUSH_CODE(off_id);
 }
 
 void Const::gen_code(ModuleObject *module) {
-    code_t &code = module->frame->code;
     Object *const_val;
 
     switch (type) {
@@ -78,17 +94,12 @@ void Const::gen_code(ModuleObject *module) {
         return;
     }
 
-    // Add this value
-    auto const_offset = module->frame->add_const(const_val);
+    PUSH_CODE(LoadConst);
 
-    // Add opcode
-    code.push_back(LoadConst);
-    code.push_back(const_offset);
+    auto const_offset = ADD_CONST(const_val);
+    PUSH_CODE(const_offset);
 }
 
 void BinExp::gen_code(ModuleObject *module) {
-    code_t &code = module->frame->code;
-
     // TODO
-    // code.push_back(BinAdd);
 }

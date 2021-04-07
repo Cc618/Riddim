@@ -339,7 +339,7 @@ void interpret(Frame *frame) {
                 DISPATCH_ERROR;
             }
 
-            POPTOP(val);
+            auto val = TOP;
 
             frame->setitem(name, val);
 
