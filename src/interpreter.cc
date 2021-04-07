@@ -201,6 +201,33 @@ void interpret(Frame *frame) {
             }
         }
 
+        case LoadAttr: {
+            CHECK_STACKLEN(1);
+
+            // Load name
+            auto name_off = ARG(1);
+            CHECK_CONST(name_off);
+
+            auto name = GET_CONST(name_off);
+
+            if (!name) {
+                DISPATCH_ERROR;
+            }
+
+            POPTOP(tos);
+
+            // Load attribute
+            auto result = tos->getattr(name);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(1);
+        }
+
         case LoadConst: {
             auto val_off = ARG(1);
             CHECK_CONST(val_off);
@@ -257,6 +284,32 @@ void interpret(Frame *frame) {
         case Return: {
             // Dispatch return
             return;
+        }
+
+        case StoreAttr: {
+            CHECK_STACKLEN(2);
+
+            // Load name
+            auto name_off = ARG(1);
+            CHECK_CONST(name_off);
+
+            auto name = GET_CONST(name_off);
+
+            if (!name) {
+                DISPATCH_ERROR;
+            }
+
+            POPTOP(tos);
+            auto tos1 = TOP;
+
+            // Set attribute
+            auto result = tos->setattr(name, tos1);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            NEXT(1);
         }
 
         case StoreIndex: {

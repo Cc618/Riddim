@@ -35,6 +35,10 @@ enum OpCode : opcode_t {
     // Jump if TOS is false
     // - pop 1
     JmpFalse,
+    // TOS become TOS.name
+    // - name : Offset of the name of the attribute
+    // - pop 1
+    LoadAttr,
     // Loads a const value on the TOS
     // - const_offset : The const object offset
     // - push 1
@@ -52,9 +56,14 @@ enum OpCode : opcode_t {
     Pop,
     // Returns from the function (or exit the module)
     Return,
+    // TOS.name = TOS1
+    // - name : Offset of the name of the attribute
+    // - pop 1
+    StoreAttr,
     // Stores indexed (or key mapped) value
     // TOS1[TOS] = TOS2
     // - pop 2
+    // TODO : pop 1
     StoreIndex,
     // Stores the TOS to a variable
     // - id_offset : Offset of the name of the symbol (constant)

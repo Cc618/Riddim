@@ -277,6 +277,8 @@ void testObjects() {
     // TODO : Test with previous frame
     auto frame = Frame::New();
 
+    auto attrobj_data = AttrObject::New();
+
     // --- Init Vars ---
     auto zero = frame->add_const(new Int(0));
     auto one = frame->add_const(new Int(1));
@@ -284,20 +286,35 @@ void testObjects() {
     auto ofalse = frame->add_const(isfalse);
     auto fnull = frame->add_const(null);
     auto tnull = frame->add_const(Null::class_type);
-    auto a = frame->add_const(new Str("Hello"));
+    auto a = frame->add_const(new Str("hello"));
     auto aname = frame->add_const(new Str("a"));
     auto ok = frame->add_const(new Str("OK"));
     auto nok = frame->add_const(new Str("Not OK"));
+    auto attrobj = frame->add_const(attrobj_data);
     // auto myfn = frame->add_const(fn);
     // auto myfnargs = frame->add_const(args);
     // auto myfnkw = frame->add_const(kw);
 
     // --- Code ---
     frame->code = {
-        LoadConst, ofalse,
-        LoadConst, ofalse,
-        BinBool, (opcode_t)BoolBinOp::Or,
-        UnaNot,
+        // hello = AttrObject()
+        LoadConst, attrobj,
+        StoreVar, a,
+
+        // hello.a = true
+        LoadConst, otrue,
+        LoadVar, a,
+        StoreAttr, aname,
+
+        Pop,
+
+        // hello.a (which is true)
+        LoadVar, a,
+        LoadAttr, aname,
+
+        // // Load attrobj.a
+        // LoadConst, attrobj,
+        // LoadAttr, aname,
 
         // return TOS
         // LoadConst, fnull,
