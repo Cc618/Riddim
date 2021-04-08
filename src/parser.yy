@@ -80,7 +80,8 @@
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 %nterm <ast::Stmt*> stmt
-%nterm <ast::IfStmt*> ifstmt
+%nterm <ast::IfStmt*> ifstmt ifstmt_elif
+%nterm <ast::Block*> ifstmt_else
 %nterm <ast::ExpStmt*> expstmt
 %nterm <ast::Set*> set
 %nterm <ast::Exp*> exp
@@ -124,8 +125,32 @@ stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     ;
 
-ifstmt: "if" exp block { $$ = new IfStmt($2, $3); }
-    | ifstmt "else" block { $$ = $1; $1->elsebody = $3; }
+ifstmt: "if" exp block ifstmt_elif {
+        $$ = new IfStmt($2, $3);
+        $$->elsebody = new Block(@4.begin.line);
+        $$->elsebody->stmts.push_back($4);
+    }
+    | "if" exp block ifstmt_else {
+        $$ = new IfStmt($2, $3);
+        $$->elsebody = $4;
+    }
+    ;
+
+ifstmt_elif: "elif" exp block ifstmt_elif {
+        $$ = new IfStmt($2, $3);
+        $$->elsebody = new Block(@4.begin.line);
+        $$->elsebody->stmts.push_back($4);
+    }
+    | "elif" exp block ifstmt_else {
+        $$ = new IfStmt($2, $3);
+        $$->elsebody = $4;
+    }
+    ;
+
+ifstmt_else: %empty { $$ = nullptr; }
+    | "else" block {
+        $$ = $2;
+    }
     ;
 
 expstmt: exp stop { $$ = new ExpStmt($1); }

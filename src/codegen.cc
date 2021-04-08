@@ -59,11 +59,11 @@ void IfStmt::gen_code(ModuleObject *module) {
     auto &code = module->frame->code;
 
     // The pseudo code of the generation
-    // false ? goto true
-    // false body
+    // condition is false ? goto else
+    // if body
     // goto finally
-    // true:
-    // true body
+    // else:
+    // else body
     // finally:
 
     // Generate condition

@@ -82,6 +82,9 @@ int main(int argc, char *argv[]) {
     }
 
     try {
+        // TODO
+        driver.module->debug();
+
         // Generate code from the AST
         auto module = gen_module(driver);
 
