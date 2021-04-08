@@ -7,7 +7,7 @@ add_compile_definitions(DEBUG_ERRORS)
 
 # Parse CMake flags
 if (${DEBUG_PARSER_CONFLICTS})
-    set(BISON_FLAGS "-Wconflicts-sr -Wcounterexamples")
+    set(BISON_FLAGS "-Wconflicts-sr -Wconflicts-rr -Wcounterexamples")
 endif()
 
 # Bison / Flex

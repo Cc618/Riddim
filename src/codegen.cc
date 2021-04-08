@@ -15,7 +15,7 @@
 // TODO : Rm debug
 #define PUSH_CODE(DATA)                                                        \
     module->frame->code.push_back(DATA);                                       \
-    cout << "> " << #DATA << endl;
+    // cout << "> " << #DATA << endl;
 
 #define ADD_CONST(DATA)                                                        \
     module->frame->add_const(DATA);                                            \
@@ -120,12 +120,14 @@ void BinExp::gen_code(ModuleObject *module) {
     right->gen_code(module);
 
     switch (op) {
-    case BinExp::Add:
-        PUSH_CODE(BinAdd);
+    case BinExp::Or:
+        PUSH_CODE(BinBool);
+        PUSH_CODE((opcode_t)BoolBinOp::Or);
         break;
 
-    case BinExp::Mul:
-        PUSH_CODE(BinMul);
+    case BinExp::And:
+        PUSH_CODE(BinBool);
+        PUSH_CODE((opcode_t)BoolBinOp::And);
         break;
 
     case BinExp::Equal:
@@ -151,6 +153,14 @@ void BinExp::gen_code(ModuleObject *module) {
     case BinExp::GreaterEqual:
         PUSH_CODE(BinCmp);
         PUSH_CODE((opcode_t)CmpOp::GreaterEqual);
+        break;
+
+    case BinExp::Add:
+        PUSH_CODE(BinAdd);
+        break;
+
+    case BinExp::Mul:
+        PUSH_CODE(BinMul);
         break;
 
     default:

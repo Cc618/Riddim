@@ -122,18 +122,18 @@ struct Const : public Exp {
 struct BinExp : public Exp {
     // TODO
     enum Op {
-        Add,
-        // Sub,
-        Mul,
-        // Div,
-        // Mod,
-        // And,
-        // Or,
+        Or,
+        And,
         Equal,
         Lesser,
         Greater,
         LesserEqual,
         GreaterEqual,
+        // Sub,
+        Add,
+        // Div,
+        // Mod,
+        Mul,
     };
 
     Op op;

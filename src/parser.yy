@@ -47,6 +47,9 @@
 %token
     EOF 0       "<<EOF>>"
     ASSIGN      "="
+    AND         "and"
+    OR          "or"
+    NOT         "not"
     EQ          "=="
     LE          "<="
     GE          ">="
@@ -80,7 +83,11 @@
 %nterm <ast::BinExp*> binexp
 %nterm stop
 
+// The lower it is declared, the sooner the token will be used
 %left "=";
+%left "or";
+%left "and";
+%left "not";
 %left "==" "<=" ">=" "<" ">";
 %left "+" "-";
 %left "*" "/" "%";
@@ -117,16 +124,19 @@ set: ID "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
     ;
 
 // TODO
-binexp : exp "+" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
-    // |  exp "-" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
-    |  exp "*" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
-    // |  exp "/" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
-    // |  exp "%" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
-    |  exp "==" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Equal, $3); }
-    |  exp "<=" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::LesserEqual, $3); }
-    |  exp ">=" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::GreaterEqual, $3); }
-    |  exp "<" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Lesser, $3); }
-    |  exp ">" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
+    // | exp "-" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
+    // | exp "/" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
+    // | exp "%" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
+
+binexp : exp "or" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
+    | exp "and" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::And, $3); }
+    | exp "==" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Equal, $3); }
+    | exp "<=" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::LesserEqual, $3); }
+    | exp ">=" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::GreaterEqual, $3); }
+    | exp "<" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Lesser, $3); }
+    | exp ">" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
+    | exp "+" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
+    | exp "*" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
     ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
