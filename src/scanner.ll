@@ -88,6 +88,11 @@ comment #.*$
     return yy::parser::make_STOP(loc);
 }
 
+\\\n            {
+    loc.lines(1);
+    loc.step();
+}
+
 "."             return yy::parser::make_DOT(loc);
 "+"             return yy::parser::make_PLUS(loc);
 "-"             return yy::parser::make_MINUS(loc);
