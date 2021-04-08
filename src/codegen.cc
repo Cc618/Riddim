@@ -96,6 +96,38 @@ void IfStmt::gen_code(ModuleObject *module) {
     code[ifaddr_offset] = code.size();
 }
 
+void WhileStmt::gen_code(ModuleObject *module) {
+    Stmt::gen_code(module);
+
+    auto &code = module->frame->code;
+
+    // The pseudo code of the generation
+    // start:
+    // condition is false ? goto finally
+    // body
+    // goto start
+    // finally:
+
+    // Generate condition
+    auto start_offset = code.size();
+    condition->gen_code(module);
+
+    // If false, goto finally
+    PUSH_CODE(JmpFalse);
+    auto finally_offset = code.size();
+    PUSH_CODE(Nop);
+
+    // If true, execute body
+    body->gen_code(module);
+
+    // Jump at the start section (loop again)
+    PUSH_CODE(Jmp);
+    PUSH_CODE(start_offset);
+
+    // Finally section
+    code[finally_offset] = code.size();
+}
+
 void ExpStmt::gen_code(ModuleObject *module) {
     Stmt::gen_code(module);
 

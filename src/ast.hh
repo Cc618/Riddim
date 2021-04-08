@@ -84,6 +84,20 @@ struct IfStmt : public Stmt {
     virtual void gen_code(ModuleObject *module) override;
 };
 
+// While statement
+struct WhileStmt : public Stmt {
+    Exp *condition;
+    Block *body;
+
+    WhileStmt(Exp *condition, Block *body);
+
+    virtual ~WhileStmt();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
 // A statement made of an expression
 struct ExpStmt : public Stmt {
     Exp *exp;
