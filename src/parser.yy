@@ -62,8 +62,8 @@
     MOD         "%"
     LPAREN      "("
     RPAREN      ")"
-    LBRACE      "{"
-    RBRACE      "}"
+    LCURLY      "{"
+    RCURLY      "}"
     DOT         "."
     STOP        "<LF>"
     IF          "if"
@@ -75,7 +75,8 @@
 %token <str_t> ID "id"
 %token <str_t> STR "string"
 %token <int> INT "int"
-%nterm <ast::Block*> block_content
+%nterm <ast::Block*> block
+%nterm <ast::Block*> stmtlist
 %nterm <ast::Stmt*> stmt
 %nterm <ast::ExpStmt*> expstmt
 %nterm <ast::Set*> set
@@ -86,6 +87,8 @@
 %nterm <ast::Id*> id
 %nterm <ast::Attr*> attr
 %nterm stop
+%nterm lcurly
+%nterm rcurly
 
 // The lower it is declared, the sooner the token will be used
 %left "=";
@@ -100,7 +103,7 @@
 %start module;
 
 %%
-module: block_content {
+module: stmtlist {
             driver.module = new AstModule(@$.begin.line);
             driver.module->content = $1;
         }
@@ -110,8 +113,12 @@ module: block_content {
         }
     ;
 
-block_content: %empty { $$ = new Block(@$.begin.line); }
-    | block_content stmt { $$ = $1; $$->stmts.push_back($2); }
+// TODO : { exp } is a block
+block: lcurly stmtlist rcurly stop { $$ = $2; }
+    ;
+
+stmtlist: %empty { $$ = new Block(@$.begin.line); }
+    | stmtlist stmt { $$ = $1; $$->stmts.push_back($2); }
     ;
 
 stmt: expstmt { $$ = $1; }
@@ -164,6 +171,16 @@ const: INT { $$ = new Const(@1.begin.line, $1); }
 
 stop: STOP
     | stop STOP
+    ;
+
+lcurly: LCURLY
+    | lcurly stop
+    | stop lcurly
+    ;
+
+rcurly: RCURLY
+    | rcurly stop
+    | stop rcurly
     ;
 %%
 
