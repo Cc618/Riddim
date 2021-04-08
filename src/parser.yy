@@ -58,6 +58,9 @@
     RBRACE      "}"
     STOP        "<LF>"
     IF          "if"
+    TRUE        "true"
+    FALSE       "false"
+    NULL        "null"
 ;
 
 %token <str_t> ID "id"
@@ -117,6 +120,9 @@ binexp : exp "+" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
     | STR { $$ = new Const(@1.begin.line, $1); }
+    | TRUE { $$ = new Const(@1.begin.line, Const::True); }
+    | FALSE { $$ = new Const(@1.begin.line, Const::False); }
+    | NULL { $$ = new Const(@1.begin.line, Const::Null); }
     ;
 
 stop: STOP

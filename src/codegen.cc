@@ -87,6 +87,18 @@ void Const::gen_code(ModuleObject *module) {
         const_val = new ::Str(get<str_t>(val));
         break;
 
+    case Const::Type::True:
+        const_val = istrue;
+        break;
+
+    case Const::Type::False:
+        const_val = isfalse;
+        break;
+
+    case Const::Type::Null:
+        const_val = null;
+        break;
+
     default:
         DEBUG_FATAL(module, fileline, "Const::gen_code : Unknown type");
     }

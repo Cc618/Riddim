@@ -99,6 +99,10 @@ comment #.*$
 "}"             return yy::parser::make_RBRACE(loc);
 "="             return yy::parser::make_EQ(loc);
 
+"true"          return yy::parser::make_TRUE(loc);
+"false"         return yy::parser::make_FALSE(loc);
+"null"          return yy::parser::make_NULL(loc);
+
 {int}           return make_INT(yytext, loc);
 {str}           return make_STR(yytext, loc);
 {id}            return yy::parser::make_ID(yytext, loc);

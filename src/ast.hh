@@ -101,10 +101,15 @@ struct Const : public Exp {
     enum Type {
         Int,
         Str,
+        True,
+        False,
+        Null,
     } type;
 
     std::variant<str_t, int_t> val;
 
+    // val is not set for the first constructor
+    Const(line_t fileline, Type type);
     Const(line_t fileline, int_t val);
     Const(line_t fileline, const str_t &val);
 
