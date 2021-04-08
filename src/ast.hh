@@ -115,12 +115,22 @@ struct Const : public Exp {
 
 // + * etc.
 struct BinExp : public Exp {
-    // '+' '*' etc.
-    char op;
+    // TODO
+    enum Op {
+        Add,
+        // Sub,
+        Mul,
+        // Div,
+        // Mod,
+        // And,
+        // Or,
+    };
+
+    Op op;
     Exp *left;
     Exp *right;
 
-    BinExp(line_t fileline, Exp *left, char op, Exp *right);
+    BinExp(line_t fileline, Exp *left, Op op, Exp *right);
 
     ~BinExp();
 

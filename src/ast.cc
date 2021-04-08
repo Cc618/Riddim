@@ -82,7 +82,7 @@ void Const::debug(int indent) {
     cout << str_indent(indent) << "Set(" << strval << ")" << endl;
 }
 
-BinExp::BinExp(line_t fileline, Exp *left, char op, Exp *right)
+BinExp::BinExp(line_t fileline, Exp *left, Op op, Exp *right)
     : Exp(fileline), left(left), op(op), right(right) {}
 
 BinExp::~BinExp() {
@@ -91,7 +91,7 @@ BinExp::~BinExp() {
 }
 
 void BinExp::debug(int indent) {
-    cout << str_indent(indent) << op << "(" << endl;
+    cout << str_indent(indent) << "BinExp<" << op << ">(" << endl;
     left->debug(indent + 1);
     right->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;

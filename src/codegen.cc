@@ -1,22 +1,24 @@
 #include "codegen.hh"
+#include "bool.hh"
 #include "debug.hh"
+#include "error.hh"
+#include "int.hh"
 #include "interpreter.hh"
 #include "module.hh"
-#include "int.hh"
 #include "null.hh"
-#include "bool.hh"
 #include "str.hh"
-#include "error.hh"
 #include <iostream>
 
 // TODO : Check nothrow on new
 // TODO : Gencode bool for error
 
 // TODO : Rm debug
-#define PUSH_CODE(DATA) module->frame->code.push_back(DATA); \
+#define PUSH_CODE(DATA)                                                        \
+    module->frame->code.push_back(DATA);                                       \
     cout << "> " << #DATA << endl;
 
-#define ADD_CONST(DATA) module->frame->add_const(DATA); \
+#define ADD_CONST(DATA)                                                        \
+    module->frame->add_const(DATA);                                            \
     // cout << "* " << #DATA << endl;
 
 using namespace OpCode;
@@ -43,7 +45,8 @@ void AstModule::gen_code(ModuleObject *module) {
 
 // --- Stmts ---
 void Block::gen_code(ModuleObject *module) {
-    for (auto stmt : stmts) stmt->gen_code(module);
+    for (auto stmt : stmts)
+        stmt->gen_code(module);
 }
 
 void ExpStmt::gen_code(ModuleObject *module) {
@@ -101,5 +104,19 @@ void Const::gen_code(ModuleObject *module) {
 }
 
 void BinExp::gen_code(ModuleObject *module) {
-    // TODO
+    left->gen_code(module);
+    right->gen_code(module);
+
+    switch (op) {
+    case BinExp::Add:
+        PUSH_CODE(BinAdd);
+        break;
+
+    case BinExp::Mul:
+        PUSH_CODE(BinMul);
+        break;
+
+    default:
+        DEBUG_FATAL(module, fileline, "BinExp::gen_code : Unknown op");
+    }
 }

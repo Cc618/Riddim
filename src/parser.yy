@@ -106,11 +106,12 @@ exp: const { $$ = $1; }
 set: ID "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
     ;
 
-binexp : exp "+" exp { $$ = new BinExp(@1.begin.line, $1, '+', $3); }
-    |  exp "-" exp { $$ = new BinExp(@1.begin.line, $1, '-', $3); }
-    |  exp "*" exp { $$ = new BinExp(@1.begin.line, $1, '*', $3); }
-    |  exp "/" exp { $$ = new BinExp(@1.begin.line, $1, '/', $3); }
-    |  exp "%" exp { $$ = new BinExp(@1.begin.line, $1, '%', $3); }
+// TODO
+binexp : exp "+" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
+    // |  exp "-" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
+    |  exp "*" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
+    // |  exp "/" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
+    // |  exp "%" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
     ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
