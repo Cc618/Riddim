@@ -118,6 +118,7 @@ struct Const : public Exp {
     virtual void gen_code(ModuleObject *module) override;
 };
 
+// Binary expression
 // + * etc.
 struct BinExp : public Exp {
     // TODO
@@ -143,6 +144,25 @@ struct BinExp : public Exp {
     BinExp(line_t fileline, Exp *left, Op op, Exp *right);
 
     ~BinExp();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
+// Unary expression
+// not etc.
+struct UnaExp : public Exp {
+    enum Op {
+        Not
+    };
+
+    Op op;
+    Exp *exp;
+
+    UnaExp(line_t fileline, Exp *exp, Op op);
+
+    ~UnaExp();
 
     virtual void debug(int indent = 0) override;
 

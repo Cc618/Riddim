@@ -62,8 +62,7 @@ void Set::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
-Const::Const(line_t fileline, Type type)
-    : Exp(fileline), type(type) {}
+Const::Const(line_t fileline, Type type) : Exp(fileline), type(type) {}
 
 Const::Const(line_t fileline, long long val)
     : Exp(fileline), type(Int), val(val) {}
@@ -97,6 +96,17 @@ void BinExp::debug(int indent) {
     cout << str_indent(indent) << "BinExp<" << op << ">(" << endl;
     left->debug(indent + 1);
     right->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
+UnaExp::UnaExp(line_t fileline, Exp *exp, Op op)
+    : Exp(fileline), exp(exp), op(op) {}
+
+UnaExp::~UnaExp() { delete exp; }
+
+void UnaExp::debug(int indent) {
+    cout << str_indent(indent) << "UnaExp<" << op << ">(" << endl;
+    exp->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 } // namespace ast

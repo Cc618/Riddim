@@ -81,6 +81,7 @@
 %nterm <ast::Exp*> exp
 %nterm <ast::Const*> const
 %nterm <ast::BinExp*> binexp
+%nterm <ast::UnaExp*> unaexp
 %nterm stop
 
 // The lower it is declared, the sooner the token will be used
@@ -117,6 +118,7 @@ expstmt: exp stop { $$ = new ExpStmt($1); }
 
 exp: const { $$ = $1; }
     | binexp { $$ = $1; }
+    | unaexp { $$ = $1; }
     | set { $$ = $1; }
     ;
 
@@ -137,6 +139,9 @@ binexp : exp "or" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
     | exp ">" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
     | exp "+" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
     | exp "*" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
+    ;
+
+unaexp: "not" exp { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
     ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }

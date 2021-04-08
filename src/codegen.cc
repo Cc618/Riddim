@@ -167,3 +167,16 @@ void BinExp::gen_code(ModuleObject *module) {
         DEBUG_FATAL(module, fileline, "BinExp::gen_code : Unknown op");
     }
 }
+
+void UnaExp::gen_code(ModuleObject *module) {
+    exp->gen_code(module);
+
+    switch (op) {
+    case UnaExp::Not:
+        PUSH_CODE(UnaNot);
+        break;
+
+    default:
+        DEBUG_FATAL(module, fileline, "UnaExp::gen_code : Unknown op");
+    }
+}
