@@ -4,8 +4,10 @@ It is possible to define some definitions to display those messages.
 
 ## Flags (defines)
 These definitions are added to the CMakeLists.txt file in the src directory.
+If the type is C, the constant is a C definition (#define), otherwise it is a CMake variable with value 1.
 
-| Name | Description |
-| ---- | ----------- |
-| DEBUG | Debug mode. |
-| DEBUG_ERRORS | Show when an error is thrown and display its type. |
+| Name | C / CMake | Description |
+| ---- | --------- | ----------- |
+| DEBUG | C | Debug mode. |
+| DEBUG_ERRORS | C | Show when an error is thrown and display its type. |
+| DEBUG_PARSER_CONFLICTS | CMake | Prints shift / reduce or reduce / reduce conflicts of the parser at compile time |
