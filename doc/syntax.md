@@ -2,13 +2,13 @@
 ## Tokens
 ### Comment
 Comments are line comments starting with # :
-```
+```py
 # I am a comment
 ```
 
 ### Statement ending
 All statements are terminated by a line feed.
-```
+```py
 a = 10
 ```
 
@@ -29,13 +29,13 @@ Integers can be written in multiple ways :
 
 ### String
 Strings can be declared by single or double quotes :
-```
+```py
 a = 'Hello'
 b = "World"
 ```
 
 Some characters can be escaped :
-```
+```py
 a = 'Hello\tworld.\nI\'m coding in Riddim !'
 ```
 
