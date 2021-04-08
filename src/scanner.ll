@@ -65,7 +65,7 @@ using namespace ast;
 
 id    [a-zA-Z_][a-zA-Z_0-9]*
 int   -?[0-9]+
-str   '(\\.|[^'])*'
+str   ('(\\.|[^'])*')|(\"(\\.|[^\"])*\")
 blank [ \t\r]
 comment #.*$
 
