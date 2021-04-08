@@ -120,6 +120,7 @@ exp: const { $$ = $1; }
     | binexp { $$ = $1; }
     | unaexp { $$ = $1; }
     | set { $$ = $1; }
+    | ID { $$ = new Id(@1.begin.line, $1); }
     ;
 
 set: ID "=" exp { $$ = new Set(@1.begin.line, $1, $3); }

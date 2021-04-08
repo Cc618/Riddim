@@ -75,6 +75,22 @@ void Set::gen_code(ModuleObject *module) {
     PUSH_CODE(off_id);
 }
 
+void Id::gen_code(ModuleObject *module) {
+    Object *name = new Str(id);
+
+    if (!name) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    PUSH_CODE(LoadVar);
+
+    auto name_offset = ADD_CONST(name);
+    PUSH_CODE(name_offset);
+}
+
+
 void Const::gen_code(ModuleObject *module) {
     Object *const_val;
 

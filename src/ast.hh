@@ -81,6 +81,7 @@ struct Exp : public ASTNode {
     using ASTNode::ASTNode;
 };
 
+// TODO : Not id, can be indexing...
 // Assignment
 struct Set : public Exp {
     str_t id;
@@ -90,6 +91,20 @@ struct Set : public Exp {
         : Exp(fileline), id(id), exp(exp) {}
 
     virtual ~Set();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
+// Variable
+struct Id : public Exp {
+    str_t id;
+
+    Id(line_t fileline, const str_t &id)
+        : Exp(fileline), id(id) {}
+
+    virtual ~Id() = default;
 
     virtual void debug(int indent = 0) override;
 
