@@ -52,14 +52,19 @@ void Driver::error(int begin_line, int begin_col, int end_line, int end_col,
 
 #define parse yy::parser
 parse::symbol_type Driver::next_token() {
-
     static bool ended = false;
+    static bool notstarted = true;
     static parse::location_type eof_pos;
 
     if (ended) {
         ended = false;
+        notstarted = true;
 
         return parse::symbol_type(parse::token::TOK_EOF, eof_pos);
+    } else if (notstarted) {
+        notstarted = false;
+
+        return parse::symbol_type(parse::token::TOK_STOP, parse::location_type());
     }
 
     // Fetch next token

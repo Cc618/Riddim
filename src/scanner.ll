@@ -108,6 +108,10 @@ comment #.*$
 "or"            return yy::parser::make_OR(loc);
 "not"           return yy::parser::make_NOT(loc);
 
+"if"            return yy::parser::make_IF(loc);
+"elif"          return yy::parser::make_ELIF(loc);
+"else"          return yy::parser::make_ELSE(loc);
+
 "true"          return yy::parser::make_TRUE(loc);
 "false"         return yy::parser::make_FALSE(loc);
 "null"          return yy::parser::make_NULL(loc);
@@ -115,8 +119,10 @@ comment #.*$
 {int}           return make_INT(yytext, loc);
 {str}           return make_STR(yytext, loc);
 {id}            return yy::parser::make_ID(yytext, loc);
+
 .               {
     lexer_error(loc, str_t("Invalid token: ") + yytext);
 }
+
 <<EOF>>         return yy::parser::make_EOF(loc);
 %%

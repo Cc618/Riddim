@@ -67,6 +67,8 @@
     DOT         "."
     STOP        "<LF>"
     IF          "if"
+    ELIF        "elif"
+    ELSE        "else"
     TRUE        "true"
     FALSE       "false"
     NULL        "null"
@@ -78,6 +80,7 @@
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 %nterm <ast::Stmt*> stmt
+%nterm <ast::IfStmt*> ifstmt
 %nterm <ast::ExpStmt*> expstmt
 %nterm <ast::Set*> set
 %nterm <ast::Exp*> exp
@@ -103,18 +106,15 @@
 %start module;
 
 %%
-module: stmtlist {
+module: stop stmtlist {
             driver.module = new AstModule(@$.begin.line);
-            driver.module->content = $1;
-        }
-    | stop {
-            // Empty
-            driver.module = new AstModule(@$.begin.line);
+            driver.module->content = $2;
         }
     ;
 
 // TODO : { exp } is a block
-block: lcurly stmtlist rcurly stop { $$ = $2; }
+// TODO : Stops
+block: lcurly stmtlist rcurly { $$ = $2; }
     ;
 
 stmtlist: %empty { $$ = new Block(@$.begin.line); }
@@ -122,6 +122,10 @@ stmtlist: %empty { $$ = new Block(@$.begin.line); }
     ;
 
 stmt: expstmt { $$ = $1; }
+    | ifstmt { $$ = $1; }
+    ;
+
+ifstmt: "if" exp block { $$ = new IfStmt($2, $3); }
     ;
 
 expstmt: exp stop { $$ = new ExpStmt($1); }
@@ -173,14 +177,14 @@ stop: STOP
     | stop STOP
     ;
 
+// TODO : Stops
 lcurly: LCURLY
-    | lcurly stop
-    | stop lcurly
+    | lcurly STOP
     ;
 
+// TODO : Stops
 rcurly: RCURLY
-    | rcurly stop
-    | stop rcurly
+    | rcurly STOP
     ;
 %%
 

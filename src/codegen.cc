@@ -53,6 +53,18 @@ void Stmt::gen_code(ModuleObject *module) {
     module->frame->mark_line(fileline);
 }
 
+void IfStmt::gen_code(ModuleObject *module) {
+    Stmt::gen_code(module);
+
+    // Generate condition
+    condition->gen_code(module);
+
+    // TODO : If false
+
+    // Remove result
+    PUSH_CODE(Pop);
+}
+
 void ExpStmt::gen_code(ModuleObject *module) {
     Stmt::gen_code(module);
 

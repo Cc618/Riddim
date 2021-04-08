@@ -69,6 +69,21 @@ struct Stmt : public ASTNode {
     virtual void gen_code(ModuleObject *module) override;
 };
 
+// If statement (with else etc.)
+struct IfStmt : public Stmt {
+    Exp *condition;
+    Block *body;
+    // TODO : Else
+
+    IfStmt(Exp *condition, Block *body);
+
+    virtual ~IfStmt();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
 // A statement made of an expression
 struct ExpStmt : public Stmt {
     Exp *exp;
