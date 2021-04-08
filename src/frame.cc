@@ -110,12 +110,19 @@ size_t Frame::lineof(size_t offset) {
         const auto &[off, delta] = *it;
 
         if (off <= offset)
-            l += delta;
+            l = delta;
         else
             break;
     }
 
     return l;
+}
+
+void Frame::mark_line(size_t lineno) {
+    if (line_deltas.empty())
+        start_lineno = lineno;
+
+    line_deltas.push_back({ code.size(), lineno });
 }
 
 size_t Frame::add_const(Object *cst) {

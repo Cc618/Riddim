@@ -49,7 +49,13 @@ void Block::gen_code(ModuleObject *module) {
         stmt->gen_code(module);
 }
 
+void Stmt::gen_code(ModuleObject *module) {
+    module->frame->mark_line(fileline);
+}
+
 void ExpStmt::gen_code(ModuleObject *module) {
+    Stmt::gen_code(module);
+
     // Generate expression
     exp->gen_code(module);
 

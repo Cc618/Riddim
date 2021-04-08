@@ -53,8 +53,7 @@ void interpret(Frame *frame) {
         DISPATCH_ERROR;                                                        \
     }
 
-// TODO : Restore stack
-#define DISPATCH_ERROR return;
+#define DISPATCH_ERROR goto error_thrown;
 
 // Check stack length and throw on error
 #define CHECK_STACKLEN(LEN)                                                    \
@@ -414,4 +413,14 @@ void interpret(Frame *frame) {
                   ip, code.size());
         return;
     }
+
+    // Should not be executed (only Return and errors return)
+    return;
+
+    // When an error is thrown within the switch
+    error_thrown:;
+        // TODO : Restore stack
+        debug_info("IP : " + to_string(ip) + ", line of error : " + to_string(frame->lineof(ip)));
+
+        return;
 }

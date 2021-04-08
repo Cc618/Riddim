@@ -61,6 +61,12 @@ struct Block : public ASTNode {
 
 struct Stmt : public ASTNode {
     using ASTNode::ASTNode;
+
+    // Don't forget to call this for inherited objects (at the top of the
+    // function)
+    // This updates line deltas in frame to output line information
+    // during error
+    virtual void gen_code(ModuleObject *module) override;
 };
 
 // A statement made of an expression
@@ -116,8 +122,7 @@ struct Attr : public Exp {
 struct Id : public Exp {
     str_t id;
 
-    Id(line_t fileline, const str_t &id)
-        : Exp(fileline), id(id) {}
+    Id(line_t fileline, const str_t &id) : Exp(fileline), id(id) {}
 
     virtual ~Id() = default;
 
@@ -183,9 +188,7 @@ struct BinExp : public Exp {
 // Unary expression
 // not etc.
 struct UnaExp : public Exp {
-    enum Op {
-        Not
-    };
+    enum Op { Not };
 
     Op op;
     Exp *exp;

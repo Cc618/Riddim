@@ -28,8 +28,8 @@ struct Frame : public Object {
     str_t filename;
 
     // Ordered array where &[off, delta] = line_deltas[i] indicates that the
-    // instruction at offset off starts delta lines after the previous
-    // instruction
+    // instruction at offset off starts delta lines after start_lineno
+    // (not after the previous instruction)
     std::vector<std::pair<size_t, size_t>> line_deltas;
 
     // It is like the getitem function
@@ -41,6 +41,9 @@ struct Frame : public Object {
 
     // Returns the line number of the instruction at offset 'offset' within code
     size_t lineof(size_t offset);
+
+    // Updates line_deltas
+    void mark_line(size_t lineno);
 
     // Pushes a new constant to consts and returns its index
     size_t add_const(Object *cst);
