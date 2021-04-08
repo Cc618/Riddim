@@ -69,6 +69,20 @@ struct Stmt : public ASTNode {
     virtual void gen_code(ModuleObject *module) override;
 };
 
+// While statement
+struct WhileStmt : public Stmt {
+    Exp *condition;
+    Block *body;
+
+    WhileStmt(Exp *condition, Block *body);
+
+    virtual ~WhileStmt();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
 // If statement (with else etc.)
 struct IfStmt : public Stmt {
     Exp *condition;
@@ -84,14 +98,13 @@ struct IfStmt : public Stmt {
     virtual void gen_code(ModuleObject *module) override;
 };
 
-// While statement
-struct WhileStmt : public Stmt {
-    Exp *condition;
-    Block *body;
+// Prints its expression
+struct PrintStmt : public Stmt {
+    Exp *exp;
 
-    WhileStmt(Exp *condition, Block *body);
+    PrintStmt(Exp *exp);
 
-    virtual ~WhileStmt();
+    virtual ~PrintStmt();
 
     virtual void debug(int indent = 0) override;
 

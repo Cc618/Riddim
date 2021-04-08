@@ -128,6 +128,18 @@ void WhileStmt::gen_code(ModuleObject *module) {
     code[finally_offset] = code.size();
 }
 
+void PrintStmt::gen_code(ModuleObject *module) {
+    Stmt::gen_code(module);
+
+    // TODO : Print multiple
+
+    // Generate expression
+    exp->gen_code(module);
+
+    // Print it
+    PUSH_CODE(Print);
+}
+
 void ExpStmt::gen_code(ModuleObject *module) {
     Stmt::gen_code(module);
 

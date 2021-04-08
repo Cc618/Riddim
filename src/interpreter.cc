@@ -3,6 +3,7 @@
 #include "debug.hh"
 #include "error.hh"
 #include "program.hh"
+#include "builtins.hh"
 
 // TODO
 #include <iostream>
@@ -280,7 +281,20 @@ void interpret(Frame *frame) {
 
         case Pop: {
             CHECK_STACKLEN(1);
+
             obj_stack.pop_back();
+
+            NEXT(0);
+        }
+
+        case Print: {
+            CHECK_STACKLEN(1);
+
+            // TODO : Print multiple
+            POPTOP(o);
+
+            debug_print(o);
+
             NEXT(0);
         }
 

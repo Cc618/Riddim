@@ -231,28 +231,7 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 #include "interpreter.hh"
 #include "null.hh"
 #include "function.hh"
-
-void print(Object *o) {
-    if (!o) {
-        cout << "nullptr" << endl;
-        return;
-    }
-
-    auto result = o->str();
-
-    // TODO : Errors
-    if (!result) {
-        cout << "Can't find @str method" << endl;
-        return;
-    }
-    if (result->type != Str::class_type) {
-        cout << "Invalid @str type" << endl;
-        return;
-    }
-
-    // TODO : Type of result error
-    cout << reinterpret_cast<Str *>(result)->data << endl;
-}
+#include "builtins.hh"
 
 using namespace OpCode;
 
@@ -335,12 +314,12 @@ void testObjects(Module *module) {
     }
 
     cout << "* End frame : " << endl;
-    print(frame);
+    debug_print(frame);
 
     cout << "* End stack :" << endl;
     int stki = Program::instance->obj_stack.size();
     for (auto o : Program::instance->obj_stack) {
         cout << --stki << ". ";
-        print(o);
+        debug_print(o);
     }
 }

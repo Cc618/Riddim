@@ -113,6 +113,8 @@ comment #.*$
 "else"          return yy::parser::make_ELSE(loc);
 "while"         return yy::parser::make_WHILE(loc);
 
+"print"         return yy::parser::make_PRINT(loc);
+
 "true"          return yy::parser::make_TRUE(loc);
 "false"         return yy::parser::make_FALSE(loc);
 "null"          return yy::parser::make_NULL(loc);

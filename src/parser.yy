@@ -70,6 +70,7 @@
     ELIF        "elif"
     ELSE        "else"
     WHILE       "while"
+    PRINT       "print"
     TRUE        "true"
     FALSE       "false"
     NULL        "null"
@@ -81,8 +82,9 @@
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 %nterm <ast::Stmt*> stmt
-%nterm <ast::IfStmt*> ifstmt ifstmt_elif
 %nterm <ast::WhileStmt*> whilestmt
+%nterm <ast::PrintStmt*> printstmt
+%nterm <ast::IfStmt*> ifstmt ifstmt_elif
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ExpStmt*> expstmt
 %nterm <ast::Set*> set
@@ -126,6 +128,7 @@ stmtlist: %empty { $$ = new Block(@$.begin.line); }
 stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     | whilestmt { $$ = $1; }
+    | printstmt { $$ = $1; }
     ;
 
 ifstmt: "if" exp block ifstmt_elif {
@@ -154,6 +157,9 @@ ifstmt_else: %empty { $$ = nullptr; }
     | "else" block {
         $$ = $2;
     }
+    ;
+
+printstmt: "print" exp stop { $$ = new PrintStmt($2); }
     ;
 
 whilestmt: "while" exp block { $$ = new WhileStmt($2, $3); }

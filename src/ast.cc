@@ -75,6 +75,17 @@ void IfStmt::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+PrintStmt::PrintStmt(Exp *exp) : Stmt(exp->fileline), exp(exp) {}
+
+PrintStmt::~PrintStmt() { delete exp; }
+
+void PrintStmt::debug(int indent) {
+    cout << str_indent(indent) << "Print(" << endl;
+    cout << str_indent(indent + 1) << "line=" << fileline << endl;
+    exp->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 ExpStmt::ExpStmt(Exp *exp) : Stmt(exp->fileline), exp(exp) {}
 
 ExpStmt::~ExpStmt() { delete exp; }

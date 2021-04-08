@@ -56,6 +56,9 @@ enum OpCode : opcode_t {
     // Pops the TOS
     // - pop 1
     Pop,
+    // Prints the expression of the TOS
+    // - pop 1
+    Print,
     // Returns from the function (or exit the module)
     Return,
     // TOS.name = TOS1
