@@ -128,6 +128,31 @@ void BinExp::gen_code(ModuleObject *module) {
         PUSH_CODE(BinMul);
         break;
 
+    case BinExp::Equal:
+        PUSH_CODE(BinCmp);
+        PUSH_CODE((opcode_t)CmpOp::Equal);
+        break;
+
+    case BinExp::Lesser:
+        PUSH_CODE(BinCmp);
+        PUSH_CODE((opcode_t)CmpOp::Lesser);
+        break;
+
+    case BinExp::Greater:
+        PUSH_CODE(BinCmp);
+        PUSH_CODE((opcode_t)CmpOp::Greater);
+        break;
+
+    case BinExp::LesserEqual:
+        PUSH_CODE(BinCmp);
+        PUSH_CODE((opcode_t)CmpOp::LesserEqual);
+        break;
+
+    case BinExp::GreaterEqual:
+        PUSH_CODE(BinCmp);
+        PUSH_CODE((opcode_t)CmpOp::GreaterEqual);
+        break;
+
     default:
         DEBUG_FATAL(module, fileline, "BinExp::gen_code : Unknown op");
     }

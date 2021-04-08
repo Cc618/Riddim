@@ -46,7 +46,12 @@
 
 %token
     EOF 0       "<<EOF>>"
-    EQ          "="
+    ASSIGN      "="
+    EQ          "=="
+    LE          "<="
+    GE          ">="
+    LESSER      "<"
+    GREATER     ">"
     MINUS       "-"
     PLUS        "+"
     WILDCARD    "*"
@@ -76,6 +81,7 @@
 %nterm stop
 
 %left "=";
+%left "==" "<=" ">=" "<" ">";
 %left "+" "-";
 %left "*" "/" "%";
 
@@ -116,6 +122,11 @@ binexp : exp "+" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
     |  exp "*" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
     // |  exp "/" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
     // |  exp "%" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
+    |  exp "==" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Equal, $3); }
+    |  exp "<=" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::LesserEqual, $3); }
+    |  exp ">=" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::GreaterEqual, $3); }
+    |  exp "<" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Lesser, $3); }
+    |  exp ">" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
     ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }

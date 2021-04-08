@@ -97,7 +97,12 @@ comment #.*$
 ")"             return yy::parser::make_RPAREN(loc);
 "{"             return yy::parser::make_LBRACE(loc);
 "}"             return yy::parser::make_RBRACE(loc);
-"="             return yy::parser::make_EQ(loc);
+"="             return yy::parser::make_ASSIGN(loc);
+"=="            return yy::parser::make_EQ(loc);
+">="            return yy::parser::make_GE(loc);
+"<="            return yy::parser::make_LE(loc);
+">"             return yy::parser::make_GREATER(loc);
+"<"             return yy::parser::make_LESSER(loc);
 
 "true"          return yy::parser::make_TRUE(loc);
 "false"         return yy::parser::make_FALSE(loc);

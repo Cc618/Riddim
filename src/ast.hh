@@ -129,6 +129,11 @@ struct BinExp : public Exp {
         // Mod,
         // And,
         // Or,
+        Equal,
+        Lesser,
+        Greater,
+        LesserEqual,
+        GreaterEqual,
     };
 
     Op op;
