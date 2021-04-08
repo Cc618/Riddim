@@ -116,7 +116,8 @@ stmt: expstmt { $$ = $1; }
 expstmt: exp stop { $$ = new ExpStmt($1); }
     ;
 
-exp: const { $$ = $1; }
+exp: "(" exp ")" { $$ = $2; }
+    | const { $$ = $1; }
     | binexp { $$ = $1; }
     | unaexp { $$ = $1; }
     | set { $$ = $1; }
