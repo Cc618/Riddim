@@ -23,8 +23,46 @@ parser::symbol_type make_STR(const str_t &s,
                              const parser::location_type &loc) {
     errno = 0;
 
-    // TODO : Parse escapes
+    str_t result;
+
+    // Maximum s.size() - 2 characters
+    result.reserve(s.size() - 2);
+
+    for (size_t i = 1; i < s.size() - 1; ++i) {
+        // Parse escapes
+        if (s[i] == '\\') {
+            ++i;
+
+            switch (s[i])
+            {
+            case '\'':
+                result += '\'';
+                break;
+
+            case '"':
+                result += '"';
+                break;
+
+            case '\\':
+                result += '\\';
+                break;
+
+            case 'n':
+                result += '\n';
+                break;
+
+            case 't':
+                result += '\t';
+                break;
+
+            default:
+                // Error (just output the raw escape)
+                result += '\\';
+                result += s[i];
+            }
+        } else result += s[i];
+    }
 
     // Remove leading and trailing quotes
-    return parser::make_STR(s.substr(1, s.size() - 2), loc);
+    return parser::make_STR(result, loc);
 }
