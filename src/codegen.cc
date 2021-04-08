@@ -58,9 +58,18 @@ void IfStmt::gen_code(ModuleObject *module) {
 
     auto &code = module->frame->code;
 
+    // The pseudo code of the generation
+    // false ? goto true
+    // false body
+    // goto finally
+    // true:
+    // true body
+    // finally:
+
     // Generate condition
     condition->gen_code(module);
 
+    // If false, goto elseaddr
     PUSH_CODE(JmpFalse);
 
     // Save offset to change the nop (placeholder) to the address
@@ -69,25 +78,22 @@ void IfStmt::gen_code(ModuleObject *module) {
     PUSH_CODE(Nop);
 
     // If true, go here
-    body->gen_code(module);
+    ifbody->gen_code(module);
 
-    // Jump after the else
+    // Jump after the else (finally section)
     PUSH_CODE(Jmp);
     auto ifaddr_offset = code.size();
     PUSH_CODE(Nop);
 
-    // TODO : Generate else
-
-    // Update placeholders
+    // If false, go here (else)
     code[elseaddr_offset] = code.size();
-    // TODO
-    code[ifaddr_offset] = code.size();
 
-    // if
-    // ibody -> if true
-    // else
-    // ebody -> if false
-    // -> finally
+    if (elsebody) {
+        elsebody->gen_code(module);
+    }
+
+    // Jump there at the end (finally)
+    code[ifaddr_offset] = code.size();
 }
 
 void ExpStmt::gen_code(ModuleObject *module) {

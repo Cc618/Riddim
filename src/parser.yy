@@ -125,6 +125,7 @@ stmt: expstmt { $$ = $1; }
     ;
 
 ifstmt: "if" exp block { $$ = new IfStmt($2, $3); }
+    | ifstmt "else" block { $$ = $1; $1->elsebody = $3; }
     ;
 
 expstmt: exp stop { $$ = new ExpStmt($1); }

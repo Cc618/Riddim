@@ -72,10 +72,10 @@ struct Stmt : public ASTNode {
 // If statement (with else etc.)
 struct IfStmt : public Stmt {
     Exp *condition;
-    Block *body;
-    // TODO : Else
+    Block *ifbody;
+    Block *elsebody = nullptr;
 
-    IfStmt(Exp *condition, Block *body);
+    IfStmt(Exp *condition, Block *ifbody);
 
     virtual ~IfStmt();
 

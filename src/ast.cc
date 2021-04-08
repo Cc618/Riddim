@@ -40,16 +40,22 @@ void Block::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
-IfStmt::IfStmt(Exp *condition, Block *body)
-    : Stmt(condition->fileline), condition(condition), body(body) {}
+IfStmt::IfStmt(Exp *condition, Block *ifbody)
+    : Stmt(condition->fileline), condition(condition), ifbody(ifbody) {}
 
-IfStmt::~IfStmt() { delete condition; delete body; }
+IfStmt::~IfStmt() {
+    delete condition;
+    delete ifbody;
+
+    if (elsebody) delete elsebody;
+}
 
 void IfStmt::debug(int indent) {
     cout << str_indent(indent) << "IfStmt(" << endl;
     cout << str_indent(indent + 1) << "line=" << fileline << endl;
     condition->debug(indent + 1);
-    body->debug(indent + 1);
+    ifbody->debug(indent + 1);
+    if (elsebody) elsebody->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 
