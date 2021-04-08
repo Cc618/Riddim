@@ -72,6 +72,7 @@
 %nterm <ast::BinExp*> binexp
 %nterm stop
 
+%left "=";
 %left "+" "-";
 %left "*" "/" "%";
 
