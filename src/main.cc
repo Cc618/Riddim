@@ -10,22 +10,6 @@
 
 using namespace std;
 
-// // TODO : Multiple modules (files)
-// // Interprets the ast in the driver
-// int interpret_ast(Driver &driver) {
-//     // Take ownership of the ast
-//     auto module = driver.module;
-//     driver.module = nullptr;
-
-//     // Generate code
-//     // module->debug();
-
-//     // Delete ast (all nodes)
-//     delete module;
-
-//     // Interpret code
-// }
-
 Module *gen_module(Driver &driver) {
     // Take ownership of the ast
     auto ast = driver.module;
@@ -83,7 +67,7 @@ int main(int argc, char *argv[]) {
 
     try {
         // TODO
-        driver.module->debug();
+        // driver.module->debug();
 
         // Generate code from the AST
         auto module = gen_module(driver);

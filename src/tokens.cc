@@ -1,4 +1,6 @@
 #include "tokens.hh"
+#include <climits>
+#include <algorithm>
 
 using namespace std;
 using namespace yy;
@@ -10,11 +12,13 @@ void lexer_error(const yy::parser::location_type &loc, const std::string &msg) {
 
 parser::symbol_type make_INT(const str_t &s,
                              const parser::location_type &loc) {
-    errno = 0;
-    long n = strtol(s.c_str(), NULL, 10);
+    string new_s = s;
+    remove_if(new_s.begin(), new_s.end(), [](char c) { return c == '\'' || c == '_'; });
+    long n = strtol(new_s.c_str(), NULL, 0);
 
-    if (errno == ERANGE)
+    if (errno == ERANGE) {
         lexer_error(loc, str_t("Invalid integer: ") + s);
+    }
 
     return parser::make_INT(n, loc);
 }

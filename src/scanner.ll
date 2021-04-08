@@ -63,11 +63,16 @@ using namespace ast;
 
 %option noyywrap nounput noinput batch
 
-id    [a-zA-Z_][a-zA-Z_0-9]*
-int   -?[0-9]+
-str   ('(\\.|[^'])*')|(\"(\\.|[^\"])*\")
-blank [ \t\r]
-comment #.*$
+id          [a-zA-Z_][a-zA-Z_0-9]*
+int_dec     [0-9][0-9_']*
+int_hex     0[xX][0-9a-fA-F][0-9a-fA-F_']*
+int_bin     0[bB][01][01_']*
+int         -?(({int_dec})|({int_hex})|({int_bin}))
+str_single  '(\\.|[^'])*'
+str_double  \"(\\.|[^\"])*\"
+str         ({str_single})|({str_double})
+blank       [ \t\r]
+comment     #.*$
 
 %{
     // Every time a pattern is matched

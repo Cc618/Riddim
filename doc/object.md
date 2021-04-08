@@ -21,7 +21,6 @@
 
 ### Default methods
 <!-- TODO : Abstract -->
-<!-- TODO : Update if str changed etc... -->
 | Name | Description | Expected Return Type | Example |
 | ---- | ----------- | -------------------- | ------- |
 | @add | + operator | | 2 + 2 |
