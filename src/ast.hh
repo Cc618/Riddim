@@ -97,6 +97,21 @@ struct Set : public Exp {
     virtual void gen_code(ModuleObject *module) override;
 };
 
+// Attribute reference (exp.id)
+struct Attr : public Exp {
+    Exp *exp;
+    str_t attr;
+
+    Attr(line_t fileline, Exp *exp, const str_t &attr)
+        : Exp(fileline), exp(exp), attr(attr) {}
+
+    virtual ~Attr();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
 // Variable
 struct Id : public Exp {
     str_t id;

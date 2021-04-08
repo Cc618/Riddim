@@ -81,7 +81,41 @@ void Str::init_class_type() {
         return result;
     };
 
-    // @index
+    // @getattr
+    class_type->fn_getattr = [](Object *self, Object *name) -> Object * {
+        auto me = reinterpret_cast<Str *>(self);
+
+        if (name->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("Str.@getattr", name->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(name)->data;
+
+        Object *result = nullptr;
+
+        // Length
+        if (attr == "len") {
+            result = new (nothrow) Int(me->data.size());
+        } else {
+            // No such attribute
+            THROW_ATTR_ERROR(Str::class_type, attr);
+
+            return nullptr;
+        }
+
+        // Check whether the object has been allocated
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
+    // @getitem
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         Str *me = reinterpret_cast<Str *>(self);
 

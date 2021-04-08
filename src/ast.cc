@@ -56,8 +56,16 @@ Set::~Set() { delete exp; }
 
 void Set::debug(int indent) {
     cout << str_indent(indent) << "Set(" << endl;
-    cout << str_indent(indent + 1) << "line=" << fileline << endl;
     cout << str_indent(indent + 1) << "id=" << id << endl;
+    exp->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
+Attr::~Attr() { delete exp; }
+
+void Attr::debug(int indent) {
+    cout << str_indent(indent) << "Attr(" << endl;
+    cout << str_indent(indent + 1) << "attr=" << attr << endl;
     exp->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }

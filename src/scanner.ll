@@ -88,6 +88,7 @@ comment #.*$
     return yy::parser::make_STOP(loc);
 }
 
+"."             return yy::parser::make_DOT(loc);
 "+"             return yy::parser::make_PLUS(loc);
 "-"             return yy::parser::make_MINUS(loc);
 "*"             return yy::parser::make_WILDCARD(loc);

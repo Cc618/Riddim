@@ -75,6 +75,23 @@ void Set::gen_code(ModuleObject *module) {
     PUSH_CODE(off_id);
 }
 
+void Attr::gen_code(ModuleObject *module) {
+    exp->gen_code(module);
+
+    PUSH_CODE(LoadAttr);
+
+    auto const_attr = new (nothrow) Str(attr);
+
+    if (!const_attr) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    auto off_attr = ADD_CONST(const_attr);
+    PUSH_CODE(off_attr);
+}
+
 void Id::gen_code(ModuleObject *module) {
     Object *name = new Str(id);
 

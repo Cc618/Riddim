@@ -64,6 +64,7 @@
     RPAREN      ")"
     LBRACE      "{"
     RBRACE      "}"
+    DOT         "."
     STOP        "<LF>"
     IF          "if"
     TRUE        "true"
@@ -82,6 +83,8 @@
 %nterm <ast::Const*> const
 %nterm <ast::BinExp*> binexp
 %nterm <ast::UnaExp*> unaexp
+%nterm <ast::Id*> id
+%nterm <ast::Attr*> attr
 %nterm stop
 
 // The lower it is declared, the sooner the token will be used
@@ -92,6 +95,7 @@
 %left "==" "<=" ">=" "<" ">";
 %left "+" "-";
 %left "*" "/" "%";
+%left ".";
 
 %start module;
 
@@ -121,7 +125,8 @@ exp: "(" exp ")" { $$ = $2; }
     | binexp { $$ = $1; }
     | unaexp { $$ = $1; }
     | set { $$ = $1; }
-    | ID { $$ = new Id(@1.begin.line, $1); }
+    | id { $$ = $1; }
+    | attr { $$ = $1; }
     ;
 
 set: ID "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
@@ -145,6 +150,10 @@ binexp : exp "or" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
 
 unaexp: "not" exp { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
     ;
+
+attr: exp "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
+
+id: ID { $$ = new Id(@1.begin.line, $1); }
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
     | STR { $$ = new Const(@1.begin.line, $1); }
