@@ -274,6 +274,10 @@ void interpret(Frame *frame) {
             NEXT(1);
         }
 
+        case Nop: {
+            NEXT(0);
+        }
+
         case Pop: {
             CHECK_STACKLEN(1);
             obj_stack.pop_back();

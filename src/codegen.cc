@@ -56,13 +56,38 @@ void Stmt::gen_code(ModuleObject *module) {
 void IfStmt::gen_code(ModuleObject *module) {
     Stmt::gen_code(module);
 
+    auto &code = module->frame->code;
+
     // Generate condition
     condition->gen_code(module);
 
-    // TODO : If false
+    PUSH_CODE(JmpFalse);
 
-    // Remove result
-    PUSH_CODE(Pop);
+    // Save offset to change the nop (placeholder) to the address
+    // of the else section
+    auto elseaddr_offset = code.size();
+    PUSH_CODE(Nop);
+
+    // If true, go here
+    body->gen_code(module);
+
+    // Jump after the else
+    PUSH_CODE(Jmp);
+    auto ifaddr_offset = code.size();
+    PUSH_CODE(Nop);
+
+    // TODO : Generate else
+
+    // Update placeholders
+    code[elseaddr_offset] = code.size();
+    // TODO
+    code[ifaddr_offset] = code.size();
+
+    // if
+    // ibody -> if true
+    // else
+    // ebody -> if false
+    // -> finally
 }
 
 void ExpStmt::gen_code(ModuleObject *module) {

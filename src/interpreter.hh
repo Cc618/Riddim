@@ -51,6 +51,8 @@ enum OpCode : opcode_t {
     // - id_offset : Offset of the name of the symbol (constant)
     // - push 1
     LoadVar,
+    // No operation, used usually as a placeholder during code generation
+    Nop,
     // Pops the TOS
     // - pop 1
     Pop,

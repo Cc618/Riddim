@@ -112,8 +112,7 @@ module: stop stmtlist {
         }
     ;
 
-// TODO : { exp } is a block
-// TODO : Stops
+// TODO : { exp } is a block or exp (-> ternary) ?
 block: lcurly stmtlist rcurly { $$ = $2; }
     ;
 
@@ -177,12 +176,10 @@ stop: STOP
     | stop STOP
     ;
 
-// TODO : Stops
 lcurly: LCURLY
     | lcurly STOP
     ;
 
-// TODO : Stops
 rcurly: RCURLY
     | rcurly STOP
     ;
