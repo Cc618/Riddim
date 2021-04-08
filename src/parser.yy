@@ -94,9 +94,7 @@
 %nterm <ast::UnaExp*> unaexp
 %nterm <ast::Id*> id
 %nterm <ast::Attr*> attr
-%nterm stop
-%nterm lcurly
-%nterm rcurly
+%nterm stop lcurly rcurly lparen rparen
 
 // The lower it is declared, the sooner the token will be used
 %left "=";
@@ -168,7 +166,7 @@ whilestmt: "while" exp block { $$ = new WhileStmt($2, $3); }
 expstmt: exp stop { $$ = new ExpStmt($1); }
     ;
 
-exp: "(" exp ")" { $$ = $2; }
+exp: lparen exp rparen { $$ = $2; }
     | const { $$ = $1; }
     | binexp { $$ = $1; }
     | unaexp { $$ = $1; }
@@ -220,6 +218,14 @@ lcurly: LCURLY
 
 rcurly: RCURLY
     | rcurly STOP
+    ;
+
+lparen: LPAREN
+    | lparen STOP
+    ;
+
+rparen: RPAREN
+    | STOP rparen
     ;
 %%
 
