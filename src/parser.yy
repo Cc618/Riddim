@@ -100,6 +100,9 @@
 %nterm <ast::Id*> id
 %nterm <ast::Indexing*> indexing
 %nterm <ast::Attr*> attr
+%nterm <ast::Target*> target
+%nterm <ast::IdTarget*> idtarget
+%nterm <ast::IndexingTarget*> indexingtarget
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 
 // The lower it is declared, the sooner the token will be used
@@ -191,7 +194,17 @@ exp: lparen exp rparen { $$ = $2; }
     | vec { $$ = $1; }
     ;
 
-set: ID "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
+set: target "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
+    ;
+
+target: idtarget { $$ = $1; }
+    | indexingtarget { $$ = $1; }
+    ;
+
+indexingtarget: indexing { $$ = new IndexingTarget($1); }
+    ;
+
+idtarget: ID { $$ = new IdTarget(@1.begin.line, $1); }
     ;
 
 vec: lbrack exp_list rbrack { $$ = new VecLiteral(@1.begin.line, $2); }

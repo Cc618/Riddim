@@ -104,16 +104,22 @@ void ExpStmt::debug(int indent) {
 }
 
 // --- Exps ---
+Set::Set(line_t fileline, Target *target, Exp *exp)
+    : Exp(fileline), target(target), exp(exp) {}
+
 Set::~Set() { delete exp; }
 
 void Set::debug(int indent) {
     cout << str_indent(indent) << "Set(" << endl;
-    cout << str_indent(indent + 1) << "id=" << id << endl;
+    target->debug(indent + 1);
     exp->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 
-VecLiteral::~VecLiteral() { for (auto exp : exps) delete exp; }
+VecLiteral::~VecLiteral() {
+    for (auto exp : exps)
+        delete exp;
+}
 
 void VecLiteral::debug(int indent) {
     cout << str_indent(indent) << "VecLiteral(" << endl;
@@ -131,7 +137,10 @@ void Attr::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
-Indexing::~Indexing() { delete container; delete index; }
+Indexing::~Indexing() {
+    delete container;
+    delete index;
+}
 
 void Indexing::debug(int indent) {
     cout << str_indent(indent) << "Indexing(" << endl;
@@ -192,6 +201,17 @@ UnaExp::~UnaExp() { delete exp; }
 void UnaExp::debug(int indent) {
     cout << str_indent(indent) << "UnaExp<" << op << ">(" << endl;
     exp->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
+// --- Targets ---
+void IdTarget::debug(int indent) {
+    cout << str_indent(indent) << "IdTarget(" << id << ")" << endl;
+}
+
+void IndexingTarget::debug(int indent) {
+    cout << str_indent(indent) << "IndexingTarget(" << endl;
+    indexing->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 } // namespace ast

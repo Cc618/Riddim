@@ -157,19 +157,7 @@ void ExpStmt::gen_code(ModuleObject *module) {
 // --- Exps ---
 void Set::gen_code(ModuleObject *module) {
     exp->gen_code(module);
-
-    PUSH_CODE(StoreVar);
-
-    auto const_id = new (nothrow) Str(id);
-
-    if (!const_id) {
-        THROW_MEMORY_ERROR;
-
-        return;
-    }
-
-    auto off_id = ADD_CONST(const_id);
-    PUSH_CODE(off_id);
+    target->gen_code(module);
 }
 
 void VecLiteral::gen_code(ModuleObject *module) {
@@ -322,4 +310,28 @@ void UnaExp::gen_code(ModuleObject *module) {
     default:
         DEBUG_FATAL(module, fileline, "UnaExp::gen_code : Unknown op");
     }
+}
+
+// --- Targets ---
+void IdTarget::gen_code(ModuleObject *module) {
+    PUSH_CODE(StoreVar);
+
+    auto const_id = new (nothrow) Str(id);
+
+    if (!const_id) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    auto off_id = ADD_CONST(const_id);
+    PUSH_CODE(off_id);
+}
+
+void IndexingTarget::gen_code(ModuleObject *module) {
+    // Note that indexing->gen_code is not used since it is useful
+    // to load not to store the value
+    indexing->container->gen_code(module);
+    indexing->index->gen_code(module);
+    PUSH_CODE(StoreIndex);
 }

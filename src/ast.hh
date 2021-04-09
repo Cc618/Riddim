@@ -131,12 +131,12 @@ struct Exp : public ASTNode {
 
 // TODO : Not id, can be indexing...
 // Assignment
+struct Target;
 struct Set : public Exp {
-    str_t id;
+    Target *target;
     Exp *exp;
 
-    Set(line_t fileline, const str_t &id, Exp *exp)
-        : Exp(fileline), id(id), exp(exp) {}
+    Set(line_t fileline, Target *target, Exp *exp);
 
     virtual ~Set();
 
@@ -269,6 +269,38 @@ struct UnaExp : public Exp {
     UnaExp(line_t fileline, Exp *exp, Op op);
 
     ~UnaExp();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
+// --- Targets ---
+// A target is an lvalue, it can be set in an assignment (Set)
+// In gen_code, the value of the TOS is stored in this target but
+// remains the TOS
+struct Target : public ASTNode {
+    Target(line_t fileline) : ASTNode(fileline) {}
+};
+
+// Target using an identifier
+// a = ...
+struct IdTarget : public Target {
+    str_t id;
+
+    IdTarget(line_t fileline, const str_t &id) : Target(fileline), id(id) {}
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
+// Target using an index assignment
+// container[index] = ...
+struct IndexingTarget : public Target {
+    Indexing *indexing;
+
+    IndexingTarget(Indexing *indexing) : Target(indexing->fileline), indexing(indexing) {}
 
     virtual void debug(int indent = 0) override;
 
