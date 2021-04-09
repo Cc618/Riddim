@@ -100,9 +100,9 @@ struct IfStmt : public Stmt {
 
 // Prints its expression
 struct PrintStmt : public Stmt {
-    Exp *exp;
+    std::vector<Exp *> exps;
 
-    PrintStmt(Exp *exp);
+    PrintStmt(line_t fileline);
 
     virtual ~PrintStmt();
 

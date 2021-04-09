@@ -14,6 +14,8 @@ typedef std::unordered_map<size_t, std::pair<Object *, Object *>> hmap_t;
 // (up to O(N))
 struct HashMap : public Object {
     static Type *class_type;
+    // An hashmap without objects, do not modify
+    static HashMap *empty;
 
     hmap_t data;
 
@@ -31,6 +33,7 @@ struct HashMap : public Object {
 
     // Can throw
     static void init_class_type();
+    static void init_class_objects();
 };
 
 // An object that can contains attributes

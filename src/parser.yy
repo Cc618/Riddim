@@ -65,6 +65,7 @@
     LCURLY      "{"
     RCURLY      "}"
     DOT         "."
+    COMMA       ","
     STOP        "<LF>"
     IF          "if"
     ELIF        "elif"
@@ -83,7 +84,7 @@
 %nterm <ast::Block*> stmtlist
 %nterm <ast::Stmt*> stmt
 %nterm <ast::WhileStmt*> whilestmt
-%nterm <ast::PrintStmt*> printstmt
+%nterm <ast::PrintStmt*> printstmt printstmt_begin
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ExpStmt*> expstmt
@@ -157,7 +158,14 @@ ifstmt_else: %empty { $$ = nullptr; }
     }
     ;
 
-printstmt: "print" exp stop { $$ = new PrintStmt($2); }
+printstmt: printstmt_begin stop { $$ = $1; }
+    ;
+
+printstmt_begin: "print" exp {
+        $$ = new PrintStmt(@1.begin.line);
+        $$->exps.push_back($2);
+    }
+    | printstmt_begin "," exp { $$ = $1; $$->exps.push_back($3); }
     ;
 
 whilestmt: "while" exp block { $$ = new WhileStmt($2, $3); }

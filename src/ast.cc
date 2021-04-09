@@ -63,7 +63,8 @@ IfStmt::~IfStmt() {
     delete condition;
     delete ifbody;
 
-    if (elsebody) delete elsebody;
+    if (elsebody)
+        delete elsebody;
 }
 
 void IfStmt::debug(int indent) {
@@ -71,18 +72,23 @@ void IfStmt::debug(int indent) {
     cout << str_indent(indent + 1) << "line=" << fileline << endl;
     condition->debug(indent + 1);
     ifbody->debug(indent + 1);
-    if (elsebody) elsebody->debug(indent + 1);
+    if (elsebody)
+        elsebody->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 
-PrintStmt::PrintStmt(Exp *exp) : Stmt(exp->fileline), exp(exp) {}
+PrintStmt::PrintStmt(line_t fileline) : Stmt(fileline) {}
 
-PrintStmt::~PrintStmt() { delete exp; }
+PrintStmt::~PrintStmt() {
+    for (auto exp : exps)
+        delete exp;
+}
 
 void PrintStmt::debug(int indent) {
     cout << str_indent(indent) << "Print(" << endl;
     cout << str_indent(indent + 1) << "line=" << fileline << endl;
-    exp->debug(indent + 1);
+    for (auto exp : exps)
+        exp->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 

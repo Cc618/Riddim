@@ -10,6 +10,7 @@ using namespace std;
 
 // --- HashMap ---
 Type *HashMap::class_type = nullptr;
+HashMap *HashMap::empty = nullptr;
 
 HashMap::HashMap(const hmap_t &data)
     : Object(HashMap::class_type), data(data) {}
@@ -145,6 +146,16 @@ void HashMap::init_class_type() {
 
         return null;
     };
+}
+
+void HashMap::init_class_objects() {
+    empty = new (nothrow) HashMap();
+
+    if (!empty) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
 }
 
 Object *HashMap::get(Object *key) {

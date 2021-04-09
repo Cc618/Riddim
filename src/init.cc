@@ -79,6 +79,11 @@ static void init_objects() {
 
     if (on_error())
         return;
+
+    HashMap::init_class_objects();
+
+    if (on_error())
+        return;
 }
 
 // --- End ---

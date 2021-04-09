@@ -53,10 +53,16 @@ enum OpCode : opcode_t {
     LoadVar,
     // No operation, used usually as a placeholder during code generation
     Nop,
+    // Packs 'count' variables of the stack in a Vec
+    // - count : Number of variables to pack
+    // - pop 'count'
+    // - push a Vec of all variables to pack
+    // * Element are stored in a LIFO order
+    Pack,
     // Pops the TOS
     // - pop 1
     Pop,
-    // Prints the expression of the TOS
+    // Prints the TOS (a Vec containing args of the print function)
     // - pop 1
     Print,
     // Returns from the function (or exit the module)

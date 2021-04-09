@@ -15,7 +15,7 @@
 // TODO : Rm debug
 #define PUSH_CODE(DATA)                                                        \
     module->frame->code.push_back(DATA);                                       \
-    // cout << "> " << #DATA << endl;
+    cout << "> " << #DATA << " (" << (DATA) << ")" << endl;
 
 #define ADD_CONST(DATA)                                                        \
     module->frame->add_const(DATA);                                            \
@@ -128,13 +128,17 @@ void WhileStmt::gen_code(ModuleObject *module) {
     code[finally_offset] = code.size();
 }
 
+// TODO : As function ?
 void PrintStmt::gen_code(ModuleObject *module) {
     Stmt::gen_code(module);
 
-    // TODO : Print multiple
+    // Generate expressions
+    for (auto exp : exps)
+        exp->gen_code(module);
 
-    // Generate expression
-    exp->gen_code(module);
+    // Make args
+    PUSH_CODE(Pack);
+    PUSH_CODE(exps.size());
 
     // Print it
     PUSH_CODE(Print);

@@ -49,6 +49,9 @@ Object *print(Object *args, Object *kwargs) {
     auto args_data = reinterpret_cast<Vec *>(args)->data;
     auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
 
+    // cout << "PRINT" << endl;
+    // cout << args_data[0]->type->name << endl;
+
     if (!args_data.empty()) {
         // Dispatch errors
         if (!print_object(args_data[0]))

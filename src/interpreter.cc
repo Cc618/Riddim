@@ -1,15 +1,28 @@
 #include "interpreter.hh"
 #include "bool.hh"
+#include "builtins.hh"
 #include "debug.hh"
 #include "error.hh"
+#include "map.hh"
 #include "program.hh"
-#include "builtins.hh"
 
 // TODO
 #include <iostream>
 
 using namespace std;
 using namespace OpCode;
+
+// Prints the stack
+// TODO : Rm
+void debug_stack(const vector<Object*> &obj_stack) {
+    cout << "Stack (" << obj_stack.size() << ") :" << endl;
+    int staki = obj_stack.size();
+    for (auto o : obj_stack) {
+        cout << --staki << ". "
+             << (o ? reinterpret_cast<Str *>(o->str())->data : "nullptr")
+             << endl;
+    }
+}
 
 // Pops the top of the stack and returns its value
 inline Object *pop_top() {
@@ -279,6 +292,29 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case Pack: {
+            auto count = ARG(1);
+
+            CHECK_STACKLEN(count);
+
+            // Pick objects
+            vector<Object *> data(obj_stack.end() - count, obj_stack.end());
+            obj_stack.resize(obj_stack.size() - count);
+
+            // Build result
+            auto result = new (nothrow) Vec(data);
+
+            if (!result) {
+                THROW_MEMORY_ERROR;
+
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(1);
+        }
+
         case Pop: {
             CHECK_STACKLEN(1);
 
@@ -287,13 +323,15 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        // TODO : Use call expression
         case Print: {
             CHECK_STACKLEN(1);
 
-            // TODO : Print multiple
             POPTOP(o);
 
-            debug_print(o);
+            if (!print(o, HashMap::empty)) {
+                DISPATCH_ERROR;
+            }
 
             NEXT(0);
         }
@@ -409,14 +447,7 @@ void interpret(Frame *frame) {
 
         // TODO : Rm
         case DebugStack: {
-            cout << "Stack (" << obj_stack.size() << ") :" << endl;
-            int staki = obj_stack.size();
-            for (auto o : obj_stack) {
-                cout << --staki << ". "
-                     << (o ? reinterpret_cast<Str *>(o->str())->data
-                           : "nullptr")
-                     << endl;
-            }
+            debug_stack(obj_stack);
 
             NEXT(0);
         }
@@ -435,10 +466,11 @@ void interpret(Frame *frame) {
     // Should not be executed (only Return and errors return)
     return;
 
-    // When an error is thrown within the switch
-    error_thrown:;
-        // TODO : Restore stack
-        debug_info("IP : " + to_string(ip) + ", line of error : " + to_string(frame->lineof(ip)));
+// When an error is thrown within the switch
+error_thrown:;
+    // TODO : Restore stack
+    debug_info("IP : " + to_string(ip) +
+               ", line of error : " + to_string(frame->lineof(ip)));
 
-        return;
+    return;
 }
