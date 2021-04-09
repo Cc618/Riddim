@@ -98,6 +98,7 @@
 %nterm <ast::BinExp*> binexp
 %nterm <ast::UnaExp*> unaexp
 %nterm <ast::Id*> id
+%nterm <ast::Indexing*> indexing
 %nterm <ast::Attr*> attr
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 
@@ -110,6 +111,7 @@
 %left "+" "-";
 %left "*" "/" "%";
 %left ".";
+%left "[";
 
 %start module;
 
@@ -184,6 +186,7 @@ exp: lparen exp rparen { $$ = $2; }
     | unaexp { $$ = $1; }
     | set { $$ = $1; }
     | id { $$ = $1; }
+    | indexing { $$ = $1; }
     | attr { $$ = $1; }
     | vec { $$ = $1; }
     ;
@@ -224,6 +227,9 @@ unaexp: "not" exp { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
     ;
 
 attr: exp "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
+
+indexing: exp "[" exp "]" { $$ = new Indexing(@1.begin.line, $1, $3); }
+    ;
 
 id: ID { $$ = new Id(@1.begin.line, $1); }
 

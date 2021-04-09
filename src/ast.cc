@@ -131,6 +131,17 @@ void Attr::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+Indexing::~Indexing() { delete container; delete index; }
+
+void Indexing::debug(int indent) {
+    cout << str_indent(indent) << "Indexing(" << endl;
+    cout << str_indent(indent + 1) << "container=";
+    container->debug(indent + 1);
+    cout << str_indent(indent + 1) << "index=";
+    index->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 void Id::debug(int indent) {
     cout << str_indent(indent) << "Id(" << id << ")" << endl;
 }

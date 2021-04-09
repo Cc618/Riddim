@@ -173,6 +173,21 @@ struct Attr : public Exp {
     virtual void gen_code(ModuleObject *module) override;
 };
 
+// Get item (a[42])
+struct Indexing : public Exp {
+    Exp *container;
+    Exp *index;
+
+    Indexing(line_t fileline, Exp *container, Exp *index)
+        : Exp(fileline), container(container), index(index) {}
+
+    virtual ~Indexing();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
 // Variable
 struct Id : public Exp {
     str_t id;

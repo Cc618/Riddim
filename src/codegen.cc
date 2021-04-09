@@ -197,6 +197,12 @@ void Attr::gen_code(ModuleObject *module) {
     PUSH_CODE(off_attr);
 }
 
+void Indexing::gen_code(ModuleObject *module) {
+    container->gen_code(module);
+    index->gen_code(module);
+    PUSH_CODE(LoadIndex);
+}
+
 void Id::gen_code(ModuleObject *module) {
     Object *name = new Str(id);
 
@@ -211,7 +217,6 @@ void Id::gen_code(ModuleObject *module) {
     auto name_offset = ADD_CONST(name);
     PUSH_CODE(name_offset);
 }
-
 
 void Const::gen_code(ModuleObject *module) {
     Object *const_val;
