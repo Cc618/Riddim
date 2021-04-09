@@ -82,7 +82,7 @@
 
 %token <str_t> ID "id"
 %token <str_t> STR "string"
-%token <int> INT "int"
+%token <int_t> INT "int"
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 %nterm <ast::Stmt*> stmt

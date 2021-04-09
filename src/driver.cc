@@ -7,29 +7,34 @@ using namespace std;
 
 extern FILE *yyin;
 
-Driver::Driver() {}
+Driver *Driver::instance = nullptr;
+
+Driver::Driver() { instance = this; }
 
 int Driver::parse(const string &f) {
     // TODO : Convert to absolute path
     file = f;
     location.initialize(&file);
 
-    try {
-        scan_begin();
+    scan_begin();
+    if (!error_occured) {
+        try {
+            yy::parser parse(*this);
+            int res = parse();
 
-        yy::parser parse(*this);
-        int res = parse();
+            // Parsing OK
+            if (res == 0 && !error_occured)
+                module->filename = f;
 
-        // Parsing OK
-        if (res == 0)
-            module->filename = f;
+            scan_end();
 
-        scan_end();
+            return error_occured ? -1 : res;
+        } catch (LexerError e) {
+            scan_end();
 
-        return res;
-    } catch (LexerError e) {
-        parse_error(file, e.begin_line, e.begin_column, e.end_line,
-                    e.end_column, e.msg);
+            parse_error(file, e.begin_line, e.begin_column, e.end_line,
+                        e.end_column, e.msg);
+        }
     }
 
     return -1;
@@ -39,7 +44,10 @@ void Driver::scan_begin() {
     if (!(yyin = fopen(file.c_str(), "r"))) {
         cerr << "Error : Cannot open " << file << " : " << strerror(errno)
              << endl;
-        exit(EXIT_FAILURE);
+
+        error_occured = true;
+    } else {
+        error_occured = false;
     }
 }
 
@@ -48,6 +56,8 @@ void Driver::scan_end() { fclose(yyin); }
 void Driver::error(int begin_line, int begin_col, int end_line, int end_col,
                    const str_t &msg) {
     parse_error(file, begin_line, begin_col, end_line, end_col, msg);
+
+    error_occured = true;
 }
 
 #define parse yy::parser

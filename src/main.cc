@@ -22,12 +22,17 @@ Module *gen_module(Driver &driver) {
     // Empty
     if (!ast) return module;
 
-    gen_module_code(ast, module);
-
-    // TODO : Handle errors
+    bool success = gen_module_code(ast, module);
 
     // Delete all ast nodes
     delete ast;
+
+    // Errors
+    if (!success) {
+        delete module;
+
+        return nullptr;
+    }
 
     return module;
 }
@@ -62,7 +67,7 @@ int main(int argc, char *argv[]) {
     if (res) {
         cerr << "Error : Failed to parse file " << file << endl;
 
-        return res;
+        goto on_parse_error;
     }
 
     try {
@@ -99,6 +104,7 @@ int main(int argc, char *argv[]) {
         res = -1;
     }
 
+on_parse_error:;
     end_program();
 
     return res;

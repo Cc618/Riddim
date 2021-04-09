@@ -13,6 +13,7 @@ str_t string_repr(const str_t &s) {
 void parse_error(const str_t &filename, int begin_line, int begin_col, int end_line, int end_col, const str_t &msg) {
     cerr << filename << ":" << begin_line << ":" << begin_col << ": Error : " << msg << endl;
 
+    // Read line
     ifstream f(filename);
     if (f.is_open()) {
         str_t line;

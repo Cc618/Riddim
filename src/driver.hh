@@ -13,6 +13,9 @@ YY_DECL;
 
 class Driver {
 public:
+    static Driver *instance;
+
+public:
     Driver();
 
 public:
@@ -34,6 +37,9 @@ public:
     // Current file being parsed
     std::string file;
     yy::location location;
+
+    // Token / rule error
+    bool error_occured = false;
 
     ast::AstModule *module;
 };

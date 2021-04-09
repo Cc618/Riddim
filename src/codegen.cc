@@ -9,9 +9,6 @@
 #include "str.hh"
 #include <iostream>
 
-// TODO : Check nothrow on new
-// TODO : Gencode bool for error
-
 // TODO : Rm debug
 #define PUSH_CODE(DATA)                                                        \
     module->frame->code.push_back(DATA);                                       \
@@ -29,8 +26,16 @@ using namespace ast;
     debug_err((MOD)->filepath + ":" + to_string(LOC) + " : " + (MSG));         \
     return
 
-void gen_module_code(AstModule *ast, ModuleObject *module) {
-    ast->gen_code(module);
+bool gen_module_code(AstModule *ast, ModuleObject *module) {
+    try {
+        ast->gen_code(module);
+
+        if (on_error()) return false;
+
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
 void AstModule::gen_code(ModuleObject *module) {
@@ -200,7 +205,7 @@ void Indexing::gen_code(ModuleObject *module) {
 }
 
 void Id::gen_code(ModuleObject *module) {
-    Object *name = new Str(id);
+    Object *name = new (nothrow) Str(id);
 
     if (!name) {
         THROW_MEMORY_ERROR;
@@ -219,11 +224,11 @@ void Const::gen_code(ModuleObject *module) {
 
     switch (type) {
     case Const::Type::Int:
-        const_val = new ::Int(get<int_t>(val));
+        const_val = new (nothrow) ::Int(get<int_t>(val));
         break;
 
     case Const::Type::Str:
-        const_val = new ::Str(get<str_t>(val));
+        const_val = new (nothrow) ::Str(get<str_t>(val));
         break;
 
     case Const::Type::True:
