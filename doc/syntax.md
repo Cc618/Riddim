@@ -1,5 +1,5 @@
 # Syntax
-## Literals
+## General
 ### Comment
 Comments are line comments starting with # :
 ```py
@@ -12,6 +12,13 @@ All statements are terminated by a line feed.
 a = 10
 ```
 
+You can escape line feeds using a backslash (\\) :
+```py
+a = 5 + \
+    5
+```
+
+## Literals
 ### Integer
 Integers can be written in multiple ways :
 ```
@@ -67,6 +74,14 @@ a variable is null like in this example :
 ```
 # Error if a is not a Bool
 if a {
+    # ...
+}
+```
+
+### While
+While is the most simple loop :
+```
+while condition {
     # ...
 }
 ```
