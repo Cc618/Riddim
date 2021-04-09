@@ -109,6 +109,8 @@ comment     #.*$
 ")"             return yy::parser::make_RPAREN(loc);
 "{"             return yy::parser::make_LCURLY(loc);
 "}"             return yy::parser::make_RCURLY(loc);
+"["             return yy::parser::make_LBRACK(loc);
+"]"             return yy::parser::make_RBRACK(loc);
 "=="            return yy::parser::make_EQ(loc);
 "="             return yy::parser::make_ASSIGN(loc);
 ">="            return yy::parser::make_GE(loc);

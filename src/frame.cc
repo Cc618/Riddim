@@ -121,6 +121,8 @@ size_t Frame::lineof(size_t offset) {
 void Frame::mark_line(size_t lineno) {
     if (line_deltas.empty())
         start_lineno = lineno;
+    // Optimize if same instruction
+    else if (line_deltas.back().first == code.size()) line_deltas.pop_back();
 
     line_deltas.push_back({ code.size(), lineno });
 }

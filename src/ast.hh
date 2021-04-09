@@ -174,6 +174,9 @@ struct Id : public Exp {
 };
 
 // Literal
+struct Const;
+typedef std::variant<str_t, int_t> const_val_t;
+
 struct Const : public Exp {
     enum Type {
         Int,
@@ -183,10 +186,10 @@ struct Const : public Exp {
         Null,
     } type;
 
-    std::variant<str_t, int_t> val;
+    const_val_t val;
 
     // val is not set for the first constructor
-    Const(line_t fileline, Type type);
+    Const(line_t fileline, Type type, const const_val_t &val = const_val_t());
     Const(line_t fileline, int_t val);
     Const(line_t fileline, const str_t &val);
 

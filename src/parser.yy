@@ -64,6 +64,8 @@
     RPAREN      ")"
     LCURLY      "{"
     RCURLY      "}"
+    LBRACK      "["
+    RBRACK      "]"
     DOT         "."
     COMMA       ","
     STOP        "<LF>"
@@ -91,11 +93,13 @@
 %nterm <ast::Set*> set
 %nterm <ast::Exp*> exp
 %nterm <ast::Const*> const
+%nterm <std::vector<ast::Exp*>> vec
+%nterm <std::vector<ast::Exp*>> exp_list exp_list_filled
 %nterm <ast::BinExp*> binexp
 %nterm <ast::UnaExp*> unaexp
 %nterm <ast::Id*> id
 %nterm <ast::Attr*> attr
-%nterm stop lcurly rcurly lparen rparen
+%nterm stop lcurly rcurly lparen rparen lbrack rbrack
 
 // The lower it is declared, the sooner the token will be used
 %left "=";
@@ -181,9 +185,23 @@ exp: lparen exp rparen { $$ = $2; }
     | set { $$ = $1; }
     | id { $$ = $1; }
     | attr { $$ = $1; }
+    | vec { /* TODO $$ = $1; */ }
     ;
 
 set: ID "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
+    ;
+
+vec: lbrack exp_list rbrack { std::cout << "Built vec" << std::endl; /* TODO $$ = new Const(@1.begin.line, Const::Type::Vec, $2); */ }
+    ;
+
+exp_list: %empty { $$ = {}; }
+    | exp_list_filled { $$ = $1; }
+    | exp_list_filled "," { $$ = $1; }
+    ;
+
+exp_list_filled: exp { $$ = { $1 }; }
+    | exp_list_filled "," exp { $$ = $1; $$.push_back($3); }
+    | exp_list_filled "," stop exp { $$ = $1; $$.push_back($4); }
     ;
 
 // TODO
@@ -226,6 +244,13 @@ lcurly: LCURLY
 
 rcurly: RCURLY
     | rcurly STOP
+    ;
+
+lbrack: LBRACK
+    | lbrack STOP
+    ;
+
+rbrack: RBRACK
     ;
 
 lparen: LPAREN

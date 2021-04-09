@@ -126,7 +126,8 @@ void Id::debug(int indent) {
     cout << str_indent(indent) << "Id(" << id << ")" << endl;
 }
 
-Const::Const(line_t fileline, Type type) : Exp(fileline), type(type) {}
+Const::Const(line_t fileline, Type type, const const_val_t &val)
+    : Exp(fileline), type(type), val(val) {}
 
 Const::Const(line_t fileline, long long val)
     : Exp(fileline), type(Int), val(val) {}
