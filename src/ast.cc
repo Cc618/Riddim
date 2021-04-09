@@ -101,8 +101,7 @@ void Set::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
-PrintExp::PrintExp(line_t fileline, const std::vector<Exp *> &exps)
-    : Exp(fileline), exps(exps) {}
+PrintExp::PrintExp(line_t fileline, const std::vector<Exp *> &exps) : Exp(fileline), exps(exps) {}
 
 PrintExp::~PrintExp() {
     for (auto exp : exps)
@@ -212,6 +211,12 @@ void IdTarget::debug(int indent) {
 void IndexingTarget::debug(int indent) {
     cout << str_indent(indent) << "IndexingTarget(" << endl;
     indexing->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
+void AttrTarget::debug(int indent) {
+    cout << str_indent(indent) << "AttrTarget(" << endl;
+    attr->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 } // namespace ast

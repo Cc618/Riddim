@@ -306,4 +306,17 @@ struct IndexingTarget : public Target {
 
     virtual void gen_code(ModuleObject *module) override;
 };
+
+// Target using an attribute assignment
+// exp.attr = ...
+struct AttrTarget : public Target {
+    Attr *attr;
+
+    AttrTarget(Attr *attr)
+        : Target(attr->fileline), attr(attr) {}
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
 } // namespace ast

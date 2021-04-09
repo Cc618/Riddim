@@ -333,3 +333,23 @@ void IndexingTarget::gen_code(ModuleObject *module) {
     indexing->index->gen_code(module);
     PUSH_CODE(StoreIndex);
 }
+
+void AttrTarget::gen_code(ModuleObject *module) {
+    // Note that attr->gen_code is not used since it is useful
+    // to load not to store the value
+    // Load object
+    attr->exp->gen_code(module);
+
+    // Add attribute name constant
+    auto const_attr = new (nothrow) Str(attr->attr);
+
+    if (!const_attr) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    PUSH_CODE(StoreAttr);
+    auto off_attr = ADD_CONST(const_attr);
+    PUSH_CODE(off_attr);
+}

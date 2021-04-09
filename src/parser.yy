@@ -103,6 +103,7 @@
 %nterm <ast::Target*> target
 %nterm <ast::IdTarget*> idtarget
 %nterm <ast::IndexingTarget*> indexingtarget
+%nterm <ast::AttrTarget*> attrtarget
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 
 // The lower it is declared, the sooner the token will be used
@@ -191,9 +192,13 @@ set: target "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
 
 target: idtarget { $$ = $1; }
     | indexingtarget { $$ = $1; }
+    | attrtarget { $$ = $1; }
     ;
 
 indexingtarget: indexing { $$ = new IndexingTarget($1); }
+    ;
+
+attrtarget: attr { $$ = new AttrTarget($1); }
     ;
 
 idtarget: ID { $$ = new IdTarget(@1.begin.line, $1); }
@@ -272,7 +277,7 @@ lparen: LPAREN
     ;
 
 rparen: RPAREN
-    | STOP rparen
+    // | STOP rparen
     ;
 %%
 
