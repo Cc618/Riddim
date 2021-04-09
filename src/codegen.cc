@@ -15,7 +15,7 @@
 // TODO : Rm debug
 #define PUSH_CODE(DATA)                                                        \
     module->frame->code.push_back(DATA);                                       \
-    cout << "> " << #DATA << " (" << (DATA) << ")" << endl;
+    // cout << "> " << #DATA << " (" << (DATA) << ")" << endl;
 
 #define ADD_CONST(DATA)                                                        \
     module->frame->add_const(DATA);                                            \
@@ -170,6 +170,14 @@ void Set::gen_code(ModuleObject *module) {
 
     auto off_id = ADD_CONST(const_id);
     PUSH_CODE(off_id);
+}
+
+void VecLiteral::gen_code(ModuleObject *module) {
+    for (auto exp : exps)
+        exp->gen_code(module);
+
+    PUSH_CODE(Pack);
+    PUSH_CODE(exps.size());
 }
 
 void Attr::gen_code(ModuleObject *module) {

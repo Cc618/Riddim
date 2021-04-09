@@ -305,8 +305,9 @@ void testObjects(Module *module) {
     // };
 
     // --- Runtime ---
+    cout << endl << endl;
     interpret(frame);
-    cout << "---" << endl;
+    cout << endl << endl;
 
     if (on_error()) {
         cerr << ">>> On error !!!" << endl;

@@ -113,6 +113,15 @@ void Set::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+VecLiteral::~VecLiteral() { for (auto exp : exps) delete exp; }
+
+void VecLiteral::debug(int indent) {
+    cout << str_indent(indent) << "VecLiteral(" << endl;
+    for (auto exp : exps)
+        exp->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 Attr::~Attr() { delete exp; }
 
 void Attr::debug(int indent) {

@@ -145,6 +145,19 @@ struct Set : public Exp {
     virtual void gen_code(ModuleObject *module) override;
 };
 
+struct VecLiteral : public Exp {
+    std::vector<Exp *> exps;
+
+    VecLiteral(line_t fileline, const std::vector<Exp *> &exps)
+        : Exp(fileline), exps(exps) {}
+
+    virtual ~VecLiteral();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
 // Attribute reference (exp.id)
 struct Attr : public Exp {
     Exp *exp;
@@ -173,10 +186,10 @@ struct Id : public Exp {
     virtual void gen_code(ModuleObject *module) override;
 };
 
-// Literal
 struct Const;
 typedef std::variant<str_t, int_t> const_val_t;
 
+// Atom literal
 struct Const : public Exp {
     enum Type {
         Int,

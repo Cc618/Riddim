@@ -93,7 +93,7 @@
 %nterm <ast::Set*> set
 %nterm <ast::Exp*> exp
 %nterm <ast::Const*> const
-%nterm <std::vector<ast::Exp*>> vec
+%nterm <ast::VecLiteral*> vec
 %nterm <std::vector<ast::Exp*>> exp_list exp_list_filled
 %nterm <ast::BinExp*> binexp
 %nterm <ast::UnaExp*> unaexp
@@ -185,13 +185,13 @@ exp: lparen exp rparen { $$ = $2; }
     | set { $$ = $1; }
     | id { $$ = $1; }
     | attr { $$ = $1; }
-    | vec { /* TODO $$ = $1; */ }
+    | vec { $$ = $1; }
     ;
 
 set: ID "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
     ;
 
-vec: lbrack exp_list rbrack { std::cout << "Built vec" << std::endl; /* TODO $$ = new Const(@1.begin.line, Const::Type::Vec, $2); */ }
+vec: lbrack exp_list rbrack { $$ = new VecLiteral(@1.begin.line, $2); }
     ;
 
 exp_list: %empty { $$ = {}; }
