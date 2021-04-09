@@ -90,6 +90,7 @@ void Error::init_class_type() {
     }                                                                          \
     SETUP_ERROR(TYPE)
 
+    INIT_ERROR(ArgumentError);
     INIT_ERROR(ArithmeticError);
     INIT_ERROR(AssertError);
     INIT_ERROR(ImportError);
@@ -117,6 +118,7 @@ void Error::init_class_type() {
     }
 
 // Can return nullptr on throw
+DECL_ERROR(ArgumentError);
 DECL_ERROR(ArithmeticError);
 DECL_ERROR(AssertError);
 DECL_ERROR(ImportError);

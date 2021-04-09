@@ -8,6 +8,22 @@
 
 using namespace std;
 
+// TODO : Verify not extra kwargs in print, builtin_typeof etc.
+
+#define CHECK_ARGS(BUILTIN_NAME)                                               \
+    if (args->type != Vec::class_type) {                                       \
+        THROW_TYPE_ERROR_PREF(BUILTIN_NAME "{args}", args->type,               \
+                              Vec::class_type);                                \
+        return nullptr;                                                        \
+    }
+
+#define CHECK_KWARGS(BUILTIN_NAME)                                             \
+    if (kwargs->type != HashMap::class_type) {                                 \
+        THROW_TYPE_ERROR_PREF(BUILTIN_NAME "{kwargs}", args->type,             \
+                              HashMap::class_type);                            \
+        return nullptr;                                                        \
+    }
+
 static Object *print_object(Object *o) {
     if (!o) {
         cout << "nullptr";
@@ -33,24 +49,11 @@ static Object *print_object(Object *o) {
 }
 
 Object *print(Object *args, Object *kwargs) {
-    if (args->type != Vec::class_type) {
-        THROW_TYPE_ERROR_PREF("print{args}", args->type, Vec::class_type);
-
-        return nullptr;
-    }
-
-    if (kwargs->type != HashMap::class_type) {
-        THROW_TYPE_ERROR_PREF("print{kwargs}", kwargs->type,
-                              HashMap::class_type);
-
-        return nullptr;
-    }
+    CHECK_ARGS("print");
+    CHECK_KWARGS("print");
 
     auto args_data = reinterpret_cast<Vec *>(args)->data;
     auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
-
-    // cout << "PRINT" << endl;
-    // cout << args_data[0]->type->name << endl;
 
     if (!args_data.empty()) {
         // Dispatch errors
@@ -69,4 +72,27 @@ Object *print(Object *args, Object *kwargs) {
     cout << endl;
 
     return null;
+}
+
+// TODO : Test
+Object *builtin_typeof(Object *args, Object *kwargs) {
+    CHECK_ARGS("typeof");
+    CHECK_KWARGS("typeof");
+
+    auto args_data = reinterpret_cast<Vec *>(args)->data;
+    auto kwargs_data = reinterpret_cast<HashMap *>(args)->data;
+
+    if (kwargs_data.size() != 0) {
+        THROW_EXTRA_KWARGS("typeof", "no kwargs required");
+
+        return nullptr;
+    }
+
+    if (args_data.size() != 1) {
+        THROW_ARGUMENT_ERROR("typeof", "length", "only one argument required");
+
+        return nullptr;
+    }
+
+    return args_data[0]->type;
 }

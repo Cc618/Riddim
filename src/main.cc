@@ -1,11 +1,11 @@
+#include "codegen.hh"
 #include "driver.hh"
 #include "error.hh"
-#include "init.hh"
-#include "object.hh"
-#include "codegen.hh"
-#include "module.hh"
 #include "frame.hh"
+#include "init.hh"
 #include "interpreter.hh"
+#include "module.hh"
+#include "object.hh"
 #include <iostream>
 
 using namespace std;
@@ -20,7 +20,8 @@ Module *gen_module(Driver &driver) {
     auto module = Module::New(driver.file, driver.file);
 
     // Empty
-    if (!ast) return module;
+    if (!ast)
+        return module;
 
     bool success = gen_module_code(ast, module);
 
@@ -67,6 +68,12 @@ int main(int argc, char *argv[]) {
     if (res) {
         cerr << "Error : Failed to parse file " << file << endl;
 
+        if (driver.module) {
+            delete driver.module;
+
+            driver.module = nullptr;
+        }
+
         goto on_parse_error;
     }
 
@@ -78,17 +85,18 @@ int main(int argc, char *argv[]) {
         auto module = gen_module(driver);
 
         // The exception is thrown to
-        if (!module) goto on_internal_error;
+        if (!module)
+            goto on_internal_error;
 
         // TODO
         cout << "Interpreting code" << endl;
-        cout << reinterpret_cast<Str*>(module->frame->consts->str())->data << endl;
+        cout << reinterpret_cast<Str *>(module->frame->consts->str())->data
+             << endl;
         testObjects(module);
 
         // Interpret code
         // TODO : Only main module
         // interpret(module->frame);
-
 
         // Error but we don't want to go within the catch block
     on_internal_error:;

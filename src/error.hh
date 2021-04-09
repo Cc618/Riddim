@@ -26,7 +26,10 @@ struct Error : public Object {
 
 // !!! Don't forget to update the documentation when adding an error
 
-// Zero division...
+// Invalid argument count...
+NEW_ERROR(ArgumentError);
+
+// Zero division
 NEW_ERROR(ArithmeticError);
 
 // False assertion
@@ -95,6 +98,13 @@ void throw_fmt(Type *error_type, const char *fmt, ...);
 void internal_error(const str_t &msg);
 
 // TODO : Error colors
+// Invalid argument
+static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
+                                 const str_t &MSG) {
+    throw_fmt(ArgumentError, "%s : Argument %s :  %s", FUNC.c_str(),
+              ARG.c_str(), MSG.c_str());
+}
+
 #define THROW_MEMORY_ERROR throw_str(MemoryError, "Failed to allocate memory");
 
 // Variable not found
@@ -110,7 +120,7 @@ void internal_error(const str_t &msg);
 
 // Invalid type with prefix
 #define THROW_TYPE_ERROR_PREF(PREF, CURRENT, EXPECTED)                         \
-    throw_fmt(TypeError, "%s : Got type %s but expected type %s", PREF,        \
+    throw_fmt(TypeError, "%s : Got type %s but expected type %s", (PREF),      \
               (CURRENT)->name.c_str(), (EXPECTED)->name.c_str())
 
 // Attribute not found
@@ -127,6 +137,12 @@ void internal_error(const str_t &msg);
 #define THROW_NOBUILTIN(METHOD)                                                \
     throw_fmt(NameError, "Type %s has no @" #METHOD " method",                 \
               type->name.c_str());
+
+// No kwargs required
+static inline void THROW_EXTRA_KWARGS(const str_t &FUNC, const str_t &EXTRA) {
+    throw_fmt(ArgumentError, "%s : Extra keyword named argument (%s)",
+              FUNC.c_str(), EXTRA.c_str());
+}
 
 // LEN and IDX are ints
 #define THROW_OUT_OF_BOUNDS(LEN, IDX)                                          \
