@@ -16,6 +16,7 @@ Module *gen_module(Driver &driver) {
     driver.module = nullptr;
 
     // TODO : Module name not file path
+    // TODO : !module error handling
     // Generate code
     auto module = Module::New(driver.file, driver.file);
 

@@ -10,6 +10,7 @@ typedef std::vector<Object*> vec_t;
 
 struct Vec : public Object {
     static Type *class_type;
+    static Vec *empty;
 
     vec_t data;
 
@@ -17,4 +18,5 @@ struct Vec : public Object {
 
     // Can throw
     static void init_class_type();
+    static void init_class_objects();
 };

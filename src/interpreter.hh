@@ -28,6 +28,17 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push TOS1 * TOS
     BinMul,
+    // TODO : Same with KW
+    // Only positional args call
+    // Calls TOS1 with TOS (a Vec) as positional args
+    // - pop 2
+    // - push result of the call
+    Call,
+    // Call without any args
+    // Calls TOS
+    // - pop 1
+    // - push result of the call
+    CallProc,
     // Duplicates the TOS
     Dup,
     // Jump at offset
@@ -67,10 +78,6 @@ enum OpCode : opcode_t {
     // Pops the TOS
     // - pop 1
     Pop,
-    // Prints the TOS (a Vec containing args of the print function)
-    // - pop 1
-    // - push result of the call
-    Print,
     // Returns from the function (or exit the module)
     Return,
     // TOS.name = TOS1
@@ -84,6 +91,7 @@ enum OpCode : opcode_t {
     // Stores the TOS to a variable
     // - id_offset : Offset of the name of the symbol (constant)
     StoreVar,
+    // TODO A : Update
     // - pop 3
     // - push TOS2(args=TOS1, kwargs=TOS)
     TerCall,

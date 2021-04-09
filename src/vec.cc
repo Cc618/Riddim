@@ -9,6 +9,7 @@
 using namespace std;
 
 Type *Vec::class_type = nullptr;
+Vec *Vec::empty = nullptr;
 
 Vec::Vec(const vec_t &data) : Object(Vec::class_type), data(data) {}
 
@@ -188,4 +189,14 @@ void Vec::init_class_type() {
 
         return null;
     };
+}
+
+void Vec::init_class_objects() {
+    empty = new (nothrow) Vec();
+
+    if (!empty) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
 }

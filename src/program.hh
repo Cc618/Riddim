@@ -7,6 +7,7 @@
 #include "object.hh"
 #include "error.hh"
 #include "module.hh"
+#include "frame.hh"
 #include <vector>
 
 struct Program : public Object {
@@ -19,7 +20,11 @@ struct Program : public Object {
     Object *current_error;
     std::vector<Object *> obj_stack;
 
-    Program(const std::vector<Type *> &types);
+    // Not the main module frame but the builtins frame
+    Frame *global_frame;
+
+    // Factory, since it is a singleton, the result is Program::instance
+    static void New(const std::vector<Type *> &types);
 
     static void init_class_type();
 
@@ -28,6 +33,12 @@ struct Program : public Object {
 
     // Registers a new module
     static void add_module(Module *mod);
+
+    // Init attributes that were impossible to init in New
+    void init_attributes();
+
+private:
+    Program(const std::vector<Type *> &types);
 
 private:
     std::vector<Module *> modules;

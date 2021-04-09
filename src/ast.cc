@@ -101,17 +101,21 @@ void Set::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
-PrintExp::PrintExp(line_t fileline, const std::vector<Exp *> &exps) : Exp(fileline), exps(exps) {}
+CallExp::CallExp(line_t fileline, Exp *exp, const std::vector<Exp *> &args)
+    : Exp(fileline), exp(exp), args(args) {}
 
-PrintExp::~PrintExp() {
-    for (auto exp : exps)
-        delete exp;
+CallExp::~CallExp() {
+    delete exp;
+
+    for (auto arg : args)
+        delete arg;
 }
 
-void PrintExp::debug(int indent) {
-    cout << str_indent(indent) << "Print(" << endl;
-    for (auto exp : exps)
-        exp->debug(indent + 1);
+void CallExp::debug(int indent) {
+    cout << str_indent(indent) << "Call(" << endl;
+    exp->debug(indent + 1);
+    for (auto arg : args)
+        arg->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 

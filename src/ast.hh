@@ -32,7 +32,6 @@ struct Set;
 struct Exp;
 
 struct AstModule : public ASTNode {
-    // TODO
     // Can be nullptr if there is no body (empty file)
     Block *content = nullptr;
     str_t filename;
@@ -130,13 +129,14 @@ struct Set : public Exp {
     virtual void gen_code(ModuleObject *module) override;
 };
 
-// Prints its expression
-struct PrintExp : public Exp {
-    std::vector<Exp *> exps;
+// TODO : Kwargs
+struct CallExp : public Exp {
+    Exp *exp;
+    std::vector<Exp *> args;
 
-    PrintExp(line_t fileline, const std::vector<Exp *> &exps);
+    CallExp(line_t fileline, Exp *exp, const std::vector<Exp *> &args);
 
-    virtual ~PrintExp();
+    virtual ~CallExp();
 
     virtual void debug(int indent = 0) override;
 

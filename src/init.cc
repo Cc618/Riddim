@@ -12,6 +12,7 @@
 #include "str.hh"
 #include "vec.hh"
 #include "function.hh"
+#include "builtins.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -67,7 +68,7 @@ static void init_types() {
 #undef INIT_TYPE
 }
 
-static void init_program_instance() { Program *program = new Program(types); }
+static void init_program_instance() { Program::New(types); }
 
 static void init_objects() {
     Null::init_singleton();
@@ -80,10 +81,24 @@ static void init_objects() {
     if (on_error())
         return;
 
+    Vec::init_class_objects();
+
+    if (on_error())
+        return;
+
     HashMap::init_class_objects();
 
     if (on_error())
         return;
+
+    // Finalize program initialization
+    Program::instance->init_attributes();
+
+    if (on_error())
+        return;
+
+    // Register builtins
+    init_builtins();
 }
 
 // --- End ---

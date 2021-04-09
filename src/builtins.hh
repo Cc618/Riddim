@@ -5,12 +5,18 @@
 #include "object.hh"
 #include "vec.hh"
 #include "map.hh"
+#include "null.hh"
 
-Object *print(Object *args, Object *kwargs);
+struct Program;
 
-Object *builtin_typeof(Object *args, Object *kwargs);
+// Inits builtins and add them in the program's global frame
+void init_builtins();
+
+Object *print(Object *self, Object *args, Object *kwargs);
+
+Object *builtin_typeof(Object *self, Object *args, Object *kwargs);
 
 // Prints one object to stdout
 inline Object *debug_print(Object *o) {
-    return print(new Vec({o}), new HashMap());
+    return print(null, new Vec({o}), new HashMap());
 }

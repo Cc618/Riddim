@@ -74,7 +74,6 @@
     ELIF        "elif"
     ELSE        "else"
     WHILE       "while"
-    PRINT       "print"
     TRUE        "true"
     FALSE       "false"
     NULL        "null"
@@ -87,13 +86,13 @@
 %nterm <ast::Block*> stmtlist
 %nterm <ast::Stmt*> stmt
 %nterm <ast::WhileStmt*> whilestmt
-%nterm <ast::PrintExp*> printexp
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ExpStmt*> expstmt
 %nterm <ast::Set*> set
 %nterm <ast::Exp*> exp
 %nterm <ast::Const*> const
+%nterm <ast::CallExp*> callexp
 %nterm <ast::VecLiteral*> vec
 %nterm <ast::MapLiteral*> map
 %nterm <std::vector<std::pair<ast::Exp *, ast::Exp *>>> exp_mapping exp_mapping_filled
@@ -120,8 +119,7 @@
 %left ".";
 %left "[";
 %left "{";
-// TODO : Not print but call
-%left "print";
+%left "(";
 
 %start module;
 
@@ -189,7 +187,7 @@ exp: lparen exp rparen { $$ = $2; }
     | attr { $$ = $1; }
     | vec { $$ = $1; }
     | map { $$ = $1; }
-    | printexp { $$ = $1; }
+    | callexp { $$ = $1; }
     ;
 
 set: target "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
@@ -209,7 +207,7 @@ attrtarget: attr { $$ = new AttrTarget($1); }
 idtarget: ID { $$ = new IdTarget(@1.begin.line, $1); }
     ;
 
-printexp: "print" lparen exp_list rparen { $$ = new PrintExp(@1.begin.line, $3); }
+callexp: exp lparen exp_list rparen { $$ = new CallExp(@1.begin.line, $1, $3); }
     ;
 
 map: lcurly exp_mapping rcurly { $$ = new MapLiteral(@1.begin.line, $2); }
@@ -258,11 +256,13 @@ unaexp: "not" exp { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
     ;
 
 attr: exp "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
+    ;
 
 indexing: exp "[" exp "]" { $$ = new Indexing(@1.begin.line, $1, $3); }
     ;
 
 id: ID { $$ = new Id(@1.begin.line, $1); }
+    ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
     | STR { $$ = new Const(@1.begin.line, $1); }

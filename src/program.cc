@@ -6,6 +6,11 @@ using namespace std;
 Program *Program::instance = nullptr;
 Type *Program::class_type = nullptr;
 
+void Program::New(const std::vector<Type *> &types) {
+    // We can't handle memory exceptions at this state
+    Program::instance = new Program(types);
+}
+
 Program::Program(const std::vector<Type *> &types)
     : Object(Program::class_type) {
     instance = this;
@@ -50,6 +55,17 @@ void Program::init_class_type() {
 
         return result;
     };
+}
+
+void Program::init_attributes() {
+    // Create global frame
+    global_frame = Frame::New();
+
+    if (!global_frame) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
 }
 
 void Program::add_type(Type *type) {

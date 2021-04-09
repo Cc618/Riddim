@@ -1,14 +1,14 @@
 #include "builtins.hh"
 #include "error.hh"
+#include "function.hh"
 #include "map.hh"
 #include "null.hh"
+#include "program.hh"
 #include "str.hh"
 #include "vec.hh"
 #include <iostream>
 
 using namespace std;
-
-// TODO : Verify not extra kwargs in print, builtin_typeof etc.
 
 #define CHECK_ARGS(BUILTIN_NAME)                                               \
     if (args->type != Vec::class_type) {                                       \
@@ -48,7 +48,33 @@ static Object *print_object(Object *o) {
     return null;
 }
 
-Object *print(Object *args, Object *kwargs) {
+void init_builtins() {
+    auto &global_frame = Program::instance->global_frame;
+
+#define INIT_BUILTIN(NAME, HANDLER)                                            \
+    {                                                                          \
+        auto obj = new (nothrow) Function(HANDLER);                            \
+        if (!obj) {                                                            \
+            THROW_MEMORY_ERROR;                                                \
+            return;                                                            \
+        }                                                                      \
+        auto name = new (nothrow) Str(NAME);                                   \
+        if (!name) {                                                           \
+            THROW_MEMORY_ERROR;                                                \
+            return;                                                            \
+        }                                                                      \
+        if (!global_frame->setitem(name, obj)) {                               \
+            return;                                                            \
+        }                                                                      \
+    }
+
+    INIT_BUILTIN("print", print);
+    INIT_BUILTIN("typeof", builtin_typeof);
+
+#undef INIT_BUILTIN
+}
+
+Object *print(Object *self, Object *args, Object *kwargs) {
     CHECK_ARGS("print");
     CHECK_KWARGS("print");
 
@@ -75,12 +101,12 @@ Object *print(Object *args, Object *kwargs) {
 }
 
 // TODO : Test
-Object *builtin_typeof(Object *args, Object *kwargs) {
+Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
     CHECK_ARGS("typeof");
     CHECK_KWARGS("typeof");
 
     auto args_data = reinterpret_cast<Vec *>(args)->data;
-    auto kwargs_data = reinterpret_cast<HashMap *>(args)->data;
+    auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
 
     if (kwargs_data.size() != 0) {
         THROW_EXTRA_KWARGS("typeof", "no kwargs required");

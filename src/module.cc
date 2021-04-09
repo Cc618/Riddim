@@ -1,5 +1,6 @@
 #include "module.hh"
 #include "error.hh"
+#include "program.hh"
 
 using namespace std;
 
@@ -60,7 +61,7 @@ Module *Module::New(const str_t &name, const str_t &filepath) {
         return nullptr;
     }
 
-    auto frame = Frame::New();
+    auto frame = Frame::New(Program::instance->global_frame);
 
     if (!frame)
         return nullptr;

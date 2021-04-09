@@ -180,6 +180,39 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case Call: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(args);
+            POPTOP(o);
+
+            auto result = o->call(args, HashMap::empty);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(0);
+        }
+
+        case CallProc: {
+            CHECK_STACKLEN(1);
+
+            POPTOP(o);
+
+            auto result = o->call(Vec::empty, HashMap::empty);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(0);
+        }
+
         case Dup: {
             CHECK_STACKLEN(1);
 
@@ -350,23 +383,6 @@ void interpret(Frame *frame) {
             CHECK_STACKLEN(1);
 
             obj_stack.pop_back();
-
-            NEXT(0);
-        }
-
-        // TODO : Use call expression
-        case Print: {
-            CHECK_STACKLEN(1);
-
-            POPTOP(o);
-
-            auto result = print(o, HashMap::empty);
-
-            if (!result) {
-                DISPATCH_ERROR;
-            }
-
-            PUSH(result);
 
             NEXT(0);
         }

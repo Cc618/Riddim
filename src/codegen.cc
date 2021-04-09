@@ -133,18 +133,25 @@ void WhileStmt::gen_code(ModuleObject *module) {
     code[finally_offset] = code.size();
 }
 
-// TODO : As function ?
-void PrintExp::gen_code(ModuleObject *module) {
-    // Generate expressions
-    for (auto exp : exps)
-        exp->gen_code(module);
+void CallExp::gen_code(ModuleObject *module) {
+    // Push exp
+    exp->gen_code(module);
 
-    // Make args
-    PUSH_CODE(Pack);
-    PUSH_CODE(exps.size());
+    if (!args.empty()) {
+        // Generate expressions
+        for (auto arg : args)
+            arg->gen_code(module);
 
-    // Print it
-    PUSH_CODE(Print);
+        // Make args
+        PUSH_CODE(Pack);
+        PUSH_CODE(args.size());
+
+        // Call
+        PUSH_CODE(Call);
+    } else {
+        // Tiny optimization, call CallProc to avoid creating empty list
+        PUSH_CODE(CallProc);
+    }
 }
 
 void ExpStmt::gen_code(ModuleObject *module) {
