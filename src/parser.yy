@@ -119,6 +119,7 @@
 %left "*" "/" "%";
 %left ".";
 %left "[";
+%left "{";
 // TODO : Not print but call
 %left "print";
 
@@ -131,26 +132,25 @@ module: stop stmtlist {
         }
     ;
 
-// TODO : { exp } is a block or exp (-> ternary) ?
 block: lcurly stmtlist rcurly { $$ = $2; }
+    | lcurly stop stmtlist rcurly { $$ = $3; }
     ;
 
 stmtlist: %empty { $$ = new Block(@$.begin.line); }
     | stmtlist stmt { $$ = $1; $$->stmts.push_back($2); }
     ;
 
-stmt: stmt STOP { $$ = $1; }
-    | expstmt { $$ = $1; }
+stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     | whilestmt { $$ = $1; }
     ;
 
-ifstmt: "if" exp block ifstmt_elif {
+ifstmt: "if" exp block ifstmt_elif stop {
         $$ = new IfStmt($2, $3);
         $$->elsebody = new Block(@4.begin.line);
         $$->elsebody->stmts.push_back($4);
     }
-    | "if" exp block ifstmt_else {
+    | "if" exp block ifstmt_else stop {
         $$ = new IfStmt($2, $3);
         $$->elsebody = $4;
     }
@@ -173,10 +173,10 @@ ifstmt_else: %empty { $$ = nullptr; }
     }
     ;
 
-whilestmt: "while" exp block { $$ = new WhileStmt($2, $3); }
+whilestmt: "while" exp block stop { $$ = new WhileStmt($2, $3); }
     ;
 
-expstmt: exp STOP { $$ = new ExpStmt($1); }
+expstmt: exp stop { $$ = new ExpStmt($1); }
     ;
 
 exp: lparen exp rparen { $$ = $2; }
@@ -276,7 +276,7 @@ stop: STOP
     ;
 
 lcurly: LCURLY
-    | lcurly STOP
+    // | lcurly STOP
     ;
 
 rcurly: RCURLY
@@ -284,14 +284,14 @@ rcurly: RCURLY
     ;
 
 lbrack: LBRACK
-    | lbrack STOP
+    // | lbrack STOP
     ;
 
 rbrack: RBRACK
     ;
 
 lparen: LPAREN
-    | lparen STOP
+    // | lparen STOP
     ;
 
 rparen: RPAREN
