@@ -305,15 +305,17 @@ void testObjects(Module *module) {
     // };
 
     // --- Runtime ---
-    cout << endl << endl;
+    cout << endl;
     interpret(frame);
-    cout << endl << endl;
+    // cout << endl << endl;
+    cout << "Done" << endl;
 
     if (on_error()) {
         cerr << ">>> On error !!!" << endl;
         return;
     }
 
+    /*
     cout << "* End frame : " << endl;
     debug_print(frame);
 
@@ -323,4 +325,5 @@ void testObjects(Module *module) {
         cout << --stki << ". ";
         debug_print(o);
     }
+    */
 }

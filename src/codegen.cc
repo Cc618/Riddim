@@ -129,9 +129,7 @@ void WhileStmt::gen_code(ModuleObject *module) {
 }
 
 // TODO : As function ?
-void PrintStmt::gen_code(ModuleObject *module) {
-    Stmt::gen_code(module);
-
+void PrintExp::gen_code(ModuleObject *module) {
     // Generate expressions
     for (auto exp : exps)
         exp->gen_code(module);

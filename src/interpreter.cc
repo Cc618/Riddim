@@ -329,9 +329,13 @@ void interpret(Frame *frame) {
 
             POPTOP(o);
 
-            if (!print(o, HashMap::empty)) {
+            auto result = print(o, HashMap::empty);
+
+            if (!result) {
                 DISPATCH_ERROR;
             }
+
+            PUSH(result);
 
             NEXT(0);
         }

@@ -97,20 +97,6 @@ struct IfStmt : public Stmt {
 
     virtual void gen_code(ModuleObject *module) override;
 };
-
-// Prints its expression
-struct PrintStmt : public Stmt {
-    std::vector<Exp *> exps;
-
-    PrintStmt(line_t fileline);
-
-    virtual ~PrintStmt();
-
-    virtual void debug(int indent = 0) override;
-
-    virtual void gen_code(ModuleObject *module) override;
-};
-
 // A statement made of an expression
 struct ExpStmt : public Stmt {
     Exp *exp;
@@ -139,6 +125,19 @@ struct Set : public Exp {
     Set(line_t fileline, Target *target, Exp *exp);
 
     virtual ~Set();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
+// Prints its expression
+struct PrintExp : public Exp {
+    std::vector<Exp *> exps;
+
+    PrintExp(line_t fileline, const std::vector<Exp *> &exps);
+
+    virtual ~PrintExp();
 
     virtual void debug(int indent = 0) override;
 
@@ -300,7 +299,8 @@ struct IdTarget : public Target {
 struct IndexingTarget : public Target {
     Indexing *indexing;
 
-    IndexingTarget(Indexing *indexing) : Target(indexing->fileline), indexing(indexing) {}
+    IndexingTarget(Indexing *indexing)
+        : Target(indexing->fileline), indexing(indexing) {}
 
     virtual void debug(int indent = 0) override;
 

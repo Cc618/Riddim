@@ -77,21 +77,6 @@ void IfStmt::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
-PrintStmt::PrintStmt(line_t fileline) : Stmt(fileline) {}
-
-PrintStmt::~PrintStmt() {
-    for (auto exp : exps)
-        delete exp;
-}
-
-void PrintStmt::debug(int indent) {
-    cout << str_indent(indent) << "Print(" << endl;
-    cout << str_indent(indent + 1) << "line=" << fileline << endl;
-    for (auto exp : exps)
-        exp->debug(indent + 1);
-    cout << str_indent(indent) << ")" << endl;
-}
-
 ExpStmt::ExpStmt(Exp *exp) : Stmt(exp->fileline), exp(exp) {}
 
 ExpStmt::~ExpStmt() { delete exp; }
@@ -113,6 +98,21 @@ void Set::debug(int indent) {
     cout << str_indent(indent) << "Set(" << endl;
     target->debug(indent + 1);
     exp->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
+PrintExp::PrintExp(line_t fileline, const std::vector<Exp *> &exps)
+    : Exp(fileline), exps(exps) {}
+
+PrintExp::~PrintExp() {
+    for (auto exp : exps)
+        delete exp;
+}
+
+void PrintExp::debug(int indent) {
+    cout << str_indent(indent) << "Print(" << endl;
+    for (auto exp : exps)
+        exp->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 

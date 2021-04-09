@@ -86,4 +86,10 @@ while condition {
 }
 ```
 
+## Indexing
+Indexing is done with brackets like in many languages.
+```
+a[key1] = b[key2]
+```
+
 <!-- TODO : Print -->

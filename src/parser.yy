@@ -86,7 +86,7 @@
 %nterm <ast::Block*> stmtlist
 %nterm <ast::Stmt*> stmt
 %nterm <ast::WhileStmt*> whilestmt
-%nterm <ast::PrintStmt*> printstmt printstmt_begin
+%nterm <ast::PrintExp*> printexp
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ExpStmt*> expstmt
@@ -115,6 +115,8 @@
 %left "*" "/" "%";
 %left ".";
 %left "[";
+// TODO : Not print but call
+%left "print";
 
 %start module;
 
@@ -136,7 +138,6 @@ stmtlist: %empty { $$ = new Block(@$.begin.line); }
 stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     | whilestmt { $$ = $1; }
-    | printstmt { $$ = $1; }
     ;
 
 ifstmt: "if" exp block ifstmt_elif {
@@ -167,16 +168,6 @@ ifstmt_else: %empty { $$ = nullptr; }
     }
     ;
 
-printstmt: printstmt_begin stop { $$ = $1; }
-    ;
-
-printstmt_begin: "print" exp {
-        $$ = new PrintStmt(@1.begin.line);
-        $$->exps.push_back($2);
-    }
-    | printstmt_begin "," exp { $$ = $1; $$->exps.push_back($3); }
-    ;
-
 whilestmt: "while" exp block { $$ = new WhileStmt($2, $3); }
     ;
 
@@ -192,6 +183,7 @@ exp: lparen exp rparen { $$ = $2; }
     | indexing { $$ = $1; }
     | attr { $$ = $1; }
     | vec { $$ = $1; }
+    | printexp { $$ = $1; }
     ;
 
 set: target "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
@@ -205,6 +197,9 @@ indexingtarget: indexing { $$ = new IndexingTarget($1); }
     ;
 
 idtarget: ID { $$ = new IdTarget(@1.begin.line, $1); }
+    ;
+
+printexp: "print" lparen exp_list rparen { $$ = new PrintExp(@1.begin.line, $3); }
     ;
 
 vec: lbrack exp_list rbrack { $$ = new VecLiteral(@1.begin.line, $2); }

@@ -64,6 +64,7 @@ enum OpCode : opcode_t {
     Pop,
     // Prints the TOS (a Vec containing args of the print function)
     // - pop 1
+    // - push result of the call
     Print,
     // Returns from the function (or exit the module)
     Return,
