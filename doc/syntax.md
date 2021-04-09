@@ -1,5 +1,5 @@
 # Syntax
-## Tokens
+## Literals
 ### Comment
 Comments are line comments starting with # :
 ```py
@@ -48,3 +48,25 @@ Here is the list of all escapes :
 | \\\\ | Back slash (\\) |
 | \\n | Line feed |
 | \\t | Tab |
+
+## Control Flow
+### If / Else / Elif
+Here is the if syntax :
+```
+if condition1 {
+    # Do something
+} elif condition2 {
+    # Do other thing
+} else {
+    # Do this if every condition is false
+}
+```
+
+All conditions must be booleans, it is not possible to check whether
+a variable is null like in this example :
+```
+# Error if a is not a Bool
+if a {
+    # ...
+}
+```
