@@ -68,6 +68,7 @@
     RBRACK      "]"
     DOT         "."
     COMMA       ","
+    COLON       ":"
     STOP        "<LF>"
     IF          "if"
     ELIF        "elif"
@@ -94,6 +95,8 @@
 %nterm <ast::Exp*> exp
 %nterm <ast::Const*> const
 %nterm <ast::VecLiteral*> vec
+%nterm <ast::MapLiteral*> map
+%nterm <std::vector<std::pair<ast::Exp *, ast::Exp *>>> exp_mapping exp_mapping_filled
 %nterm <std::vector<ast::Exp*>> exp_list exp_list_filled
 %nterm <ast::BinExp*> binexp
 %nterm <ast::UnaExp*> unaexp
@@ -136,7 +139,8 @@ stmtlist: %empty { $$ = new Block(@$.begin.line); }
     | stmtlist stmt { $$ = $1; $$->stmts.push_back($2); }
     ;
 
-stmt: expstmt { $$ = $1; }
+stmt: stmt STOP { $$ = $1; }
+    | expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     | whilestmt { $$ = $1; }
     ;
@@ -172,7 +176,7 @@ ifstmt_else: %empty { $$ = nullptr; }
 whilestmt: "while" exp block { $$ = new WhileStmt($2, $3); }
     ;
 
-expstmt: exp stop { $$ = new ExpStmt($1); }
+expstmt: exp STOP { $$ = new ExpStmt($1); }
     ;
 
 exp: lparen exp rparen { $$ = $2; }
@@ -184,6 +188,7 @@ exp: lparen exp rparen { $$ = $2; }
     | indexing { $$ = $1; }
     | attr { $$ = $1; }
     | vec { $$ = $1; }
+    | map { $$ = $1; }
     | printexp { $$ = $1; }
     ;
 
@@ -207,7 +212,20 @@ idtarget: ID { $$ = new IdTarget(@1.begin.line, $1); }
 printexp: "print" lparen exp_list rparen { $$ = new PrintExp(@1.begin.line, $3); }
     ;
 
+map: lcurly exp_mapping rcurly { $$ = new MapLiteral(@1.begin.line, $2); }
+    ;
+
 vec: lbrack exp_list rbrack { $$ = new VecLiteral(@1.begin.line, $2); }
+    ;
+
+exp_mapping: %empty { $$ = {}; }
+    | exp_mapping_filled { $$ = $1; }
+    | exp_mapping_filled "," { $$ = $1; }
+    ;
+
+exp_mapping_filled: exp ":" exp { $$ = {{ $1, $3 }}; }
+    | exp_mapping_filled "," exp ":" exp { $$ = $1; $$.push_back({ $3, $5 }); }
+    | exp_mapping_filled "," stop exp ":" exp { $$ = $1; $$.push_back({ $4, $6 }); }
     ;
 
 exp_list: %empty { $$ = {}; }
@@ -262,7 +280,7 @@ lcurly: LCURLY
     ;
 
 rcurly: RCURLY
-    | rcurly STOP
+    // | rcurly STOP
     ;
 
 lbrack: LBRACK

@@ -127,6 +127,22 @@ void VecLiteral::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+MapLiteral::~MapLiteral() {
+    for (const auto &[k, v] : kv) {
+        delete k;
+        delete v;
+    }
+}
+
+void MapLiteral::debug(int indent) {
+    cout << str_indent(indent) << "MapLiteral(" << endl;
+    for (const auto &[k, v] : kv) {
+        k->debug(indent + 1);
+        v->debug(indent + 1);
+    }
+    cout << str_indent(indent) << ")" << endl;
+}
+
 Attr::~Attr() { delete exp; }
 
 void Attr::debug(int indent) {

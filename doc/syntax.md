@@ -86,6 +86,7 @@ while condition {
 }
 ```
 
+<!-- TODO : Not an h2 -->
 ## Indexing
 Indexing is done with brackets like in many languages.
 ```

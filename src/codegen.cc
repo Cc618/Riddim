@@ -166,6 +166,16 @@ void VecLiteral::gen_code(ModuleObject *module) {
     PUSH_CODE(exps.size());
 }
 
+void MapLiteral::gen_code(ModuleObject *module) {
+    for (const auto &[k, v] : kv) {
+        k->gen_code(module);
+        v->gen_code(module);
+    }
+
+    PUSH_CODE(PackMap);
+    PUSH_CODE(kv.size());
+}
+
 void Attr::gen_code(ModuleObject *module) {
     exp->gen_code(module);
 

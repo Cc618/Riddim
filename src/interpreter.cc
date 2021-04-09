@@ -315,6 +315,37 @@ void interpret(Frame *frame) {
             NEXT(1);
         }
 
+        case PackMap: {
+            auto count = ARG(1);
+
+            CHECK_STACKLEN(count * 2);
+
+            // Build result
+            auto result = new (nothrow) HashMap();
+
+            if (!result) {
+                THROW_MEMORY_ERROR;
+
+                DISPATCH_ERROR;
+            }
+
+            // Pick objects
+            for (size_t i = 0; i < count; ++i) {
+                auto key = obj_stack[obj_stack.size() - count * 2 + i * 2];
+                auto val = obj_stack[obj_stack.size() - count * 2 + i * 2 + 1];
+
+                if (!result->setitem(key, val)) {
+                    DISPATCH_ERROR;
+                }
+            }
+
+            obj_stack.resize(obj_stack.size() - count * 2);
+
+            PUSH(result);
+
+            NEXT(1);
+        }
+
         case Pop: {
             CHECK_STACKLEN(1);
 

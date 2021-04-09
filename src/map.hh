@@ -25,9 +25,11 @@ struct HashMap : public Object {
     // Can throw (returns data.end() on error)
     hmap_t::iterator find(Object *key);
 
+    // Like getitem
     // Can throw
     Object *get(Object *key);
 
+    // Like setitem
     // Can throw
     void set(Object *key, Object *value);
 

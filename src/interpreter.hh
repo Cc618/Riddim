@@ -59,6 +59,11 @@ enum OpCode : opcode_t {
     // - push a Vec of all variables to pack
     // * Element are stored in a LIFO order
     Pack,
+    // Packs 'count' key-value pairs ('count' * 2 total variables) in a HashMap
+    // The key is the first pushed value on the stack
+    // - pop 'count' * 2
+    // - push a HashMap of all key value pairs to pack
+    PackMap,
     // Pops the TOS
     // - pop 1
     Pop,

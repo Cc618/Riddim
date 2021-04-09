@@ -115,7 +115,6 @@ struct Exp : public ASTNode {
     using ASTNode::ASTNode;
 };
 
-// TODO : Not id, can be indexing...
 // Assignment
 struct Target;
 struct Set : public Exp {
@@ -144,6 +143,7 @@ struct PrintExp : public Exp {
     virtual void gen_code(ModuleObject *module) override;
 };
 
+// Vector literal ([1, 2, 3])
 struct VecLiteral : public Exp {
     std::vector<Exp *> exps;
 
@@ -151,6 +151,20 @@ struct VecLiteral : public Exp {
         : Exp(fileline), exps(exps) {}
 
     virtual ~VecLiteral();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(ModuleObject *module) override;
+};
+
+// HashMap literal ({'a': 'A', 'b': 'B'})
+struct MapLiteral : public Exp {
+    std::vector<std::pair<Exp *, Exp *>> kv;
+
+    MapLiteral(line_t fileline, const std::vector<std::pair<Exp *, Exp *>> &kv)
+        : Exp(fileline), kv(kv) {}
+
+    virtual ~MapLiteral();
 
     virtual void debug(int indent = 0) override;
 
@@ -312,8 +326,7 @@ struct IndexingTarget : public Target {
 struct AttrTarget : public Target {
     Attr *attr;
 
-    AttrTarget(Attr *attr)
-        : Target(attr->fileline), attr(attr) {}
+    AttrTarget(Attr *attr) : Target(attr->fileline), attr(attr) {}
 
     virtual void debug(int indent = 0) override;
 
