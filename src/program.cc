@@ -39,6 +39,8 @@ void Program::init_class_type() {
         for (auto child : program->obj_stack)
             visit(child);
 
+        visit(program->global_frame);
+
         if (program->current_error) visit(program->current_error);
     };
 

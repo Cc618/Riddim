@@ -68,12 +68,21 @@ void init_builtins() {
         }                                                                      \
     }
 
+#define INIT_CONSTRUCTOR(TYPE) INIT_BUILTIN(#TYPE, new_##TYPE)
+
+    // Functions
     INIT_BUILTIN("print", print);
     INIT_BUILTIN("typeof", builtin_typeof);
 
+    // Constructors
+    INIT_CONSTRUCTOR(AttrObject);
+
+#undef INIT_CONSTRUCTOR
 #undef INIT_BUILTIN
 }
 
+// --- Functions ---
+// Print
 Object *print(Object *self, Object *args, Object *kwargs) {
     CHECK_ARGS("print");
     CHECK_KWARGS("print");
@@ -126,4 +135,32 @@ Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
     }
 
     return args_data[0]->type;
+}
+
+// --- Constructors ---
+Object *new_AttrObject(Object *self, Object *args, Object *kwargs) {
+    CHECK_ARGS("AttrObject");
+    CHECK_KWARGS("AttrObject");
+
+    auto args_data = reinterpret_cast<Vec *>(args)->data;
+    auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
+
+    if (kwargs_data.size() != 0) {
+        THROW_EXTRA_KWARGS("AttrObject", "No kwargs required");
+
+        return nullptr;
+    }
+
+    if (args_data.size() != 0) {
+        THROW_ARGUMENT_ERROR("AttrObject", "length", "No args required");
+
+        return nullptr;
+    }
+
+    auto result = AttrObject::New();
+
+    // Dispatch error
+    if (!result) return nullptr;
+
+    return result;
 }
