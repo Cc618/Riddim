@@ -96,10 +96,6 @@ enum OpCode : opcode_t {
     // Stores the TOS to a variable
     // - id_offset : Offset of the name of the symbol (constant)
     StoreVar,
-    // TODO A : Update
-    // - pop 3
-    // - push TOS2(args=TOS1, kwargs=TOS)
-    TerCall,
     // - pop 1
     // - push not TOS (must be bool)
     UnaNot,

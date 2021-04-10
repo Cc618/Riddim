@@ -470,24 +470,6 @@ void interpret(Frame *frame) {
             NEXT(1);
         }
 
-        case TerCall: {
-            CHECK_STACKLEN(3);
-
-            POPTOP(tos);
-            POPTOP(tos1);
-            POPTOP(tos2);
-
-            auto result = tos2->call(tos1, tos);
-
-            if (!result) {
-                DISPATCH_ERROR;
-            }
-
-            PUSH(result);
-
-            NEXT(0);
-        }
-
         case UnaNot: {
             CHECK_STACKLEN(1);
 
