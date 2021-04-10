@@ -370,11 +370,9 @@ void interpret(Frame *frame) {
             CHECK_STACKLEN(count * 2);
 
             // Build result
-            auto result = new (nothrow) HashMap();
+            auto result = HashMap::New();
 
             if (!result) {
-                THROW_MEMORY_ERROR;
-
                 DISPATCH_ERROR;
             }
 

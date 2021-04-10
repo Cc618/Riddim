@@ -46,11 +46,9 @@ Frame *Frame::New(Frame *previous) {
         return nullptr;
     }
 
-    o->vars = new (nothrow) HashMap();
+    o->vars = HashMap::New();
 
     if (!o->vars) {
-        THROW_MEMORY_ERROR;
-
         return nullptr;
     }
 

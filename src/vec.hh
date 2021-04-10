@@ -28,6 +28,6 @@ struct Vec : public Object {
     static void init_class_type();
     static void init_class_objects();
 
-private:
+protected:
     Vec(const vec_t &data = {});
 };

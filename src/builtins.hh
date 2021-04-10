@@ -21,5 +21,5 @@ Object *builtin_typeof(Object *self, Object *args, Object *kwargs);
 // Prints one object to stdout
 // !!! Use it only in debug mode since it is unsafe
 inline Object *debug_print(Object *o) {
-    return print(null, Vec::New({o}), new HashMap());
+    return print(null, Vec::New({o}), HashMap::empty);
 }

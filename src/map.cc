@@ -13,6 +13,18 @@ using namespace std;
 Type *HashMap::class_type = nullptr;
 HashMap *HashMap::empty = nullptr;
 
+HashMap *HashMap::New(const hmap_t &data) {
+    auto self = new (nothrow) HashMap(data);
+
+    if (!self) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return self;
+}
+
 HashMap::HashMap(const hmap_t &data)
     : Object(HashMap::class_type), data(data) {}
 
@@ -22,6 +34,23 @@ void HashMap::init_class_type() {
         THROW_MEMORY_ERROR;
         return;
     }
+
+    class_type->constructor = [](Object *self, Object *args, Object *kwargs) -> Object* {
+        // TODO : Change name (use it as a constructor not a function)
+        INIT_METHOD(HashMap, "HashMap");
+
+        CHECK_NOARGS("HashMap");
+        CHECK_NOKWARGS("HashMap");
+
+        auto result = HashMap::New();
+
+        // Dispatch error
+        if (!result)
+            return nullptr;
+
+        return result;
+    };
+
 
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {
@@ -39,11 +68,9 @@ void HashMap::init_class_type() {
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashMap *>(self);
 
-        auto result = new (nothrow) HashMap(me->data);
+        auto result = HashMap::New(me->data);
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -150,11 +177,9 @@ void HashMap::init_class_type() {
 }
 
 void HashMap::init_class_objects() {
-    empty = new (nothrow) HashMap();
+    empty = HashMap::New();
 
     if (!empty) {
-        THROW_MEMORY_ERROR;
-
         return;
     }
 }
@@ -229,13 +254,15 @@ Type *AttrObject::class_type = nullptr;
 AttrObject *AttrObject::New() {
     auto o = new (nothrow) AttrObject();
 
-    if (o) {
-        o->data = new (nothrow) HashMap();
-    }
-
-    if (!o || !o->data) {
+    if (!o) {
         THROW_MEMORY_ERROR;
 
+        return nullptr;
+    }
+
+    o->data = HashMap::New();
+
+    if (!o->data) {
         return nullptr;
     }
 
