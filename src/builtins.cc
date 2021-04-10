@@ -2,11 +2,11 @@
 #include "error.hh"
 #include "function.hh"
 #include "map.hh"
+#include "methods.hh"
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
 #include "vec.hh"
-#include "methods.hh"
 #include <iostream>
 
 using namespace std;
@@ -62,6 +62,8 @@ void init_builtins() {
     INIT_BUILTIN("typeof", builtin_typeof);
 
     // Constructors
+    // TODO : A constructor is a method within the Type (Int is a type, Int() is
+    // a function call)
     INIT_CONSTRUCTOR(AttrObject);
 
 #undef INIT_CONSTRUCTOR
@@ -71,17 +73,9 @@ void init_builtins() {
 // --- Functions ---
 // Print
 Object *print(Object *self, Object *args, Object *kwargs) {
-    CHECK_ARGS("print");
-    CHECK_KWARGS("print");
+    INIT_METHOD(Object, "print");
 
-    auto args_data = reinterpret_cast<Vec *>(args)->data;
-    auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
-
-    if (kwargs_data.size() != 0) {
-        THROW_EXTRA_KWARGS("print", "No kwargs required");
-
-        return nullptr;
-    }
+    CHECK_NOKWARGS("print");
 
     if (!args_data.empty()) {
         // Dispatch errors
@@ -103,51 +97,26 @@ Object *print(Object *self, Object *args, Object *kwargs) {
 }
 
 Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
-    CHECK_ARGS("typeof");
-    CHECK_KWARGS("typeof");
+    INIT_METHOD(Object, "typeof");
 
-    auto args_data = reinterpret_cast<Vec *>(args)->data;
-    auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
-
-    if (kwargs_data.size() != 0) {
-        THROW_EXTRA_KWARGS("typeof", "No kwargs required");
-
-        return nullptr;
-    }
-
-    if (args_data.size() != 1) {
-        THROW_ARGUMENT_ERROR("typeof", "length", "Only one argument required");
-
-        return nullptr;
-    }
+    CHECK_ARGSLEN(1, "typeof");
+    CHECK_NOKWARGS("typeof");
 
     return args_data[0]->type;
 }
 
 // --- Constructors ---
 Object *new_AttrObject(Object *self, Object *args, Object *kwargs) {
-    CHECK_ARGS("AttrObject");
-    CHECK_KWARGS("AttrObject");
+    INIT_METHOD(Object, "AttrObject");
 
-    auto args_data = reinterpret_cast<Vec *>(args)->data;
-    auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
-
-    if (kwargs_data.size() != 0) {
-        THROW_EXTRA_KWARGS("AttrObject", "No kwargs required");
-
-        return nullptr;
-    }
-
-    if (args_data.size() != 0) {
-        THROW_ARGUMENT_ERROR("AttrObject", "length", "No args required");
-
-        return nullptr;
-    }
+    CHECK_NOARGS("AttrObject");
+    CHECK_NOKWARGS("AttrObject");
 
     auto result = AttrObject::New();
 
     // Dispatch error
-    if (!result) return nullptr;
+    if (!result)
+        return nullptr;
 
     return result;
 }
