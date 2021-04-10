@@ -81,6 +81,12 @@ Object *print(Object *self, Object *args, Object *kwargs) {
     auto args_data = reinterpret_cast<Vec *>(args)->data;
     auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
 
+    if (kwargs_data.size() != 0) {
+        THROW_EXTRA_KWARGS("print", "No kwargs required");
+
+        return nullptr;
+    }
+
     if (!args_data.empty()) {
         // Dispatch errors
         if (!print_object(args_data[0]))
@@ -100,7 +106,6 @@ Object *print(Object *self, Object *args, Object *kwargs) {
     return null;
 }
 
-// TODO : Test
 Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
     CHECK_ARGS("typeof");
     CHECK_KWARGS("typeof");
@@ -109,13 +114,13 @@ Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
     auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
 
     if (kwargs_data.size() != 0) {
-        THROW_EXTRA_KWARGS("typeof", "no kwargs required");
+        THROW_EXTRA_KWARGS("typeof", "No kwargs required");
 
         return nullptr;
     }
 
     if (args_data.size() != 1) {
-        THROW_ARGUMENT_ERROR("typeof", "length", "only one argument required");
+        THROW_ARGUMENT_ERROR("typeof", "length", "Only one argument required");
 
         return nullptr;
     }

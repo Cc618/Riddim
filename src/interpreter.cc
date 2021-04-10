@@ -197,6 +197,24 @@ void interpret(Frame *frame) {
             NEXT(0);
         }
 
+        case CallKw: {
+            CHECK_STACKLEN(3);
+
+            POPTOP(kwargs);
+            POPTOP(args);
+            POPTOP(o);
+
+            auto result = o->call(args, kwargs);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(0);
+        }
+
         case CallProc: {
             CHECK_STACKLEN(1);
 

@@ -140,7 +140,7 @@ static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
 
 // No kwargs required
 static inline void THROW_EXTRA_KWARGS(const str_t &FUNC, const str_t &EXTRA) {
-    throw_fmt(ArgumentError, "%s : Extra keyword named argument (%s)",
+    throw_fmt(ArgumentError, "%s : Extra kwarg (%s)",
               FUNC.c_str(), EXTRA.c_str());
 }
 

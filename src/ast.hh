@@ -129,12 +129,12 @@ struct Set : public Exp {
     virtual void gen_code(ModuleObject *module) override;
 };
 
-// TODO : Kwargs
 struct CallExp : public Exp {
     Exp *exp;
     std::vector<Exp *> args;
+    std::vector<std::pair<std::string, Exp *>> kwargs;
 
-    CallExp(line_t fileline, Exp *exp, const std::vector<Exp *> &args);
+    CallExp(line_t fileline);
 
     virtual ~CallExp();
 

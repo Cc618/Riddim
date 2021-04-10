@@ -28,12 +28,17 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push TOS1 * TOS
     BinMul,
-    // TODO : Same with KW
+    // TODO : Self
     // Only positional args call
     // Calls TOS1 with TOS (a Vec) as positional args
     // - pop 2
     // - push result of the call
     Call,
+    // Full call (contains at least kw args)
+    // Calls TOS2 with TOS1 (an HashMap) and TOS (a Vec) as kw / pos args
+    // - pop 3
+    // - push result of the call
+    CallKw,
     // Call without any args
     // Calls TOS
     // - pop 1

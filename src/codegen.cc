@@ -137,7 +137,12 @@ void CallExp::gen_code(ModuleObject *module) {
     // Push exp
     exp->gen_code(module);
 
-    if (!args.empty()) {
+    // No args
+    if (args.empty() && kwargs.empty()) {
+        // Tiny optimization, call CallProc to avoid creating empty list
+        PUSH_CODE(CallProc);
+    } else if (kwargs.empty()) {
+        // Only positional args
         // Generate expressions
         for (auto arg : args)
             arg->gen_code(module);
@@ -149,8 +154,40 @@ void CallExp::gen_code(ModuleObject *module) {
         // Call
         PUSH_CODE(Call);
     } else {
-        // Tiny optimization, call CallProc to avoid creating empty list
-        PUSH_CODE(CallProc);
+        // Keyword and possibly positional args
+        // Generate args
+        for (auto arg : args)
+            arg->gen_code(module);
+
+        // Make args
+        PUSH_CODE(Pack);
+        PUSH_CODE(args.size());
+
+        // Generate kwargs
+        for (const auto &[id, val] : kwargs) {
+            auto const_id = new (nothrow) Str(id);
+
+            // TODO : Throw
+            if (!const_id) {
+                THROW_MEMORY_ERROR;
+
+                return;
+            }
+
+            // Load id
+            PUSH_CODE(LoadConst);
+            auto off_id = ADD_CONST(const_id);
+            PUSH_CODE(off_id);
+
+            val->gen_code(module);
+        }
+
+        // Make kwargs
+        PUSH_CODE(PackMap);
+        PUSH_CODE(kwargs.size());
+
+        // Call
+        PUSH_CODE(CallKw);
     }
 }
 
@@ -214,6 +251,7 @@ void Indexing::gen_code(ModuleObject *module) {
 void Id::gen_code(ModuleObject *module) {
     Object *name = new (nothrow) Str(id);
 
+    // TODO : Throw
     if (!name) {
         THROW_MEMORY_ERROR;
 

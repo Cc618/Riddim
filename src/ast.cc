@@ -101,8 +101,8 @@ void Set::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
-CallExp::CallExp(line_t fileline, Exp *exp, const std::vector<Exp *> &args)
-    : Exp(fileline), exp(exp), args(args) {}
+CallExp::CallExp(line_t fileline)
+    : Exp(fileline) {}
 
 CallExp::~CallExp() {
     delete exp;

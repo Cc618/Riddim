@@ -92,7 +92,7 @@
 %nterm <ast::Set*> set
 %nterm <ast::Exp*> exp
 %nterm <ast::Const*> const
-%nterm <ast::CallExp*> callexp
+%nterm <ast::CallExp*> callexp call_args call_args_filled
 %nterm <ast::VecLiteral*> vec
 %nterm <ast::MapLiteral*> map
 %nterm <std::vector<std::pair<ast::Exp *, ast::Exp *>>> exp_mapping exp_mapping_filled
@@ -207,7 +207,30 @@ attrtarget: attr { $$ = new AttrTarget($1); }
 idtarget: ID { $$ = new IdTarget(@1.begin.line, $1); }
     ;
 
-callexp: exp lparen exp_list rparen { $$ = new CallExp(@1.begin.line, $1, $3); }
+callexp: exp lparen call_args rparen {
+        $$ = $3;
+        $$->fileline = @1.begin.line;
+        $$->exp = $1;
+    }
+    ;
+
+call_args: %empty { $$ = new CallExp(0); }
+    | call_args_filled { $$ = $1; }
+    | call_args_filled "," { $$ = $1; }
+    ;
+
+call_args_filled: ID ":" exp {
+        $$ = new CallExp(0);
+        $$->kwargs.push_back({ $1, $3 });
+    }
+    | exp {
+        $$ = new CallExp(0);
+        $$->args.push_back($1);
+    }
+    | call_args_filled "," exp { $$ = $1; $$->args.push_back($3); }
+    | call_args_filled "," stop exp { $$ = $1; $$->args.push_back($4); }
+    | call_args_filled "," ID ":" exp { $$ = $1; $$->kwargs.push_back({ $3, $5 }); }
+    | call_args_filled "," stop ID ":" exp { $$ = $1; $$->kwargs.push_back({ $4, $6 }); }
     ;
 
 map: lcurly exp_mapping rcurly { $$ = new MapLiteral(@1.begin.line, $2); }
