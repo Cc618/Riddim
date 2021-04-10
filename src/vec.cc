@@ -11,7 +11,10 @@ using namespace std;
 Type *Vec::class_type = nullptr;
 Vec *Vec::empty = nullptr;
 
-Vec::Vec(const vec_t &data) : Object(Vec::class_type), data(data) {}
+// TODO C : ::New for error handling
+Vec::Vec(const vec_t &data) : Object(Vec::class_type), data(data) {
+    me_add = new Function(me_add_handler, this);
+}
 
 void Vec::init_class_type() {
     class_type = new (nothrow) Type("Vec");
@@ -93,6 +96,43 @@ void Vec::init_class_type() {
         return result;
     };
 
+    // @getattr
+    class_type->fn_getattr = [](Object *self, Object *name) -> Object * {
+        auto me = reinterpret_cast<Vec *>(self);
+
+        if (name->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("Vec.@getattr", name->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(name)->data;
+
+        Object *result = nullptr;
+
+        // Length
+        if (attr == "len") {
+            result = new (nothrow) Int(me->data.size());
+        } else if (attr == "add") {
+            // Methods
+            return me->me_add;
+        } else {
+            // No such attribute
+            THROW_ATTR_ERROR(Str::class_type, attr);
+
+            return nullptr;
+        }
+
+        // Check whether the object has been allocated
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
@@ -165,6 +205,7 @@ void Vec::init_class_type() {
         return result_str;
     };
 
+    // @setitem
     class_type->fn_setitem = [](Object *self, Object *key,
                                 Object *value) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
@@ -199,4 +240,16 @@ void Vec::init_class_objects() {
 
         return;
     }
+}
+
+// --- Methods ---
+Object *Vec::me_add_handler(Object *self, Object *args, Object *kwargs) {
+    auto me = reinterpret_cast<Vec *>(self);
+
+    // TODO C : Check args + kwargs type
+    auto args_data = reinterpret_cast<Vec *>(args)->data;
+
+    me->data.push_back(args_data[0]);
+
+    return null;
 }
