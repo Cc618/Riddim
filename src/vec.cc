@@ -13,7 +13,8 @@ Vec *Vec::empty = nullptr;
 
 // TODO C : ::New for error handling
 Vec::Vec(const vec_t &data) : Object(Vec::class_type), data(data) {
-    me_add = new Function(me_add_handler, this);
+    NEW_METHOD(add);
+    NEW_METHOD(pop);
 }
 
 void Vec::init_class_type() {
@@ -111,11 +112,13 @@ void Vec::init_class_type() {
         Object *result = nullptr;
 
         // Length
+        // TODO : Use AttrObject
         if (attr == "len") {
             result = new (nothrow) Int(me->data.size());
         } else if (attr == "add") {
-            // Methods
             return me->me_add;
+        } else if (attr == "pop") {
+            return me->me_pop;
         } else {
             // No such attribute
             THROW_ATTR_ERROR(Str::class_type, attr);
@@ -244,12 +247,30 @@ void Vec::init_class_objects() {
 
 // --- Methods ---
 Object *Vec::me_add_handler(Object *self, Object *args, Object *kwargs) {
-    auto me = reinterpret_cast<Vec *>(self);
+    INIT_METHOD(Vec, "add");
 
-    // TODO C : Check args + kwargs type
-    auto args_data = reinterpret_cast<Vec *>(args)->data;
+    CHECK_ARGSLEN(1, "Vec.add");
+    CHECK_NOKWARGS("Vec.add");
 
     me->data.push_back(args_data[0]);
+
+    return null;
+}
+
+// TODO : Pop position
+Object *Vec::me_pop_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Vec, "pop");
+
+    CHECK_NOARGS("Vec.pop");
+    CHECK_NOKWARGS("Vec.pop");
+
+    if (me->data.empty()) {
+        throw_str(IndexError, "Can't pop empty collection");
+
+        return nullptr;
+    }
+
+    me->data.pop_back();
 
     return null;
 }

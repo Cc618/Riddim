@@ -6,23 +6,10 @@
 #include "program.hh"
 #include "str.hh"
 #include "vec.hh"
+#include "methods.hh"
 #include <iostream>
 
 using namespace std;
-
-#define CHECK_ARGS(BUILTIN_NAME)                                               \
-    if (args->type != Vec::class_type) {                                       \
-        THROW_TYPE_ERROR_PREF(BUILTIN_NAME "{args}", args->type,               \
-                              Vec::class_type);                                \
-        return nullptr;                                                        \
-    }
-
-#define CHECK_KWARGS(BUILTIN_NAME)                                             \
-    if (kwargs->type != HashMap::class_type) {                                 \
-        THROW_TYPE_ERROR_PREF(BUILTIN_NAME "{kwargs}", args->type,             \
-                              HashMap::class_type);                            \
-        return nullptr;                                                        \
-    }
 
 static Object *print_object(Object *o) {
     if (!o) {
