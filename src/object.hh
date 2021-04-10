@@ -82,6 +82,10 @@ struct Type : public Object {
     // Complete name
     str_t name;
 
+    // This function is called with fn_call
+    // Can be empty
+    fn_ternary_t constructor;
+
     // Builtin methods : Use wrappers within Object
     // The tp_traverse function
     fn_traverse_objects_t fn_traverse_objects;

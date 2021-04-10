@@ -11,6 +11,7 @@
 
 using namespace std;
 
+// --- Static ---
 static Object *print_object(Object *o) {
     if (!o) {
         cout << "nullptr";
@@ -35,6 +36,7 @@ static Object *print_object(Object *o) {
     return null;
 }
 
+// --- Init ---
 void init_builtins() {
     auto &global_frame = Program::instance->global_frame;
 
@@ -55,18 +57,10 @@ void init_builtins() {
         }                                                                      \
     }
 
-#define INIT_CONSTRUCTOR(TYPE) INIT_BUILTIN(#TYPE, new_##TYPE)
-
     // Functions
     INIT_BUILTIN("print", print);
     INIT_BUILTIN("typeof", builtin_typeof);
 
-    // Constructors
-    // TODO : A constructor is a method within the Type (Int is a type, Int() is
-    // a function call)
-    INIT_CONSTRUCTOR(AttrObject);
-
-#undef INIT_CONSTRUCTOR
 #undef INIT_BUILTIN
 }
 
@@ -103,20 +97,4 @@ Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
     CHECK_NOKWARGS("typeof");
 
     return args_data[0]->type;
-}
-
-// --- Constructors ---
-Object *new_AttrObject(Object *self, Object *args, Object *kwargs) {
-    INIT_METHOD(Object, "AttrObject");
-
-    CHECK_NOARGS("AttrObject");
-    CHECK_NOKWARGS("AttrObject");
-
-    auto result = AttrObject::New();
-
-    // Dispatch error
-    if (!result)
-        return nullptr;
-
-    return result;
 }

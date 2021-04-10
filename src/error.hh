@@ -108,7 +108,7 @@ static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
 #define THROW_MEMORY_ERROR throw_str(MemoryError, "Failed to allocate memory");
 
 // Variable not found
-// VAR is a string and TYPE is a type
+// VAR is a string
 #define THROW_NAME_ERROR(VAR)                                                  \
     throw_fmt(NameError, "Symbol %s not found", (VAR).c_str())
 
@@ -134,9 +134,9 @@ static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
     throw_fmt(ArithmeticError, "Operator %s : %s", (OP), (MSG))
 
 // Throws a NameError that says no such builtin method
-#define THROW_NOBUILTIN(METHOD)                                                \
+#define THROW_NOBUILTIN(TYPE, METHOD)                                                \
     throw_fmt(NameError, "Type %s has no @" #METHOD " method",                 \
-              type->name.c_str());
+              #TYPE);
 
 // No kwargs required
 static inline void THROW_EXTRA_KWARGS(const str_t &FUNC, const str_t &EXTRA) {

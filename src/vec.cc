@@ -4,6 +4,7 @@
 #include "int.hh"
 #include "null.hh"
 #include "str.hh"
+#include "methods.hh"
 #include <algorithm>
 
 using namespace std;
@@ -23,6 +24,22 @@ void Vec::init_class_type() {
         THROW_MEMORY_ERROR;
         return;
     }
+
+    class_type->constructor = [](Object *self, Object *args, Object *kwargs) -> Object* {
+        // TODO : Change name (use it as a constructor not a function)
+        INIT_METHOD(Vec, "Vec");
+
+        CHECK_NOARGS("Vec");
+        CHECK_NOKWARGS("Vec");
+
+        auto result = new (nothrow) Vec();
+
+        // Dispatch error
+        if (!result)
+            return nullptr;
+
+        return result;
+    };
 
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {

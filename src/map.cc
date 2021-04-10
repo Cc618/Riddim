@@ -5,6 +5,7 @@
 #include "int.hh"
 #include "null.hh"
 #include "str.hh"
+#include "methods.hh"
 
 using namespace std;
 
@@ -241,12 +242,31 @@ AttrObject *AttrObject::New() {
     return o;
 }
 
+// TODO
+#include "builtins.hh"
 void AttrObject::init_class_type() {
     class_type = new (nothrow) Type("AttrObject");
     if (!class_type) {
         THROW_MEMORY_ERROR;
         return;
     }
+
+    class_type->constructor = [](Object *self, Object *args,
+                                 Object *kwargs) -> Object * {
+        // TODO : Change name (use it as a constructor not a function)
+        INIT_METHOD(Object, "AttrObject");
+
+        CHECK_NOARGS("AttrObject");
+        CHECK_NOKWARGS("AttrObject");
+
+        auto result = AttrObject::New();
+
+        // Dispatch error
+        if (!result)
+            return nullptr;
+
+        return result;
+    };
 
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {
@@ -300,7 +320,8 @@ void AttrObject::init_class_type() {
             return nullptr;
         }
 
-        auto result = new (nothrow) AttrObject(reinterpret_cast<HashMap*>(data_copy));
+        auto result =
+            new (nothrow) AttrObject(reinterpret_cast<HashMap *>(data_copy));
 
         if (!result) {
             THROW_MEMORY_ERROR;

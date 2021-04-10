@@ -30,7 +30,7 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
 
 Object *Object::add(Object *o) {
     if (!type->fn_add) {
-        THROW_NOBUILTIN(add);
+        THROW_NOBUILTIN(Object, add);
 
         return nullptr;
     }
@@ -40,7 +40,7 @@ Object *Object::add(Object *o) {
 
 Object *Object::call(Object *args, Object *kwargs) {
     if (!type->fn_call) {
-        THROW_NOBUILTIN(call);
+        THROW_NOBUILTIN(Object, call);
 
         return nullptr;
     }
@@ -92,7 +92,7 @@ Object *Object::getattr(Object *name) {
 
 Object *Object::getitem(Object *args) {
     if (!type->fn_getitem) {
-        THROW_NOBUILTIN(getitem);
+        THROW_NOBUILTIN(Object, getitem);
 
         return nullptr;
     }
@@ -120,7 +120,7 @@ Object *Object::hash() {
 
 Object *Object::in(Object *val) {
     if (!type->fn_in) {
-        THROW_NOBUILTIN(in);
+        THROW_NOBUILTIN(Object, in);
 
         return nullptr;
     }
@@ -130,7 +130,7 @@ Object *Object::in(Object *val) {
 
 Object *Object::mul(Object *o) {
     if (!type->fn_mul) {
-        THROW_NOBUILTIN(mul);
+        THROW_NOBUILTIN(Object, mul);
 
         return nullptr;
     }
@@ -156,7 +156,7 @@ Object *Object::setattr(Object *name, Object *value) {
 
 Object *Object::setitem(Object *key, Object *value) {
     if (!type->fn_setitem) {
-        THROW_NOBUILTIN(setitem);
+        THROW_NOBUILTIN(Object, setitem);
 
         return nullptr;
     }
@@ -181,8 +181,6 @@ Object *Object::str() {
     return type->fn_str(this);
 }
 
-#undef THROW_NOBUILTIN
-
 // --- Type ---
 static int type_global_id = 0;
 
@@ -201,6 +199,20 @@ void Type::init_class_type() {
 
     // Was not initialized
     class_type->type = class_type;
+
+    // @call
+    // Call the constructor
+    class_type->fn_call = [](Object *self, Object *args, Object *kwargs) -> Object * {
+        auto me = reinterpret_cast<Type *>(self);
+
+        if (!me->constructor) {
+            THROW_NOBUILTIN(Type, call);
+
+            return nullptr;
+        }
+
+        return me->constructor(self, args, kwargs);
+    };
 
     // @str
     class_type->fn_str = [](Object *self) -> Object * {

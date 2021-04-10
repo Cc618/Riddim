@@ -17,10 +17,6 @@ Object *print(Object *self, Object *args, Object *kwargs);
 
 Object *builtin_typeof(Object *self, Object *args, Object *kwargs);
 
-// --- Constructors ---
-// TODO B : Move to map.hh ?
-Object *new_AttrObject(Object *self, Object *args, Object *kwargs);
-
 // --- Utils ---
 // Prints one object to stdout
 inline Object *debug_print(Object *o) {

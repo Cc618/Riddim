@@ -68,12 +68,37 @@ void Program::init_attributes() {
 
         return;
     }
+
+    // Register all types that weren't registered yet
+    for (auto type : types) {
+        register_type(type);
+
+        if (on_error()) return;
+    }
 }
 
 void Program::add_type(Type *type) {
     Program::instance->types.push_back(type);
+
+    if (Program::instance->global_frame) {
+        Program::instance->register_type(type);
+
+        if (on_error()) return;
+    }
 }
 
 void Program::add_module(Module *mod) {
     Program::instance->modules.push_back(mod);
+}
+
+void Program::register_type(Type *type) {
+    auto type_id = new (nothrow) Str(type->name);
+
+    if (!type_id) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    Program::instance->global_frame->setitem(type_id, type);
 }
