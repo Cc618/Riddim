@@ -22,9 +22,12 @@ struct Vec : public Object {
     // Pop back
     DECL_METHOD(pop);
 
-    Vec(const vec_t &data = {});
+    static Vec *New(const vec_t &data = {});
 
     // Can throw
     static void init_class_type();
     static void init_class_objects();
+
+private:
+    Vec(const vec_t &data = {});
 };

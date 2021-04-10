@@ -51,9 +51,9 @@
         return nullptr;                                                        \
     }
 
-// Inits a method in the constructor of an object
+// Inits a method in the factory of an object (self is the object)
 #define NEW_METHOD(NAME) \
-    me_##NAME = new Function(me_##NAME##_handler, this);
+    self->me_##NAME = new Function(self->me_##NAME##_handler, self);
 
 // Declares a new method inside the class of an object
 #define DECL_METHOD(NAME) \

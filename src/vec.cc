@@ -12,11 +12,22 @@ using namespace std;
 Type *Vec::class_type = nullptr;
 Vec *Vec::empty = nullptr;
 
-// TODO C : ::New for error handling
-Vec::Vec(const vec_t &data) : Object(Vec::class_type), data(data) {
+Vec *Vec::New(const vec_t &data) {
+    auto self = new (nothrow) Vec(data);
+
+    if (!self) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
     NEW_METHOD(add);
     NEW_METHOD(pop);
+
+    return self;
 }
+
+Vec::Vec(const vec_t &data) : Object(Vec::class_type), data(data) {}
 
 void Vec::init_class_type() {
     class_type = new (nothrow) Type("Vec");
@@ -32,7 +43,7 @@ void Vec::init_class_type() {
         CHECK_NOARGS("Vec");
         CHECK_NOKWARGS("Vec");
 
-        auto result = new (nothrow) Vec();
+        auto result = Vec::New();
 
         // Dispatch error
         if (!result)
@@ -56,11 +67,9 @@ void Vec::init_class_type() {
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
-        auto result = new (nothrow) Vec(me->data);
+        auto result = Vec::New(me->data);
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -103,11 +112,9 @@ void Vec::init_class_type() {
         for (size_t i = 0; i < multiplier; ++i)
             data.insert(data.end(), me->data.begin(), me->data.end());
 
-        auto result = new (nothrow) Vec(data);
+        auto result = Vec::New(data);
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -253,11 +260,9 @@ void Vec::init_class_type() {
 }
 
 void Vec::init_class_objects() {
-    empty = new (nothrow) Vec();
+    empty = Vec::New();
 
     if (!empty) {
-        THROW_MEMORY_ERROR;
-
         return;
     }
 }

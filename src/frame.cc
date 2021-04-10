@@ -54,11 +54,10 @@ Frame *Frame::New(Frame *previous) {
         return nullptr;
     }
 
-    o->consts = new (nothrow) Vec();
+    o->consts = Vec::New();
 
+    // Dispatch error
     if (!o->consts) {
-        THROW_MEMORY_ERROR;
-
         return nullptr;
     }
 

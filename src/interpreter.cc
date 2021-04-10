@@ -353,11 +353,9 @@ void interpret(Frame *frame) {
             obj_stack.resize(obj_stack.size() - count);
 
             // Build result
-            auto result = new (nothrow) Vec(data);
+            auto result = Vec::New(data);
 
             if (!result) {
-                THROW_MEMORY_ERROR;
-
                 DISPATCH_ERROR;
             }
 
