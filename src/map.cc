@@ -51,7 +51,6 @@ void HashMap::init_class_type() {
         return result;
     };
 
-
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {
         HashMap *me = reinterpret_cast<HashMap *>(self);

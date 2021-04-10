@@ -206,7 +206,7 @@ void Type::init_class_type() {
         auto me = reinterpret_cast<Type *>(self);
 
         if (!me->constructor) {
-            THROW_NOBUILTIN(Type, call);
+            throw_fmt(NameError, "Type %s has no constructor", me->name.c_str());
 
             return nullptr;
         }
