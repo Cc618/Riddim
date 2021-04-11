@@ -6,5 +6,5 @@ Here is the documentation for the riddim language.
 - [Objects](object.md)
 - [Errors](error.md)
 - [Garbage Collector / Memory](gc.md)
-- [Parser](parser.md)
 - [Debug](debug.md)
+- [Parser](parser.md)

@@ -2,6 +2,7 @@
 #include "bool.hh"
 #include "debug.hh"
 #include "error.hh"
+#include "frame.hh"
 #include "int.hh"
 #include "interpreter.hh"
 #include "module.hh"
@@ -11,11 +12,11 @@
 
 // TODO : Rm debug
 #define PUSH_CODE(DATA)                                                        \
-    module->frame->code.push_back(DATA);                                       \
+    frame->code.push_back(DATA);                                               \
     // cout << "> " << #DATA << " (" << (DATA) << ")" << endl;
 
 #define ADD_CONST(DATA)                                                        \
-    module->frame->add_const(DATA);                                            \
+    frame->add_const(DATA);                                                    \
     // cout << "* " << #DATA << endl;
 
 using namespace OpCode;
@@ -28,9 +29,10 @@ using namespace ast;
 
 bool gen_module_code(AstModule *ast, ModuleObject *module) {
     try {
-        ast->gen_code(module);
+        ast->gen_code(module, module->frame);
 
-        if (on_error()) return false;
+        if (on_error())
+            return false;
 
         return true;
     } catch (...) {
@@ -38,8 +40,8 @@ bool gen_module_code(AstModule *ast, ModuleObject *module) {
     }
 }
 
-void AstModule::gen_code(ModuleObject *module) {
-    content->gen_code(module);
+void AstModule::gen_code(Module *module, Frame *frame) {
+    content->gen_code(module, frame);
 
     // Return null at the end
     PUSH_CODE(LoadConst);
@@ -49,19 +51,19 @@ void AstModule::gen_code(ModuleObject *module) {
 }
 
 // --- Stmts ---
-void Block::gen_code(ModuleObject *module) {
+void Block::gen_code(Module *module, Frame *frame) {
     for (auto stmt : stmts)
-        stmt->gen_code(module);
+        stmt->gen_code(module, frame);
 }
 
-void Stmt::gen_code(ModuleObject *module) {
-    module->frame->mark_line(fileline);
+void Stmt::gen_code(Module *module, Frame *frame) {
+    frame->mark_line(fileline);
 }
 
-void IfStmt::gen_code(ModuleObject *module) {
-    Stmt::gen_code(module);
+void IfStmt::gen_code(Module *module, Frame *frame) {
+    Stmt::gen_code(module, frame);
 
-    auto &code = module->frame->code;
+    auto &code = frame->code;
 
     // The pseudo code of the generation
     // condition is false ? goto else
@@ -72,7 +74,7 @@ void IfStmt::gen_code(ModuleObject *module) {
     // finally:
 
     // Generate condition
-    condition->gen_code(module);
+    condition->gen_code(module, frame);
 
     // If false, goto elseaddr
     PUSH_CODE(JmpFalse);
@@ -83,7 +85,7 @@ void IfStmt::gen_code(ModuleObject *module) {
     PUSH_CODE(Nop);
 
     // If true, go here
-    ifbody->gen_code(module);
+    ifbody->gen_code(module, frame);
 
     // Jump after the else (finally section)
     PUSH_CODE(Jmp);
@@ -94,17 +96,17 @@ void IfStmt::gen_code(ModuleObject *module) {
     code[elseaddr_offset] = code.size();
 
     if (elsebody) {
-        elsebody->gen_code(module);
+        elsebody->gen_code(module, frame);
     }
 
     // Jump there at the end (finally)
     code[ifaddr_offset] = code.size();
 }
 
-void WhileStmt::gen_code(ModuleObject *module) {
-    Stmt::gen_code(module);
+void WhileStmt::gen_code(Module *module, Frame *frame) {
+    Stmt::gen_code(module, frame);
 
-    auto &code = module->frame->code;
+    auto &code = frame->code;
 
     // The pseudo code of the generation
     // start:
@@ -115,7 +117,7 @@ void WhileStmt::gen_code(ModuleObject *module) {
 
     // Generate condition
     auto start_offset = code.size();
-    condition->gen_code(module);
+    condition->gen_code(module, frame);
 
     // If false, goto finally
     PUSH_CODE(JmpFalse);
@@ -123,7 +125,7 @@ void WhileStmt::gen_code(ModuleObject *module) {
     PUSH_CODE(Nop);
 
     // If true, execute body
-    body->gen_code(module);
+    body->gen_code(module, frame);
 
     // Jump at the start section (loop again)
     PUSH_CODE(Jmp);
@@ -133,9 +135,9 @@ void WhileStmt::gen_code(ModuleObject *module) {
     code[finally_offset] = code.size();
 }
 
-void CallExp::gen_code(ModuleObject *module) {
+void CallExp::gen_code(Module *module, Frame *frame) {
     // Push exp
-    exp->gen_code(module);
+    exp->gen_code(module, frame);
 
     // No args
     if (args.empty() && kwargs.empty()) {
@@ -145,7 +147,7 @@ void CallExp::gen_code(ModuleObject *module) {
         // Only positional args
         // Generate expressions
         for (auto arg : args)
-            arg->gen_code(module);
+            arg->gen_code(module, frame);
 
         // Make args
         PUSH_CODE(Pack);
@@ -157,7 +159,7 @@ void CallExp::gen_code(ModuleObject *module) {
         // Keyword and possibly positional args
         // Generate args
         for (auto arg : args)
-            arg->gen_code(module);
+            arg->gen_code(module, frame);
 
         // Make args
         PUSH_CODE(Pack);
@@ -179,7 +181,7 @@ void CallExp::gen_code(ModuleObject *module) {
             auto off_id = ADD_CONST(const_id);
             PUSH_CODE(off_id);
 
-            val->gen_code(module);
+            val->gen_code(module, frame);
         }
 
         // Make kwargs
@@ -191,42 +193,42 @@ void CallExp::gen_code(ModuleObject *module) {
     }
 }
 
-void ExpStmt::gen_code(ModuleObject *module) {
-    Stmt::gen_code(module);
+void ExpStmt::gen_code(Module *module, Frame *frame) {
+    Stmt::gen_code(module, frame);
 
     // Generate expression
-    exp->gen_code(module);
+    exp->gen_code(module, frame);
 
     // Remove result
     PUSH_CODE(Pop);
 }
 
 // --- Exps ---
-void Set::gen_code(ModuleObject *module) {
-    exp->gen_code(module);
-    target->gen_code(module);
+void Set::gen_code(Module *module, Frame *frame) {
+    exp->gen_code(module, frame);
+    target->gen_code(module, frame);
 }
 
-void VecLiteral::gen_code(ModuleObject *module) {
+void VecLiteral::gen_code(Module *module, Frame *frame) {
     for (auto exp : exps)
-        exp->gen_code(module);
+        exp->gen_code(module, frame);
 
     PUSH_CODE(Pack);
     PUSH_CODE(exps.size());
 }
 
-void MapLiteral::gen_code(ModuleObject *module) {
+void MapLiteral::gen_code(Module *module, Frame *frame) {
     for (const auto &[k, v] : kv) {
-        k->gen_code(module);
-        v->gen_code(module);
+        k->gen_code(module, frame);
+        v->gen_code(module, frame);
     }
 
     PUSH_CODE(PackMap);
     PUSH_CODE(kv.size());
 }
 
-void Attr::gen_code(ModuleObject *module) {
-    exp->gen_code(module);
+void Attr::gen_code(Module *module, Frame *frame) {
+    exp->gen_code(module, frame);
 
     PUSH_CODE(LoadAttr);
 
@@ -242,13 +244,13 @@ void Attr::gen_code(ModuleObject *module) {
     PUSH_CODE(off_attr);
 }
 
-void Indexing::gen_code(ModuleObject *module) {
-    container->gen_code(module);
-    index->gen_code(module);
+void Indexing::gen_code(Module *module, Frame *frame) {
+    container->gen_code(module, frame);
+    index->gen_code(module, frame);
     PUSH_CODE(LoadIndex);
 }
 
-void Id::gen_code(ModuleObject *module) {
+void Id::gen_code(Module *module, Frame *frame) {
     Object *name = new (nothrow) Str(id);
 
     // TODO : Throw
@@ -264,16 +266,16 @@ void Id::gen_code(ModuleObject *module) {
     PUSH_CODE(name_offset);
 }
 
-void Const::gen_code(ModuleObject *module) {
+void Const::gen_code(Module *module, Frame *frame) {
     Object *const_val;
 
     switch (type) {
     case Const::Type::Int:
-        const_val = new (nothrow) ::Int(get<int_t>(val));
+        const_val = new (nothrow)::Int(get<int_t>(val));
         break;
 
     case Const::Type::Str:
-        const_val = new (nothrow) ::Str(get<str_t>(val));
+        const_val = new (nothrow)::Str(get<str_t>(val));
         break;
 
     case Const::Type::True:
@@ -304,9 +306,9 @@ void Const::gen_code(ModuleObject *module) {
     PUSH_CODE(const_offset);
 }
 
-void BinExp::gen_code(ModuleObject *module) {
-    left->gen_code(module);
-    right->gen_code(module);
+void BinExp::gen_code(Module *module, Frame *frame) {
+    left->gen_code(module, frame);
+    right->gen_code(module, frame);
 
     switch (op) {
     case BinExp::Or:
@@ -366,8 +368,8 @@ void BinExp::gen_code(ModuleObject *module) {
     }
 }
 
-void UnaExp::gen_code(ModuleObject *module) {
-    exp->gen_code(module);
+void UnaExp::gen_code(Module *module, Frame *frame) {
+    exp->gen_code(module, frame);
 
     switch (op) {
     case UnaExp::Not:
@@ -380,7 +382,7 @@ void UnaExp::gen_code(ModuleObject *module) {
 }
 
 // --- Targets ---
-void IdTarget::gen_code(ModuleObject *module) {
+void IdTarget::gen_code(Module *module, Frame *frame) {
     PUSH_CODE(StoreVar);
 
     auto const_id = new (nothrow) Str(id);
@@ -395,19 +397,19 @@ void IdTarget::gen_code(ModuleObject *module) {
     PUSH_CODE(off_id);
 }
 
-void IndexingTarget::gen_code(ModuleObject *module) {
+void IndexingTarget::gen_code(Module *module, Frame *frame) {
     // Note that indexing->gen_code is not used since it is useful
     // to load not to store the value
-    indexing->container->gen_code(module);
-    indexing->index->gen_code(module);
+    indexing->container->gen_code(module, frame);
+    indexing->index->gen_code(module, frame);
     PUSH_CODE(StoreIndex);
 }
 
-void AttrTarget::gen_code(ModuleObject *module) {
+void AttrTarget::gen_code(Module *module, Frame *frame) {
     // Note that attr->gen_code is not used since it is useful
     // to load not to store the value
     // Load object
-    attr->exp->gen_code(module);
+    attr->exp->gen_code(module, frame);
 
     // Add attribute name constant
     auto const_attr = new (nothrow) Str(attr->attr);

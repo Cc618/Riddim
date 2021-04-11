@@ -5,6 +5,7 @@
 #include "null.hh"
 #include "str.hh"
 #include "methods.hh"
+#include "function.hh"
 #include <algorithm>
 
 using namespace std;

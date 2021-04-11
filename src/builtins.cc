@@ -1,6 +1,7 @@
 #include "builtins.hh"
 #include "error.hh"
 #include "function.hh"
+#include "frame.hh"
 #include "map.hh"
 #include "methods.hh"
 #include "null.hh"

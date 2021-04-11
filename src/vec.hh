@@ -3,9 +3,10 @@
 // Vector type, an array where objects are stored contiguously
 
 #include "object.hh"
-#include "function.hh"
 #include "methods.hh"
 #include <vector>
+
+struct Function;
 
 // Internal Vec
 typedef std::vector<Object*> vec_t;

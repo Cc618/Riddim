@@ -21,7 +21,7 @@ There are multiple sections :
 ### Expressions
 Expressions are complex because of precedence, some expressions must be parsed
 before others.
-To avoid conflicts, here is the types of expressions :
+To avoid conflicts, here are the types of expressions :
 - exp : Abstract expression used in statements
 - set : Assignment, can be chained
 - boolean : Not, And, Or...

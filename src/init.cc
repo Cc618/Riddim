@@ -64,6 +64,7 @@ static void init_types() {
     INIT_TYPE(Module);
     INIT_TYPE(Vec);
     INIT_TYPE(Function);
+    INIT_TYPE(CodeFunction);
 
 #undef INIT_TYPE
 }
