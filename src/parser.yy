@@ -90,14 +90,8 @@
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ExpStmt*> expstmt
 // Expressions
-%nterm <ast::Exp*> exp primary
-%nterm <ast::BinExp*> binary
-%nterm <ast::UnaExp*> unary
-%nterm <ast::Set*> set
-%nterm <ast::Target*> target
-%nterm <ast::IdTarget*> target_id
-%nterm <ast::IndexingTarget*> target_indexing
-%nterm <ast::AttrTarget*> target_attr
+%nterm <ast::Exp*> exp set boolean comparison binary unary primary
+%nterm <ast::Target*> target target_id target_indexing target_attr
 // Atoms
 %nterm <ast::CallExp*> call call_args call_args_filled
 %nterm <ast::Id*> id
@@ -115,14 +109,11 @@
 %token <int_t> INT "int"
 
 // The lower it is declared, the sooner the token will be used
-// TODO
-%left ISNOT;
-%left "=";
+%right "=";
 %left "or";
 %left "and";
 %left "not";
-%left "==" "<=" ">=" "<" ">";
-%left "is";
+%left "==" "<=" ">=" "<" ">" "is";
 %left "+" "-";
 %left "*" "/" "%";
 %left ".";
@@ -190,22 +181,13 @@ expstmt: exp stop { $$ = new ExpStmt($1); }
     ;
 
 // --- Expressions ---
-exp: primary { $$ = $1; }
-    | binary { $$ = $1; }
-    | unary { $$ = $1; }
-    | set { $$ = $1; }
+exp: set { $$ = $1; }
     ;
 
-// TODO
-// exp: primary
-//     | "not" primary { cout << "not" << endl; }
-//     | primary "is" primary
-//     | primary "is" "not" primary { cout << "is not" << endl; }
-//     ;
-
-
 // Set and targets
-set: target "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
+// We can chain multiple sets
+set: boolean { $$ = $1; }
+    | target "=" set { $$ = new Set(@1.begin.line, $1, $3); }
     ;
 
 target: target_id { $$ = $1; }
@@ -222,7 +204,46 @@ target_attr: attr { $$ = new AttrTarget($1); }
 target_id: ID { $$ = new IdTarget(@1.begin.line, $1); }
     ;
 
-primary: lparen exp rparen {}
+boolean: comparison { $$ = $1; }
+    | "not" comparison { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
+    | boolean "or" comparison { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
+    | boolean "and" comparison { $$ = new BinExp(@1.begin.line, $1, BinExp::And, $3); }
+    ;
+
+comparison: binary { $$ = $1; }
+    | comparison "==" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Equal, $3); }
+    | comparison "<=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::LesserEqual, $3); }
+    | comparison ">=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::GreaterEqual, $3); }
+    | comparison "<" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Lesser, $3); }
+    | comparison ">" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
+    | comparison "is" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Is, $3); }
+    | comparison "is" "not" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::IsNot, $4); }
+    ;
+
+// TODO : Multiple comparisons
+// comparison: binary
+//     | binary comp_list
+// comparison_list: "<" binary
+//     | "is" binary
+//     | "is" "not" binary
+
+// Binary
+// TODO
+    // | exp "-" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
+    // | exp "/" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
+    // | exp "%" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
+
+binary : unary { $$ = $1; }
+    | binary "+" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
+    | binary "*" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
+    ;
+
+// Unaries
+unary: primary { $$ = $1; }
+    ;
+
+// Primaries
+primary: lparen exp rparen { $$ = $2; }
     | const { $$ = $1; }
     | id { $$ = $1; }
     | indexing { $$ = $1; }
@@ -232,32 +253,14 @@ primary: lparen exp rparen {}
     | call { $$ = $1; }
     ;
 
-// Binary
-// TODO
-    // | exp "-" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
-    // | exp "/" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
-    // | exp "%" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
-
-binary : exp "or" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
-    | exp "and" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::And, $3); }
-    | exp "==" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Equal, $3); }
-    | exp "<=" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::LesserEqual, $3); }
-    | exp ">=" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::GreaterEqual, $3); }
-    | exp "<" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Lesser, $3); }
-    | exp ">" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
-    | exp "+" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
-    | exp "*" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
-    | exp "is" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Is, $3); }
-    | exp "is" "not" exp %prec ISNOT { $$ = new BinExp(@1.begin.line, $1, BinExp::IsNot, $4); }
+attr: primary "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
     ;
 
-unary: "not" exp { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
+indexing: primary "[" exp "]" { $$ = new Indexing(@1.begin.line, $1, $3); }
     ;
 
-
-// --- Atoms ---
 // Call
-call: exp lparen call_args rparen {
+call: primary lparen call_args rparen {
         $$ = $3;
         $$->fileline = @1.begin.line;
         $$->exp = $1;
@@ -283,6 +286,7 @@ call_args_filled: ID ":" exp {
     | call_args_filled "," stop ID ":" exp { $$ = $1; $$->kwargs.push_back({ $4, $6 }); }
     ;
 
+// --- Atoms ---
 // Maps
 map: lcurly map_content rcurly { $$ = new MapLiteral(@1.begin.line, $2); }
     ;
@@ -311,14 +315,9 @@ vec_content_filled: exp { $$ = { $1 }; }
     | vec_content_filled "," stop exp { $$ = $1; $$.push_back($4); }
     ;
 
-attr: exp "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
-    ;
-
-indexing: exp "[" exp "]" { $$ = new Indexing(@1.begin.line, $1, $3); }
-    ;
-
 const: INT { $$ = new Const(@1.begin.line, $1); }
     | STR { $$ = new Const(@1.begin.line, $1); }
+    // TODO : As global constants
     | TRUE { $$ = new Const(@1.begin.line, Const::True); }
     | FALSE { $$ = new Const(@1.begin.line, Const::False); }
     | NULL { $$ = new Const(@1.begin.line, Const::Null); }
