@@ -92,11 +92,12 @@
 // Expressions
 %nterm <ast::Exp*> exp set boolean comparison binary unary primary
 %nterm <ast::Target*> target target_id target_indexing target_attr
-// Atoms
 %nterm <ast::CallExp*> call call_args call_args_filled
-%nterm <ast::Id*> id
 %nterm <ast::Indexing*> indexing
 %nterm <ast::Attr*> attr
+// Atoms
+%nterm <ast::Exp*> atom
+%nterm <ast::Id*> id
 %nterm <ast::VecLiteral*> vec
 %nterm <ast::MapLiteral*> map
 %nterm <std::vector<std::pair<ast::Exp *, ast::Exp *>>> map_content map_content_filled
@@ -243,14 +244,11 @@ unary: primary { $$ = $1; }
     ;
 
 // Primaries
-primary: lparen exp rparen { $$ = $2; }
-    | const { $$ = $1; }
-    | id { $$ = $1; }
+primary: atom { $$ = $1; }
+    | lparen exp rparen { $$ = $2; }
+    | call { $$ = $1; }
     | indexing { $$ = $1; }
     | attr { $$ = $1; }
-    | vec { $$ = $1; }
-    | map { $$ = $1; }
-    | call { $$ = $1; }
     ;
 
 attr: primary "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
@@ -287,6 +285,12 @@ call_args_filled: ID ":" exp {
     ;
 
 // --- Atoms ---
+atom: const { $$ = $1; }
+    | id { $$ = $1; }
+    | vec { $$ = $1; }
+    | map { $$ = $1; }
+    ;
+
 // Maps
 map: lcurly map_content rcurly { $$ = new MapLiteral(@1.begin.line, $2); }
     ;

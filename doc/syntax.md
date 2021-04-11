@@ -94,3 +94,15 @@ a[key1] = b[key2]
 ```
 
 <!-- TODO : Print -->
+
+## Operator precedence
+The precedence is similar to Python.
+- "="
+- "or"
+- "and"
+- "not"
+- "==" "<=" ">=" "<" ">" "is"
+- "+" "-"
+- "*" "/" "%"
+- Attribute reference
+- Indexing
