@@ -352,6 +352,15 @@ void BinExp::gen_code(ModuleObject *module) {
         PUSH_CODE(BinMul);
         break;
 
+    case BinExp::Is:
+        PUSH_CODE(BinIs);
+        break;
+
+    case BinExp::IsNot:
+        PUSH_CODE(BinIs);
+        PUSH_CODE(UnaNot);
+        break;
+
     default:
         DEBUG_FATAL(module, fileline, "BinExp::gen_code : Unknown op");
     }

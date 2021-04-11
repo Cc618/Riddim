@@ -256,6 +256,8 @@ struct BinExp : public Exp {
         // Div,
         // Mod,
         Mul,
+        Is,
+        IsNot,
     };
 
     Op op;

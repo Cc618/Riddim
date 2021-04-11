@@ -50,6 +50,7 @@
     AND         "and"
     OR          "or"
     NOT         "not"
+    IS          "is"
     EQ          "=="
     LE          "<="
     GE          ">="
@@ -90,7 +91,7 @@
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ExpStmt*> expstmt
 %nterm <ast::Set*> set
-%nterm <ast::Exp*> exp
+%nterm <ast::Exp*> exp primary
 %nterm <ast::Const*> const
 %nterm <ast::CallExp*> callexp call_args call_args_filled
 %nterm <ast::VecLiteral*> vec
@@ -109,11 +110,14 @@
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 
 // The lower it is declared, the sooner the token will be used
+// TODO
+%left ISNOT;
 %left "=";
 %left "or";
 %left "and";
 %left "not";
 %left "==" "<=" ">=" "<" ">";
+%left "is";
 %left "+" "-";
 %left "*" "/" "%";
 %left ".";
@@ -124,16 +128,19 @@
 %start module;
 
 %%
+// --- AST ---
 module: stop stmtlist {
             driver.module = new AstModule(@$.begin.line);
             driver.module->content = $2;
         }
     ;
 
+// --- Declarations ---
 block: lcurly stmtlist rcurly { $$ = $2; }
     | lcurly stop stmtlist rcurly { $$ = $3; }
     ;
 
+// --- Statements
 stmtlist: %empty { $$ = new Block(@$.begin.line); }
     | stmtlist stmt { $$ = $1; $$->stmts.push_back($2); }
     ;
@@ -177,11 +184,24 @@ whilestmt: "while" exp block stop { $$ = new WhileStmt($2, $3); }
 expstmt: exp stop { $$ = new ExpStmt($1); }
     ;
 
-exp: lparen exp rparen { $$ = $2; }
-    | const { $$ = $1; }
+// --- Expressions ---
+exp: primary { $$ = $1; }
     | binexp { $$ = $1; }
     | unaexp { $$ = $1; }
     | set { $$ = $1; }
+    ;
+
+
+
+// TODO
+// exp: primary
+//     | "not" primary { cout << "not" << endl; }
+//     | primary "is" primary
+//     | primary "is" "not" primary { cout << "is not" << endl; }
+//     ;
+
+primary: lparen exp rparen {}
+    | const { $$ = $1; }
     | id { $$ = $1; }
     | indexing { $$ = $1; }
     | attr { $$ = $1; }
@@ -189,6 +209,9 @@ exp: lparen exp rparen { $$ = $2; }
     | map { $$ = $1; }
     | callexp { $$ = $1; }
     ;
+
+
+
 
 set: target "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
     ;
@@ -233,6 +256,7 @@ call_args_filled: ID ":" exp {
     | call_args_filled "," stop ID ":" exp { $$ = $1; $$->kwargs.push_back({ $4, $6 }); }
     ;
 
+// --- Atoms ---
 map: lcurly exp_mapping rcurly { $$ = new MapLiteral(@1.begin.line, $2); }
     ;
 
@@ -273,6 +297,8 @@ binexp : exp "or" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
     | exp ">" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
     | exp "+" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
     | exp "*" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
+    | exp "is" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Is, $3); }
+    | exp "is" "not" exp %prec ISNOT { $$ = new BinExp(@1.begin.line, $1, BinExp::IsNot, $4); }
     ;
 
 unaexp: "not" exp { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
@@ -284,6 +310,7 @@ attr: exp "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
 indexing: exp "[" exp "]" { $$ = new Indexing(@1.begin.line, $1, $3); }
     ;
 
+// --- Tokens ---
 id: ID { $$ = new Id(@1.begin.line, $1); }
     ;
 
@@ -299,26 +326,21 @@ stop: STOP
     ;
 
 lcurly: LCURLY
-    // | lcurly STOP
     ;
 
 rcurly: RCURLY
-    // | rcurly STOP
     ;
 
 lbrack: LBRACK
-    // | lbrack STOP
     ;
 
 rbrack: RBRACK
     ;
 
 lparen: LPAREN
-    // | lparen STOP
     ;
 
 rparen: RPAREN
-    // | STOP rparen
     ;
 %%
 

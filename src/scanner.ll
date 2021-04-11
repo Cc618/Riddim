@@ -120,6 +120,7 @@ comment     #.*$
 "and"           return yy::parser::make_AND(loc);
 "or"            return yy::parser::make_OR(loc);
 "not"           return yy::parser::make_NOT(loc);
+"is"            return yy::parser::make_IS(loc);
 
 "if"            return yy::parser::make_IF(loc);
 "elif"          return yy::parser::make_ELIF(loc);
