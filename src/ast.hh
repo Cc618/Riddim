@@ -46,7 +46,7 @@ struct AstModule : public ASTNode {
     virtual void gen_code(Module *module, Frame *frame) override;
 };
 
-// --- Stmts ---
+// --- Decls ---
 struct Block : public ASTNode {
     std::vector<Stmt *> stmts;
 
@@ -59,6 +59,7 @@ struct Block : public ASTNode {
     virtual void gen_code(Module *module, Frame *frame) override;
 };
 
+// --- Stmts ---
 struct Stmt : public ASTNode {
     using ASTNode::ASTNode;
 
@@ -335,4 +336,30 @@ struct AttrTarget : public Target {
 
     virtual void gen_code(Module *module, Frame *frame) override;
 };
+
+
+
+
+// TODO A : Statement / decl
+struct FnDecl : public Stmt {
+    str_t name;
+    Block *body;
+
+    FnDecl(line_t fileline, const str_t &name, Block *body)
+        : Stmt(fileline), name(name), body(body) {}
+
+    virtual ~FnDecl();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Frame *frame) override;
+};
+
+
+
+
+
+
+
+
 } // namespace ast

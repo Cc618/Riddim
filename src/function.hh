@@ -35,13 +35,14 @@ struct Function : public AbstractFunction {
 struct CodeFunction : public AbstractFunction {
     static Type *class_type;
 
+    str_t name;
     Frame *frame;
 
-    static CodeFunction *New(Frame *frame, Object *self = nullptr);
+    static CodeFunction *New(Frame *frame, const str_t &name, Object *self = nullptr);
 
     // Can throw
     static void init_class_type();
 
 protected:
-    CodeFunction(Frame *frame, Object *self);
+    CodeFunction(Frame *frame, const str_t &name, Object *self);
 };

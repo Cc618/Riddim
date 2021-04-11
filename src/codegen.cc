@@ -6,6 +6,7 @@
 #include "int.hh"
 #include "interpreter.hh"
 #include "module.hh"
+#include "function.hh"
 #include "null.hh"
 #include "str.hh"
 #include <iostream>
@@ -26,6 +27,15 @@ using namespace ast;
 #define DEBUG_FATAL(MOD, LOC, MSG)                                             \
     debug_err((MOD)->filepath + ":" + to_string(LOC) + " : " + (MSG));         \
     return
+
+// Finalize the generation of a function's code body
+//
+static void finalize_function_frame(Module *module, Frame *frame) {
+    // Add last return statement (with null)
+    PUSH_CODE(Return);
+    auto off_null = ADD_CONST(null);
+    PUSH_CODE(off_null);
+}
 
 bool gen_module_code(AstModule *ast, ModuleObject *module) {
     try {
@@ -50,12 +60,49 @@ void AstModule::gen_code(Module *module, Frame *frame) {
     PUSH_CODE(Return);
 }
 
-// --- Stmts ---
+// --- Decls ---
 void Block::gen_code(Module *module, Frame *frame) {
     for (auto stmt : stmts)
         stmt->gen_code(module, frame);
 }
 
+void FnDecl::gen_code(Module *module, Frame *frame) {
+    // TODO A : Update, create symbol in frame + not an expression
+    // TODO A : Clean frame variables when calling the function
+    auto fnframe = Frame::New(frame);
+
+    // TODO : Throw
+    if (!fnframe) return;
+
+    // Generate body within the function's frame
+    body->gen_code(module, fnframe);
+
+    finalize_function_frame(module, fnframe);
+
+    auto fn = CodeFunction::New(fnframe, name);
+
+    auto off_fn = ADD_CONST(fn);
+
+    // Load it
+    PUSH_CODE(LoadConst);
+    PUSH_CODE(off_fn);
+
+    // Store it
+    PUSH_CODE(StoreVar);
+
+    auto const_name = new (nothrow) Str(name);
+
+    if (!const_name) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    auto off_name = ADD_CONST(const_name);
+    PUSH_CODE(off_name);
+}
+
+// --- Stmts ---
 void Stmt::gen_code(Module *module, Frame *frame) {
     frame->mark_line(fileline);
 }

@@ -75,12 +75,14 @@
     ELIF        "elif"
     ELSE        "else"
     WHILE       "while"
+    FN          "fn"
     TRUE        "true"
     FALSE       "false"
     NULL        "null"
 ;
 
 // Declarations
+%nterm <ast::FnDecl*> fndecl
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 // Statements
@@ -133,6 +135,10 @@ module: stop stmtlist {
     ;
 
 // --- Declarations ---
+// TODO : Compound ID
+fndecl: "fn" ID lparen rparen block stop { $$ = new FnDecl(@1.begin.line, $2, $5); }
+    ;
+
 block: lcurly stmtlist rcurly { $$ = $2; }
     | lcurly stop stmtlist rcurly { $$ = $3; }
     ;
@@ -145,6 +151,8 @@ stmtlist: %empty { $$ = new Block(@$.begin.line); }
 stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     | whilestmt { $$ = $1; }
+    // TODO A
+    | fndecl { $$ = $1; }
     ;
 
 ifstmt: "if" exp block ifstmt_elif stop {

@@ -1,9 +1,10 @@
 #include "function.hh"
 #include "error.hh"
+#include "frame.hh"
+#include "interpreter.hh"
 #include "null.hh"
 #include "str.hh"
 #include "vec.hh"
-#include "frame.hh"
 
 using namespace std;
 
@@ -54,8 +55,9 @@ void Function::init_class_type() {
 // --- CodeFunction ---
 Type *CodeFunction::class_type = nullptr;
 
-CodeFunction *CodeFunction::New(Frame *frame, Object *_self) {
-    auto self = new (nothrow) CodeFunction(frame, _self);
+CodeFunction *CodeFunction::New(Frame *frame, const str_t &name,
+                                Object *_self) {
+    auto self = new (nothrow) CodeFunction(frame, name, _self);
 
     if (!self) {
         THROW_MEMORY_ERROR;
@@ -66,9 +68,11 @@ CodeFunction *CodeFunction::New(Frame *frame, Object *_self) {
     return self;
 }
 
-CodeFunction::CodeFunction(Frame *frame, Object *self)
-    : AbstractFunction(CodeFunction::class_type, self ? self : null), frame(frame) {}
+CodeFunction::CodeFunction(Frame *frame, const str_t &name, Object *self)
+    : AbstractFunction(CodeFunction::class_type, self ? self : null),
+      frame(frame), name(name) {}
 
+// TODO A
 void CodeFunction::init_class_type() {
     // TODO : Rename to Function and Function to Builtin ?
     class_type = new (nothrow) Type("CodeFunction");
@@ -83,8 +87,9 @@ void CodeFunction::init_class_type() {
     // TODO A
     class_type->fn_call = [](Object *self, Object *args,
                              Object *kwargs) -> Object * {
-        // auto me = reinterpret_cast<CodeFunction *>(self);
+        auto me = reinterpret_cast<CodeFunction *>(self);
 
+        // TODO C : Handle args
         // if (args->type != args_t::class_type) {
         //     THROW_TYPE_ERROR_PREF("CodeFunction.@call{args}", args->type,
         //                           args_t::class_type);
@@ -99,8 +104,9 @@ void CodeFunction::init_class_type() {
         //     return nullptr;
         // }
 
-        // return me->data(me->self, args, kwargs);
-
-        return nullptr;
+        // TODO B : Handle return
+        // TODO D : Clean frame before
+        interpret(me->frame);
+        return null;
     };
 }
