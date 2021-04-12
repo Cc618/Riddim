@@ -72,9 +72,8 @@ CodeFunction::CodeFunction(Code *code, const str_t &name, Object *self)
     : AbstractFunction(CodeFunction::class_type, self ? self : null),
       code(code), name(name) {}
 
-// TODO A
 void CodeFunction::init_class_type() {
-    // TODO : Rename to Function and Function to Builtin ?
+    // TODO B : Rename to Function and Function to Builtin ?
     class_type = new (nothrow) Type("CodeFunction");
 
     if (!class_type) {
@@ -91,7 +90,6 @@ void CodeFunction::init_class_type() {
     };
 
     // @call
-    // TODO A
     class_type->fn_call = [](Object *self, Object *args,
                              Object *kwargs) -> Object * {
         auto me = reinterpret_cast<CodeFunction *>(self);
@@ -111,8 +109,9 @@ void CodeFunction::init_class_type() {
         //     return nullptr;
         // }
 
-        // TODO A : Error handling
         interpret(me->code);
+
+        if (on_error()) return nullptr;
 
         // The return value is the TOS
         auto ret = Program::instance->obj_stack.back();

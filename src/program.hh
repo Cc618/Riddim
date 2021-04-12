@@ -24,8 +24,7 @@ struct Program : public Object {
     // Not the main module frame but the builtins frame
     Frame *global_frame = nullptr;
 
-    // TODO A : Top frame : the current frame executed to avoid freeing frames
-    // with gc collect
+    // The current frame executed
     Frame *top_frame = nullptr;
 
     // Factory, since it is a singleton, the result is Program::instance

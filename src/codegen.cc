@@ -69,7 +69,8 @@ void Block::gen_code(Module *module, Code *_code) {
 }
 
 void FnDecl::gen_code(Module *module, Code *_code) {
-    // TODO A : Update, create symbol in code + not an expression
+    Decl::gen_code(module, _code);
+
     auto fncode = Code::New();
 
     // TODO : Throw

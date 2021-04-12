@@ -27,8 +27,29 @@ struct ASTNode {
     virtual void gen_code(Module *module, Code *code) = 0;
 };
 
+struct Stmt : public ASTNode {
+    using ASTNode::ASTNode;
+
+    // Don't forget to call this for inherited objects (at the top of the
+    // function)
+    // This updates line deltas in code to output line information
+    // during error
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
+struct Decl : public Stmt {
+    using Stmt::Stmt;
+
+    // Don't forget to call this for inherited objects (at the top of the
+    // function)
+    using Stmt::gen_code;
+};
+
+struct Exp : public ASTNode {
+    using ASTNode::ASTNode;
+};
+
 struct Block;
-struct Stmt;
 struct Set;
 struct Exp;
 
@@ -47,6 +68,20 @@ struct AstModule : public ASTNode {
 };
 
 // --- Decls ---
+struct FnDecl : public Decl {
+    str_t name;
+    Block *body;
+
+    FnDecl(line_t fileline, const str_t &name, Block *body)
+        : Decl(fileline), name(name), body(body) {}
+
+    virtual ~FnDecl();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 struct Block : public ASTNode {
     std::vector<Stmt *> stmts;
 
@@ -60,16 +95,6 @@ struct Block : public ASTNode {
 };
 
 // --- Stmts ---
-struct Stmt : public ASTNode {
-    using ASTNode::ASTNode;
-
-    // Don't forget to call this for inherited objects (at the top of the
-    // function)
-    // This updates line deltas in code to output line information
-    // during error
-    virtual void gen_code(Module *module, Code *code) override;
-};
-
 // While statement
 struct WhileStmt : public Stmt {
     Exp *condition;
@@ -127,10 +152,6 @@ struct ExpStmt : public Stmt {
 };
 
 // --- Exps ---
-struct Exp : public ASTNode {
-    using ASTNode::ASTNode;
-};
-
 // Assignment
 struct Target;
 struct Set : public Exp {
@@ -351,30 +372,4 @@ struct AttrTarget : public Target {
 
     virtual void gen_code(Module *module, Code *code) override;
 };
-
-
-
-
-// TODO A : Statement / decl
-struct FnDecl : public Stmt {
-    str_t name;
-    Block *body;
-
-    FnDecl(line_t fileline, const str_t &name, Block *body)
-        : Stmt(fileline), name(name), body(body) {}
-
-    virtual ~FnDecl();
-
-    virtual void debug(int indent = 0) override;
-
-    virtual void gen_code(Module *module, Code *code) override;
-};
-
-
-
-
-
-
-
-
 } // namespace ast
