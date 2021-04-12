@@ -83,6 +83,14 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     auto fn = CodeFunction::New(fncode, name);
 
+    // Set up positional args
+    for (const auto &[argid, argdefault] : args->args) {
+        // TODO E : arg default
+        fn->args.push_back({ argid, nullptr });
+    }
+
+    // TODO D : Set up kw args
+
     auto off_fn = ADD_CONST(fn);
 
     // Load it

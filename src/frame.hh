@@ -9,6 +9,7 @@
 typedef size_t opcode_t;
 typedef std::vector<opcode_t> code_t;
 
+// Use setitem to set variables
 struct Frame : public Object {
     static Type *class_type;
 

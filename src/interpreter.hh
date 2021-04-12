@@ -114,5 +114,6 @@ enum OpCode : opcode_t {
 // TODO : Return ?
 // TODO : Stack different for each function call (obj_stack in frame)
 // Interprets the code
+// - vars : The default variables of the frame
 // Can throw
-void interpret(Code *code);
+void interpret(Code *code, const std::unordered_map<str_t, Object*> &vars={});

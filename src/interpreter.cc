@@ -32,7 +32,7 @@ inline Object *pop_top() {
     return top;
 }
 
-void interpret(Code *_code) {
+void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
 #define NEXT(NARGS)                                                            \
     ip += (NARGS) + 1;                                                         \
     continue;
@@ -78,6 +78,12 @@ void interpret(Code *_code) {
 
     // Push new frame
     auto frame = Frame::New(Program::instance->top_frame);
+    for (const auto &[id, val] : vars) {
+        auto o_id = new (nothrow) Str(id);
+        if (!o_id) return;
+
+        if (!frame->setitem(o_id, val)) return;
+    }
 
     if (!frame) return;
 
