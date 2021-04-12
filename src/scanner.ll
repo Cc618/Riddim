@@ -126,6 +126,7 @@ comment     #.*$
 "elif"          return yy::parser::make_ELIF(loc);
 "else"          return yy::parser::make_ELSE(loc);
 "while"         return yy::parser::make_WHILE(loc);
+"return"        return yy::parser::make_RETURN(loc);
 "fn"            return yy::parser::make_FN(loc);
 
 "true"          return yy::parser::make_TRUE(loc);

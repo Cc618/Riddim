@@ -5,6 +5,7 @@
 #include "null.hh"
 #include "str.hh"
 #include "vec.hh"
+#include "program.hh"
 
 using namespace std;
 
@@ -110,9 +111,13 @@ void CodeFunction::init_class_type() {
         //     return nullptr;
         // }
 
-        // TODO B : Handle return
+        // TODO A : Error handling
         interpret(me->code);
 
-        return null;
+        // The return value is the TOS
+        auto ret = Program::instance->obj_stack.back();
+        Program::instance->obj_stack.pop_back();
+
+        return ret;
     };
 }

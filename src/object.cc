@@ -250,7 +250,7 @@ using namespace OpCode;
 void testObjects(Module *module) {
     auto code = module->code;
 
-    // cout << frame->code.size() << " Op codes" << endl;
+    cout << code->code.size() << " Op codes" << endl;
 
     // // --- Test ---
 

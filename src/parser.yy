@@ -75,6 +75,7 @@
     ELIF        "elif"
     ELSE        "else"
     WHILE       "while"
+    RETURN      "return"
     FN          "fn"
     TRUE        "true"
     FALSE       "false"
@@ -90,6 +91,7 @@
 %nterm <ast::WhileStmt*> whilestmt
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
 %nterm <ast::Block*> ifstmt_else
+%nterm <ast::ReturnStmt*> returnstmt
 %nterm <ast::ExpStmt*> expstmt
 // Expressions
 %nterm <ast::Exp*> exp set boolean comparison binary unary primary
@@ -151,7 +153,7 @@ stmtlist: %empty { $$ = new Block(@$.begin.line); }
 stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     | whilestmt { $$ = $1; }
-    // TODO A
+    | returnstmt { $$ = $1; }
     | fndecl { $$ = $1; }
     ;
 
@@ -181,6 +183,10 @@ ifstmt_else: %empty { $$ = nullptr; }
     | "else" block {
         $$ = $2;
     }
+    ;
+
+returnstmt: "return" exp stop { $$ = new ReturnStmt(@1.begin.line, $2); }
+    | "return" stop { $$ = new ReturnStmt(@1.begin.line); }
     ;
 
 whilestmt: "while" exp block stop { $$ = new WhileStmt($2, $3); }

@@ -32,10 +32,11 @@ using namespace ast;
 // Finalize the generation of a function's code body
 //
 static void finalize_function_code(Module *module, Code *_code) {
-    // Add last return statement (with null)
-    PUSH_CODE(Return);
+    PUSH_CODE(LoadConst);
     auto off_null = ADD_CONST(null);
     PUSH_CODE(off_null);
+    // Add last return statement (with null)
+    PUSH_CODE(Return);
 }
 
 bool gen_module_code(AstModule *ast, ModuleObject *module) {
@@ -148,6 +149,21 @@ void IfStmt::gen_code(Module *module, Code *_code) {
 
     // Jump there at the end (finally)
     code[ifaddr_offset] = code.size();
+}
+
+void ReturnStmt::gen_code(Module *module, Code *_code) {
+    Stmt::gen_code(module, _code);
+
+    auto &code = _code->code;
+
+    // Return null
+    if (!exp) {
+        PUSH_CODE(LoadConst);
+        auto off_null = ADD_CONST(null);
+        PUSH_CODE(off_null);
+    } else exp->gen_code(module, _code);
+
+    PUSH_CODE(Return);
 }
 
 void WhileStmt::gen_code(Module *module, Code *_code) {

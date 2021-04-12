@@ -2,8 +2,8 @@
 
 // Interprets code objects
 
-#include "frame.hh"
 #include "code.hh"
+#include "frame.hh"
 
 // enum class but we can use the using keyword to bring this scope in source
 // code
@@ -85,6 +85,8 @@ enum OpCode : opcode_t {
     // - pop 1
     Pop,
     // Returns from the function (or exit the module)
+    // The TOS is the return value, it must be set (can be null for "void"
+    // functions)
     Return,
     // TOS.name = TOS1
     // - name : Offset of the name of the attribute

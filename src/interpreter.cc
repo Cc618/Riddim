@@ -409,6 +409,7 @@ void interpret(Code *_code) {
         }
 
         case Return: {
+            cout << "RET" << endl;
             // Dispatch return
             Program::instance->top_frame = Program::instance->top_frame->previous;
             return;

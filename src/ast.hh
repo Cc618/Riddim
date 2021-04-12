@@ -98,6 +98,21 @@ struct IfStmt : public Stmt {
 
     virtual void gen_code(Module *module, Code *code) override;
 };
+
+// Return with a value or null
+struct ReturnStmt : public Stmt {
+    // nullptr for null
+    Exp *exp;
+
+    ReturnStmt(line_t fileline, Exp *exp=nullptr);
+
+    virtual ~ReturnStmt();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 // A statement made of an expression
 struct ExpStmt : public Stmt {
     Exp *exp;

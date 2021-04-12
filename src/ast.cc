@@ -88,6 +88,22 @@ void IfStmt::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+ReturnStmt::ReturnStmt(line_t fileline, Exp *exp)
+    : Stmt(fileline), exp(exp) {}
+
+ReturnStmt::~ReturnStmt() {
+    if (exp)
+        delete exp;
+}
+
+void ReturnStmt::debug(int indent) {
+    cout << str_indent(indent) << "ReturnStmt(" << endl;
+    cout << str_indent(indent + 1) << "line=" << fileline << endl;
+    if (exp)
+        exp->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 ExpStmt::ExpStmt(Exp *exp) : Stmt(exp->fileline), exp(exp) {}
 
 ExpStmt::~ExpStmt() { delete exp; }
