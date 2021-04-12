@@ -1,6 +1,6 @@
 #pragma once
 
-#include "frame.hh"
+#include "code.hh"
 #include "object.hh"
 #include "str.hh"
 
@@ -10,7 +10,7 @@ struct Module : public Object {
     // TODO : Str object ?
     str_t filepath;
     Str *name;
-    Frame *frame;
+    Code *code;
 
     static Module *New(const str_t &name, const str_t &filepath);
 
@@ -18,5 +18,5 @@ struct Module : public Object {
     static void init_class_type();
 
 private:
-    Module(Str *name, Frame *frame, const str_t &filepath);
+    Module(Str *name, Code *code, const str_t &filepath);
 };

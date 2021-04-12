@@ -91,8 +91,8 @@ int main(int argc, char *argv[]) {
 
         // TODO
         cout << "Interpreting code" << endl;
-        cout << reinterpret_cast<Str *>(module->frame->consts->str())->data
-             << endl;
+        // cout << reinterpret_cast<Str *>(module->code->consts->str())->data
+        //      << endl;
         testObjects(module);
 
         // Interpret code

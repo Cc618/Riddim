@@ -55,9 +55,8 @@ void Function::init_class_type() {
 // --- CodeFunction ---
 Type *CodeFunction::class_type = nullptr;
 
-CodeFunction *CodeFunction::New(Frame *frame, const str_t &name,
-                                Object *_self) {
-    auto self = new (nothrow) CodeFunction(frame, name, _self);
+CodeFunction *CodeFunction::New(Code *code, const str_t &name, Object *_self) {
+    auto self = new (nothrow) CodeFunction(code, name, _self);
 
     if (!self) {
         THROW_MEMORY_ERROR;
@@ -68,9 +67,9 @@ CodeFunction *CodeFunction::New(Frame *frame, const str_t &name,
     return self;
 }
 
-CodeFunction::CodeFunction(Frame *frame, const str_t &name, Object *self)
+CodeFunction::CodeFunction(Code *code, const str_t &name, Object *self)
     : AbstractFunction(CodeFunction::class_type, self ? self : null),
-      frame(frame), name(name) {}
+      code(code), name(name) {}
 
 // TODO A
 void CodeFunction::init_class_type() {
@@ -82,6 +81,13 @@ void CodeFunction::init_class_type() {
 
         return;
     }
+
+    class_type->fn_traverse_objects = [](Object *self,
+                                         const fn_visit_object_t &visit) {
+        CodeFunction *me = reinterpret_cast<CodeFunction *>(self);
+
+        visit(me->code);
+    };
 
     // @call
     // TODO A
@@ -105,8 +111,8 @@ void CodeFunction::init_class_type() {
         // }
 
         // TODO B : Handle return
-        // TODO D : Clean frame before
-        interpret(me->frame);
+        interpret(me->code);
+
         return null;
     };
 }

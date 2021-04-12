@@ -6,8 +6,8 @@ using namespace std;
 
 Type *Module::class_type = nullptr;
 
-Module::Module(Str *name, Frame *frame, const str_t &filepath)
-    : Object(Module::class_type), name(name), frame(frame), filepath(filepath) {}
+Module::Module(Str *name, Code *code, const str_t &filepath)
+    : Object(Module::class_type), name(name), code(code), filepath(filepath) {}
 
 void Module::init_class_type() {
     class_type = new (nothrow) Type("Module");
@@ -22,13 +22,13 @@ void Module::init_class_type() {
         Module *me = reinterpret_cast<Module *>(self);
 
         visit(me->name);
-        visit(me->frame);
+        visit(me->code);
     };
 
     class_type->fn_getitem = [](Object *self, Object *key) -> Object* {
         Module *me = reinterpret_cast<Module *>(self);
 
-        return me->frame->getitem(key);
+        return me->code->getitem(key);
     };
 
     class_type->fn_str = [](Object *self) -> Object* {
@@ -48,7 +48,7 @@ void Module::init_class_type() {
     class_type->fn_setitem = [](Object *self, Object *key, Object *value) -> Object* {
         Module *me = reinterpret_cast<Module *>(self);
 
-        return me->frame->setitem(key, value);
+        return me->code->setitem(key, value);
     };
 }
 
@@ -61,12 +61,12 @@ Module *Module::New(const str_t &name, const str_t &filepath) {
         return nullptr;
     }
 
-    auto frame = Frame::New(Program::instance->global_frame);
+    auto code = Code::New();
 
-    if (!frame)
+    if (!code)
         return nullptr;
 
-    auto me = new (nothrow) Module(namestr, frame, filepath);
+    auto me = new (nothrow) Module(namestr, code, filepath);
 
     if (!me) {
         THROW_MEMORY_ERROR;

@@ -3,6 +3,7 @@
 // Interprets code objects
 
 #include "frame.hh"
+#include "code.hh"
 
 // enum class but we can use the using keyword to bring this scope in source
 // code
@@ -108,6 +109,8 @@ enum OpCode : opcode_t {
 };
 } // namespace OpCode
 
-// Interprets the code of a code frame
+// TODO : Return ?
+// TODO : Stack different for each function call (obj_stack in frame)
+// Interprets the code
 // Can throw
-void interpret(Frame *frame);
+void interpret(Code *code);

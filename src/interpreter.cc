@@ -32,7 +32,7 @@ inline Object *pop_top() {
     return top;
 }
 
-void interpret(Frame *frame) {
+void interpret(Code *_code) {
 #define NEXT(NARGS)                                                            \
     ip += (NARGS) + 1;                                                         \
     continue;
@@ -76,9 +76,16 @@ void interpret(Frame *frame) {
         DISPATCH_ERROR;                                                        \
     }
 
-    auto &ip = frame->ip;
-    auto &code = frame->code;
-    auto &consts = frame->consts->data;
+    // Push new frame
+    auto frame = Frame::New(Program::instance->top_frame);
+
+    if (!frame) return;
+
+    Program::instance->top_frame = frame;
+
+    auto &ip = _code->ip;
+    auto &code = _code->code;
+    auto &consts = _code->consts->data;
     auto &obj_stack = Program::instance->obj_stack;
 
     ip = 0;
@@ -88,7 +95,7 @@ void interpret(Frame *frame) {
             DISPATCH_ERROR;
         }
 
-        auto instruction = frame->code[ip];
+        auto instruction = code[ip];
         switch (instruction) {
         case BinAdd: {
             CHECK_STACKLEN(2);
@@ -403,6 +410,7 @@ void interpret(Frame *frame) {
 
         case Return: {
             // Dispatch return
+            Program::instance->top_frame = Program::instance->top_frame->previous;
             return;
         }
 
@@ -517,7 +525,7 @@ void interpret(Frame *frame) {
 error_thrown:;
     // TODO : Restore stack
     debug_info("IP : " + to_string(ip) +
-               ", line of error : " + to_string(frame->lineof(ip)));
+               ", line of error : " + to_string(_code->lineof(ip)));
 
     return;
 }

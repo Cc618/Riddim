@@ -6,7 +6,7 @@
 #include <vector>
 
 struct Module;
-struct Frame;
+struct Code;
 #define ModuleObject Module
 
 namespace ast {
@@ -21,10 +21,10 @@ struct ASTNode {
     // Prints recursively all nodes
     virtual void debug(int indent = 0) = 0;
 
-    // Generates the code of this node (and its children) for this frame
+    // Generates the code of this node (and its children) for this code
     // * Note that every body of this function is declared in codegen.cc NOT
     // ast.cc
-    virtual void gen_code(Module *module, Frame *frame) = 0;
+    virtual void gen_code(Module *module, Code *code) = 0;
 };
 
 struct Block;
@@ -43,7 +43,7 @@ struct AstModule : public ASTNode {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // --- Decls ---
@@ -56,7 +56,7 @@ struct Block : public ASTNode {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // --- Stmts ---
@@ -65,9 +65,9 @@ struct Stmt : public ASTNode {
 
     // Don't forget to call this for inherited objects (at the top of the
     // function)
-    // This updates line deltas in frame to output line information
+    // This updates line deltas in code to output line information
     // during error
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // While statement
@@ -81,7 +81,7 @@ struct WhileStmt : public Stmt {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // If statement (with else etc.)
@@ -96,7 +96,7 @@ struct IfStmt : public Stmt {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 // A statement made of an expression
 struct ExpStmt : public Stmt {
@@ -108,7 +108,7 @@ struct ExpStmt : public Stmt {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // --- Exps ---
@@ -128,7 +128,7 @@ struct Set : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 struct CallExp : public Exp {
@@ -142,7 +142,7 @@ struct CallExp : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // Vector literal ([1, 2, 3])
@@ -156,7 +156,7 @@ struct VecLiteral : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // HashMap literal ({'a': 'A', 'b': 'B'})
@@ -170,7 +170,7 @@ struct MapLiteral : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // Attribute reference (exp.id)
@@ -185,7 +185,7 @@ struct Attr : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // Get item (a[42])
@@ -200,7 +200,7 @@ struct Indexing : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // Variable
@@ -213,7 +213,7 @@ struct Id : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 struct Const;
@@ -238,7 +238,7 @@ struct Const : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // Binary expression
@@ -272,7 +272,7 @@ struct BinExp : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // Unary expression
@@ -289,7 +289,7 @@ struct UnaExp : public Exp {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // --- Targets ---
@@ -309,7 +309,7 @@ struct IdTarget : public Target {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // Target using an index assignment
@@ -322,7 +322,7 @@ struct IndexingTarget : public Target {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 // Target using an attribute assignment
@@ -334,7 +334,7 @@ struct AttrTarget : public Target {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 
@@ -352,7 +352,7 @@ struct FnDecl : public Stmt {
 
     virtual void debug(int indent = 0) override;
 
-    virtual void gen_code(Module *module, Frame *frame) override;
+    virtual void gen_code(Module *module, Code *code) override;
 };
 
 

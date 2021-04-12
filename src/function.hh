@@ -2,6 +2,7 @@
 
 // Functor objects
 
+#include "code.hh"
 #include "map.hh"
 #include "object.hh"
 #include "utils.hh"
@@ -36,13 +37,15 @@ struct CodeFunction : public AbstractFunction {
     static Type *class_type;
 
     str_t name;
-    Frame *frame;
+    Code *code;
 
-    static CodeFunction *New(Frame *frame, const str_t &name, Object *self = nullptr);
+    static CodeFunction *New(Code *code, const str_t &name,
+                             Object *self = nullptr);
 
     // Can throw
     static void init_class_type();
 
 protected:
-    CodeFunction(Frame *frame, const str_t &name, Object *self);
+    CodeFunction(Code *code, const str_t &name,
+                 Object *self);
 };

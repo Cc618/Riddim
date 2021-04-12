@@ -248,9 +248,9 @@ bool Type::operator==(const Type &other) const { return id == other.id; }
 using namespace OpCode;
 
 void testObjects(Module *module) {
-    auto frame = module->frame;
+    auto code = module->code;
 
-    cout << frame->code.size() << " Op codes" << endl;
+    // cout << frame->code.size() << " Op codes" << endl;
 
     // // --- Test ---
 
@@ -318,7 +318,7 @@ void testObjects(Module *module) {
 
     // --- Runtime ---
     cout << endl;
-    interpret(frame);
+    interpret(code);
     // cout << endl << endl;
     cout << "Done" << endl;
 

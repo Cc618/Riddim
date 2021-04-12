@@ -24,6 +24,10 @@ struct Program : public Object {
     // Not the main module frame but the builtins frame
     Frame *global_frame = nullptr;
 
+    // TODO A : Top frame : the current frame executed to avoid freeing frames
+    // with gc collect
+    Frame *top_frame = nullptr;
+
     // Factory, since it is a singleton, the result is Program::instance
     static void New(const std::vector<Type *> &types);
 

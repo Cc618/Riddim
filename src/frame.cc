@@ -52,13 +52,6 @@ Frame *Frame::New(Frame *previous) {
         return nullptr;
     }
 
-    o->consts = Vec::New();
-
-    // Dispatch error
-    if (!o->consts) {
-        return nullptr;
-    }
-
     return o;
 }
 
@@ -74,7 +67,6 @@ void Frame::init_class_type() {
         Frame *me = reinterpret_cast<Frame *>(self);
 
         visit(me->vars);
-        visit(me->consts);
 
         // Can be nullptr
         visit(me->previous);
@@ -98,44 +90,4 @@ void Frame::init_class_type() {
 
         return me->vars->str();
     };
-}
-
-size_t Frame::lineof(size_t offset) {
-    size_t l = start_lineno;
-
-    for (auto it = line_deltas.begin(); it != line_deltas.end(); ++it) {
-        const auto &[off, delta] = *it;
-
-        if (off <= offset)
-            l = delta;
-        else
-            break;
-    }
-
-    return l;
-}
-
-void Frame::mark_line(size_t lineno) {
-    if (line_deltas.empty())
-        start_lineno = lineno;
-    // Optimize if same instruction
-    else if (line_deltas.back().first == code.size()) line_deltas.pop_back();
-
-    line_deltas.push_back({ code.size(), lineno });
-}
-
-size_t Frame::add_const(Object *cst) {
-    consts->data.push_back(cst);
-
-    return consts->data.size() - 1;
-}
-
-Object *Frame::spawn_const(size_t i) {
-    if (i >= consts->data.size()) {
-        THROW_OUT_OF_BOUNDS(consts->data.size(), i);
-
-        return nullptr;
-    }
-
-    return consts->data[i]->copy();
 }

@@ -40,6 +40,7 @@ void Program::init_class_type() {
             visit(child);
 
         visit(program->global_frame);
+        visit(program->top_frame);
 
         if (program->current_error) visit(program->current_error);
     };
@@ -68,6 +69,8 @@ void Program::init_attributes() {
 
         return;
     }
+
+    top_frame = global_frame;
 
     // Register all types that weren't registered yet
     for (auto type : types) {
