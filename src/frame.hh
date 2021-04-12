@@ -13,6 +13,9 @@ typedef std::vector<opcode_t> code_t;
 struct Frame : public Object {
     static Type *class_type;
 
+    // Instruction pointer (counter)
+    size_t ip;
+
     Frame *previous;
     HashMap *vars;
 

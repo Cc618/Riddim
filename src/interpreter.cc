@@ -89,7 +89,7 @@ void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
 
     Program::instance->top_frame = frame;
 
-    auto &ip = _code->ip;
+    auto &ip = frame->ip;
     auto &code = _code->code;
     auto &consts = _code->consts->data;
     auto &obj_stack = Program::instance->obj_stack;
@@ -415,7 +415,6 @@ void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
         }
 
         case Return: {
-            cout << "RET" << endl;
             // Dispatch return
             Program::instance->top_frame = Program::instance->top_frame->previous;
             return;

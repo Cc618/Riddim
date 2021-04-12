@@ -12,8 +12,8 @@ void lexer_error(const yy::parser::location_type &loc, const std::string &msg) {
     Driver::instance->error_occured = true;
 }
 
-parser::symbol_type make_INT(const str_t &raw, const str_t &s,
-                             const parser::location_type &loc, int base) {
+parser::symbol_type make_INT(const parser::location_type &loc, const str_t &raw,
+                             const str_t &s, int base, bool negate) {
     string new_s = s;
     new_s.erase(remove_if(new_s.begin(), new_s.end(),
                           [](char c) { return c == '\'' || c == '_'; }),
@@ -22,7 +22,7 @@ parser::symbol_type make_INT(const str_t &raw, const str_t &s,
     try {
         long long n = stoll(new_s.c_str(), NULL, base);
 
-        return parser::make_INT(n, loc);
+        return parser::make_INT(negate ? -n : n, loc);
     } catch (...) {
         // Out of range
         lexer_error(loc, str_t("Invalid integer: ") + raw);
@@ -31,7 +31,7 @@ parser::symbol_type make_INT(const str_t &raw, const str_t &s,
     }
 }
 
-parser::symbol_type make_STR(const str_t &s, const parser::location_type &loc) {
+parser::symbol_type make_STR(const parser::location_type &loc, const str_t &s) {
     errno = 0;
 
     str_t result;

@@ -12,8 +12,6 @@ typedef std::vector<opcode_t> code_t;
 struct Code : public Object {
     static Type *class_type;
 
-    // Instruction pointer (counter)
-    size_t ip;
     code_t code;
 
     // Constants, to be copied

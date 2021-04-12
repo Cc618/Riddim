@@ -64,14 +64,14 @@ using namespace ast;
 %option noyywrap nounput noinput batch
 
 id          [a-zA-Z_][a-zA-Z_0-9]*
-int_dec     -?[0-9][0-9_']*
+int_dec     [0-9][0-9_']*
 int_hex     0[xX][0-9a-fA-F][0-9a-fA-F_']*
 int_bin     0[bB][01][01_']*
 str_single  '(\\.|[^'])*'
 str_double  \"(\\.|[^\"])*\"
 str         ({str_single})|({str_double})
 blank       [ \t\r]
-comment     #.*$
+comment     #.*
 
 %{
     // Every time a pattern is matched
@@ -96,6 +96,12 @@ comment     #.*$
     loc.lines(1);
     loc.step();
 }
+
+{int_dec}       return make_INT(loc, yytext, yytext, 10);
+-{int_dec}      return make_INT(loc, yytext, yytext + 1, 10, true);
+{int_hex}       return make_INT(loc, yytext, yytext + 2, 16);
+{int_bin}       return make_INT(loc, yytext, yytext + 2, 2);
+{str}           return make_STR(loc, yytext);
 
 "."             return yy::parser::make_DOT(loc);
 ","             return yy::parser::make_COMMA(loc);
@@ -133,10 +139,6 @@ comment     #.*$
 "false"         return yy::parser::make_FALSE(loc);
 "null"          return yy::parser::make_NULL(loc);
 
-{int_dec}       return make_INT(yytext, yytext, loc, 10);
-{int_hex}       return make_INT(yytext, yytext + 2, loc, 16);
-{int_bin}       return make_INT(yytext, yytext + 2, loc, 2);
-{str}           return make_STR(yytext, loc);
 {id}            return yy::parser::make_ID(yytext, loc);
 
 .               {
