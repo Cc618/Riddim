@@ -26,6 +26,24 @@ void AstModule::debug(int indent) {
 }
 
 // --- Decls ---
+FnDecl::Args::~Args() {
+    for (const auto &[k, v] : args) {
+        if (v)
+            delete v;
+    }
+}
+
+FnDecl::~FnDecl() {
+    delete body;
+    delete args;
+}
+
+void FnDecl::debug(int indent) {
+    cout << str_indent(indent) << "FnDecl<" << name << "(" << endl;
+    body->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 Block::~Block() {
     for (auto stmt : stmts)
         delete stmt;
@@ -37,16 +55,6 @@ void Block::debug(int indent) {
     for (auto stmt : stmts)
         stmt->debug(indent + 1);
 
-    cout << str_indent(indent) << ")" << endl;
-}
-
-FnDecl::~FnDecl() {
-    delete body;
-}
-
-void FnDecl::debug(int indent) {
-    cout << str_indent(indent) << "FnDecl<" << name << "(" << endl;
-    body->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }
 

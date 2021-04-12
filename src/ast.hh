@@ -69,11 +69,20 @@ struct AstModule : public ASTNode {
 
 // --- Decls ---
 struct FnDecl : public Decl {
+    struct Args {
+        Args() {}
+        ~Args();
+
+        // TODO : Default values
+        // The second value is the default value, can be nullptr if none
+        std::vector<std::pair<str_t, Exp*>> args;
+    } *args;
+
     str_t name;
     Block *body;
 
-    FnDecl(line_t fileline, const str_t &name, Block *body)
-        : Decl(fileline), name(name), body(body) {}
+    FnDecl(line_t fileline, const str_t &name, Args *args, Block *body)
+        : Decl(fileline), name(name), args(args), body(body) {}
 
     virtual ~FnDecl();
 
@@ -129,7 +138,7 @@ struct ReturnStmt : public Stmt {
     // nullptr for null
     Exp *exp;
 
-    ReturnStmt(line_t fileline, Exp *exp=nullptr);
+    ReturnStmt(line_t fileline, Exp *exp = nullptr);
 
     virtual ~ReturnStmt();
 

@@ -84,6 +84,7 @@
 
 // Declarations
 %nterm <ast::FnDecl*> fndecl
+%nterm <ast::FnDecl::Args*> fndecl_args fndecl_args_filled
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 // Statements
@@ -137,8 +138,22 @@ module: stop stmtlist {
     ;
 
 // --- Declarations ---
+// Function declaration
 // TODO : Compound ID
-fndecl: "fn" ID lparen rparen block stop { $$ = new FnDecl(@1.begin.line, $2, $5); }
+// TODO Kwargs : Remove vec_content, create custom nterm
+fndecl: "fn" ID lparen fndecl_args rparen block stop {
+        $$ = new FnDecl(@1.begin.line, $2, $4, $6);
+    }
+    ;
+
+fndecl_args: %empty { $$ = new FnDecl::Args(); }
+    | fndecl_args_filled { $$ = $1; }
+    | fndecl_args_filled "," { $$ = $1; }
+    ;
+
+fndecl_args_filled: ID { $$ = new FnDecl::Args(); $$->args.push_back({ $1, nullptr }); }
+    | fndecl_args_filled "," ID { $$ = $1; $$->args.push_back({ $3, nullptr }); }
+    | fndecl_args_filled "," stop ID { $$ = $1; $$->args.push_back({ $4, nullptr }); }
     ;
 
 block: lcurly stmtlist rcurly { $$ = $2; }
