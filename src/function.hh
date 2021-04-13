@@ -19,7 +19,7 @@ struct AbstractFunction : public Object {
 
 // Built in function
 // Wraps a C++ function
-struct Function : public AbstractFunction {
+struct Builtin : public AbstractFunction {
     static Type *class_type;
 
     // (Object *self, Vec *args, HashMap *kwargs) -> Object*
@@ -28,12 +28,12 @@ struct Function : public AbstractFunction {
     // Can throw
     static void init_class_type();
 
-    Function(const fn_ternary_t &data, Object *self = nullptr);
+    Builtin(const fn_ternary_t &data, Object *self = nullptr);
 };
 
-// A function containing a code frame
+// A function containing code to interpret
 // This kind of function is the one generated via function declarations
-struct CodeFunction : public AbstractFunction {
+struct Function : public AbstractFunction {
     static Type *class_type;
 
     str_t name;
@@ -42,13 +42,13 @@ struct CodeFunction : public AbstractFunction {
     std::vector<std::pair<str_t, Code*>> args;
     int n_required_args;
 
-    static CodeFunction *New(Code *code, const str_t &name,
+    static Function *New(Code *code, const str_t &name,
                              Object *self = nullptr);
 
     // Can throw
     static void init_class_type();
 
 protected:
-    CodeFunction(Code *code, const str_t &name,
+    Function(Code *code, const str_t &name,
                  Object *self);
 };

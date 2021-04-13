@@ -43,7 +43,7 @@ void init_builtins() {
 
 #define INIT_BUILTIN(NAME, HANDLER)                                            \
     {                                                                          \
-        auto obj = new (nothrow) Function(HANDLER);                            \
+        auto obj = new (nothrow) Builtin(HANDLER);                            \
         if (!obj) {                                                            \
             THROW_MEMORY_ERROR;                                                \
             return;                                                            \

@@ -6,7 +6,7 @@
 #include "methods.hh"
 #include <vector>
 
-struct Function;
+struct Builtin;
 
 // Internal Vec
 typedef std::vector<Object*> vec_t;

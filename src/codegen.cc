@@ -82,7 +82,7 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     finalize_function_code(module, fncode);
 
-    auto fn = CodeFunction::New(fncode, name);
+    auto fn = Function::New(fncode, name);
     fn->n_required_args = args->n_required;
 
     // To disallow functions with same arguments (fn f(a, a) ...)

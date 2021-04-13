@@ -53,9 +53,9 @@
 
 // Inits a method in the factory of an object (self is the object)
 #define NEW_METHOD(NAME) \
-    self->me_##NAME = new Function(self->me_##NAME##_handler, self);
+    self->me_##NAME = new Builtin(self->me_##NAME##_handler, self);
 
 // Declares a new method inside the class of an object
 #define DECL_METHOD(NAME) \
-    Function *me_##NAME; \
+    Builtin *me_##NAME; \
     static Object *me_##NAME##_handler(Object *self, Object *args, Object *kwargs);

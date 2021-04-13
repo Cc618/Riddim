@@ -63,8 +63,8 @@ static void init_types() {
     INIT_TYPE(Bool);
     INIT_TYPE(Module);
     INIT_TYPE(Vec);
+    INIT_TYPE(Builtin);
     INIT_TYPE(Function);
-    INIT_TYPE(CodeFunction);
 
 #undef INIT_TYPE
 }

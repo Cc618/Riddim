@@ -14,14 +14,14 @@ using namespace std;
 AbstractFunction::AbstractFunction(Type *type, Object *self)
     : Object(type), self(self) {}
 
-// --- Function ---
-Type *Function::class_type = nullptr;
+// --- Builtin ---
+Type *Builtin::class_type = nullptr;
 
-Function::Function(const fn_ternary_t &data, Object *self)
-    : AbstractFunction(Function::class_type, self ? self : null), data(data) {}
+Builtin::Builtin(const fn_ternary_t &data, Object *self)
+    : AbstractFunction(Builtin::class_type, self ? self : null), data(data) {}
 
-void Function::init_class_type() {
-    class_type = new (nothrow) Type("Function");
+void Builtin::init_class_type() {
+    class_type = new (nothrow) Type("Builtin");
 
     if (!class_type) {
         THROW_MEMORY_ERROR;
@@ -34,17 +34,17 @@ void Function::init_class_type() {
     // @call
     class_type->fn_call = [](Object *self, Object *args,
                              Object *kwargs) -> Object * {
-        auto me = reinterpret_cast<Function *>(self);
+        auto me = reinterpret_cast<Builtin *>(self);
 
         if (args->type != args_t::class_type) {
-            THROW_TYPE_ERROR_PREF("Function.@call{args}", args->type,
+            THROW_TYPE_ERROR_PREF("Builtin.@call{args}", args->type,
                                   args_t::class_type);
 
             return nullptr;
         }
 
         if (kwargs != null && kwargs->type != kwargs_t::class_type) {
-            THROW_TYPE_ERROR_PREF("Function.@call{kwargs}", kwargs->type,
+            THROW_TYPE_ERROR_PREF("Builtin.@call{kwargs}", kwargs->type,
                                   kwargs_t::class_type);
 
             return nullptr;
@@ -54,11 +54,11 @@ void Function::init_class_type() {
     };
 }
 
-// --- CodeFunction ---
-Type *CodeFunction::class_type = nullptr;
+// --- Function ---
+Type *Function::class_type = nullptr;
 
-CodeFunction *CodeFunction::New(Code *code, const str_t &name, Object *_self) {
-    auto self = new (nothrow) CodeFunction(code, name, _self);
+Function *Function::New(Code *code, const str_t &name, Object *_self) {
+    auto self = new (nothrow) Function(code, name, _self);
 
     if (!self) {
         THROW_MEMORY_ERROR;
@@ -69,13 +69,12 @@ CodeFunction *CodeFunction::New(Code *code, const str_t &name, Object *_self) {
     return self;
 }
 
-CodeFunction::CodeFunction(Code *code, const str_t &name, Object *self)
-    : AbstractFunction(CodeFunction::class_type, self ? self : null),
+Function::Function(Code *code, const str_t &name, Object *self)
+    : AbstractFunction(Function::class_type, self ? self : null),
       code(code), name(name) {}
 
-void CodeFunction::init_class_type() {
-    // TODO B : Rename to Function and Function to Builtin ?
-    class_type = new (nothrow) Type("CodeFunction");
+void Function::init_class_type() {
+    class_type = new (nothrow) Type("Function");
 
     if (!class_type) {
         THROW_MEMORY_ERROR;
@@ -85,7 +84,7 @@ void CodeFunction::init_class_type() {
 
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {
-        CodeFunction *me = reinterpret_cast<CodeFunction *>(self);
+        Function *me = reinterpret_cast<Function *>(self);
 
         visit(me->code);
 
@@ -98,10 +97,10 @@ void CodeFunction::init_class_type() {
     // @call
     class_type->fn_call = [](Object *self, Object *args,
                              Object *kwargs) -> Object * {
-        auto me = reinterpret_cast<CodeFunction *>(self);
+        auto me = reinterpret_cast<Function *>(self);
 
         if (args->type != args_t::class_type) {
-            THROW_TYPE_ERROR_PREF("CodeFunction.@call{args}", args->type,
+            THROW_TYPE_ERROR_PREF("Function.@call{args}", args->type,
                                   args_t::class_type);
 
             return nullptr;
@@ -128,7 +127,7 @@ void CodeFunction::init_class_type() {
         }
 
         if (kwargs != null && kwargs->type != kwargs_t::class_type) {
-            THROW_TYPE_ERROR_PREF("CodeFunction.@call{kwargs}", kwargs->type,
+            THROW_TYPE_ERROR_PREF("Function.@call{kwargs}", kwargs->type,
                                   kwargs_t::class_type);
 
             return nullptr;
@@ -148,7 +147,7 @@ void CodeFunction::init_class_type() {
             const auto &[k, v] = kv;
 
             if (k->type != Str::class_type) {
-                THROW_TYPE_ERROR_PREF("CodeFunction.@call", k->type, Str::class_type);
+                THROW_TYPE_ERROR_PREF("Function.@call", k->type, Str::class_type);
 
                 return nullptr;
             }
