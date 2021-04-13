@@ -1,16 +1,16 @@
 #include "codegen.hh"
 #include "bool.hh"
+#include "code.hh"
 #include "debug.hh"
 #include "error.hh"
-#include "code.hh"
+#include "function.hh"
 #include "int.hh"
 #include "interpreter.hh"
 #include "module.hh"
-#include "function.hh"
 #include "null.hh"
 #include "str.hh"
-#include "code.hh"
 #include <iostream>
+#include <unordered_set>
 
 // TODO : Rm debug
 #define PUSH_CODE(DATA)                                                        \
@@ -74,22 +74,35 @@ void FnDecl::gen_code(Module *module, Code *_code) {
     auto fncode = Code::New();
 
     // TODO : Throw
-    if (!fncode) return;
+    if (!fncode)
+        return;
 
     // Generate body within the function's code
     body->gen_code(module, fncode);
 
     finalize_function_code(module, fncode);
 
-    // TODO F : Verify no 2 same args id
     auto fn = CodeFunction::New(fncode, name);
     fn->n_required_args = args->n_required;
 
+    // To disallow functions with same arguments (fn f(a, a) ...)
+    unordered_set<str_t> ids;
+
     // Set up positional args
     for (const auto &[argid, argdefault] : args->args) {
+        if (ids.find(argid) != ids.end()) {
+            THROW_ARGUMENT_ERROR(
+                name, argid,
+                "Multiple arguments with the same name disallowed");
+
+            return;
+        }
+
+        ids.insert(argid);
+
         // No default
         if (!argdefault) {
-            fn->args.push_back({ argid, nullptr });
+            fn->args.push_back({argid, nullptr});
         } else {
             // Generate code to push the arg on the TOS
             Code *default_code = Code::New();
@@ -101,7 +114,7 @@ void FnDecl::gen_code(Module *module, Code *_code) {
             argdefault->gen_code(module, default_code);
             default_code->code.push_back(Return);
 
-            fn->args.push_back({ argid, default_code });
+            fn->args.push_back({argid, default_code});
         }
     }
 
@@ -127,9 +140,7 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 }
 
 // --- Stmts ---
-void Stmt::gen_code(Module *module, Code *_code) {
-    _code->mark_line(fileline);
-}
+void Stmt::gen_code(Module *module, Code *_code) { _code->mark_line(fileline); }
 
 void IfStmt::gen_code(Module *module, Code *_code) {
     Stmt::gen_code(module, _code);
@@ -184,7 +195,8 @@ void ReturnStmt::gen_code(Module *module, Code *_code) {
         PUSH_CODE(LoadConst);
         auto off_null = ADD_CONST(null);
         PUSH_CODE(off_null);
-    } else exp->gen_code(module, _code);
+    } else
+        exp->gen_code(module, _code);
 
     PUSH_CODE(Return);
 }

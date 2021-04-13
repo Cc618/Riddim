@@ -110,7 +110,7 @@ void CodeFunction::init_class_type() {
         auto posargs = reinterpret_cast<Vec *>(args)->data;
 
         if (posargs.size() > me->args.size()) {
-            // TODO C : Function name
+            // TODO A : Function name
             if (me->n_required_args == me->args.size()) {
                 THROW_ARGUMENT_ERROR("???", "length (too many arguments)",
                                      "This function requires " +
@@ -127,7 +127,6 @@ void CodeFunction::init_class_type() {
             return nullptr;
         }
 
-        // TODO D : Handle kwargs
         if (kwargs != null && kwargs->type != kwargs_t::class_type) {
             THROW_TYPE_ERROR_PREF("CodeFunction.@call{kwargs}", kwargs->type,
                                   kwargs_t::class_type);
@@ -158,7 +157,7 @@ void CodeFunction::init_class_type() {
 
             // This argument is already set
             if (vars.find(key) != vars.end()) {
-                // TODO F : Func name
+                // TODO A : Func name
                 THROW_ARGUMENT_ERROR("<unknown func>", key, "This argument has been set multiple times");
 
                 return nullptr;
@@ -175,6 +174,7 @@ void CodeFunction::init_class_type() {
 
             // Throw error
             if (!exists) {
+                // TODO A : Func name
                 THROW_ARGUMENT_ERROR("<unknown func>", key, "This argument doesn't exist");
 
                 return nullptr;
@@ -189,7 +189,7 @@ void CodeFunction::init_class_type() {
             // This argument is not set
             if (vars.find(arg_name) == vars.end()) {
                 if (!arg_default) {
-                    // TODO F : Func name
+                    // TODO A : Func name
                     THROW_ARGUMENT_ERROR("<unknown func>", arg_name, "Argument not set but required");
 
                     return nullptr;
