@@ -117,3 +117,7 @@ enum OpCode : opcode_t {
 // - vars : The default variables of the frame
 // Can throw
 void interpret(Code *code, const std::unordered_map<str_t, Object*> &vars={});
+
+// Interprets a fragment of code
+// Compared to interpret, it doesn't create a new frame (it uses the top frame)
+void interpret_fragment(Code *code);

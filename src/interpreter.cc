@@ -32,7 +32,6 @@ inline Object *pop_top() {
     return top;
 }
 
-void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
 #define NEXT(NARGS)                                                            \
     ip += (NARGS) + 1;                                                         \
     continue;
@@ -76,6 +75,7 @@ void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
         DISPATCH_ERROR;                                                        \
     }
 
+void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
     // Push new frame
     auto frame = Frame::New(Program::instance->top_frame);
     for (const auto &[id, val] : vars) {
@@ -88,6 +88,12 @@ void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
     if (!frame) return;
 
     Program::instance->top_frame = frame;
+
+    interpret_fragment(_code);
+}
+
+void interpret_fragment(Code *_code) {
+    auto frame = Program::instance->top_frame;
 
     auto &ip = frame->ip;
     auto &code = _code->code;
