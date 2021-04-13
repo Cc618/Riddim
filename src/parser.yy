@@ -98,6 +98,7 @@
 %nterm <ast::Exp*> exp set boolean comparison binary unary primary
 %nterm <ast::Target*> target target_id target_indexing target_attr
 %nterm <ast::CallExp*> call call_args call_args_filled
+%nterm call_stop
 %nterm <ast::Indexing*> indexing
 %nterm <ast::Attr*> attr
 // Atoms
@@ -294,9 +295,14 @@ call: primary lparen call_args rparen {
     }
     ;
 
-call_args: %empty { $$ = new CallExp(0); }
-    | call_args_filled { $$ = $1; }
-    | call_args_filled "," { $$ = $1; }
+call_args:
+    call_stop { $$ = new CallExp(0); }
+    | call_stop call_args_filled call_stop { $$ = $2; }
+    | call_stop call_args_filled "," call_stop { $$ = $2; }
+    ;
+
+call_stop: %empty
+    | stop
     ;
 
 call_args_filled: ID ":" exp {
