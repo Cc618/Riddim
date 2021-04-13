@@ -98,7 +98,6 @@
 %nterm <ast::Exp*> exp set boolean comparison binary unary primary
 %nterm <ast::Target*> target target_id target_indexing target_attr
 %nterm <ast::CallExp*> call call_args call_args_filled
-%nterm call_stop
 %nterm <ast::Indexing*> indexing
 %nterm <ast::Attr*> attr
 // Atoms
@@ -111,6 +110,7 @@
 %nterm <ast::Const*> const
 // Tokens
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
+%nterm option_stop option_comma option_comma_stop
 %token <str_t> ID "id"
 %token <str_t> STR "string"
 %token <int_t> INT "int"
@@ -147,37 +147,31 @@ fndecl: "fn" ID lparen fndecl_all_args rparen block stop {
     ;
 
 // kwargs are arguments with default values
-// TODO : Extra comma
-fndecl_all_args: %empty { $$ = new FnDecl::Args(); }
-    | fndecl_args { $$ = $1; $$->n_required = $$->args.size(); }
-    | fndecl_kwargs { $$ = $1; }
-    | fndecl_args fndecl_comma fndecl_kwargs {
-        $$ = $1;
+fndecl_all_args: option_stop { $$ = new FnDecl::Args(); }
+    | option_stop fndecl_args option_comma_stop  { $$ = $2; $$->n_required = $$->args.size(); }
+    | option_stop fndecl_kwargs option_comma_stop { $$ = $2; }
+    | option_stop fndecl_args "," option_stop fndecl_kwargs option_stop {
+        $$ = $2;
         $$->n_required = $$->args.size();
 
         // Merge args in order (default values after)
-        $$->args.insert($$->args.end(), $3->args.begin(), $3->args.end());
-        $3->args.clear();
+        $$->args.insert($$->args.end(), $5->args.begin(), $5->args.end());
+        $5->args.clear();
 
-        delete $3;
+        delete $5;
     }
     ;
 
 fndecl_args: ID { $$ = new FnDecl::Args(); $$->args.push_back({ $1, nullptr }); }
-    | fndecl_args fndecl_comma ID { $$ = $1; $$->args.push_back({ $3, nullptr }); }
+    | fndecl_args "," option_stop ID { $$ = $1; $$->args.push_back({ $4, nullptr }); }
     ;
 
 fndecl_kwargs:
     ID ":" exp { $$ = new FnDecl::Args(); $$->args.push_back({ $1, $3 }); }
-    | fndecl_kwargs fndecl_comma ID ":" exp { $$ = $1; $$->args.push_back({ $3, $5 }); }
+    | fndecl_kwargs "," option_stop ID ":" exp { $$ = $1; $$->args.push_back({ $4, $6 }); }
     ;
 
-fndecl_comma: ","
-    | "," stop
-    ;
-
-block: lcurly stmtlist rcurly { $$ = $2; }
-    | lcurly stop stmtlist rcurly { $$ = $3; }
+block: lcurly option_stop stmtlist rcurly { $$ = $3; }
     ;
 
 // --- Statements ---
@@ -315,13 +309,8 @@ call: primary lparen call_args rparen {
     ;
 
 call_args:
-    call_stop { $$ = new CallExp(0); }
-    | call_stop call_args_filled call_stop { $$ = $2; }
-    | call_stop call_args_filled "," call_stop { $$ = $2; }
-    ;
-
-call_stop: %empty
-    | stop
+    option_stop { $$ = new CallExp(0); }
+    | option_stop call_args_filled option_comma_stop { $$ = $2; }
     ;
 
 call_args_filled: ID ":" exp {
@@ -332,10 +321,8 @@ call_args_filled: ID ":" exp {
         $$ = new CallExp(0);
         $$->args.push_back($1);
     }
-    | call_args_filled "," exp { $$ = $1; $$->args.push_back($3); }
-    | call_args_filled "," stop exp { $$ = $1; $$->args.push_back($4); }
-    | call_args_filled "," ID ":" exp { $$ = $1; $$->kwargs.push_back({ $3, $5 }); }
-    | call_args_filled "," stop ID ":" exp { $$ = $1; $$->kwargs.push_back({ $4, $6 }); }
+    | call_args_filled "," option_stop exp { $$ = $1; $$->args.push_back($4); }
+    | call_args_filled "," option_stop ID ":" exp { $$ = $1; $$->kwargs.push_back({ $4, $6 }); }
     ;
 
 // --- Atoms ---
@@ -350,13 +337,11 @@ map: lcurly map_content rcurly { $$ = new MapLiteral(@1.begin.line, $2); }
     ;
 
 map_content: %empty { $$ = {}; }
-    | map_content_filled { $$ = $1; }
-    | map_content_filled "," { $$ = $1; }
+    | map_content_filled option_comma { $$ = $1; }
     ;
 
 map_content_filled: exp ":" exp { $$ = {{ $1, $3 }}; }
-    | map_content_filled "," exp ":" exp { $$ = $1; $$.push_back({ $3, $5 }); }
-    | map_content_filled "," stop exp ":" exp { $$ = $1; $$.push_back({ $4, $6 }); }
+    | map_content_filled "," option_stop exp ":" exp { $$ = $1; $$.push_back({ $4, $6 }); }
     ;
 
 // Vec
@@ -364,13 +349,11 @@ vec: lbrack vec_content rbrack { $$ = new VecLiteral(@1.begin.line, $2); }
     ;
 
 vec_content: %empty { $$ = {}; }
-    | vec_content_filled { $$ = $1; }
-    | vec_content_filled "," { $$ = $1; }
+    | vec_content_filled option_comma { $$ = $1; }
     ;
 
 vec_content_filled: exp { $$ = { $1 }; }
-    | vec_content_filled "," exp { $$ = $1; $$.push_back($3); }
-    | vec_content_filled "," stop exp { $$ = $1; $$.push_back($4); }
+    | vec_content_filled "," option_stop exp { $$ = $1; $$.push_back($4); }
     ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
@@ -405,6 +388,22 @@ lparen: LPAREN
     ;
 
 rparen: RPAREN
+    ;
+
+// Optional tokens
+option_stop: %empty
+    | stop
+    ;
+
+option_comma: %empty
+    | "?"
+    ;
+
+// ","? stop?
+option_comma_stop: %empty
+    | stop
+    | ","
+    | "," stop
     ;
 %%
 

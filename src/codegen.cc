@@ -40,6 +40,7 @@ static void finalize_function_code(Module *module, Code *_code) {
 }
 
 bool gen_module_code(AstModule *ast, ModuleObject *module) {
+    // TODO B : Custom error with fileline
     try {
         ast->gen_code(module, module->code);
 
@@ -73,7 +74,7 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     auto fncode = Code::New();
 
-    // TODO : Throw
+    // TODO B : Throw
     if (!fncode)
         return;
 
