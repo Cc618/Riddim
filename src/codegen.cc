@@ -81,15 +81,29 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     finalize_function_code(module, fncode);
 
+    // TODO F : Verify no 2 same args id
     auto fn = CodeFunction::New(fncode, name);
+    fn->n_required_args = args->n_required;
 
     // Set up positional args
     for (const auto &[argid, argdefault] : args->args) {
-        // TODO E : arg default
-        fn->args.push_back({ argid, nullptr });
-    }
+        // No default
+        if (!argdefault) {
+            fn->args.push_back({ argid, nullptr });
+        } else {
+            // Generate code to push the arg on the TOS
+            Code *default_code = Code::New();
+            default_code->start_lineno = fileline;
+            if (!default_code) {
+                return;
+            }
 
-    // TODO D : Set up kw args
+            argdefault->gen_code(module, default_code);
+            default_code->code.push_back(Return);
+
+            fn->args.push_back({ argid, default_code });
+        }
+    }
 
     auto off_fn = ADD_CONST(fn);
 

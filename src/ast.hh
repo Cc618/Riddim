@@ -73,9 +73,11 @@ struct FnDecl : public Decl {
         Args() {}
         ~Args();
 
-        // TODO : Default values
         // The second value is the default value, can be nullptr if none
         std::vector<std::pair<str_t, Exp*>> args;
+
+        // Number of required args (no default)
+        int n_required = 0;
     } *args;
 
     str_t name;

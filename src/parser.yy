@@ -84,7 +84,7 @@
 
 // Declarations
 %nterm <ast::FnDecl*> fndecl
-%nterm <ast::FnDecl::Args*> fndecl_all_args fndecl_args fndecl_args_filled fndecl_kwargs fndecl_kwargs_filled
+%nterm <ast::FnDecl::Args*> fndecl_all_args fndecl_args fndecl_kwargs
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 // Statements
@@ -149,32 +149,31 @@ fndecl: "fn" ID lparen fndecl_all_args rparen block stop {
 // kwargs are arguments with default values
 // TODO : Extra comma
 fndecl_all_args: %empty { $$ = new FnDecl::Args(); }
-    | fndecl_args_filled { $$ = $1; }
-    | fndecl_kwargs_filled { $$ = $1; }
-    | fndecl_args_filled fndecl_comma fndecl_kwargs_filled {
+    | fndecl_args { $$ = $1; $$->n_required = $$->args.size(); }
+    | fndecl_kwargs { $$ = $1; }
+    | fndecl_args fndecl_comma fndecl_kwargs {
         $$ = $1;
+        $$->n_required = $$->args.size();
+
         // Merge args in order (default values after)
-        $$->args.insert($$->args.begin(), $3->args.begin(), $3->args.end());
+        $$->args.insert($$->args.end(), $3->args.begin(), $3->args.end());
         $3->args.clear();
+
         delete $3;
     }
     ;
 
-// fndecl_args: %empty { $$ = new FnDecl::Args(); }
-//     | fndecl_args_filled { $$ = $1; }
-//     ;
-
-fndecl_args_filled: ID { $$ = new FnDecl::Args(); $$->args.push_back({ $1, nullptr }); }
-    | fndecl_args_filled fndecl_comma ID { $$ = $1; $$->args.push_back({ $3, nullptr }); }
+fndecl_args: ID { $$ = new FnDecl::Args(); $$->args.push_back({ $1, nullptr }); }
+    | fndecl_args fndecl_comma ID { $$ = $1; $$->args.push_back({ $3, nullptr }); }
     ;
 
-fndecl_kwargs_filled:
+fndecl_kwargs:
     ID ":" exp { $$ = new FnDecl::Args(); $$->args.push_back({ $1, $3 }); }
-    | fndecl_kwargs_filled fndecl_comma ID ":" exp { $$ = $1; $$->args.push_back({ $3, $5 }); }
+    | fndecl_kwargs fndecl_comma ID ":" exp { $$ = $1; $$->args.push_back({ $3, $5 }); }
     ;
 
 fndecl_comma: ","
-    // | TODO "," stop
+    | "," stop
     ;
 
 block: lcurly stmtlist rcurly { $$ = $2; }

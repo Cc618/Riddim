@@ -89,13 +89,12 @@ void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
 
     Program::instance->top_frame = frame;
 
-    interpret_fragment(_code);
+    interpret_fragment(_code, frame->ip);
 }
 
-void interpret_fragment(Code *_code) {
+void interpret_fragment(Code *_code, size_t &ip) {
     auto frame = Program::instance->top_frame;
 
-    auto &ip = frame->ip;
     auto &code = _code->code;
     auto &consts = _code->consts->data;
     auto &obj_stack = Program::instance->obj_stack;

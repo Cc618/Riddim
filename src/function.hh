@@ -38,8 +38,10 @@ struct CodeFunction : public AbstractFunction {
 
     str_t name;
     Code *code;
+    // TODO I : Visit
     // Positional args with possibly default values (can be nullptr)
-    std::vector<std::pair<str_t, Object*>> args;
+    std::vector<std::pair<str_t, Code*>> args;
+    int n_required_args;
 
     static CodeFunction *New(Code *code, const str_t &name,
                              Object *self = nullptr);

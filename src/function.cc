@@ -6,6 +6,7 @@
 #include "program.hh"
 #include "str.hh"
 #include "vec.hh"
+#include <unordered_set>
 
 using namespace std;
 
@@ -108,30 +109,106 @@ void CodeFunction::init_class_type() {
 
         auto posargs = reinterpret_cast<Vec *>(args)->data;
 
-        // TODO E : Handle defaults
-        if (posargs.size() != me->args.size()) {
+        if (posargs.size() > me->args.size()) {
             // TODO C : Function name
-            THROW_ARGUMENT_ERROR("???", "length",
-                                 "This function requires " +
-                                     to_string(me->args.size()) + " arguments");
+            if (me->n_required_args == me->args.size()) {
+                THROW_ARGUMENT_ERROR("???", "length (too many arguments)",
+                                     "This function requires " +
+                                         to_string(me->args.size()) +
+                                         " arguments");
+            } else {
+                THROW_ARGUMENT_ERROR("???", "length (too many arguments)",
+                                     "This function requires from " +
+                                         to_string(me->n_required_args) +
+                                         " to " + to_string(me->args.size()) +
+                                         " arguments");
+            }
 
             return nullptr;
         }
 
         // TODO D : Handle kwargs
-        // if (kwargs != null && kwargs->type != kwargs_t::class_type) {
-        //     THROW_TYPE_ERROR_PREF("CodeFunction.@call{kwargs}", kwargs->type,
-        //                           kwargs_t::class_type);
+        if (kwargs != null && kwargs->type != kwargs_t::class_type) {
+            THROW_TYPE_ERROR_PREF("CodeFunction.@call{kwargs}", kwargs->type,
+                                  kwargs_t::class_type);
 
-        //     return nullptr;
-        // }
+            return nullptr;
+        }
 
-        // TODO E : Handle defaults
+        auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
 
-        // Bind arguments
-        std::unordered_map<str_t, Object*> vars;
-        for (size_t i = 0; i < me->args.size(); ++i) {
-            vars[me->args[i].first] = posargs[i];
+        // Bind positional arguments
+        std::unordered_map<str_t, Object *> vars;
+        for (size_t i = 0; i < posargs.size(); ++i) {
+            auto &arg_name = me->args[i].first;
+            vars[arg_name] = posargs[i];
+        }
+
+        // Bind keyword arguments
+        for (const auto &[h, kv] : kwargs_data) {
+            const auto &[k, v] = kv;
+
+            if (k->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("CodeFunction.@call", k->type, Str::class_type);
+
+                return nullptr;
+            }
+
+            str_t key = reinterpret_cast<Str *>(k)->data;
+
+            // This argument is already set
+            if (vars.find(key) != vars.end()) {
+                // TODO F : Func name
+                THROW_ARGUMENT_ERROR("<unknown func>", key, "This argument has been set multiple times");
+
+                return nullptr;
+            }
+
+            // Check whether this argument exists
+            bool exists = false;
+            for (const auto &[name, _] : me->args) {
+                if (name == key) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            // Throw error
+            if (!exists) {
+                THROW_ARGUMENT_ERROR("<unknown func>", key, "This argument doesn't exist");
+
+                return nullptr;
+            }
+
+            // Set
+            vars[key] = v;
+        }
+
+        // Evaluate default arguments
+        for (const auto &[arg_name, arg_default] : me->args) {
+            // This argument is not set
+            if (vars.find(arg_name) == vars.end()) {
+                if (!arg_default) {
+                    // TODO F : Func name
+                    THROW_ARGUMENT_ERROR("<unknown func>", arg_name, "Argument not set but required");
+
+                    return nullptr;
+                }
+
+                // Evaluate the default value
+                size_t ip = 0;
+                interpret_fragment(arg_default, ip);
+
+                // Evaluation error
+                if (on_error()) {
+                    return nullptr;
+                }
+
+                // Retrieve value and set it
+                auto default_value = Program::instance->obj_stack.back();
+                Program::instance->obj_stack.pop_back();
+                vars[arg_name] = default_value;
+            }
         }
 
         interpret(me->code, vars);
