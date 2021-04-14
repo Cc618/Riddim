@@ -72,7 +72,7 @@ void Block::gen_code(Module *module, Code *_code) {
 void FnDecl::gen_code(Module *module, Code *_code) {
     Decl::gen_code(module, _code);
 
-    auto fncode = Code::New();
+    auto fncode = Code::New(module->filepath);
 
     // TODO B : Throw
     if (!fncode)
@@ -106,11 +106,12 @@ void FnDecl::gen_code(Module *module, Code *_code) {
             fn->args.push_back({argid, nullptr});
         } else {
             // Generate code to push the arg on the TOS
-            Code *default_code = Code::New();
-            default_code->start_lineno = fileline;
+            Code *default_code = Code::New(module->filepath);
             if (!default_code) {
                 return;
             }
+
+            default_code->start_lineno = fileline;
 
             argdefault->gen_code(module, default_code);
             default_code->code.push_back(Return);

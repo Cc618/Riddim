@@ -11,8 +11,8 @@ struct Trace : public Object {
 
     // Function name / module name...
     str_t id;
-    str_t filename;
     size_t ip;
+    // Contains filename
     Code *code;
     Trace *prev = nullptr;
 
@@ -23,12 +23,11 @@ struct Trace : public Object {
     // on stderr
     void dump(int level = 1);
 
-    static Trace *New(size_t ip, Code *code, const str_t &id,
-                      const str_t &filename);
+    static Trace *New(size_t ip, Code *code, const str_t &id);
 
     // Can throw
     static void init_class_type();
 
 private:
-    Trace(size_t ip, Code *code, const str_t &id, const str_t &filename);
+    Trace(size_t ip, Code *code, const str_t &id);
 };

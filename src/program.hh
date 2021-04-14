@@ -15,6 +15,8 @@ struct Program : public Object {
     static Program *instance;
     static Type *class_type;
 
+    str_t main_module_path;
+
     // This module must be added via add_module (will be garbage collected
     // otherwise)
     Module *main_module;
@@ -53,6 +55,7 @@ struct Program : public Object {
     static void pop_trace();
 
     // Init attributes that were impossible to init in New
+    // - filename : Main module file path
     void init_attributes();
 
 private:

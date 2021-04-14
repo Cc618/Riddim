@@ -8,9 +8,8 @@ using namespace std;
 
 Type *Trace::class_type = nullptr;
 
-Trace *Trace::New(size_t ip, Code *code, const str_t &id,
-                  const str_t &filename) {
-    auto self = new (nothrow) Trace(ip, code, id, filename);
+Trace *Trace::New(size_t ip, Code *code, const str_t &id) {
+    auto self = new (nothrow) Trace(ip, code, id);
 
     if (!self) {
         THROW_MEMORY_ERROR;
@@ -21,9 +20,8 @@ Trace *Trace::New(size_t ip, Code *code, const str_t &id,
     return self;
 }
 
-Trace::Trace(size_t ip, Code *code, const str_t &id, const str_t &filename)
-    : Object(Trace::class_type), ip(ip), code(code), id(id),
-      filename(filename) {}
+Trace::Trace(size_t ip, Code *code, const str_t &id)
+    : Object(Trace::class_type), ip(ip), code(code), id(id) {}
 
 void Trace::init_class_type() {
     class_type = new (nothrow) Type("Trace");
@@ -47,11 +45,12 @@ void Trace::init_class_type() {
 
 // TODO Colors : Error colors
 str_t Trace::display() {
-    return filename + ":" + to_string(code->lineof(ip)) + " " + id;
+    return code->filename + ":" + to_string(code->lineof(ip)) + " " + id;
 }
 
 void Trace::dump(int level) {
-    if (prev) prev->dump(level + 1);
+    if (prev)
+        prev->dump(level + 1);
 
     cerr << level << ". " << display() << endl;
 }

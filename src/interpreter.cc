@@ -91,7 +91,7 @@ bool interpret_program(Code *code) {
 
 void interpret(Code *_code, const str_t &id, const std::unordered_map<str_t, Object*> &vars) {
     // Push new frame
-    auto frame = Frame::New(id, Program::instance->top_frame);
+    auto frame = Frame::New(id, _code->filename, Program::instance->top_frame);
     for (const auto &[id, val] : vars) {
         auto o_id = new (nothrow) Str(id);
         if (!o_id) return;
@@ -556,7 +556,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
 // When an error is thrown within the switch
 error_thrown:;
     // TODO D : Filename
-    auto trace = Trace::New(ip, _code, frame->id, "/path/to/main");
+    auto trace = Trace::New(ip, _code, frame->id);
 
     // Do not throw again
     if (trace)

@@ -61,7 +61,7 @@ Module *Module::New(const str_t &name, const str_t &filepath) {
         return nullptr;
     }
 
-    auto code = Code::New();
+    auto code = Code::New(filepath);
 
     if (!code)
         return nullptr;

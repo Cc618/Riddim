@@ -39,11 +39,11 @@ struct Code : public Object {
     Object *spawn_const(size_t i);
 
     // Can throw
-    static Code *New();
+    static Code *New(const str_t &filename);
 
     // Can throw
     static void init_class_type();
 
 private:
-    Code();
+    Code(const str_t &filename);
 };

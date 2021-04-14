@@ -6,6 +6,7 @@
 #include "interpreter.hh"
 #include "module.hh"
 #include "object.hh"
+#include "program.hh"
 #include <iostream>
 
 using namespace std;
@@ -50,8 +51,12 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+    string main_module_path = argv[1];
+
     // Init VM
     init_program();
+
+    Program::instance->main_module_path = main_module_path;
 
     // Check for initialization errors
     if (on_error()) {
@@ -62,12 +67,11 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    // Parse file
-    string file = argv[1];
-    res = driver.parse(file);
+    // Parse main module
+    res = driver.parse(main_module_path);
 
     if (res) {
-        cerr << "Error : Failed to parse file " << file << endl;
+        cerr << "Error : Failed to parse file " << main_module_path << endl;
 
         if (driver.module) {
             delete driver.module;

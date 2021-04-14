@@ -7,10 +7,11 @@ using namespace std;
 
 Type *Code::class_type = nullptr;
 
-Code::Code() : Object(Code::class_type) {}
+Code::Code(const str_t &filename)
+    : Object(Code::class_type), filename(filename) {}
 
-Code *Code::New() {
-    auto o = new (nothrow) Code();
+Code *Code::New(const str_t &filename) {
+    auto o = new (nothrow) Code(filename);
 
     if (!o) {
         THROW_MEMORY_ERROR;
@@ -62,9 +63,10 @@ void Code::mark_line(size_t lineno) {
     if (line_deltas.empty())
         start_lineno = lineno;
     // Optimize if same instruction
-    else if (line_deltas.back().first == code.size()) line_deltas.pop_back();
+    else if (line_deltas.back().first == code.size())
+        line_deltas.pop_back();
 
-    line_deltas.push_back({ code.size(), lineno });
+    line_deltas.push_back({code.size(), lineno});
 }
 
 size_t Code::add_const(Object *cst) {
@@ -82,4 +84,3 @@ Object *Code::spawn_const(size_t i) {
 
     return consts->data[i]->copy();
 }
-

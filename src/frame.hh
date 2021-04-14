@@ -17,6 +17,7 @@ struct Frame : public Object {
     size_t ip;
     // Function name, module name...
     str_t id;
+    str_t filename;
 
     Frame *previous;
     HashMap *vars;
@@ -34,11 +35,11 @@ struct Frame : public Object {
     Object *fetch(Object *name);
 
     // Can throw
-    static Frame *New(const str_t &id, Frame *previous = nullptr);
+    static Frame *New(const str_t &id, const str_t &filename, Frame *previous = nullptr);
 
     // Can throw
     static void init_class_type();
 
 private:
-    Frame(const str_t &id, Frame *previous);
+    Frame(const str_t &id, const str_t &filename, Frame *previous);
 };

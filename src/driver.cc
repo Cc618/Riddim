@@ -23,8 +23,9 @@ int Driver::parse(const string &f) {
             int res = parse();
 
             // Parsing OK
-            if (res == 0 && !error_occured)
+            if (res == 0 && !error_occured) {
                 module->filename = f;
+            }
 
             scan_end();
 

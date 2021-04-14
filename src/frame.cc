@@ -7,8 +7,8 @@ using namespace std;
 
 Type *Frame::class_type = nullptr;
 
-Frame::Frame(const str_t &id, Frame *previous)
-    : Object(Frame::class_type), id(id), previous(previous) {}
+Frame::Frame(const str_t &id, const str_t &filename, Frame *previous)
+    : Object(Frame::class_type), id(id), filename(filename), previous(previous) {}
 
 Object *Frame::fetch(Object *name) {
     if (name->type != Str::class_type) {
@@ -38,8 +38,8 @@ Object *Frame::fetch(Object *name) {
     return nullptr;
 }
 
-Frame *Frame::New(const str_t &id, Frame *previous) {
-    auto o = new (nothrow) Frame(id, previous);
+Frame *Frame::New(const str_t &id, const str_t &filename, Frame *previous) {
+    auto o = new (nothrow) Frame(id, filename, previous);
 
     if (!o) {
         THROW_MEMORY_ERROR;
