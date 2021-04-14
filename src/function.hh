@@ -36,6 +36,7 @@ struct Builtin : public AbstractFunction {
 struct Function : public AbstractFunction {
     static Type *class_type;
 
+    // TODO : Full name
     str_t name;
     Code *code;
     // Positional args with possibly default values (can be nullptr)

@@ -87,9 +87,11 @@ void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
 
     if (!frame) return;
 
-    Program::instance->top_frame = frame;
+    Program::push_frame(frame);
 
     interpret_fragment(_code, frame->ip);
+
+    Program::pop_frame();
 }
 
 void interpret_fragment(Code *_code, size_t &ip) {
@@ -352,7 +354,13 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
-            PUSH(frame->fetch(name));
+            auto result = frame->fetch(name);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
 
             NEXT(1);
         }
@@ -421,7 +429,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
         case Return: {
             // Dispatch return
-            Program::instance->top_frame = Program::instance->top_frame->previous;
             return;
         }
 

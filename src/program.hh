@@ -39,6 +39,11 @@ struct Program : public Object {
     // Registers a new module
     static void add_module(Module *mod);
 
+    // Updates the top of frame, links this frame with the
+    // previous TOF
+    static void push_frame(Frame *f);
+    static void pop_frame();
+
     // Init attributes that were impossible to init in New
     void init_attributes();
 

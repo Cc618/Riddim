@@ -16,7 +16,8 @@ Program::Program(const std::vector<Type *> &types)
     instance = this;
 
     // Register types
-    for (auto type : types) Program::add_type(type);
+    for (auto type : types)
+        Program::add_type(type);
 }
 
 void Program::init_class_type() {
@@ -42,11 +43,12 @@ void Program::init_class_type() {
         visit(program->global_frame);
         visit(program->top_frame);
 
-        if (program->current_error) visit(program->current_error);
+        if (program->current_error)
+            visit(program->current_error);
     };
 
     // @str
-    class_type->fn_str = [](Object *self) -> Object* {
+    class_type->fn_str = [](Object *self) -> Object * {
         // TODO : Display modules, types...
         auto result = new (nothrow) Str("Program()");
 
@@ -76,7 +78,8 @@ void Program::init_attributes() {
     for (auto type : types) {
         register_type(type);
 
-        if (on_error()) return;
+        if (on_error())
+            return;
     }
 }
 
@@ -86,12 +89,22 @@ void Program::add_type(Type *type) {
     if (Program::instance->global_frame) {
         Program::instance->register_type(type);
 
-        if (on_error()) return;
+        if (on_error())
+            return;
     }
 }
 
 void Program::add_module(Module *mod) {
     Program::instance->modules.push_back(mod);
+}
+
+void Program::push_frame(Frame *f) {
+    f->previous = Program::instance->top_frame;
+    Program::instance->top_frame = f;
+}
+
+void Program::pop_frame() {
+    Program::instance->top_frame = Program::instance->top_frame->previous;
 }
 
 void Program::register_type(Type *type) {

@@ -100,7 +100,7 @@ void Function::init_class_type() {
         auto me = reinterpret_cast<Function *>(self);
 
         if (args->type != args_t::class_type) {
-            THROW_TYPE_ERROR_PREF("Function.@call{args}", args->type,
+            THROW_TYPE_ERROR_PREF("Function<" + me->name + ">.@call{args}", args->type,
                                   args_t::class_type);
 
             return nullptr;
@@ -109,14 +109,13 @@ void Function::init_class_type() {
         auto posargs = reinterpret_cast<Vec *>(args)->data;
 
         if (posargs.size() > me->args.size()) {
-            // TODO A : Function name
             if (me->n_required_args == me->args.size()) {
-                THROW_ARGUMENT_ERROR("???", "length (too many arguments)",
+                THROW_ARGUMENT_ERROR(me->name, "length (too many arguments)",
                                      "This function requires " +
                                          to_string(me->args.size()) +
                                          " arguments");
             } else {
-                THROW_ARGUMENT_ERROR("???", "length (too many arguments)",
+                THROW_ARGUMENT_ERROR(me->name, "length (too many arguments)",
                                      "This function requires from " +
                                          to_string(me->n_required_args) +
                                          " to " + to_string(me->args.size()) +
@@ -156,8 +155,7 @@ void Function::init_class_type() {
 
             // This argument is already set
             if (vars.find(key) != vars.end()) {
-                // TODO A : Func name
-                THROW_ARGUMENT_ERROR("<unknown func>", key, "This argument has been set multiple times");
+                THROW_ARGUMENT_ERROR(me->name, key, "This argument has been set multiple times");
 
                 return nullptr;
             }
@@ -173,8 +171,7 @@ void Function::init_class_type() {
 
             // Throw error
             if (!exists) {
-                // TODO A : Func name
-                THROW_ARGUMENT_ERROR("<unknown func>", key, "This argument doesn't exist");
+                THROW_ARGUMENT_ERROR(me->name, key, "This argument doesn't exist");
 
                 return nullptr;
             }
@@ -188,8 +185,7 @@ void Function::init_class_type() {
             // This argument is not set
             if (vars.find(arg_name) == vars.end()) {
                 if (!arg_default) {
-                    // TODO A : Func name
-                    THROW_ARGUMENT_ERROR("<unknown func>", arg_name, "Argument not set but required");
+                    THROW_ARGUMENT_ERROR(me->name, arg_name, "Argument not set but required");
 
                     return nullptr;
                 }
