@@ -44,11 +44,10 @@ void Trace::init_class_type() {
     };
 }
 
-// TODO Colors : Error colors
 void Trace::display() {
     auto line = code->lineof(ip);
 
-    cerr << code->filename << ":" << to_string(line) << " " << id << endl;
+    cerr << C_GREEN << code->filename << ":" << C_RED << to_string(line) << " " << C_BLUE << id << C_NORMAL << endl;
     show_source_line(code->filename, line);
 }
 

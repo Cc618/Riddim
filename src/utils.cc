@@ -21,7 +21,7 @@ void parse_error(const str_t &filename, int begin_line, int begin_col,
 void show_source_line(const str_t &filename, int line) {
     auto text = read_source_line(filename, line);
     if (!text.empty())
-        cerr << line << ". " << text << endl;
+        cerr << C_RED << line << ". " << C_NORMAL << text << endl;
 }
 
 str_t read_source_line(const str_t &filename, int line) {

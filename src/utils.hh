@@ -5,6 +5,11 @@
 #include <functional>
 #include <string>
 
+#define C_RED "\x1b[1;31m"
+#define C_GREEN "\x1b[1;32m"
+#define C_BLUE "\x1b[1;34m"
+#define C_NORMAL "\x1b[1;0m"
+
 struct Vec;
 struct HashMap;
 struct Object;

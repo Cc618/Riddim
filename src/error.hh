@@ -99,12 +99,11 @@ void throw_fmt(Type *error_type, const char *fmt, ...);
 // An error that can't be caught in Riddim
 void internal_error(const str_t &msg);
 
-// TODO : Error colors
 // Invalid argument
 static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
                                         const str_t &MSG) {
-    throw_fmt(ArgumentError, "%s : Argument %s :  %s", FUNC.c_str(),
-              ARG.c_str(), MSG.c_str());
+    throw_fmt(ArgumentError, "%s : Argument %s%s%s :  %s", C_BLUE, FUNC.c_str(),
+              C_BLUE, ARG.c_str(), MSG.c_str());
 }
 
 #define THROW_MEMORY_ERROR throw_str(MemoryError, "Failed to allocate memory");
@@ -112,49 +111,55 @@ static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
 // Variable not found
 // VAR is a string
 #define THROW_NAME_ERROR(VAR)                                                  \
-    throw_fmt(NameError, "Symbol %s not found", (VAR).c_str())
+    throw_fmt(NameError, "Symbol '%s%s%s' not found", C_BLUE, (VAR).c_str(),   \
+              C_NORMAL)
 
-// TODO : Check whether we throw TypeError in another way
 // Args are types
 #define THROW_TYPE_ERROR(CURRENT, EXPECTED)                                    \
-    throw_fmt(TypeError, "Got type %s but expected type %s",                   \
-              (CURRENT)->name.c_str(), (EXPECTED)->name.c_str())
+    throw_fmt(TypeError, "Got type %s%s%s but expected type %s%s%s", C_RED,    \
+              (CURRENT)->name.c_str(), C_NORMAL, C_BLUE,                       \
+              (EXPECTED)->name.c_str(), C_NORMAL)
 
 // Invalid type with prefix
 #define THROW_TYPE_ERROR_PREF(PREF, CURRENT, EXPECTED)                         \
-    throw_fmt(TypeError, "%s : Got type %s but expected type %s", (PREF),      \
-              (CURRENT)->name.c_str(), (EXPECTED)->name.c_str())
+    throw_fmt(TypeError, "%s : Got type %s%s%s but expected type %s%s%s",      \
+              (PREF), C_RED, (CURRENT)->name.c_str(), C_NORMAL, C_BLUE,        \
+              (EXPECTED)->name.c_str(), C_NORMAL)
 
 // Attribute not found
 // ATTR is a string and TYPE is a type
 #define THROW_ATTR_ERROR(TYPE, ATTR)                                           \
-    throw_fmt(NameError, "Attribute %s not found for type %s", (ATTR).c_str(), \
-              (TYPE)->name.c_str())
+    throw_fmt(NameError, "Attribute %s%s%s not found for type %s%s%s", C_BLUE, \
+              (ATTR).c_str(), C_NORMAL, C_GREEN, (TYPE)->name.c_str(),         \
+              C_NORMAL)
 
 // Arithmetic error
 #define THROW_ARITHMETIC_ERROR(OP, MSG)                                        \
-    throw_fmt(ArithmeticError, "Operator %s : %s", (OP), (MSG))
+    throw_fmt(ArithmeticError, "Operator %s%s%s : %s", C_BLUE, (OP), C_NORMAL, \
+              (MSG))
 
 // Throws a NameError that says no such builtin method
 #define THROW_NOBUILTIN(TYPE, METHOD)                                          \
-    throw_fmt(NameError, "Type %s has no @" #METHOD " method", #TYPE);
+    throw_fmt(NameError, "Type %s%s%s has no %s@" #METHOD "%s method",         \
+              C_GREEN, #TYPE, C_NORMAL, C_BLUE, C_NORMAL);
 
 // No kwargs required
 static inline void THROW_EXTRA_KWARGS(const str_t &FUNC, const str_t &EXTRA) {
-    throw_fmt(ArgumentError, "%s : Extra kwarg (%s)", FUNC.c_str(),
-              EXTRA.c_str());
+    throw_fmt(ArgumentError, "%s%s%s : Extra kwarg (%s%s%s)", C_BLUE,
+              FUNC.c_str(), C_NORMAL, C_BLUE, EXTRA.c_str(), C_NORMAL);
 }
 
 // LEN and IDX are ints
 #define THROW_OUT_OF_BOUNDS(LEN, IDX)                                          \
     throw_fmt(IndexError,                                                      \
-              "Index %d out of bounds for a collection of size %d", (LEN),     \
-              (IDX));
+              "Index %s%d%s out of bounds for a collection of size %s%d%s",    \
+              C_BLUE, (IDX), C_NORMAL, C_GREEN, (LEN), C_NORMAL);
 
 #define THROW_STACK_TOOSMALL(MINLEN)                                           \
     throw_fmt(InternalError,                                                   \
-              "Object stack of length %d too small (%d items needed)",         \
-              (Program::instance->obj_stack.size()), (MINLEN));
+              "Object stack of length %s%d%s too small (%s%d%s items needed)", \
+              C_BLUE, (Program::instance->obj_stack.size()), C_NORMAL, C_BLUE, \
+              (MINLEN), C_NORMAL);
 
 class CodeGenException : public std::exception {
 public:
