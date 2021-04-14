@@ -40,7 +40,6 @@ static void finalize_function_code(Module *module, Code *_code) {
 }
 
 bool gen_module_code(AstModule *ast, ModuleObject *module) {
-    // TODO B : Custom error with fileline
     try {
         ast->gen_code(module, module->code);
 
@@ -48,7 +47,15 @@ bool gen_module_code(AstModule *ast, ModuleObject *module) {
             return false;
 
         return true;
+    } catch (const CodeGenException &e) {
+        cerr << e.what() << endl;
+
+        return false;
     } catch (...) {
+        auto e = CodeGenException("Fatal internal error during code generation",
+                                  module->filepath, 1);
+        cerr << e.what() << endl;
+
         return false;
     }
 }
@@ -74,9 +81,10 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     auto fncode = Code::New(module->filepath);
 
-    // TODO B : Throw
-    if (!fncode)
-        return;
+    if (!fncode) {
+        throw CodeGenException("Can't allocate memory", module->filepath,
+                               fileline);
+    }
 
     // Generate body within the function's code
     body->gen_code(module, fncode);
@@ -92,11 +100,10 @@ void FnDecl::gen_code(Module *module, Code *_code) {
     // Set up positional args
     for (const auto &[argid, argdefault] : args->args) {
         if (ids.find(argid) != ids.end()) {
-            THROW_ARGUMENT_ERROR(
-                name, argid,
-                "Multiple arguments with the same name disallowed");
-
-            return;
+            throw CodeGenException(
+                "Function " + name + "Multiple arguments with the same name (" +
+                    argid + ") disallowed",
+                module->filepath, fileline);
         }
 
         ids.insert(argid);
@@ -132,9 +139,7 @@ void FnDecl::gen_code(Module *module, Code *_code) {
     auto const_name = new (nothrow) Str(name);
 
     if (!const_name) {
-        THROW_MEMORY_ERROR;
-
-        return;
+        throw CodeGenException("Not enough memory", module->filepath, fileline);
     }
 
     auto off_name = ADD_CONST(const_name);
@@ -269,11 +274,9 @@ void CallExp::gen_code(Module *module, Code *_code) {
         for (const auto &[id, val] : kwargs) {
             auto const_id = new (nothrow) Str(id);
 
-            // TODO : Throw
             if (!const_id) {
-                THROW_MEMORY_ERROR;
-
-                return;
+                throw CodeGenException("Can't allocate memory",
+                                       module->filepath, fileline);
             }
 
             // Load id
@@ -335,9 +338,7 @@ void Attr::gen_code(Module *module, Code *_code) {
     auto const_attr = new (nothrow) Str(attr);
 
     if (!const_attr) {
-        THROW_MEMORY_ERROR;
-
-        return;
+        throw CodeGenException("Not enough memory", module->filepath, fileline);
     }
 
     auto off_attr = ADD_CONST(const_attr);
@@ -353,11 +354,9 @@ void Indexing::gen_code(Module *module, Code *_code) {
 void Id::gen_code(Module *module, Code *_code) {
     Object *name = new (nothrow) Str(id);
 
-    // TODO : Throw
     if (!name) {
-        THROW_MEMORY_ERROR;
-
-        return;
+        throw CodeGenException("Can't allocate memory", module->filepath,
+                               fileline);
     }
 
     PUSH_CODE(LoadVar);
@@ -395,9 +394,7 @@ void Const::gen_code(Module *module, Code *_code) {
     }
 
     if (!const_val) {
-        THROW_MEMORY_ERROR;
-
-        return;
+        throw CodeGenException("Not enough memory", module->filepath, fileline);
     }
 
     PUSH_CODE(LoadConst);
@@ -488,9 +485,7 @@ void IdTarget::gen_code(Module *module, Code *_code) {
     auto const_id = new (nothrow) Str(id);
 
     if (!const_id) {
-        THROW_MEMORY_ERROR;
-
-        return;
+        throw CodeGenException("Not enough memory", module->filepath, fileline);
     }
 
     auto off_id = ADD_CONST(const_id);
@@ -515,9 +510,8 @@ void AttrTarget::gen_code(Module *module, Code *_code) {
     auto const_attr = new (nothrow) Str(attr->attr);
 
     if (!const_attr) {
-        THROW_MEMORY_ERROR;
-
-        return;
+        throw CodeGenException("Can't allocate memory", module->filepath,
+                               fileline);
     }
 
     PUSH_CODE(StoreAttr);

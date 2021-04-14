@@ -555,7 +555,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
 // When an error is thrown within the switch
 error_thrown:;
-    // TODO D : Filename
     auto trace = Trace::New(ip, _code, frame->id);
 
     // Do not throw again

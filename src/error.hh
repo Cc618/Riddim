@@ -1,8 +1,10 @@
 #pragma once
 
 // Error object and functions
+// Defines also an exception for the code generation (try catch used here)
 
 #include "object.hh"
+#include <exception>
 
 typedef str_t error_msg_t;
 
@@ -100,7 +102,7 @@ void internal_error(const str_t &msg);
 // TODO : Error colors
 // Invalid argument
 static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
-                                 const str_t &MSG) {
+                                        const str_t &MSG) {
     throw_fmt(ArgumentError, "%s : Argument %s :  %s", FUNC.c_str(),
               ARG.c_str(), MSG.c_str());
 }
@@ -134,14 +136,13 @@ static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
     throw_fmt(ArithmeticError, "Operator %s : %s", (OP), (MSG))
 
 // Throws a NameError that says no such builtin method
-#define THROW_NOBUILTIN(TYPE, METHOD)                                                \
-    throw_fmt(NameError, "Type %s has no @" #METHOD " method",                 \
-              #TYPE);
+#define THROW_NOBUILTIN(TYPE, METHOD)                                          \
+    throw_fmt(NameError, "Type %s has no @" #METHOD " method", #TYPE);
 
 // No kwargs required
 static inline void THROW_EXTRA_KWARGS(const str_t &FUNC, const str_t &EXTRA) {
-    throw_fmt(ArgumentError, "%s : Extra kwarg (%s)",
-              FUNC.c_str(), EXTRA.c_str());
+    throw_fmt(ArgumentError, "%s : Extra kwarg (%s)", FUNC.c_str(),
+              EXTRA.c_str());
 }
 
 // LEN and IDX are ints
@@ -154,3 +155,14 @@ static inline void THROW_EXTRA_KWARGS(const str_t &FUNC, const str_t &EXTRA) {
     throw_fmt(InternalError,                                                   \
               "Object stack of length %d too small (%d items needed)",         \
               (Program::instance->obj_stack.size()), (MINLEN));
+
+class CodeGenException : public std::exception {
+public:
+    CodeGenException(const std::string &msg, const std::string &filename,
+                     int lineno);
+
+    virtual const char *what() const noexcept override;
+
+private:
+    str_t rawmsg;
+};

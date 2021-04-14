@@ -221,3 +221,9 @@ void dump_error_object(Object *error, ostream &out) {
         Program::instance->current_error = current_error;
     }
 }
+
+CodeGenException::CodeGenException(const std::string &msg,
+                                   const std::string &filename, int lineno) {
+    rawmsg = filename + ":" + to_string(lineno) + " : " + msg;
+}
+const char *CodeGenException::what() const noexcept { return rawmsg.c_str(); }
