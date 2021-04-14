@@ -2,8 +2,8 @@
 
 // Some utility functions and definitions
 
-#include <string>
 #include <functional>
+#include <string>
 
 struct Vec;
 struct HashMap;
@@ -34,4 +34,12 @@ struct LexerError {
     str_t msg;
 };
 
-void parse_error(const str_t &filename, int begin_line, int begin_col, int end_line, int end_col, const str_t &msg);
+void parse_error(const str_t &filename, int begin_line, int begin_col,
+                 int end_line, int end_col, const str_t &msg);
+
+// Displays on stderr the content of this file at this line
+// Nothing is shown if the file can't be open
+void show_source_line(const str_t &filename, int line);
+
+// Returns the content of the line in filename
+str_t read_source_line(const str_t &filename, int line);

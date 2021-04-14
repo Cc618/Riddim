@@ -83,6 +83,10 @@ bool interpret_program(Code *code) {
         if (Program::instance->trace)
             Program::instance->trace->dump();
 
+        dump_error();
+
+        clear_error();
+
         return false;
     }
 

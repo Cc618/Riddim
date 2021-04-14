@@ -2,6 +2,7 @@
 #include "error.hh"
 #include "program.hh"
 #include "str.hh"
+#include "utils.hh"
 #include <iostream>
 
 using namespace std;
@@ -44,13 +45,22 @@ void Trace::init_class_type() {
 }
 
 // TODO Colors : Error colors
-str_t Trace::display() {
-    return code->filename + ":" + to_string(code->lineof(ip)) + " " + id;
+void Trace::display() {
+    auto line = code->lineof(ip);
+
+    cerr << code->filename << ":" << to_string(line) << " " << id << endl;
+    show_source_line(code->filename, line);
 }
 
-void Trace::dump(int level) {
-    if (prev)
-        prev->dump(level + 1);
+void Trace::dump() {
+    auto current = this;
 
-    cerr << level << ". " << display() << endl;
+    int level = 1;
+    while (current) {
+        cerr << "  (#" << level << ") ";
+        current->display();
+
+        current = current->prev;
+        ++level;
+    }
 }

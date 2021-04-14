@@ -17,11 +17,11 @@ struct Trace : public Object {
     Trace *prev = nullptr;
 
     // Display the trace back for this frame only
-    str_t display();
+    void display();
 
     // Dumps the whole stack trace (also previous traces)
     // on stderr
-    void dump(int level = 1);
+    void dump();
 
     static Trace *New(size_t ip, Code *code, const str_t &id);
 

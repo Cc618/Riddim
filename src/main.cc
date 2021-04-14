@@ -16,10 +16,18 @@ Module *gen_module(Driver &driver) {
     auto ast = driver.module;
     driver.module = nullptr;
 
+    // TODO : Absolute
+    auto file_path = driver.file;
+
     // TODO : Module name not file path
-    // TODO : !module error handling
     // Generate code
-    auto module = Module::New(driver.file, driver.file);
+    auto module = Module::New(file_path, file_path);
+
+    if (!module) {
+        cerr << "Can't allocate module " << file_path << endl;
+
+        return nullptr;
+    }
 
     // Empty
     if (!ast)
@@ -83,28 +91,23 @@ int main(int argc, char *argv[]) {
     }
 
     try {
-        // TODO
-        // driver.module->debug();
-
         // Generate code from the AST
         auto module = gen_module(driver);
 
-        // The exception is thrown to
-        if (!module)
-            goto on_internal_error;
+        if (!module) {
+            res = -1;
 
-        // TODO
-        cout << "Interpreting code" << endl;
+            goto on_error;
+        }
 
         // Interpret code
         if (!interpret_program(module->code)) {
             res = -1;
 
-            goto on_internal_error;
+            goto on_error;
         }
 
-        // Error but we don't want to go within the catch block
-    on_internal_error:;
+    on_error:;
     } catch (...) {
         throw_str(InternalError, "Internal error");
     }
