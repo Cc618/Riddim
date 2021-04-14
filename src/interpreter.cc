@@ -75,9 +75,23 @@ inline Object *pop_top() {
         DISPATCH_ERROR;                                                        \
     }
 
-void interpret(Code *_code, const std::unordered_map<str_t, Object*> &vars) {
+bool interpret_program(Code *code) {
+    interpret(code, "Module<main>");
+
+    if (on_error()) {
+        // Print stack trace
+        if (Program::instance->trace)
+            Program::instance->trace->dump();
+
+        return false;
+    }
+
+    return true;
+}
+
+void interpret(Code *_code, const str_t &id, const std::unordered_map<str_t, Object*> &vars) {
     // Push new frame
-    auto frame = Frame::New(Program::instance->top_frame);
+    auto frame = Frame::New(id, Program::instance->top_frame);
     for (const auto &[id, val] : vars) {
         auto o_id = new (nothrow) Str(id);
         if (!o_id) return;
@@ -541,9 +555,14 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
 // When an error is thrown within the switch
 error_thrown:;
+    // TODO D : Filename
+    auto trace = Trace::New(ip, _code, frame->id, "/path/to/main");
+
+    // Do not throw again
+    if (trace)
+        Program::push_trace(trace);
+
     // TODO : Restore stack
-    debug_info("IP : " + to_string(ip) +
-               ", line of error : " + to_string(_code->lineof(ip)));
 
     return;
 }

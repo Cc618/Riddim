@@ -206,7 +206,7 @@ void Function::init_class_type() {
             }
         }
 
-        interpret(me->code, vars);
+        interpret(me->code, "Function<" + me->name + ">", vars);
 
         if (on_error())
             return nullptr;

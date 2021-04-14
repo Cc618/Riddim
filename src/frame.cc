@@ -7,7 +7,8 @@ using namespace std;
 
 Type *Frame::class_type = nullptr;
 
-Frame::Frame(Frame *previous) : Object(Frame::class_type), previous(previous) {}
+Frame::Frame(const str_t &id, Frame *previous)
+    : Object(Frame::class_type), id(id), previous(previous) {}
 
 Object *Frame::fetch(Object *name) {
     if (name->type != Str::class_type) {
@@ -37,8 +38,8 @@ Object *Frame::fetch(Object *name) {
     return nullptr;
 }
 
-Frame *Frame::New(Frame *previous) {
-    auto o = new (nothrow) Frame(previous);
+Frame *Frame::New(const str_t &id, Frame *previous) {
+    auto o = new (nothrow) Frame(id, previous);
 
     if (!o) {
         THROW_MEMORY_ERROR;
@@ -87,6 +88,8 @@ void Frame::init_class_type() {
 
     class_type->fn_str = [](Object *self) -> Object * {
         Frame *me = reinterpret_cast<Frame *>(self);
+
+        // TODO C : Frame id
 
         return me->vars->str();
     };

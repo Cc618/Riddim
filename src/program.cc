@@ -65,7 +65,7 @@ void Program::init_class_type() {
 
 void Program::init_attributes() {
     // Create global frame
-    global_frame = Frame::New();
+    global_frame = Frame::New("<builtins>");
 
     if (!global_frame) {
         THROW_MEMORY_ERROR;

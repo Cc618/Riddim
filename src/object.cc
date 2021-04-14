@@ -318,14 +318,11 @@ void testObjects(Module *module) {
 
     // --- Runtime ---
     cout << endl;
-    interpret(code);
-    // cout << endl << endl;
-    cout << "Done" << endl;
+    if (!interpret_program(code))
+        cerr << "Uncaught errors, exiting" << endl;
+    else
+        cout << "Done" << endl;
 
-    if (on_error()) {
-        cerr << ">>> On error !!!" << endl;
-        return;
-    }
 
     /*
     cout << "* End frame : " << endl;

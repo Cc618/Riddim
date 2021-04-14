@@ -111,12 +111,16 @@ enum OpCode : opcode_t {
 };
 } // namespace OpCode
 
-// TODO : Return ?
-// TODO : Stack different for each function call (obj_stack in frame)
+// Interprets the main module's code
+// This prints the traceback in case of uncaught error
+// Returns whether the program executed successfully
+bool interpret_program(Code *code);
+
+// TODO : Stack different for each function call (obj_stack in frame) ?
 // Interprets the code
 // - vars : The default variables of the frame
 // Can throw
-void interpret(Code *code, const std::unordered_map<str_t, Object*> &vars={});
+void interpret(Code *code, const str_t &id, const std::unordered_map<str_t, Object*> &vars={});
 
 // Interprets a fragment of code
 // Compared to interpret, it doesn't create a new frame (it uses the top frame)

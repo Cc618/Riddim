@@ -3,21 +3,32 @@
 // Error stack trace
 // Program holds a stack of traces, the TOS is the oldest trace
 
-#include "object.hh"
 #include "code.hh"
+#include "object.hh"
 
 struct Trace : public Object {
     static Type *class_type;
 
+    // Function name / module name...
+    str_t id;
+    str_t filename;
     size_t ip;
     Code *code;
     Trace *prev = nullptr;
 
-    static Trace *New(size_t ip, Code *code);
+    // Display the trace back for this frame only
+    str_t display();
+
+    // Dumps the whole stack trace (also previous traces)
+    // on stderr
+    void dump(int level = 1);
+
+    static Trace *New(size_t ip, Code *code, const str_t &id,
+                      const str_t &filename);
 
     // Can throw
     static void init_class_type();
 
 private:
-    Trace(size_t ip, Code *code);
+    Trace(size_t ip, Code *code, const str_t &id, const str_t &filename);
 };
