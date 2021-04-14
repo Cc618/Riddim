@@ -7,10 +7,6 @@
 #include <iterator>
 #include <vector>
 
-// TODO
-struct Module;
-void testObjects(Module *module);
-
 struct Type;
 struct Object;
 

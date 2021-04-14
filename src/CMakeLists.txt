@@ -3,7 +3,7 @@ set(DEBUG_PARSER_CONFLICTS 1)
 
 # C flags (see the debug section in the documentation for more details)
 add_compile_definitions(DEBUG)
-add_compile_definitions(DEBUG_ERRORS)
+# add_compile_definitions(DEBUG_ERRORS)
 
 # Parse CMake flags
 if (${DEBUG_PARSER_CONFLICTS})

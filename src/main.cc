@@ -95,26 +95,18 @@ int main(int argc, char *argv[]) {
 
         // TODO
         cout << "Interpreting code" << endl;
-        // cout << reinterpret_cast<Str *>(module->code->consts->str())->data
-        //      << endl;
-        testObjects(module);
 
         // Interpret code
-        // TODO : Only main module
-        // interpret(module->frame);
+        if (!interpret_program(module->code)) {
+            res = -1;
+
+            goto on_internal_error;
+        }
 
         // Error but we don't want to go within the catch block
     on_internal_error:;
     } catch (...) {
         throw_str(InternalError, "Internal error");
-    }
-
-    if (on_error()) {
-        cerr << "Error : Uncaught error" << endl;
-
-        dump_error();
-
-        res = -1;
     }
 
 on_parse_error:;
