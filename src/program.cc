@@ -42,6 +42,7 @@ void Program::init_class_type() {
 
         visit(program->global_frame);
         visit(program->top_frame);
+        visit(program->trace);
 
         if (program->current_error)
             visit(program->current_error);
@@ -105,6 +106,15 @@ void Program::push_frame(Frame *f) {
 
 void Program::pop_frame() {
     Program::instance->top_frame = Program::instance->top_frame->previous;
+}
+
+void Program::push_trace(Trace *t) {
+    t->prev = Program::instance->trace;
+    Program::instance->trace = t;
+}
+
+void Program::pop_trace() {
+    Program::instance->trace = Program::instance->trace->prev;
 }
 
 void Program::register_type(Type *type) {

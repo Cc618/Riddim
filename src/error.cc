@@ -20,8 +20,6 @@ void Error::init_class_type() {
     auto error_traverse_objects = [](Object *self,
                                      const fn_visit_object_t &visit) {
         Error *obj = reinterpret_cast<Error *>(self);
-
-        // TODO : Visit msg
     };
 
     // @getattr

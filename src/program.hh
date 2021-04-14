@@ -8,6 +8,7 @@
 #include "frame.hh"
 #include "module.hh"
 #include "object.hh"
+#include "trace.hh"
 #include <vector>
 
 struct Program : public Object {
@@ -27,6 +28,9 @@ struct Program : public Object {
     // The current frame executed
     Frame *top_frame = nullptr;
 
+    // The trace back (trace is the oldest)
+    Trace *trace = nullptr;
+
     // Factory, since it is a singleton, the result is Program::instance
     static void New(const std::vector<Type *> &types);
 
@@ -43,6 +47,10 @@ struct Program : public Object {
     // previous TOF
     static void push_frame(Frame *f);
     static void pop_frame();
+
+    // Pushes a new trace, this one is older than the current frame
+    static void push_trace(Trace *t);
+    static void pop_trace();
 
     // Init attributes that were impossible to init in New
     void init_attributes();

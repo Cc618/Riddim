@@ -1,7 +1,9 @@
 #include "init.hh"
 #include "bool.hh"
+#include "builtins.hh"
 #include "error.hh"
 #include "frame.hh"
+#include "function.hh"
 #include "gc.hh"
 #include "int.hh"
 #include "map.hh"
@@ -10,9 +12,8 @@
 #include "object.hh"
 #include "program.hh"
 #include "str.hh"
+#include "trace.hh"
 #include "vec.hh"
-#include "function.hh"
-#include "builtins.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -65,6 +66,7 @@ static void init_types() {
     INIT_TYPE(Vec);
     INIT_TYPE(Builtin);
     INIT_TYPE(Function);
+    INIT_TYPE(Trace);
 
 #undef INIT_TYPE
 }
@@ -103,6 +105,4 @@ static void init_objects() {
 }
 
 // --- End ---
-void end_program() {
-    garbage_collect(nullptr);
-}
+void end_program() { garbage_collect(nullptr); }
