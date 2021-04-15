@@ -113,6 +113,9 @@ void interpret(Code *_code, const str_t &id, const std::unordered_map<str_t, Obj
 
     Program::push_frame(frame);
 
+    // Recursion error
+    if (on_error()) return;
+
     interpret_fragment(_code, frame->ip);
 
     Program::pop_frame();

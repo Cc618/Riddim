@@ -98,6 +98,7 @@ void Error::init_class_type() {
     INIT_ERROR(NameError);
     INIT_ERROR(NotImplementedError);
     INIT_ERROR(NullError);
+    INIT_ERROR(RecursionError);
     INIT_ERROR(TypeError);
 
 #undef INIT_ERROR
@@ -127,6 +128,7 @@ DECL_ERROR(MemoryError);
 DECL_ERROR(NameError);
 DECL_ERROR(NotImplementedError);
 DECL_ERROR(NullError);
+DECL_ERROR(RecursionError);
 DECL_ERROR(TypeError);
 
 #undef DECL_ERROR

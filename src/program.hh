@@ -36,6 +36,9 @@ struct Program : public Object {
     // The trace back (trace is the oldest)
     Trace *trace = nullptr;
 
+    // Current call count
+    size_t recursion_depth = 0;
+
     // Factory, since it is a singleton, the result is Program::instance
     static void New(const std::vector<Type *> &types);
 
@@ -53,6 +56,7 @@ struct Program : public Object {
 
     // Updates the top of frame, links this frame with the
     // previous TOF
+    // Can throw
     static void push_frame(Frame *f);
     static void pop_frame();
 

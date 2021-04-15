@@ -3,6 +3,8 @@
 
 using namespace std;
 
+constexpr size_t MAX_RECURSION_DEPTH = 1000;
+
 Program *Program::instance = nullptr;
 Type *Program::class_type = nullptr;
 
@@ -94,20 +96,27 @@ void Program::add_type(Type *type) {
     }
 }
 
-void Program::add_global(Object *o) {
-    Program::instance->globals.push_back(o);
-}
+void Program::add_global(Object *o) { Program::instance->globals.push_back(o); }
 
 void Program::add_module(Module *mod) {
     Program::instance->modules.push_back(mod);
 }
 
 void Program::push_frame(Frame *f) {
+    if (Program::instance->recursion_depth >= MAX_RECURSION_DEPTH) {
+        throw_fmt(RecursionError,
+                  "Max recursion depth reached (%s%zu%s), infinite recursion",
+                  C_BLUE, MAX_RECURSION_DEPTH, C_NORMAL);
+        return;
+    }
+
+    ++Program::instance->recursion_depth;
     f->previous = Program::instance->top_frame;
     Program::instance->top_frame = f;
 }
 
 void Program::pop_frame() {
+    --Program::instance->recursion_depth;
     Program::instance->top_frame = Program::instance->top_frame->previous;
 }
 

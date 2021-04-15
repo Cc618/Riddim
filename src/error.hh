@@ -62,6 +62,9 @@ NEW_ERROR(NotImplementedError);
 // Null reference
 NEW_ERROR(NullError);
 
+// Max recursion depth reached
+NEW_ERROR(RecursionError);
+
 // Invalid type
 NEW_ERROR(TypeError);
 
