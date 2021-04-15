@@ -3,16 +3,20 @@
 #include "error.hh"
 #include "hash.hh"
 #include "int.hh"
-#include "null.hh"
-#include "str.hh"
-#include "program.hh"
 #include "methods.hh"
+#include "null.hh"
+#include "program.hh"
+#include "str.hh"
+#include <string>
 
 using namespace std;
 
 // --- HashMap ---
 Type *HashMap::class_type = nullptr;
+
 HashMap *HashMap::empty = nullptr;
+
+size_t HashMap::class_hash = 0;
 
 HashMap *HashMap::New(const hmap_t &data) {
     auto self = new (nothrow) HashMap(data);
@@ -36,7 +40,8 @@ void HashMap::init_class_type() {
         return;
     }
 
-    class_type->constructor = [](Object *self, Object *args, Object *kwargs) -> Object* {
+    class_type->constructor = [](Object *self, Object *args,
+                                 Object *kwargs) -> Object * {
         INIT_METHOD(HashMap, "HashMap");
 
         CHECK_NOARGS("HashMap");
@@ -76,7 +81,45 @@ void HashMap::init_class_type() {
         return result;
     };
 
-    // TODO : Hash
+    // @hash
+    class_type->fn_hash = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<HashMap *>(self);
+
+        int_t h = class_hash;
+
+        for (const auto &[kh, kv] : me->data) {
+            const auto &[k, v] = kv;
+
+            // Value hash
+            auto item_hash = v->hash();
+            if (!item_hash) {
+                return nullptr;
+            }
+
+            if (item_hash->type != Int::class_type) {
+                THROW_TYPE_ERROR_PREF(v->type->name + ".@hash", item_hash->type,
+                                      Int::class_type);
+
+                return nullptr;
+            }
+
+            // Combine key
+            h = hash_combine(h, kh);
+
+            // Combine value
+            h = hash_combine(h, reinterpret_cast<Int *>(item_hash)->data);
+        }
+
+        auto result = new (nothrow) Int(h);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
 
     // @in
     class_type->fn_in = [](Object *self, Object *key) -> Object * {
@@ -182,6 +225,8 @@ void HashMap::init_class_objects() {
     }
 
     Program::add_global(empty);
+
+    class_hash = std::hash<str_t>()("HashMap");
 }
 
 Object *HashMap::get(Object *key) {

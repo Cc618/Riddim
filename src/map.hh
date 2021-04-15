@@ -39,6 +39,9 @@ struct HashMap : public Object {
 
 protected:
     HashMap(const hmap_t &data = {});
+
+private:
+    static size_t class_hash;
 };
 
 // An object that can contains attributes
