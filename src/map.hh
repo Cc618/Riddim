@@ -56,7 +56,11 @@ struct AttrObject : public Object {
 
     // Can throw
     static void init_class_type();
+    static void init_class_objects();
 
 protected:
     AttrObject(HashMap *data = nullptr);
+
+private:
+    static size_t class_hash;
 };

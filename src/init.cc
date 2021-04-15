@@ -96,6 +96,11 @@ static void init_objects() {
     if (on_error())
         return;
 
+    AttrObject::init_class_objects();
+
+    if (on_error())
+        return;
+
     // Finalize program initialization
     Program::instance->init_attributes();
 

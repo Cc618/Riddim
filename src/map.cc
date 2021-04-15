@@ -296,6 +296,8 @@ hmap_t::iterator HashMap::find(Object *key) {
 // --- AttrObject ---
 Type *AttrObject::class_type = nullptr;
 
+size_t AttrObject::class_hash = 0;
+
 AttrObject *AttrObject::New() {
     auto o = new (nothrow) AttrObject();
 
@@ -372,7 +374,29 @@ void AttrObject::init_class_type() {
         return result;
     };
 
-    // TODO : Hash
+    // @hash
+    class_type->fn_hash = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<AttrObject *>(self);
+
+        auto map_hash = me->data->hash();
+
+        // Dispatch error
+        if (!map_hash) return nullptr;
+
+        int_t h = class_hash;
+
+        // The type Int* is guaranted for builtin type hashes
+        auto result = new (nothrow) Int(hash_combine(h, reinterpret_cast<Int*>(map_hash)->data));
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<AttrObject *>(self);
@@ -459,3 +483,7 @@ void AttrObject::init_class_type() {
 
 AttrObject::AttrObject(HashMap *data)
     : Object(AttrObject::class_type), data(data) {}
+
+void AttrObject::init_class_objects() {
+    class_hash = std::hash<str_t>()("AttrObject");
+}
