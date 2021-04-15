@@ -15,7 +15,7 @@
 | MemoryError | Out of memory. |
 | NameError | Local / attribute / global variable not found. |
 | NotImplementedError | This method is not implemented yet. |
-| NullError | Null reference. |
+| RecursionError | Max recursion depth reached |
 | TypeError | Invalid type. |
 
 ## Files

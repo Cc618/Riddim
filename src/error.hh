@@ -59,9 +59,6 @@ NEW_ERROR(NameError);
 // This method is not implemented yet
 NEW_ERROR(NotImplementedError);
 
-// Null reference
-NEW_ERROR(NullError);
-
 // Max recursion depth reached
 NEW_ERROR(RecursionError);
 
