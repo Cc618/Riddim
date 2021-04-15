@@ -1,18 +1,23 @@
 #include "vec.hh"
 #include "bool.hh"
 #include "error.hh"
-#include "int.hh"
-#include "null.hh"
-#include "str.hh"
-#include "methods.hh"
 #include "function.hh"
+#include "hash.hh"
+#include "int.hh"
+#include "methods.hh"
+#include "null.hh"
 #include "program.hh"
+#include "str.hh"
 #include <algorithm>
+#include <string>
 
 using namespace std;
 
 Type *Vec::class_type = nullptr;
+
 Vec *Vec::empty = nullptr;
+
+size_t Vec::class_hash = 0;
 
 Vec *Vec::New(const vec_t &data) {
     auto self = new (nothrow) Vec(data);
@@ -38,7 +43,8 @@ void Vec::init_class_type() {
         return;
     }
 
-    class_type->constructor = [](Object *self, Object *args, Object *kwargs) -> Object* {
+    class_type->constructor = [](Object *self, Object *args,
+                                 Object *kwargs) -> Object * {
         INIT_METHOD(Vec, "Vec");
 
         CHECK_NOARGS("Vec");
@@ -65,7 +71,37 @@ void Vec::init_class_type() {
         visit(me->me_pop);
     };
 
-    // TODO : Hash
+    // @hash
+    class_type->fn_hash = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Vec *>(self);
+
+        int_t h = class_hash;
+
+        for (auto o : me->data) {
+            auto item_hash = o->hash();
+            if (!item_hash) {
+                return nullptr;
+            }
+
+            if (item_hash->type != Int::class_type) {
+                THROW_TYPE_ERROR_PREF(o->type->name + ".@hash", item_hash->type, Int::class_type);
+
+                return nullptr;
+            }
+
+            h = hash_combine(h, reinterpret_cast<Int*>(item_hash)->data);
+        }
+
+        auto result = new (nothrow) Int(h);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
 
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
@@ -271,6 +307,8 @@ void Vec::init_class_objects() {
     }
 
     Program::add_global(empty);
+
+    class_hash = std::hash<str_t>()("Vec");
 }
 
 // --- Methods ---

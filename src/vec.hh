@@ -31,4 +31,7 @@ struct Vec : public Object {
 
 protected:
     Vec(const vec_t &data = {});
+
+private:
+    static size_t class_hash;
 };

@@ -1,7 +1,8 @@
 #include "builtins.hh"
 #include "error.hh"
-#include "function.hh"
 #include "frame.hh"
+#include "function.hh"
+#include "int.hh"
 #include "map.hh"
 #include "methods.hh"
 #include "null.hh"
@@ -43,7 +44,7 @@ void init_builtins() {
 
 #define INIT_BUILTIN(NAME, HANDLER)                                            \
     {                                                                          \
-        auto obj = new (nothrow) Builtin(HANDLER, NAME);                            \
+        auto obj = new (nothrow) Builtin(HANDLER, NAME);                       \
         if (!obj) {                                                            \
             THROW_MEMORY_ERROR;                                                \
             return;                                                            \
@@ -59,6 +60,7 @@ void init_builtins() {
     }
 
     // Functions
+    INIT_BUILTIN("hash", builtin_hash);
     INIT_BUILTIN("print", print);
     INIT_BUILTIN("typeof", builtin_typeof);
 
@@ -66,6 +68,28 @@ void init_builtins() {
 }
 
 // --- Functions ---
+Object *builtin_hash(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "hash");
+
+    CHECK_NOKWARGS("hash");
+    CHECK_ARGSLEN(1, "typeof");
+
+    auto o = reinterpret_cast<Vec *>(args)->data[0];
+    auto result = o->hash();
+
+    if (!result)
+        return nullptr;
+
+    if (result->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF(o->type->name + ".@hash", result->type,
+                              Int::class_type);
+
+        return nullptr;
+    }
+
+    return result;
+}
+
 // Print
 Object *print(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Object, "print");

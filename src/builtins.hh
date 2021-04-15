@@ -13,6 +13,9 @@ struct Program;
 void init_builtins();
 
 // --- Functions ---
+// Throws if is not Int
+Object *builtin_hash(Object *self, Object *args, Object *kwargs);
+
 Object *print(Object *self, Object *args, Object *kwargs);
 
 Object *builtin_typeof(Object *self, Object *args, Object *kwargs);
