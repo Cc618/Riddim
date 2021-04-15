@@ -4,6 +4,7 @@
 
 #include "code.hh"
 #include "frame.hh"
+#include "module.hh"
 
 // enum class but we can use the using keyword to bring this scope in source
 // code
@@ -114,7 +115,7 @@ enum OpCode : opcode_t {
 // Interprets the main module's code
 // This prints the traceback in case of uncaught error
 // Returns whether the program executed successfully
-bool interpret_program(Code *code);
+bool interpret_program(Module *main_module);
 
 // TODO : Stack different for each function call (obj_stack in frame) ?
 // Interprets the code

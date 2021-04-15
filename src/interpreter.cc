@@ -75,8 +75,11 @@ inline Object *pop_top() {
         DISPATCH_ERROR;                                                        \
     }
 
-bool interpret_program(Code *code) {
-    interpret(code, "Module<main>");
+bool interpret_program(Module *main_module) {
+    Program::instance->main_module = main_module;
+    Program::instance->add_module(main_module);
+
+    interpret(main_module->code, "Module<main>");
 
     if (on_error()) {
         // Print stack trace
@@ -449,6 +452,9 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case Return: {
+            // TODO A : Also on jumps...
+            gc_step();
+
             // Dispatch return
             return;
         }

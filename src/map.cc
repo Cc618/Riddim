@@ -5,6 +5,7 @@
 #include "int.hh"
 #include "null.hh"
 #include "str.hh"
+#include "program.hh"
 #include "methods.hh"
 
 using namespace std;
@@ -36,7 +37,6 @@ void HashMap::init_class_type() {
     }
 
     class_type->constructor = [](Object *self, Object *args, Object *kwargs) -> Object* {
-        // TODO : Change name (use it as a constructor not a function)
         INIT_METHOD(HashMap, "HashMap");
 
         CHECK_NOARGS("HashMap");
@@ -174,13 +174,14 @@ void HashMap::init_class_type() {
         return null;
     };
 }
-
 void HashMap::init_class_objects() {
     empty = HashMap::New();
 
     if (!empty) {
         return;
     }
+
+    Program::add_global(empty);
 }
 
 Object *HashMap::get(Object *key) {

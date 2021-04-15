@@ -40,12 +40,11 @@ void Program::init_class_type() {
         for (auto child : program->obj_stack)
             visit(child);
 
+        visit(program->main_module);
         visit(program->global_frame);
         visit(program->top_frame);
         visit(program->trace);
-
-        if (program->current_error)
-            visit(program->current_error);
+        visit(program->current_error);
     };
 
     // @str
@@ -93,6 +92,10 @@ void Program::add_type(Type *type) {
         if (on_error())
             return;
     }
+}
+
+void Program::add_global(Object *o) {
+    Program::instance->globals.push_back(o);
 }
 
 void Program::add_module(Module *mod) {

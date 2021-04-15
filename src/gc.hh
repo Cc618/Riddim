@@ -3,6 +3,8 @@
 // Garbage collection
 // Mark and sweep algorithm
 
+#include <cstddef>
+
 struct Object;
 
 struct GcData {
@@ -19,3 +21,12 @@ void init_gc_data(Object *obj);
 
 // Deletes objects not linked to parent
 void garbage_collect(Object *parent);
+
+// Called every instruction
+// This collect garbages once a max objects alive threshold is reached
+// The root of the GC is Program
+void gc_step();
+
+// Returns the number of alive objects
+// O(1)
+size_t gc_get_count();

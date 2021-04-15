@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Interpret code
-        if (!interpret_program(module->code)) {
+        if (!interpret_program(module)) {
             res = -1;
 
             goto on_error;

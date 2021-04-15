@@ -17,8 +17,8 @@ AbstractFunction::AbstractFunction(Type *type, Object *self)
 // --- Builtin ---
 Type *Builtin::class_type = nullptr;
 
-Builtin::Builtin(const fn_ternary_t &data, Object *self)
-    : AbstractFunction(Builtin::class_type, self ? self : null), data(data) {}
+Builtin::Builtin(const fn_ternary_t &data, const str_t &name, Object *self)
+    : AbstractFunction(Builtin::class_type, self ? self : null), data(data), name(name) {}
 
 void Builtin::init_class_type() {
     class_type = new (nothrow) Type("Builtin");

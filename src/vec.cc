@@ -6,6 +6,7 @@
 #include "str.hh"
 #include "methods.hh"
 #include "function.hh"
+#include "program.hh"
 #include <algorithm>
 
 using namespace std;
@@ -22,8 +23,8 @@ Vec *Vec::New(const vec_t &data) {
         return nullptr;
     }
 
-    NEW_METHOD(add);
-    NEW_METHOD(pop);
+    NEW_METHOD(Vec, add);
+    NEW_METHOD(Vec, pop);
 
     return self;
 }
@@ -38,7 +39,6 @@ void Vec::init_class_type() {
     }
 
     class_type->constructor = [](Object *self, Object *args, Object *kwargs) -> Object* {
-        // TODO : Change name (use it as a constructor not a function)
         INIT_METHOD(Vec, "Vec");
 
         CHECK_NOARGS("Vec");
@@ -60,6 +60,9 @@ void Vec::init_class_type() {
         for (auto o : me->data) {
             visit(o);
         }
+
+        visit(me->me_add);
+        visit(me->me_pop);
     };
 
     // TODO : Hash
@@ -266,6 +269,8 @@ void Vec::init_class_objects() {
     if (!empty) {
         return;
     }
+
+    Program::add_global(empty);
 }
 
 // --- Methods ---

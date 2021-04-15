@@ -24,11 +24,12 @@ struct Builtin : public AbstractFunction {
 
     // (Object *self, Vec *args, HashMap *kwargs) -> Object*
     fn_ternary_t data;
+    str_t name;
 
     // Can throw
     static void init_class_type();
 
-    Builtin(const fn_ternary_t &data, Object *self = nullptr);
+    Builtin(const fn_ternary_t &data, const str_t &name, Object *self = nullptr);
 };
 
 // A function containing code to interpret

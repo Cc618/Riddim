@@ -13,6 +13,7 @@
 #include "program.hh"
 #include "str.hh"
 #include "trace.hh"
+#include "code.hh"
 #include "vec.hh"
 
 // --- Init ---
@@ -67,6 +68,7 @@ static void init_types() {
     INIT_TYPE(Builtin);
     INIT_TYPE(Function);
     INIT_TYPE(Trace);
+    INIT_TYPE(Code);
 
 #undef INIT_TYPE
 }

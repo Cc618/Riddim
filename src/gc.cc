@@ -1,19 +1,36 @@
 #include "gc.hh"
 #include "object.hh"
+#include "program.hh"
 #include <vector>
 
 using namespace std;
 
+// Number of minimum alive objects to execute a garbage collection
+constexpr size_t gc_count_threshold = 100;
+
 static Object *last_allocated_object = nullptr;
+
+static size_t gc_object_count = 0;
 
 void init_gc_data(Object *obj) {
     // Insert this object to the gc linked list
     obj->gc_data.prev = last_allocated_object;
 
     last_allocated_object = obj;
+
+    ++gc_object_count;
 }
 
+// TODO A
+#include "debug.hh"
+#include "builtins.hh"
+#include "function.hh"
+#include "int.hh"
+#include <iostream>
+
 void garbage_collect(Object *parent) {
+    debug_info("Collecting garbages, " + to_string(gc_get_count()) + " objects");
+
     // parent can be nullptr at the destruction of the interpreter
     if (parent) {
         // Mark using an iterative DFS
@@ -38,6 +55,7 @@ void garbage_collect(Object *parent) {
         }
     }
 
+
     // Sweep by iterating through the gc list
     Object *node = last_allocated_object;
 
@@ -55,6 +73,20 @@ void garbage_collect(Object *parent) {
             // Remove it from the linked list
             if (next_node)
                 next_node->gc_data.prev = prev_node;
+
+            // TODO
+            --gc_object_count;
+            // debug_print(node);
+            cout << node->type->name << " ";
+            if (node->type == Int::class_type) {
+                cout << reinterpret_cast<Int*>(node)->data;
+            } else if (node->type == Builtin::class_type) {
+                cout << reinterpret_cast<Builtin*>(node)->name;
+            } else if (node->type == Str::class_type) {
+                cout << reinterpret_cast<Str*>(node)->data;
+            }
+
+            cout << endl;
 
             delete node;
         } else {
@@ -75,4 +107,19 @@ void garbage_collect(Object *parent) {
 
     // Update last allocated object
     last_allocated_object = last_alive_object;
+
+    debug_info("garbage_collect ended, " + to_string(gc_get_count()) + " objects");
+    // TODO
+    exit(0);
+}
+
+// TODO : Every N instructions
+void gc_step() {
+    if (gc_object_count >= gc_count_threshold) {
+        garbage_collect(Program::instance);
+    }
+}
+
+size_t gc_get_count() {
+    return gc_object_count;
 }

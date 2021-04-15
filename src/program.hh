@@ -17,12 +17,15 @@ struct Program : public Object {
 
     str_t main_module_path;
 
+    // Unreachable variables from Riddim
+    std::vector<Object *> globals;
+    std::vector<Object *> obj_stack;
+
     // This module must be added via add_module (will be garbage collected
     // otherwise)
     Module *main_module;
-    std::vector<Object *> globals;
+
     Object *current_error;
-    std::vector<Object *> obj_stack;
 
     // Not the main module frame but the builtins frame
     Frame *global_frame = nullptr;
@@ -44,6 +47,9 @@ struct Program : public Object {
 
     // Registers a new module
     static void add_module(Module *mod);
+
+    // Adds a global variable unreachable from Riddim
+    static void add_global(Object *o);
 
     // Updates the top of frame, links this frame with the
     // previous TOF
