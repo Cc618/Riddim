@@ -4,9 +4,17 @@
 #include "int.hh"
 #include "program.hh"
 #include "str.hh"
+#include "bool.hh"
 #include <iostream>
 
 using namespace std;
+
+bool is_pod_object(Object *o) {
+    if (o->type == Int::class_type) return true;
+    if (o->type == Bool::class_type) return true;
+
+    return false;
+}
 
 // --- Object ---
 Type *Object::class_type = nullptr;

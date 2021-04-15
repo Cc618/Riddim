@@ -15,6 +15,12 @@ typedef std::function<void(Object *child)> fn_visit_object_t;
 typedef std::function<void(Object *obj, const fn_visit_object_t &visit)>
     fn_traverse_objects_t;
 
+struct Object;
+
+// Returns whether this object is a Plain Old Data type,
+// that is, it must be copied on various operations
+bool is_pod_object(Object *o);
+
 struct Object {
     // This attribute describes the type of this object
     // It is present also on other classes such as Type

@@ -14,7 +14,7 @@ using namespace OpCode;
 
 // Prints the stack
 // TODO : Rm
-void debug_stack(const vector<Object*> &obj_stack) {
+void debug_stack(const vector<Object *> &obj_stack) {
     cout << "Stack (" << obj_stack.size() << ") :" << endl;
     int staki = obj_stack.size();
     for (auto o : obj_stack) {
@@ -75,6 +75,14 @@ inline Object *pop_top() {
         DISPATCH_ERROR;                                                        \
     }
 
+#define COPY_IF_POD(VAR)                                                       \
+    if (is_pod_object(VAR)) {                                                         \
+        (VAR) = (VAR)->copy();                                                 \
+        if (!(VAR)) {                                                          \
+            DISPATCH_ERROR;                                                    \
+        }                                                                      \
+    }
+
 bool interpret_program(Module *main_module) {
     Program::instance->main_module = main_module;
     Program::instance->add_module(main_module);
@@ -99,22 +107,27 @@ bool interpret_program(Module *main_module) {
     return true;
 }
 
-void interpret(Code *_code, const str_t &id, const std::unordered_map<str_t, Object*> &vars) {
+void interpret(Code *_code, const str_t &id,
+               const std::unordered_map<str_t, Object *> &vars) {
     // Push new frame
     auto frame = Frame::New(id, _code->filename, Program::instance->top_frame);
     for (const auto &[id, val] : vars) {
         auto o_id = new (nothrow) Str(id);
-        if (!o_id) return;
+        if (!o_id)
+            return;
 
-        if (!frame->setitem(o_id, val)) return;
+        if (!frame->setitem(o_id, val))
+            return;
     }
 
-    if (!frame) return;
+    if (!frame)
+        return;
 
     Program::push_frame(frame);
 
     // Recursion error
-    if (on_error()) return;
+    if (on_error())
+        return;
 
     interpret_fragment(_code, frame->ip);
 
@@ -344,6 +357,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
+            COPY_IF_POD(result);
+
             PUSH(result);
 
             NEXT(1);
@@ -376,6 +391,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
+            COPY_IF_POD(newtos);
+
             PUSH(newtos);
 
             NEXT(0);
@@ -397,6 +414,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
+            COPY_IF_POD(result);
+
             PUSH(result);
 
             NEXT(1);
@@ -414,6 +433,11 @@ void interpret_fragment(Code *_code, size_t &ip) {
             // Pick objects
             vector<Object *> data(obj_stack.end() - count, obj_stack.end());
             obj_stack.resize(obj_stack.size() - count);
+
+            // Copy PODs
+            for (auto &arg : data) {
+                COPY_IF_POD(arg);
+            }
 
             // Build result
             auto result = Vec::New(data);
@@ -444,6 +468,9 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 auto key = obj_stack[obj_stack.size() - count * 2 + i * 2];
                 auto val = obj_stack[obj_stack.size() - count * 2 + i * 2 + 1];
 
+                COPY_IF_POD(key);
+                COPY_IF_POD(val);
+
                 if (!result->setitem(key, val)) {
                     DISPATCH_ERROR;
                 }
@@ -465,6 +492,11 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case Return: {
+            CHECK_STACKLEN(1);
+
+            auto &tos = TOP;
+            COPY_IF_POD(tos);
+
             gc_step();
 
             // Dispatch return
