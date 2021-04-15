@@ -238,6 +238,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             PUSH(result);
 
+            gc_step();
+
             NEXT(0);
         }
 
@@ -256,6 +258,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             PUSH(result);
 
+            gc_step();
+
             NEXT(0);
         }
 
@@ -272,6 +276,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             PUSH(result);
 
+            gc_step();
+
             NEXT(0);
         }
 
@@ -287,6 +293,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
             auto offset = ARG(1);
 
             JMP(offset);
+
+            gc_step();
         }
 
         case JmpFalse: {
@@ -307,6 +315,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
             } else {
                 JMP(offset);
             }
+
+            gc_step();
         }
 
         case LoadAttr: {
@@ -452,7 +462,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case Return: {
-            // TODO A : Also on jumps...
             gc_step();
 
             // Dispatch return
@@ -544,18 +553,10 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             NEXT(0);
         }
-
-        // TODO : Rm
-        case DebugStack: {
-            debug_stack(obj_stack);
-
-            NEXT(0);
-        }
         }
 
         // Error, ip outside of code (to exit, the opcode must be Exit or
         // Return)
-        // TODO : Line info
         throw_fmt(InternalError,
                   "interpret: Instruction pointer (%d) outside of bounds "
                   "(length = %d)",

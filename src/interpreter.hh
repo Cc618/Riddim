@@ -106,9 +106,6 @@ enum OpCode : opcode_t {
     // - pop 1
     // - push TOS->type
     UnaTypeOf,
-    // TODO : Remove
-    // Prints the stack
-    DebugStack,
 };
 } // namespace OpCode
 
@@ -117,7 +114,6 @@ enum OpCode : opcode_t {
 // Returns whether the program executed successfully
 bool interpret_program(Module *main_module);
 
-// TODO : Stack different for each function call (obj_stack in frame) ?
 // Interprets the code
 // - vars : The default variables of the frame
 // Can throw
