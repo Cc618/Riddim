@@ -82,8 +82,6 @@ int main(int argc, char *argv[]) {
         cerr << "Error : Failed to parse file " << main_module_path << endl;
 
         if (driver.module) {
-            delete driver.module;
-
             driver.module = nullptr;
         }
 

@@ -1,12 +1,14 @@
 #include "gc.hh"
+#include "debug.hh"
 #include "object.hh"
 #include "program.hh"
+#include <iostream>
 #include <vector>
 
 using namespace std;
 
 // Number of minimum alive objects to execute a garbage collection
-constexpr size_t gc_count_threshold = 100;
+constexpr size_t gc_count_threshold = 1000;
 
 static Object *last_allocated_object = nullptr;
 
@@ -21,15 +23,11 @@ void init_gc_data(Object *obj) {
     ++gc_object_count;
 }
 
-// TODO A
-#include "debug.hh"
-#include "builtins.hh"
-#include "function.hh"
-#include "int.hh"
-#include <iostream>
-
 void garbage_collect(Object *parent) {
-    debug_info("Collecting garbages, " + to_string(gc_get_count()) + " objects");
+#ifdef DEBUG_GC
+    debug_info("Collecting garbages, " + to_string(gc_get_count()) +
+               " objects");
+#endif
 
     // parent can be nullptr at the destruction of the interpreter
     if (parent) {
@@ -55,7 +53,6 @@ void garbage_collect(Object *parent) {
         }
     }
 
-
     // Sweep by iterating through the gc list
     Object *node = last_allocated_object;
 
@@ -74,19 +71,7 @@ void garbage_collect(Object *parent) {
             if (next_node)
                 next_node->gc_data.prev = prev_node;
 
-            // TODO
             --gc_object_count;
-            // debug_print(node);
-            cout << node->type->name << " ";
-            if (node->type == Int::class_type) {
-                cout << reinterpret_cast<Int*>(node)->data;
-            } else if (node->type == Builtin::class_type) {
-                cout << reinterpret_cast<Builtin*>(node)->name;
-            } else if (node->type == Str::class_type) {
-                cout << reinterpret_cast<Str*>(node)->data;
-            }
-
-            cout << endl;
 
             delete node;
         } else {
@@ -108,9 +93,11 @@ void garbage_collect(Object *parent) {
     // Update last allocated object
     last_allocated_object = last_alive_object;
 
-    debug_info("garbage_collect ended, " + to_string(gc_get_count()) + " objects");
-    // TODO
-    exit(0);
+#ifdef DEBUG_GC
+    debug_info("garbage_collect ended, " + to_string(gc_get_count()) +
+               " objects");
+    cout << endl;
+#endif
 }
 
 // TODO : Every N instructions
@@ -120,6 +107,4 @@ void gc_step() {
     }
 }
 
-size_t gc_get_count() {
-    return gc_object_count;
-}
+size_t gc_get_count() { return gc_object_count; }
