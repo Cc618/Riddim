@@ -89,8 +89,19 @@ void Frame::init_class_type() {
     class_type->fn_str = [](Object *self) -> Object * {
         Frame *me = reinterpret_cast<Frame *>(self);
 
-        // TODO C : Frame id
+        auto varstr = me->vars->str();
+        if (!varstr) {
+            return nullptr;
+        }
 
-        return me->vars->str();
+        auto result = new (nothrow) Str("Frame(" + me->id + ", " + reinterpret_cast<Str*>(varstr)->data + ")");
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
     };
 }
