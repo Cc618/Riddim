@@ -64,6 +64,7 @@ void init_builtins() {
     INIT_BUILTIN("assert", builtin_assert);
     INIT_BUILTIN("hash", builtin_hash);
     INIT_BUILTIN("print", builtin_print);
+    INIT_BUILTIN("throw", builtin_throw);
     INIT_BUILTIN("typeof", builtin_typeof);
 
 #undef INIT_BUILTIN
@@ -166,3 +167,15 @@ Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
 
     return args_data[0]->type;
 }
+
+Object *builtin_throw(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "throw");
+
+    CHECK_ARGSLEN(1, "throw");
+    CHECK_NOKWARGS("throw");
+
+    throw_error(args_data[0]);
+
+    return nullptr;
+}
+

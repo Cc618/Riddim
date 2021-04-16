@@ -55,7 +55,8 @@ void Error::init_class_type() {
     auto error_str = [](Object *self) -> Object * {
         Error *me = reinterpret_cast<Error *>(self);
 
-        auto result = new (nothrow) Str(C_RED + me->type->name + C_NORMAL + "(" + me->msg + ")");
+        auto result = new (nothrow)
+            Str(C_RED + me->type->name + C_NORMAL + "(" + me->msg + ")");
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -66,14 +67,33 @@ void Error::init_class_type() {
         return result;
     };
 
+#define ERROR_CONSTRUCTOR(TYPE)                                                \
+    [](Object *self, Object *args, Object *kwargs) -> Object * {               \
+        INIT_METHOD(Object, #TYPE);                                            \
+        CHECK_ARGSLEN(1, #TYPE);                                               \
+        CHECK_NOKWARGS(#TYPE);                                                 \
+        if (args_data[0]->type != Str::class_type) {                           \
+            THROW_TYPE_ERROR_PREF(#TYPE "{msg}", args_data[0]->type,           \
+                                  Str::class_type);                            \
+            return nullptr;                                                    \
+        }                                                                      \
+        auto result = New##TYPE(reinterpret_cast<Str *>(args_data[0])->data);  \
+        if (!result) {                                                         \
+            return nullptr;                                                    \
+        }                                                                      \
+        return result;                                                         \
+    };
+
 #define SETUP_ERROR(TYPE)                                                      \
+    TYPE->constructor = ERROR_CONSTRUCTOR(TYPE);                               \
     TYPE->fn_traverse_objects = error_traverse_objects;                        \
     TYPE->fn_str = error_str;                                                  \
     TYPE->fn_getattr = error_getattr;
 
     // Default type
     class_type = new Type("Error");
-    SETUP_ERROR(class_type);
+    auto &Error = class_type;
+    SETUP_ERROR(Error);
 
     MemoryError = new Type("MemoryError");
     SETUP_ERROR(MemoryError);
@@ -114,6 +134,18 @@ void Error::init_class_type() {
         error->type = TYPE;                                                    \
         return error;                                                          \
     }
+
+// Basic error, cannot specify type
+Error *NewError(error_msg_t msg) {
+    auto error = new (nothrow) Error(msg);
+
+    if (!error) {
+        THROW_MEMORY_ERROR;
+        return nullptr;
+    }
+
+    return error;
+}
 
 // Can return nullptr on throw
 DECL_ERROR(ArgumentError);

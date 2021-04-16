@@ -20,6 +20,8 @@ Object *builtin_hash(Object *self, Object *args, Object *kwargs);
 
 Object *builtin_print(Object *self, Object *args, Object *kwargs);
 
+Object *builtin_throw(Object *self, Object *args, Object *kwargs);
+
 Object *builtin_typeof(Object *self, Object *args, Object *kwargs);
 
 // --- Utils ---

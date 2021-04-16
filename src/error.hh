@@ -28,6 +28,9 @@ struct Error : public Object {
 
 // !!! Don't forget to update the documentation when adding an error
 
+// Unspecified error
+Error *NewError(error_msg_t msg);
+
 // Invalid argument count...
 NEW_ERROR(ArgumentError);
 
