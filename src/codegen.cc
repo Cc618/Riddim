@@ -200,8 +200,63 @@ void TryStmt::gen_code(Module *module, Code *_code) {
 
     auto &code = _code->code;
 
-    // TODO B
+    // Generation :
+    // 1. Try
+    // PushTryBlock
+    // trybody content
+    // PopTryBlock
+    // Jmp End
+    // 2. Catch (repeated for all catch clauses)
+    // TODO B : If matches...
+    // ClearError
+    // catchbody
+    // Jmp End
+    // 3. Uncaught (if no catch matches)
+    // Rethrow
+    // 4. End
+
+    // Each offset where the opcode needs to be the end offset
+    vector<size_t> set_end_offsets;
+
+    // 1. try
+    // Set up block
+    PUSH_CODE(PushTryBlock);
+    auto pushtry_offset = code.size();
+    PUSH_CODE(Nop);
+
     trybody->gen_code(module, _code);
+
+    PUSH_CODE(PopTryBlock);
+
+    // Jump to end
+    PUSH_CODE(Jmp);
+    set_end_offsets.push_back(code.size());
+    PUSH_CODE(Nop);
+
+    // 2. Catch
+    // Set first catch offset
+    code[pushtry_offset] = code.size();
+
+    // TODO B : For each catch clause
+    // TODO B : If matches...
+    auto &catchbody = catchbodies[0];
+
+    // It matches the error, we can clear the status
+    PUSH_CODE(ClearError);
+
+    catchbody.body->gen_code(module, _code);
+
+    // Jump to end
+    PUSH_CODE(Jmp);
+    set_end_offsets.push_back(code.size());
+    PUSH_CODE(Nop);
+
+    // 3. Uncaught
+    PUSH_CODE(Rethrow);
+
+    // 4. End
+    for (auto offset : set_end_offsets)
+        code[offset] = code.size();
 }
 
 void ReturnStmt::gen_code(Module *module, Code *_code) {

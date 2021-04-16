@@ -149,6 +149,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
             DISPATCH_ERROR;
         }
 
+        // To be able to loop again on error thrown
+    main_loop:;
         auto instruction = code[ip];
         switch (instruction) {
         case BinAdd: {
@@ -637,6 +639,15 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
 // When an error is thrown within the switch
 error_thrown:;
+    if (!frame->tryblocks.empty()) {
+        auto block = frame->tryblocks.back();
+        frame->tryblocks.pop_back();
+
+        ip = block.catch_offset;
+
+        goto main_loop;
+    }
+
     auto trace = Trace::New(ip, _code, frame->id);
 
     // Do not throw again
