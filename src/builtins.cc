@@ -61,7 +61,7 @@ void init_builtins() {
 
     // Functions
     INIT_BUILTIN("hash", builtin_hash);
-    INIT_BUILTIN("print", print);
+    INIT_BUILTIN("print", builtin_print);
     INIT_BUILTIN("typeof", builtin_typeof);
 
 #undef INIT_BUILTIN
@@ -91,7 +91,7 @@ Object *builtin_hash(Object *self, Object *args, Object *kwargs) {
 }
 
 // Print
-Object *print(Object *self, Object *args, Object *kwargs) {
+Object *builtin_print(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Object, "print");
 
     CHECK_NOKWARGS("print");

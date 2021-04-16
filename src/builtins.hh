@@ -16,7 +16,7 @@ void init_builtins();
 // Throws if is not Int
 Object *builtin_hash(Object *self, Object *args, Object *kwargs);
 
-Object *print(Object *self, Object *args, Object *kwargs);
+Object *builtin_print(Object *self, Object *args, Object *kwargs);
 
 Object *builtin_typeof(Object *self, Object *args, Object *kwargs);
 
@@ -24,5 +24,5 @@ Object *builtin_typeof(Object *self, Object *args, Object *kwargs);
 // Prints one object to stdout
 // !!! Use it only in debug mode since it is unsafe
 inline Object *debug_print(Object *o) {
-    return print(null, Vec::New({o}), HashMap::empty);
+    return builtin_print(null, Vec::New({o}), HashMap::empty);
 }
