@@ -145,9 +145,10 @@ void interpret_fragment(Code *_code, size_t &ip) {
     ip = 0;
 
     while (42) {
-        if (on_error()) {
-            DISPATCH_ERROR;
-        }
+        // TODO B : Verify
+        // if (on_error()) {
+        //     DISPATCH_ERROR;
+        // }
 
         // To be able to loop again on error thrown
     main_loop:;
@@ -298,6 +299,46 @@ void interpret_fragment(Code *_code, size_t &ip) {
             gc_step();
 
             NEXT(0);
+        }
+
+        case CatchError: {
+            CHECK_STACKLEN(1);
+
+            // Can be null
+            POPTOP(error_type);
+
+            if (error_type != null && error_type->type != Type::class_type) {
+                THROW_TYPE_ERROR_PREF("catch", error_type->type,
+                                      Type::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            auto error = Program::instance->current_error;
+
+            // Matches
+            if (error_type == null || error->type == error_type) {
+                auto id = GET_CONST(ARG(1));
+
+                if (id->type != Str::class_type) {
+                    throw_fmt(InternalError,
+                              "Opcode CatchError : Invalid catch id type '%s'",
+                              id->type->name.c_str());
+
+                    DISPATCH_ERROR;
+                }
+
+                // Set this variable to the error
+                frame->setitem(id, Program::instance->current_error);
+                clear_error();
+            } else {
+                auto nomatch_offset = ARG(2);
+
+                // Don't clear error and jump to next instruction
+                JMP(nomatch_offset);
+            }
+
+            NEXT(2);
         }
 
         case ClearError: {
@@ -512,7 +553,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
             Frame::TryBlock block{offset};
             frame->tryblocks.push_back(block);
 
-            NEXT(1)
+            NEXT(1);
         }
 
         case Rethrow: {
@@ -524,7 +565,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 throw_fmt(InternalError,
                           "Return : Invalid stack size, should be "
                           "obj_stack_start_size + 1 (%s%d + 1%s) but is %s%d%s",
-                          C_GREEN, obj_stack_start_size, C_NORMAL, C_RED, obj_stack.size(), C_NORMAL);
+                          C_GREEN, obj_stack_start_size, C_NORMAL, C_RED,
+                          obj_stack.size(), C_NORMAL);
 
                 DISPATCH_ERROR;
             }

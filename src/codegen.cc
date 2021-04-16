@@ -237,21 +237,56 @@ void TryStmt::gen_code(Module *module, Code *_code) {
     // Set first catch offset
     code[pushtry_offset] = code.size();
 
-    // TODO B : For each catch clause
-    // TODO B : If matches...
-    auto &catchbody = catchbodies[0];
+    size_t last_catch_jmp_offset = 0;
+    for (auto &catchbody : catchbodies) {
+        if (last_catch_jmp_offset) {
+            code[last_catch_jmp_offset] = code.size();
+        }
 
-    // It matches the error, we can clear the status
-    PUSH_CODE(ClearError);
+        // Load the target error type (or null if none)
+        if (catchbody.type) {
+            catchbody.type->gen_code(module, _code);
+        } else {
+            PUSH_CODE(LoadConst);
+            auto null_offset = ADD_CONST(null);
+            PUSH_CODE(null_offset);
+        }
 
-    catchbody.body->gen_code(module, _code);
+        // Test if the error matches the TOS
+        PUSH_CODE(CatchError);
 
-    // Jump to end
-    PUSH_CODE(Jmp);
-    set_end_offsets.push_back(code.size());
-    PUSH_CODE(Nop);
+        // Gen id
+        auto id = new (nothrow) Str(catchbody.id);
+
+        if (!id) {
+            throw CodeGenException("Can't allocate memory", _code->filename, fileline);
+        }
+
+        auto id_offset = ADD_CONST(id);
+
+        PUSH_CODE(id_offset);
+
+        // Next catch location
+        last_catch_jmp_offset = code.size();
+        PUSH_CODE(Nop);
+
+        // TODO D
+        // It matches the error, we can clear the status
+        PUSH_CODE(ClearError);
+
+        catchbody.body->gen_code(module, _code);
+
+        // Jump to end
+        PUSH_CODE(Jmp);
+        set_end_offsets.push_back(code.size());
+        PUSH_CODE(Nop);
+    }
 
     // 3. Uncaught
+    if (last_catch_jmp_offset) {
+        code[last_catch_jmp_offset] = code.size();
+    }
+
     PUSH_CODE(Rethrow);
 
     // 4. End

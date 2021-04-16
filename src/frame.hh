@@ -12,6 +12,7 @@ typedef std::vector<opcode_t> code_t;
 // Use setitem to set variables
 struct Frame : public Object {
     struct TryBlock {
+        // TODO C : Restore stack
         // Instruction offset where the first catch lies
         size_t catch_offset;
     };

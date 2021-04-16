@@ -46,6 +46,14 @@ enum OpCode : opcode_t {
     // - pop 1
     // - push result of the call
     CallProc,
+    // Tries to catch the error if it matches the specific type at the TOS
+    // If caught, the exception is stored in a new variable named 'id'
+    // - id_offset : Offset of the constant
+    // - nomatch_offset : Offset where to jump if no such match
+    // - pop 1
+    // * The TOS can be null for a catch all (matches always)
+    CatchError,
+    // TODO D : Rm, done in CatchError
     // Clears the current error
     ClearError,
     // Duplicates the TOS
