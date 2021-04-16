@@ -550,7 +550,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
         case PushTryBlock: {
             auto offset = ARG(1);
 
-            Frame::TryBlock block{offset};
+            Frame::TryBlock block{offset, obj_stack.size()};
             frame->tryblocks.push_back(block);
 
             NEXT(1);
@@ -685,6 +685,8 @@ error_thrown:;
         auto block = frame->tryblocks.back();
         frame->tryblocks.pop_back();
 
+        // Restore state
+        obj_stack.resize(block.stack_size);
         ip = block.catch_offset;
 
         goto main_loop;
