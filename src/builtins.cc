@@ -8,6 +8,7 @@
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
+#include "bool.hh"
 #include "vec.hh"
 #include <iostream>
 
@@ -60,6 +61,7 @@ void init_builtins() {
     }
 
     // Functions
+    INIT_BUILTIN("assert", builtin_assert);
     INIT_BUILTIN("hash", builtin_hash);
     INIT_BUILTIN("print", builtin_print);
     INIT_BUILTIN("typeof", builtin_typeof);
@@ -68,13 +70,54 @@ void init_builtins() {
 }
 
 // --- Functions ---
+Object *builtin_assert(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "assert");
+
+    CHECK_NOKWARGS("assert");
+
+    if (args_data.size() < 1 || args_data.size() > 2) {
+        THROW_ARGUMENT_ERROR("assert", "length", "1 or 2 arguments required");
+
+        return nullptr;
+    }
+
+    auto condition = args_data[0];
+
+    if (!condition)
+        return nullptr;
+
+    if (condition->type != Bool::class_type) {
+        THROW_TYPE_ERROR_PREF("assert", condition->type, Bool::class_type);
+
+        return nullptr;
+    }
+
+    auto msg = args_data.size() == 2 ? args_data[1] : nullptr;
+
+    if (msg && msg->type != Str::class_type) {
+        THROW_TYPE_ERROR_PREF("assert{msg}", msg->type, Str::class_type);
+
+        return nullptr;
+    }
+
+    if (!reinterpret_cast<Bool *>(condition)->data) {
+        str_t msg_str = msg ? " : " C_GREEN + reinterpret_cast<Str*>(msg)->data + C_NORMAL : "";
+
+        throw_fmt(AssertError, "Assert failed%s", msg_str.c_str());
+
+        return nullptr;
+    }
+
+    return null;
+}
+
 Object *builtin_hash(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Object, "hash");
 
     CHECK_NOKWARGS("hash");
-    CHECK_ARGSLEN(1, "typeof");
+    CHECK_ARGSLEN(1, "hash");
 
-    auto o = reinterpret_cast<Vec *>(args)->data[0];
+    auto o = args_data[0];
     auto result = o->hash();
 
     if (!result)
