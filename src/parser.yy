@@ -52,6 +52,7 @@
     NOT         "not"
     IS          "is"
     EQ          "=="
+    NEQ         "!="
     LE          "<="
     GE          ">="
     LESSER      "<"
@@ -293,6 +294,7 @@ boolean: comparison { $$ = $1; }
 
 comparison: binary { $$ = $1; }
     | comparison "==" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Equal, $3); }
+    | comparison "!=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::NotEqual, $3); }
     | comparison "<=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::LesserEqual, $3); }
     | comparison ">=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::GreaterEqual, $3); }
     | comparison "<" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Lesser, $3); }

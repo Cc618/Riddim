@@ -521,6 +521,11 @@ void BinExp::gen_code(Module *module, Code *_code) {
         PUSH_CODE((opcode_t)CmpOp::Equal);
         break;
 
+    case BinExp::NotEqual:
+        PUSH_CODE(BinCmp);
+        PUSH_CODE((opcode_t)CmpOp::NotEqual);
+        break;
+
     case BinExp::Lesser:
         PUSH_CODE(BinCmp);
         PUSH_CODE((opcode_t)CmpOp::Lesser);

@@ -313,11 +313,11 @@ struct Const : public Exp {
 // Binary expression
 // + * etc.
 struct BinExp : public Exp {
-    // TODO
     enum Op {
         Or,
         And,
         Equal,
+        NotEqual,
         Lesser,
         Greater,
         LesserEqual,
