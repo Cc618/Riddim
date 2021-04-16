@@ -52,6 +52,21 @@ void Builtin::init_class_type() {
 
         return me->data(me->self, args, kwargs);
     };
+
+    // @str
+    class_type->fn_str = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Builtin *>(self);
+
+        auto result = new (nothrow) Str("Builtin<" + me->name + ">");
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
 }
 
 // --- Function ---
@@ -216,5 +231,20 @@ void Function::init_class_type() {
         Program::instance->obj_stack.pop_back();
 
         return ret;
+    };
+
+    // @str
+    class_type->fn_str = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Function *>(self);
+
+        auto result = new (nothrow) Str("Function<" + me->name + ">");
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
     };
 }

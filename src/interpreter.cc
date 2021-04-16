@@ -76,7 +76,7 @@ inline Object *pop_top() {
     }
 
 #define COPY_IF_POD(VAR)                                                       \
-    if (is_pod_object(VAR)) {                                                         \
+    if (is_pod_object(VAR)) {                                                  \
         (VAR) = (VAR)->copy();                                                 \
         if (!(VAR)) {                                                          \
             DISPATCH_ERROR;                                                    \
@@ -140,6 +140,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
     auto &code = _code->code;
     auto &consts = _code->consts->data;
     auto &obj_stack = Program::instance->obj_stack;
+    auto obj_stack_start_size = obj_stack.size();
 
     ip = 0;
 
@@ -492,7 +493,14 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case Return: {
-            CHECK_STACKLEN(1);
+            if (obj_stack.size() != obj_stack_start_size + 1) {
+                throw_fmt(InternalError,
+                          "Return : Invalid stack size, should be "
+                          "obj_stack_start_size + 1 (%s%d + 1%s) but is %s%d%s",
+                          C_GREEN, obj_stack_start_size, C_NORMAL, C_RED, obj_stack.size(), C_NORMAL);
+
+                DISPATCH_ERROR;
+            }
 
             auto &tos = TOP;
             COPY_IF_POD(tos);
@@ -610,7 +618,8 @@ error_thrown:;
     if (trace)
         Program::push_trace(trace);
 
-    // TODO : Restore stack
+    // Restore stack
+    obj_stack.resize(obj_stack_start_size);
 
     return;
 }

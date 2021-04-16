@@ -144,6 +144,9 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     auto off_name = ADD_CONST(const_name);
     PUSH_CODE(off_name);
+
+    // Pop since it's a statement
+    PUSH_CODE(Pop);
 }
 
 // --- Stmts ---
