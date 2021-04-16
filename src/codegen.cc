@@ -195,6 +195,15 @@ void IfStmt::gen_code(Module *module, Code *_code) {
     code[ifaddr_offset] = code.size();
 }
 
+void TryStmt::gen_code(Module *module, Code *_code) {
+    Stmt::gen_code(module, _code);
+
+    auto &code = _code->code;
+
+    // TODO B
+    trybody->gen_code(module, _code);
+}
+
 void ReturnStmt::gen_code(Module *module, Code *_code) {
     Stmt::gen_code(module, _code);
 

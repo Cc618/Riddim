@@ -135,6 +135,28 @@ struct IfStmt : public Stmt {
     virtual void gen_code(Module *module, Code *code) override;
 };
 
+// Try catch statement
+struct TryStmt : public Stmt {
+    // catch type as id ...
+    struct CatchClause {
+        // nullptr if catch all
+        Exp *type;
+        str_t id;
+        Block *body;
+    };
+
+    Block *trybody;
+    std::vector<CatchClause> catchbodies;
+
+    TryStmt(Block *trybody);
+
+    virtual ~TryStmt();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 // Return with a value or null
 struct ReturnStmt : public Stmt {
     // nullptr for null

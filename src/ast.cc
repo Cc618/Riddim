@@ -96,6 +96,25 @@ void IfStmt::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+TryStmt::TryStmt(Block *trybody)
+    : Stmt(trybody->fileline), trybody(trybody) {}
+
+TryStmt::~TryStmt() {
+    delete trybody;
+
+    for (auto &clause : catchbodies) {
+        if (clause.type) delete clause.type;
+        delete clause.body;
+    }
+}
+
+void TryStmt::debug(int indent) {
+    cout << str_indent(indent) << "IfStmt(" << endl;
+    cout << str_indent(indent + 1) << "line=" << fileline << endl;
+    trybody->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 ReturnStmt::ReturnStmt(line_t fileline, Exp *exp)
     : Stmt(fileline), exp(exp) {}
 

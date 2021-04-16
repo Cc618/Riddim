@@ -75,6 +75,9 @@
     ELIF        "elif"
     ELSE        "else"
     WHILE       "while"
+    TRY         "try"
+    CATCH       "catch"
+    AS          "as"
     RETURN      "return"
     FN          "fn"
     TRUE        "true"
@@ -91,6 +94,8 @@
 %nterm <ast::Stmt*> stmt
 %nterm <ast::WhileStmt*> whilestmt
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
+%nterm <ast::TryStmt*> trystmt trystmt_start
+%nterm <ast::TryStmt::CatchClause> trystmt_catch trystmt_catchall
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ReturnStmt*> returnstmt
 %nterm <ast::ExpStmt*> expstmt
@@ -181,6 +186,7 @@ stmtlist: %empty { $$ = new Block(@$.begin.line); }
 
 stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
+    | trystmt { $$ = $1; }
     | whilestmt { $$ = $1; }
     | returnstmt { $$ = $1; }
     | fndecl { $$ = $1; }
@@ -211,6 +217,37 @@ ifstmt_elif: "elif" exp block ifstmt_elif {
 ifstmt_else: %empty { $$ = nullptr; }
     | "else" block {
         $$ = $2;
+    }
+    ;
+
+// TODO B : Catch as / catch all
+// TODO B : Multiple catches
+trystmt: trystmt_start trystmt_catch stop {
+        $$ = $1;
+        $$->catchbodies.push_back($2);
+    }
+    | trystmt_start trystmt_catchall stop {
+        $$ = $1;
+        $$->catchbodies.push_back($2);
+    }
+    ;
+
+trystmt_start: "try" block {
+        $$ = new TryStmt($2);
+    }
+    | trystmt_start trystmt_catch {
+        $$ = $1;
+        $$->catchbodies.push_back($2);
+    }
+    ;
+
+trystmt_catchall: "catch" ID block {
+        $$ = TryStmt::CatchClause{nullptr, $2, $3};
+    }
+    ;
+
+trystmt_catch: "catch" exp "as" ID block {
+        $$ = TryStmt::CatchClause{$2, $4, $5};
     }
     ;
 
