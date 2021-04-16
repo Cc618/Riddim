@@ -142,9 +142,10 @@ static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
               (MSG))
 
 // Throws a NameError that says no such builtin method
+// TYPE is a type while METHOD is stringified
 #define THROW_NOBUILTIN(TYPE, METHOD)                                          \
     throw_fmt(NameError, "Type %s%s%s has no %s@" #METHOD "%s method",         \
-              C_GREEN, #TYPE, C_NORMAL, C_BLUE, C_NORMAL);
+              C_GREEN, (TYPE)->name.c_str(), C_NORMAL, C_BLUE, C_NORMAL);
 
 // No kwargs required
 static inline void THROW_EXTRA_KWARGS(const str_t &FUNC, const str_t &EXTRA) {

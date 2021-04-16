@@ -38,7 +38,7 @@ void Object::traverse_objects(const fn_visit_object_t &visit) {
 
 Object *Object::add(Object *o) {
     if (!type->fn_add) {
-        THROW_NOBUILTIN(Object, add);
+        THROW_NOBUILTIN(this->type, add);
 
         return nullptr;
     }
@@ -48,7 +48,7 @@ Object *Object::add(Object *o) {
 
 Object *Object::call(Object *args, Object *kwargs) {
     if (!type->fn_call) {
-        THROW_NOBUILTIN(Object, call);
+        THROW_NOBUILTIN(this->type, call);
 
         return nullptr;
     }
@@ -100,7 +100,7 @@ Object *Object::getattr(Object *name) {
 
 Object *Object::getitem(Object *args) {
     if (!type->fn_getitem) {
-        THROW_NOBUILTIN(Object, getitem);
+        THROW_NOBUILTIN(this->type, getitem);
 
         return nullptr;
     }
@@ -128,7 +128,7 @@ Object *Object::hash() {
 
 Object *Object::in(Object *val) {
     if (!type->fn_in) {
-        THROW_NOBUILTIN(Object, in);
+        THROW_NOBUILTIN(this->type, in);
 
         return nullptr;
     }
@@ -138,7 +138,7 @@ Object *Object::in(Object *val) {
 
 Object *Object::mul(Object *o) {
     if (!type->fn_mul) {
-        THROW_NOBUILTIN(Object, mul);
+        THROW_NOBUILTIN(this->type, mul);
 
         return nullptr;
     }
@@ -164,7 +164,7 @@ Object *Object::setattr(Object *name, Object *value) {
 
 Object *Object::setitem(Object *key, Object *value) {
     if (!type->fn_setitem) {
-        THROW_NOBUILTIN(Object, setitem);
+        THROW_NOBUILTIN(this->type, setitem);
 
         return nullptr;
     }
