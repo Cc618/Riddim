@@ -46,6 +46,8 @@ enum OpCode : opcode_t {
     // - pop 1
     // - push result of the call
     CallProc,
+    // Clears the current error
+    ClearError,
     // Duplicates the TOS
     Dup,
     // Jump at offset
@@ -91,6 +93,13 @@ enum OpCode : opcode_t {
     // Pops the TOS
     // - pop 1
     Pop,
+    // Pops a try block of the current frame
+    PopTryBlock,
+    // Pushes a new Frame::TryBlock to the current frame
+    // - catch_offset : See Frame::TryBlock::catch_offset
+    PushTryBlock,
+    // Dispatches the current error
+    Rethrow,
     // Returns from the function (or exit the module)
     // The TOS is the return value, it must be set (can be null for "void"
     // functions)

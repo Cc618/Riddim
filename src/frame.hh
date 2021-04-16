@@ -11,6 +11,11 @@ typedef std::vector<opcode_t> code_t;
 
 // Use setitem to set variables
 struct Frame : public Object {
+    struct TryBlock {
+        // Instruction offset where the first catch lies
+        size_t catch_offset;
+    };
+
     static Type *class_type;
 
     // Instruction pointer (counter)
@@ -26,6 +31,9 @@ struct Frame : public Object {
     // instruction at offset off starts delta lines after start_lineno
     // (not after the previous instruction)
     std::vector<std::pair<size_t, size_t>> line_deltas;
+
+    // For try catches, stack describing where is each first catch block
+    std::vector<TryBlock> tryblocks;
 
     // It is like the getitem function
     // Fetch the first variable named "name"

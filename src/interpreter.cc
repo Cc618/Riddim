@@ -298,6 +298,12 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(0);
         }
 
+        case ClearError: {
+            clear_error();
+
+            NEXT(0);
+        }
+
         case Dup: {
             CHECK_STACKLEN(1);
 
@@ -490,6 +496,25 @@ void interpret_fragment(Code *_code, size_t &ip) {
             obj_stack.pop_back();
 
             NEXT(0);
+        }
+
+        case PopTryBlock: {
+            frame->tryblocks.pop_back();
+
+            NEXT(0);
+        }
+
+        case PushTryBlock: {
+            auto offset = ARG(1);
+
+            Frame::TryBlock block{offset};
+            frame->tryblocks.push_back(block);
+
+            NEXT(1)
+        }
+
+        case Rethrow: {
+            DISPATCH_ERROR;
         }
 
         case Return: {
