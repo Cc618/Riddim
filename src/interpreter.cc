@@ -145,12 +145,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
     ip = 0;
 
     while (42) {
-        // TODO B : Verify
-        // if (on_error()) {
-        //     DISPATCH_ERROR;
-        // }
-
-        // To be able to loop again on error thrown
+        // To be able to loop again on thrown error
     main_loop:;
         auto instruction = code[ip];
         switch (instruction) {
@@ -339,12 +334,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
             }
 
             NEXT(2);
-        }
-
-        case ClearError: {
-            clear_error();
-
-            NEXT(0);
         }
 
         case Dup: {
@@ -699,6 +688,11 @@ error_thrown:;
         Program::push_trace(trace);
 
     // Restore stack
+    if (obj_stack.size() != obj_stack_start_size) {
+        debug_warn("Invalid stack size " + to_string(obj_stack.size()) +
+                   ", should be " + to_string(obj_stack_start_size));
+    }
+
     obj_stack.resize(obj_stack_start_size);
 
     return;

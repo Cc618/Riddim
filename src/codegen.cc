@@ -207,8 +207,8 @@ void TryStmt::gen_code(Module *module, Code *_code) {
     // PopTryBlock
     // Jmp End
     // 2. Catch (repeated for all catch clauses)
-    // TODO B : If matches...
-    // ClearError
+    // Load target type
+    // Try to catch if matches, otherwise, go to next clause or end
     // catchbody
     // Jmp End
     // 3. Uncaught (if no catch matches)
@@ -269,10 +269,6 @@ void TryStmt::gen_code(Module *module, Code *_code) {
         // Next catch location
         last_catch_jmp_offset = code.size();
         PUSH_CODE(Nop);
-
-        // TODO D
-        // It matches the error, we can clear the status
-        PUSH_CODE(ClearError);
 
         catchbody.body->gen_code(module, _code);
 

@@ -53,9 +53,6 @@ enum OpCode : opcode_t {
     // - pop 1
     // * The TOS can be null for a catch all (matches always)
     CatchError,
-    // TODO D : Rm, done in CatchError
-    // Clears the current error
-    ClearError,
     // Duplicates the TOS
     Dup,
     // Jump at offset
