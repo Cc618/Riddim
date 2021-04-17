@@ -103,7 +103,7 @@ enum OpCode : opcode_t {
     // Pushes a new Frame::TryBlock to the current frame
     // - catch_offset : See Frame::TryBlock::catch_offset
     PushTryBlock,
-    // Dispatches the current error
+    // Dispatches the current caught error
     Rethrow,
     // Returns from the function (or exit the module)
     // The TOS is the return value, it must be set (can be null for "void"

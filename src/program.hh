@@ -27,6 +27,9 @@ struct Program : public Object {
 
     Object *current_error;
 
+    // Saved current_error in a catch block
+    Object *caught_error;
+
     // Not the main module frame but the builtins frame
     Frame *global_frame = nullptr;
 

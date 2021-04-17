@@ -41,7 +41,6 @@ inline Object *pop_top() {
 #define ARG(N) code[ip + (N)]
 #define TOP obj_stack.back();
 #define PUSH(OBJ) obj_stack.push_back(OBJ);
-// TODO : Trace
 #define POPTOP(VAR)                                                            \
     if (obj_stack.empty()) {                                                   \
         throw_fmt(InternalError, "Stack empty for instruction %d",             \
@@ -145,6 +144,10 @@ void interpret_fragment(Code *_code, size_t &ip) {
     ip = 0;
 
     while (42) {
+        if (on_error()) {
+            DISPATCH_ERROR;
+        }
+
         // To be able to loop again on thrown error
     main_loop:;
         auto instruction = code[ip];
@@ -309,7 +312,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
-            auto error = Program::instance->current_error;
+            auto error = Program::instance->caught_error;
 
             // Matches
             if (error_type == null || error->type == error_type) {
@@ -324,7 +327,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 }
 
                 // Set this variable to the error
-                frame->setitem(id, Program::instance->current_error);
+                frame->setitem(id, error);
                 clear_error();
             } else {
                 auto nomatch_offset = ARG(2);
@@ -546,6 +549,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case Rethrow: {
+            Program::instance->current_error = Program::instance->caught_error;
+
             DISPATCH_ERROR;
         }
 
@@ -677,6 +682,8 @@ error_thrown:;
         // Restore state
         obj_stack.resize(block.stack_size);
         ip = block.catch_offset;
+        Program::instance->caught_error = Program::instance->current_error;
+        Program::instance->current_error = nullptr;
 
         goto main_loop;
     }
@@ -688,11 +695,6 @@ error_thrown:;
         Program::push_trace(trace);
 
     // Restore stack
-    if (obj_stack.size() != obj_stack_start_size) {
-        debug_warn("Invalid stack size " + to_string(obj_stack.size()) +
-                   ", should be " + to_string(obj_stack_start_size));
-    }
-
     obj_stack.resize(obj_stack_start_size);
 
     return;

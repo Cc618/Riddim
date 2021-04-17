@@ -245,6 +245,7 @@ void TryStmt::gen_code(Module *module, Code *_code) {
 
         // Load the target error type (or null if none)
         if (catchbody.type) {
+            _code->mark_line(catchbody.type->fileline);
             catchbody.type->gen_code(module, _code);
         } else {
             PUSH_CODE(LoadConst);
