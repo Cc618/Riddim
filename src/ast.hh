@@ -320,7 +320,7 @@ struct Const : public Exp {
 };
 
 // Binary expression
-// + * etc.
+// + * in etc.
 struct BinExp : public Exp {
     enum Op {
         Or,
@@ -338,6 +338,8 @@ struct BinExp : public Exp {
         Mul,
         Is,
         IsNot,
+        In,
+        NotIn,
     };
 
     Op op;

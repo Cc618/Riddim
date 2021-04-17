@@ -97,12 +97,12 @@ a[key1] = b[key2]
 
 ## Operator precedence
 The precedence is similar to Python.
-- "="
-- "or"
-- "and"
-- "not"
-- "==" "<=" ">=" "<" ">" "is"
-- "+" "-"
-- "*" "/" "%"
+- =
+- or
+- and
+- not
+- == <= >= < > is in
+- \+ -
+- \* / %
 - Attribute reference
 - Indexing

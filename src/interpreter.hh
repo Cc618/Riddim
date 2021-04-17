@@ -23,6 +23,10 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push compare(TOS1, TOS, op)
     BinCmp,
+    // Checks whether an item is within a collection
+    // - pop 2
+    // - push TOS1 in TOS
+    BinIn,
     // Is type
     // - pop 2
     // - push TOS1->type == TOS

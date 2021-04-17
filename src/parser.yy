@@ -51,6 +51,7 @@
     OR          "or"
     NOT         "not"
     IS          "is"
+    IN          "in"
     EQ          "=="
     NEQ         "!="
     LE          "<="
@@ -128,7 +129,7 @@
 %left "or";
 %left "and";
 %left "not";
-%left "==" "<=" ">=" "<" ">" "is";
+%left "==" "<=" ">=" "<" ">" "is" "in";
 %left "+" "-";
 %left "*" "/" "%";
 %left ".";
@@ -303,6 +304,8 @@ comparison: binary { $$ = $1; }
     | comparison ">=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::GreaterEqual, $3); }
     | comparison "<" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Lesser, $3); }
     | comparison ">" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
+    | comparison "in" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::In, $3); }
+    | comparison "not" "in" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::NotIn, $4); }
     | comparison "is" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Is, $3); }
     | comparison "is" "not" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::IsNot, $4); }
     ;

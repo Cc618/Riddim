@@ -225,6 +225,23 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(0);
         }
 
+        case BinIn: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto result = tos->in(tos1);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(0);
+        }
+
         case BinMul: {
             CHECK_STACKLEN(2);
 
