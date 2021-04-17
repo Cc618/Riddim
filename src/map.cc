@@ -425,6 +425,13 @@ void AttrObject::init_class_type() {
         return result;
     };
 
+    // @in
+    class_type->fn_in = [](Object *self, Object *val) -> Object * {
+        auto me = reinterpret_cast<AttrObject *>(self);
+
+        return me->data->in(val);
+    };
+
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<AttrObject *>(self);
