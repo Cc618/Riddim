@@ -136,6 +136,7 @@ comment     #.*
 "try"           return yy::parser::make_TRY(loc);
 "catch"         return yy::parser::make_CATCH(loc);
 "as"            return yy::parser::make_AS(loc);
+"rethrow"       return yy::parser::make_RETHROW(loc);
 "return"        return yy::parser::make_RETURN(loc);
 "fn"            return yy::parser::make_FN(loc);
 

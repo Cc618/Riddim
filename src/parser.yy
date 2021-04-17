@@ -79,6 +79,7 @@
     TRY         "try"
     CATCH       "catch"
     AS          "as"
+    RETHROW     "rethrow"
     RETURN      "return"
     FN          "fn"
     TRUE        "true"
@@ -99,6 +100,7 @@
 %nterm <ast::TryStmt::CatchClause> trystmt_catch trystmt_catchall
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ReturnStmt*> returnstmt
+%nterm <ast::RethrowStmt*> rethrowstmt
 %nterm <ast::ExpStmt*> expstmt
 // Expressions
 %nterm <ast::Exp*> exp set boolean comparison binary unary primary
@@ -190,6 +192,7 @@ stmt: expstmt { $$ = $1; }
     | trystmt { $$ = $1; }
     | whilestmt { $$ = $1; }
     | returnstmt { $$ = $1; }
+    | rethrowstmt { $$ = $1; }
     | fndecl { $$ = $1; }
     ;
 
@@ -221,8 +224,6 @@ ifstmt_else: %empty { $$ = nullptr; }
     }
     ;
 
-// TODO B : Catch as / catch all
-// TODO B : Multiple catches
 trystmt: trystmt_start trystmt_catch stop {
         $$ = $1;
         $$->catchbodies.push_back($2);
@@ -254,6 +255,9 @@ trystmt_catch: "catch" exp "as" ID block {
 
 returnstmt: "return" exp stop { $$ = new ReturnStmt(@1.begin.line, $2); }
     | "return" stop { $$ = new ReturnStmt(@1.begin.line); }
+    ;
+
+rethrowstmt: "rethrow" stop { $$ = new RethrowStmt(@1.begin.line); }
     ;
 
 whilestmt: "while" exp block stop { $$ = new WhileStmt($2, $3); }

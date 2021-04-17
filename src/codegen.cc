@@ -274,7 +274,7 @@ void TryStmt::gen_code(Module *module, Code *_code) {
         catchbody.body->gen_code(module, _code);
 
         // Jump to end
-        PUSH_CODE(Jmp);
+        PUSH_CODE(CatchTerminate);
         set_end_offsets.push_back(code.size());
         PUSH_CODE(Nop);
     }
@@ -306,6 +306,15 @@ void ReturnStmt::gen_code(Module *module, Code *_code) {
 
     PUSH_CODE(Return);
 }
+
+void RethrowStmt::gen_code(Module *module, Code *_code) {
+    Stmt::gen_code(module, _code);
+
+    auto &code = _code->code;
+
+    PUSH_CODE(Rethrow);
+}
+
 
 void WhileStmt::gen_code(Module *module, Code *_code) {
     Stmt::gen_code(module, _code);

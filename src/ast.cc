@@ -131,6 +131,10 @@ void ReturnStmt::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+void RethrowStmt::debug(int indent) {
+    cout << str_indent(indent) << "RethrowStmt()" << endl;
+}
+
 ExpStmt::ExpStmt(Exp *exp) : Stmt(exp->fileline), exp(exp) {}
 
 ExpStmt::~ExpStmt() { delete exp; }

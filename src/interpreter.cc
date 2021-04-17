@@ -339,6 +339,16 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(2);
         }
 
+        case CatchTerminate: {
+            Program::instance->caught_error = nullptr;
+
+            auto offset = ARG(1);
+
+            gc_step();
+
+            JMP(offset);
+        }
+
         case Dup: {
             CHECK_STACKLEN(1);
 
@@ -549,7 +559,16 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case Rethrow: {
+            if (!Program::instance->caught_error) {
+                throw_fmt(RuntimeError,
+                          "%sRethrow%s outside of try-catch block", C_RED,
+                          C_NORMAL);
+
+                DISPATCH_ERROR;
+            }
+
             Program::instance->current_error = Program::instance->caught_error;
+            Program::instance->caught_error = nullptr;
 
             DISPATCH_ERROR;
         }

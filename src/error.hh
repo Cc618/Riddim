@@ -65,6 +65,9 @@ NEW_ERROR(NotImplementedError);
 // Max recursion depth reached
 NEW_ERROR(RecursionError);
 
+// Rethrow not within a try catch...
+NEW_ERROR(RuntimeError);
+
 // Invalid type
 NEW_ERROR(TypeError);
 

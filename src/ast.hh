@@ -171,6 +171,15 @@ struct ReturnStmt : public Stmt {
     virtual void gen_code(Module *module, Code *code) override;
 };
 
+// The rethrow instruction
+struct RethrowStmt : public Stmt {
+    RethrowStmt(line_t fileline) : Stmt(fileline) {}
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 // A statement made of an expression
 struct ExpStmt : public Stmt {
     Exp *exp;

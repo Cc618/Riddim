@@ -53,6 +53,9 @@ enum OpCode : opcode_t {
     // - pop 1
     // * The TOS can be null for a catch all (matches always)
     CatchError,
+    // Terminates a catch block, this instruction is similar to Jmp except
+    // that it clears the caught error
+    CatchTerminate,
     // Duplicates the TOS
     Dup,
     // Jump at offset
