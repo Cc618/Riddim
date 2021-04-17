@@ -8,7 +8,12 @@
 using namespace std;
 
 // Number of minimum alive objects to execute a garbage collection
-constexpr size_t gc_count_threshold = 1000;
+constexpr size_t GC_COUNT_THRESHOLD = 1000;
+
+// Number of calls to gc_step to garbage collect if necessary
+constexpr size_t GC_PERIOD = 10;
+
+static size_t gc_step_counter = 0;
 
 static Object *last_allocated_object = nullptr;
 
@@ -100,11 +105,13 @@ void garbage_collect(Object *parent) {
 #endif
 }
 
-// TODO : Every N instructions
 void gc_step() {
-    if (gc_object_count >= gc_count_threshold) {
+    if (gc_step_counter == 0 && gc_object_count >= GC_COUNT_THRESHOLD) {
         garbage_collect(Program::instance);
     }
+
+    ++gc_step_counter;
+    gc_step_counter %= GC_PERIOD;
 }
 
 size_t gc_get_count() { return gc_object_count; }
