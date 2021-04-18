@@ -25,6 +25,14 @@ struct ASTNode {
     // * Note that every body of this function is declared in codegen.cc NOT
     // ast.cc
     virtual void gen_code(Module *module, Code *code) = 0;
+
+    // Returns the ID to be replaced by an attribute
+    // in a cascade section.
+    // For instance in o .. a, o is the owner, a the cascade id
+    // and a must be replaced by o.a
+    // Returns nullptr if not found
+    // TODO B : Implement in other nodes
+    virtual ASTNode **fetch_cascade_id() { return nullptr; }
 };
 
 struct Stmt : public ASTNode {
@@ -74,11 +82,11 @@ struct FnDecl : public Decl {
         ~Args();
 
         // The second value is the default value, can be nullptr if none
-        std::vector<std::pair<str_t, Exp*>> args;
+        std::vector<std::pair<str_t, Exp *>> args;
 
         // Number of required args (no default)
         int n_required = 0;
-    } *args;
+    } * args;
 
     str_t name;
     Block *body;
@@ -221,6 +229,8 @@ struct CallExp : public Exp {
     virtual void debug(int indent = 0) override;
 
     virtual void gen_code(Module *module, Code *code) override;
+
+    virtual ASTNode **fetch_cascade_id() override;
 };
 
 // Vector literal ([1, 2, 3])
@@ -317,6 +327,22 @@ struct Const : public Exp {
     virtual void debug(int indent = 0) override;
 
     virtual void gen_code(Module *module, Code *code) override;
+};
+
+// Manages the cascade (..) operator
+struct Cascade : public Exp {
+    Exp *left;
+    Exp *right;
+
+    Cascade(line_t fileline, Exp *left, Exp *right);
+
+    ~Cascade();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+
+    virtual ASTNode **fetch_cascade_id() override;
 };
 
 // Binary expression

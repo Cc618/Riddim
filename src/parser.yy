@@ -69,6 +69,7 @@
     RCURLY      "}"
     LBRACK      "["
     RBRACK      "]"
+    CASCADE     ".."
     DOT         "."
     COMMA       ","
     COLON       ":"
@@ -93,6 +94,7 @@
 %nterm <ast::FnDecl::Args*> fndecl_all_args fndecl_args fndecl_kwargs
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
+
 // Statements
 %nterm <ast::Stmt*> stmt
 %nterm <ast::WhileStmt*> whilestmt
@@ -103,12 +105,14 @@
 %nterm <ast::ReturnStmt*> returnstmt
 %nterm <ast::RethrowStmt*> rethrowstmt
 %nterm <ast::ExpStmt*> expstmt
+
 // Expressions
-%nterm <ast::Exp*> exp set boolean comparison binary unary primary
+%nterm <ast::Exp*> exp set /* TODO B : cascade */ boolean comparison binary unary primary
 %nterm <ast::Target*> target target_id target_indexing target_attr
 %nterm <ast::CallExp*> call call_args call_args_filled
 %nterm <ast::Indexing*> indexing
 %nterm <ast::Attr*> attr
+
 // Atoms
 %nterm <ast::Exp*> atom
 %nterm <ast::Id*> id
@@ -117,6 +121,7 @@
 %nterm <std::vector<std::pair<ast::Exp *, ast::Exp *>>> map_content map_content_filled
 %nterm <std::vector<ast::Exp*>> vec_content vec_content_filled
 %nterm <ast::Const*> const
+
 // Tokens
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 %nterm option_stop option_comma option_comma_stop
@@ -126,6 +131,7 @@
 
 // The lower it is declared, the sooner the token will be used
 %right "=";
+%left "..";
 %left "or";
 %left "and";
 %left "not";
@@ -291,6 +297,52 @@ target_attr: attr { $$ = new AttrTarget($1); }
 target_id: ID { $$ = new IdTarget(@1.begin.line, $1); }
     ;
 
+// cascade: boolean { $$ = $1; }
+// TODO B
+//     | cascade option_stop ".." boolean {
+//         $$ = new Cascade(@1.begin.line, $1, $4);
+//     }
+    ;
+
+
+// TODO B
+/*
+o..a()
+-> (o.a)(); o
+*/
+
+
+/*
+cascade: cascade cascade_section
+    | boolean cascade_section
+    ;
+
+cascade_section: ID cascade_section_tail
+    ;
+
+cascade_section_tail: cascade_assignment
+    | selector* (assignable_selector cascade_assignment)?
+    ;
+
+cascade_assignment: assignment_operator boolean
+    ;
+
+selector: assignable_selector
+    | args // ex: (a, b, c)
+    ;
+
+assignable_selector: "." ID
+    ;
+
+// cascade_section: cascade_selector cascade_section_tail
+//     ;
+
+// cascade_selector: ID
+//     ;
+*/
+
+
+
 boolean: comparison { $$ = $1; }
     | "not" comparison { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
     | boolean "or" comparison { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
@@ -338,10 +390,15 @@ primary: atom { $$ = $1; }
     | call { $$ = $1; }
     | indexing { $$ = $1; }
     | attr { $$ = $1; }
+    // TODO B : | cascade { $$ = $1; }
     ;
 
 attr: primary "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
     ;
+
+// TODO B : Handle stops + multiples
+// cascade: primary ".." call { $$ = new Cascade(@1.begin.line, $1, $3); }
+    // ;
 
 indexing: primary "[" exp "]" { $$ = new Indexing(@1.begin.line, $1, $3); }
     ;

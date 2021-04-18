@@ -103,6 +103,7 @@ comment     #.*
 {int_bin}       return make_INT(loc, yytext, yytext + 2, 2);
 {str}           return make_STR(loc, yytext);
 
+".."            return yy::parser::make_CASCADE(loc);
 "."             return yy::parser::make_DOT(loc);
 ","             return yy::parser::make_COMMA(loc);
 ":"             return yy::parser::make_COLON(loc);

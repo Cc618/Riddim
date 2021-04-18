@@ -260,7 +260,8 @@ void TryStmt::gen_code(Module *module, Code *_code) {
         auto id = new (nothrow) Str(catchbody.id);
 
         if (!id) {
-            throw CodeGenException("Can't allocate memory", _code->filename, fileline);
+            throw CodeGenException("Can't allocate memory", _code->filename,
+                                   fileline);
         }
 
         auto id_offset = ADD_CONST(id);
@@ -314,7 +315,6 @@ void RethrowStmt::gen_code(Module *module, Code *_code) {
 
     PUSH_CODE(Rethrow);
 }
-
 
 void WhileStmt::gen_code(Module *module, Code *_code) {
     Stmt::gen_code(module, _code);
@@ -509,6 +509,49 @@ void Const::gen_code(Module *module, Code *_code) {
 
     auto const_offset = ADD_CONST(const_val);
     PUSH_CODE(const_offset);
+}
+
+// TODO B : Cascade
+void Cascade::gen_code(Module *module, Code *_code) {
+    this->debug();
+
+    // TODO B : Multiple statements
+    auto cascade_id = right->fetch_cascade_id();
+
+    if (!cascade_id) {
+        throw CodeGenException(
+            "Invalid cascade expression, the right hand side expression must "
+            "be compatible to an attribute expression",
+            _code->filename, right->fileline);
+    } else {
+        cout << "OK" << endl;
+    }
+
+    auto c_id = *cascade_id;
+
+    // TODO : Delete shallow
+    *cascade_id = new Attr(c_id->fileline, left, reinterpret_cast<Id*&>(c_id)->id);
+
+    // *cascade_id = new Attr(1, new Id(1, "o"), "a");
+
+    // TODO : Handle frees
+    auto old_left = left;
+    left = new Id(0, "a");
+
+    // left->debug();
+    // right->debug();
+
+    right->gen_code(module, _code);
+    PUSH_CODE(Pop);
+
+    old_left->gen_code(module, _code);
+
+    // left->gen_code(module, _code);
+
+    // PUSH_CODE(Dup);
+
+    // right->gen_code(module, _code);
+    // PUSH_CODE(Pop);
 }
 
 void BinExp::gen_code(Module *module, Code *_code) {

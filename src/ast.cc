@@ -177,6 +177,16 @@ void CallExp::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+ASTNode **CallExp::fetch_cascade_id() {
+    auto id = dynamic_cast<Id*>(exp);
+
+    if (id) {
+        return reinterpret_cast<ASTNode**>(&exp);
+    }
+
+    return nullptr;
+}
+
 VecLiteral::~VecLiteral() {
     for (auto exp : exps)
         delete exp;
@@ -253,6 +263,25 @@ void Const::debug(int indent) {
         break;
     }
     cout << str_indent(indent) << "Set(" << strval << ")" << endl;
+}
+
+Cascade::Cascade(line_t fileline, Exp *left, Exp *right)
+    : Exp(fileline), left(left), right(right) {}
+
+Cascade::~Cascade() {
+    delete left;
+    delete right;
+}
+
+void Cascade::debug(int indent) {
+    cout << str_indent(indent) << "Cascade(" << endl;
+    left->debug(indent + 1);
+    right->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
+ASTNode **Cascade::fetch_cascade_id() {
+    return right->fetch_cascade_id();
 }
 
 BinExp::BinExp(line_t fileline, Exp *left, Op op, Exp *right)
