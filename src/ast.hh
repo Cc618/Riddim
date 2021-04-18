@@ -398,6 +398,21 @@ struct UnaExp : public Exp {
     virtual void gen_code(Module *module, Code *code) override;
 };
 
+// Relative assignment, += *=...
+struct RelativeSet : public Exp {
+    Target *target;
+    Exp *exp;
+    BinExp::Op op;
+
+    RelativeSet(line_t fileline, Target *target, BinExp::Op op, Exp *exp);
+
+    virtual ~RelativeSet();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 // --- Targets ---
 // A target is an lvalue, it can be set in an assignment (Set)
 // In gen_code, the value of the TOS is stored in this target but

@@ -313,6 +313,18 @@ void UnaExp::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+RelativeSet::RelativeSet(line_t fileline, Target *target, BinExp::Op op, Exp *exp)
+    : Exp(fileline), target(target), op(op), exp(exp) {}
+
+RelativeSet::~RelativeSet() { delete target; delete exp; }
+
+void RelativeSet::debug(int indent) {
+    cout << str_indent(indent) << "RelativeSet<" << op << ">(" << endl;
+    target->debug(indent + 1);
+    exp->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 // --- Targets ---
 void IdTarget::debug(int indent) {
     cout << str_indent(indent) << "IdTarget(" << endl;

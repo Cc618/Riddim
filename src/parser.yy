@@ -283,10 +283,8 @@ exp: set { $$ = $1; }
 // We can chain multiple sets
 set: boolean { $$ = $1; }
     | target "=" set { $$ = new Set(@1.begin.line, $1, $3); }
-    | target "+=" set {
-        // $$ = new Set(@1.begin.line, $1,
-        //     new BinExp(@3.begin.line, $1, BinExp::Add, $3), true);
-    }
+    | target "+=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Add, $3); }
+    | target "*=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Mul, $3); }
     ;
 
 target: target_id { $$ = $1; }

@@ -554,10 +554,8 @@ void Cascade::gen_code(Module *module, Code *_code) {
     // PUSH_CODE(Pop);
 }
 
-void BinExp::gen_code(Module *module, Code *_code) {
-    left->gen_code(module, _code);
-    right->gen_code(module, _code);
-
+// Generates the binary expression op code
+void gen_binexp(Module *module, Code *_code, BinExp::Op op, int fileline) {
     switch (op) {
     case BinExp::Or:
         PUSH_CODE(BinBool);
@@ -626,8 +624,15 @@ void BinExp::gen_code(Module *module, Code *_code) {
         break;
 
     default:
-        DEBUG_FATAL(module, fileline, "BinExp::gen_code : Unknown op");
+        DEBUG_FATAL(module, fileline, "gen_binexp : Unknown op");
     }
+}
+
+void BinExp::gen_code(Module *module, Code *_code) {
+    left->gen_code(module, _code);
+    right->gen_code(module, _code);
+
+    gen_binexp(module, _code, op, fileline);
 }
 
 void UnaExp::gen_code(Module *module, Code *_code) {
@@ -641,6 +646,16 @@ void UnaExp::gen_code(Module *module, Code *_code) {
     default:
         DEBUG_FATAL(module, fileline, "UnaExp::gen_code : Unknown op");
     }
+}
+
+void RelativeSet::gen_code(Module *module, Code *_code) {
+    // Perform relative operation
+    target->get_exp()->gen_code(module, _code);
+    exp->gen_code(module, _code);
+    gen_binexp(module, _code, op, fileline);
+
+    // Update value
+    target->gen_code(module, _code);
 }
 
 // --- Targets ---
