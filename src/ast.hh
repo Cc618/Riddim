@@ -404,18 +404,25 @@ struct UnaExp : public Exp {
 // remains the TOS
 struct Target : public ASTNode {
     Target(line_t fileline) : ASTNode(fileline) {}
+
+    // Returns the wrapped expression
+    virtual ASTNode *get_exp() = 0;
 };
 
 // Target using an identifier
 // a = ...
 struct IdTarget : public Target {
-    str_t id;
+    Id *id;
 
-    IdTarget(line_t fileline, const str_t &id) : Target(fileline), id(id) {}
+    IdTarget(line_t fileline, Id *id) : Target(fileline), id(id) {}
+
+    virtual ~IdTarget() { delete id; }
 
     virtual void debug(int indent = 0) override;
 
     virtual void gen_code(Module *module, Code *code) override;
+
+    virtual ASTNode *get_exp() override { return id; }
 };
 
 // Target using an index assignment
@@ -426,9 +433,13 @@ struct IndexingTarget : public Target {
     IndexingTarget(Indexing *indexing)
         : Target(indexing->fileline), indexing(indexing) {}
 
+    virtual ~IndexingTarget() { delete indexing; }
+
     virtual void debug(int indent = 0) override;
 
     virtual void gen_code(Module *module, Code *code) override;
+
+    virtual ASTNode *get_exp() override { return indexing; }
 };
 
 // Target using an attribute assignment
@@ -438,8 +449,12 @@ struct AttrTarget : public Target {
 
     AttrTarget(Attr *attr) : Target(attr->fileline), attr(attr) {}
 
+    virtual ~AttrTarget() { delete attr; }
+
     virtual void debug(int indent = 0) override;
 
     virtual void gen_code(Module *module, Code *code) override;
+
+    virtual ASTNode *get_exp() override { return attr; }
 };
 } // namespace ast

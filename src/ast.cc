@@ -150,7 +150,10 @@ void ExpStmt::debug(int indent) {
 Set::Set(line_t fileline, Target *target, Exp *exp)
     : Exp(fileline), target(target), exp(exp) {}
 
-Set::~Set() { delete exp; }
+Set::~Set() {
+    delete target;
+    delete exp;
+}
 
 void Set::debug(int indent) {
     cout << str_indent(indent) << "Set(" << endl;
@@ -312,7 +315,9 @@ void UnaExp::debug(int indent) {
 
 // --- Targets ---
 void IdTarget::debug(int indent) {
-    cout << str_indent(indent) << "IdTarget(" << id << ")" << endl;
+    cout << str_indent(indent) << "IdTarget(" << endl;
+    id->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
 }
 
 void IndexingTarget::debug(int indent) {

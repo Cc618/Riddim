@@ -118,9 +118,11 @@ comment     #.*
 "}"             return yy::parser::make_RCURLY(loc);
 "["             return yy::parser::make_LBRACK(loc);
 "]"             return yy::parser::make_RBRACK(loc);
+"="             return yy::parser::make_ASSIGN(loc);
+"+="            return yy::parser::make_RADD(loc);
+"*="            return yy::parser::make_RMUL(loc);
 "=="            return yy::parser::make_EQ(loc);
 "!="            return yy::parser::make_NEQ(loc);
-"="             return yy::parser::make_ASSIGN(loc);
 ">="            return yy::parser::make_GE(loc);
 "<="            return yy::parser::make_LE(loc);
 ">"             return yy::parser::make_GREATER(loc);

@@ -647,7 +647,7 @@ void UnaExp::gen_code(Module *module, Code *_code) {
 void IdTarget::gen_code(Module *module, Code *_code) {
     PUSH_CODE(StoreVar);
 
-    auto const_id = new (nothrow) Str(id);
+    auto const_id = new (nothrow) Str(id->id);
 
     if (!const_id) {
         throw CodeGenException("Not enough memory", module->filepath, fileline);

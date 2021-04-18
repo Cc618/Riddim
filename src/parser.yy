@@ -47,6 +47,8 @@
 %token
     EOF 0       "<<EOF>>"
     ASSIGN      "="
+    RADD        "+="
+    RMUL        "*="
     AND         "and"
     OR          "or"
     NOT         "not"
@@ -281,6 +283,10 @@ exp: set { $$ = $1; }
 // We can chain multiple sets
 set: boolean { $$ = $1; }
     | target "=" set { $$ = new Set(@1.begin.line, $1, $3); }
+    | target "+=" set {
+        // $$ = new Set(@1.begin.line, $1,
+        //     new BinExp(@3.begin.line, $1, BinExp::Add, $3), true);
+    }
     ;
 
 target: target_id { $$ = $1; }
@@ -294,7 +300,7 @@ target_indexing: indexing { $$ = new IndexingTarget($1); }
 target_attr: attr { $$ = new AttrTarget($1); }
     ;
 
-target_id: ID { $$ = new IdTarget(@1.begin.line, $1); }
+target_id: id { $$ = new IdTarget(@1.begin.line, $1); }
     ;
 
 // cascade: boolean { $$ = $1; }
