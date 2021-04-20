@@ -23,6 +23,9 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push compare(TOS1, TOS, op)
     BinCmp,
+    // - pop 2
+    // - push TOS1 / TOS
+    BinDiv,
     // Checks whether an item is within a collection
     // - pop 2
     // - push TOS1 in TOS
@@ -32,8 +35,14 @@ enum OpCode : opcode_t {
     // - push TOS1->type == TOS
     BinIs,
     // - pop 2
+    // - push TOS1 % TOS
+    BinMod,
+    // - pop 2
     // - push TOS1 * TOS
     BinMul,
+    // - pop 2
+    // - push TOS1 - TOS
+    BinSub,
     // TODO : Self
     // Only positional args call
     // Calls TOS1 with TOS (a Vec) as positional args

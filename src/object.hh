@@ -55,6 +55,8 @@ struct Object {
     // Returns this if there is no custom handler
     Object *copy();
 
+    Object *div(Object *o);
+
     Object *getattr(Object *name);
 
     Object *getitem(Object *key);
@@ -66,6 +68,8 @@ struct Object {
 
     Object *len();
 
+    Object *mod(Object *o);
+
     Object *mul(Object *o);
 
     Object *setattr(Object *name, Object *value);
@@ -74,6 +78,8 @@ struct Object {
 
     // Returns ObjectType() by default
     Object *str();
+
+    Object *sub(Object *o);
 };
 
 // Every type must have a unique instance of this class
@@ -112,6 +118,9 @@ struct Type : public Object {
     // Returns a deep copy of this object
     fn_unary_t fn_copy;
 
+    // / operator, returns the quotient
+    fn_binary_t fn_div;
+
     // Get map attribute (not read only)
     fn_binary_t fn_getattr;
 
@@ -125,6 +134,9 @@ struct Type : public Object {
     // Whether an object is within a collection
     // Returns a Bool
     fn_binary_t fn_in;
+
+    // % operator, returns the modulo
+    fn_binary_t fn_mod;
 
     // * operator, returns the product
     fn_binary_t fn_mul;
@@ -142,16 +154,8 @@ struct Type : public Object {
     // Returns a Str
     fn_unary_t fn_str;
 
-    // TODO : + doc
-    // fn_unary_t fn_init;
-    // fn_unary_t fn_del;
-    // fn_binary_t fn_cmp;
-    // fn_binary_t fn_add;
-    // fn_binary_t fn_sub;
-    // fn_binary_t fn_mul;
-    // fn_binary_t fn_div;
-    // fn_binary_t fn_mod;
-    // fn_unary_t fn_call;
+    // % operator, returns the modulo
+    fn_binary_t fn_sub;
 
     // A type is always global
     Type(const str_t &name);

@@ -82,6 +82,16 @@ Object *Object::copy() {
     return type->fn_copy(this);
 }
 
+Object *Object::div(Object *o) {
+    if (!type->fn_div) {
+        THROW_NOBUILTIN(this->type, div);
+
+        return nullptr;
+    }
+
+    return type->fn_div(this, o);
+}
+
 Object *Object::getattr(Object *name) {
     if (!type->fn_getattr) {
         auto name_str = name->str();
@@ -146,6 +156,16 @@ Object *Object::len() {
     return type->fn_len(this);
 }
 
+Object *Object::mod(Object *o) {
+    if (!type->fn_div) {
+        THROW_NOBUILTIN(this->type, mod);
+
+        return nullptr;
+    }
+
+    return type->fn_mod(this, o);
+}
+
 Object *Object::mul(Object *o) {
     if (!type->fn_mul) {
         THROW_NOBUILTIN(this->type, mul);
@@ -197,6 +217,16 @@ Object *Object::str() {
     }
 
     return type->fn_str(this);
+}
+
+Object *Object::sub(Object *o) {
+    if (!type->fn_div) {
+        THROW_NOBUILTIN(this->type, sub);
+
+        return nullptr;
+    }
+
+    return type->fn_sub(this, o);
 }
 
 // --- Type ---

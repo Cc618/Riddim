@@ -207,6 +207,23 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(1);
         }
 
+        case BinDiv: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto prod = tos1->div(tos);
+
+            if (!prod) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(prod);
+
+            NEXT(0);
+        }
+
         case BinIs: {
             CHECK_STACKLEN(2);
 
@@ -242,6 +259,23 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(0);
         }
 
+        case BinMod: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto prod = tos1->mod(tos);
+
+            if (!prod) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(prod);
+
+            NEXT(0);
+        }
+
         case BinMul: {
             CHECK_STACKLEN(2);
 
@@ -249,6 +283,23 @@ void interpret_fragment(Code *_code, size_t &ip) {
             POPTOP(tos1);
 
             auto prod = tos1->mul(tos);
+
+            if (!prod) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(prod);
+
+            NEXT(0);
+        }
+
+        case BinSub: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto prod = tos1->sub(tos);
 
             if (!prod) {
                 DISPATCH_ERROR;

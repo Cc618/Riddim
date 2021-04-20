@@ -79,11 +79,71 @@ void Int::init_class_type() {
         return result;
     };
 
+    // @div
+    class_type->fn_div = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Int *>(self);
+
+        if (o->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Int.@div", o->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        auto odata = reinterpret_cast<Int *>(o)->data;
+
+        if (odata == 0) {
+            THROW_ARITHMETIC_ERROR("/", "Division by 0");
+
+            return nullptr;
+        }
+
+        auto result =
+            new (nothrow) Int(me->data / odata);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @hash
     class_type->fn_hash = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
 
         auto result = new (nothrow) Int(hash_int(me->data));
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
+    // @mod
+    class_type->fn_mod = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Int *>(self);
+
+        if (o->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Int.@mod", o->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        auto odata = reinterpret_cast<Int *>(o)->data;
+
+        if (odata == 0) {
+            THROW_ARITHMETIC_ERROR("%", "Modulo by 0");
+
+            return nullptr;
+        }
+
+        auto result =
+            new (nothrow) Int(me->data % odata);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -131,4 +191,27 @@ void Int::init_class_type() {
 
         return result;
     };
+
+    // @sub
+    class_type->fn_sub = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Int *>(self);
+
+        if (o->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Int.@sub", o->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        auto result =
+            new (nothrow) Int(me->data - reinterpret_cast<Int *>(o)->data);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
 }

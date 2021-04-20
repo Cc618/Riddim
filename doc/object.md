@@ -24,13 +24,17 @@
 | Name | Description | Expected Return Type | Example |
 | ---- | ----------- | -------------------- | ------- |
 | @add | + operator | | 2 + 2 |
-| @mul | * operator | | 2 * 2 |
 | @call | Call operator (for functor like objects) | | f(2, a=22) |
 | @cmp | Comparison, returns 0 on equality, < 0 if lesser or on inequality and > 0 if greater | Int | 1 <=> 2 returns -1 |
 | @copy | Shallow copy / clone (by default it is the identity function) | | |
+| @div | / operator | | 2 / 2 |
 | @getattr | Get map attribute (not a read only attribute) | | a.foo which is a.@getattr('foo') |
 | @getitem | Index / subscript getter | | a[42] which is a.@getitem(42) |
 | @hash | Hash representation (by default, the address of the reference is returned) | Int | |
+| @in | Whether an item is within a collection | Bool | 1 in [1, 2, 3] == true |
+| @mod | % operator | | 2 % 2 |
+| @mul | * operator | | 2 * 2 |
 | @setattr | Set map attribute (not a read only attribute) | | a.foo = 42 which is a.@setattr('foo', 42) |
 | @setitem | Index / subscript setter | Null | a[42] = 2 which is a.@setitem(42, 2) |
 | @str | String representation (by default it returns 'TypeName()' | Str | @str(Int) which returns 'Type(Int)' |
+| @sub | - operator | | 2 - 2 |

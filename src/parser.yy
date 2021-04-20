@@ -157,7 +157,7 @@ module: stop stmtlist {
 
 // --- Declarations ---
 // Function declaration
-// TODO : Compound ID
+// TODO : Compound ID (target)
 fndecl: "fn" ID lparen fndecl_all_args rparen block stop {
         $$ = new FnDecl(@1.begin.line, $2, $4, $6);
     }
@@ -284,7 +284,10 @@ exp: set { $$ = $1; }
 set: boolean { $$ = $1; }
     | target "=" set { $$ = new Set(@1.begin.line, $1, $3); }
     | target "+=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Add, $3); }
+    | target "-=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Sub, $3); }
     | target "*=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Mul, $3); }
+    | target "/=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Div, $3); }
+    | target "%=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Mod, $3); }
     ;
 
 target: target_id { $$ = $1; }
@@ -373,15 +376,13 @@ comparison: binary { $$ = $1; }
 //     | "is" binary
 //     | "is" "not" binary
 
-// Binary
-// TODO
-    // | exp "-" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
-    // | exp "/" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
-    // | exp "%" exp { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
-
+// Binary arithmetic
 binary : unary { $$ = $1; }
     | binary "+" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
+    | binary "-" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
     | binary "*" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
+    | binary "/" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
+    | binary "%" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
     ;
 
 // Unaries
