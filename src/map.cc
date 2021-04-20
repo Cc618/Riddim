@@ -232,6 +232,7 @@ void HashMap::init_class_type() {
         return null;
     };
 }
+
 void HashMap::init_class_objects() {
     empty = HashMap::New();
 

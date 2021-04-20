@@ -71,6 +71,44 @@ void Vec::init_class_type() {
         visit(me->me_pop);
     };
 
+    // @add
+    class_type->fn_add = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Vec *>(self);
+
+        if (o->type != Vec::class_type) {
+            THROW_TYPE_ERROR_PREF("Vec.@add", o->type, Vec::class_type);
+
+            return nullptr;
+        }
+
+        // PODs are copied
+        auto odata = reinterpret_cast<Vec *>(o)->data;
+        vec_t newdata(me->data.size() + odata.size());
+
+        for (int i = 0; i < me->data.size(); ++i) {
+            auto item = me->data[i];
+
+            newdata[i] = is_pod_object(item) ? item->copy() : item;
+        }
+
+        for (int i = 0; i < odata.size(); ++i) {
+            auto item = odata[i];
+
+            newdata[me->data.size() + i] =
+                is_pod_object(item) ? item->copy() : item;
+        }
+
+        auto result = new (nothrow) Vec(newdata);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @hash
     class_type->fn_hash = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
@@ -84,12 +122,13 @@ void Vec::init_class_type() {
             }
 
             if (item_hash->type != Int::class_type) {
-                THROW_TYPE_ERROR_PREF(o->type->name + ".@hash", item_hash->type, Int::class_type);
+                THROW_TYPE_ERROR_PREF(o->type->name + ".@hash", item_hash->type,
+                                      Int::class_type);
 
                 return nullptr;
             }
 
-            h = hash_combine(h, reinterpret_cast<Int*>(item_hash)->data);
+            h = hash_combine(h, reinterpret_cast<Int *>(item_hash)->data);
         }
 
         auto result = new (nothrow) Int(h);
@@ -137,13 +176,14 @@ void Vec::init_class_type() {
 
         auto it = me->data.begin();
         for (; it != me->data.end(); ++it) {
-                auto threeway = (*it)->cmp(val);
+            auto threeway = (*it)->cmp(val);
 
-                if (!threeway) return nullptr;
+            if (!threeway)
+                return nullptr;
 
-                // Int type guaranted
-                if (reinterpret_cast<Int*>(threeway)->data == 0)
-                    break;
+            // Int type guaranted
+            if (reinterpret_cast<Int *>(threeway)->data == 0)
+                break;
         }
 
         bool result = it != me->data.end();
