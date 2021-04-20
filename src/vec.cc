@@ -208,10 +208,12 @@ void Vec::init_class_type() {
             return nullptr;
         }
 
-        vec_t data;
-        data.reserve(me->data.size() * multiplier);
-        for (size_t i = 0; i < multiplier; ++i)
-            data.insert(data.end(), me->data.begin(), me->data.end());
+        vec_t data(me->data.size() * multiplier);
+        for (size_t i = 0; i < data.size(); ++i) {
+            auto item = me->data[i % me->data.size()];
+
+            data[i] = is_pod_object(item) ? item->copy() : item;
+        }
 
         auto result = Vec::New(data);
 
