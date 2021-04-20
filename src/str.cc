@@ -166,6 +166,21 @@ void Str::init_class_type() {
         return result;
     };
 
+    // @len
+    class_type->fn_len = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Str *>(self);
+
+        auto result = new (nothrow) Int(me->data.size());
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @mul
     class_type->fn_mul = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Str *>(self);

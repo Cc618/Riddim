@@ -142,6 +142,21 @@ void HashMap::init_class_type() {
         return result;
     };
 
+    // @len
+    class_type->fn_len = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<HashMap *>(self);
+
+        auto result = new (nothrow) Int(me->data.size());
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashMap *>(self);
@@ -430,6 +445,13 @@ void AttrObject::init_class_type() {
         auto me = reinterpret_cast<AttrObject *>(self);
 
         return me->data->in(val);
+    };
+
+    // @len
+    class_type->fn_len = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<AttrObject *>(self);
+
+        return me->data->len();
     };
 
     // @str
