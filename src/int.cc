@@ -5,6 +5,13 @@
 
 using namespace std;
 
+int_t get_mod_index(int_t i, int_t len) {
+    if (i >= 0) return i;
+    if (-i > len) return i;
+
+    return len + i;
+}
+
 Type *Int::class_type = nullptr;
 
 Int::Int(const int_t &data) : Object(Int::class_type), data(data) {}

@@ -273,10 +273,11 @@ void Vec::init_class_type() {
             return nullptr;
         }
 
-        auto idx = reinterpret_cast<Int *>(key)->data;
+        auto len = me->data.size();
+        auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data, len);
 
         // Out of bounds
-        if (idx < 0 || idx >= me->data.size()) {
+        if (idx < 0 || idx >= len) {
             THROW_OUT_OF_BOUNDS(me->data.size(), idx);
 
             return nullptr;
@@ -347,7 +348,7 @@ void Vec::init_class_type() {
             return nullptr;
         }
 
-        auto idx = reinterpret_cast<Int *>(key)->data;
+        auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
 
         // Out of bounds
         if (idx < 0 || idx >= me->data.size()) {

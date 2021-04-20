@@ -121,14 +121,11 @@ void Str::init_class_type() {
 
         // TODO : Slice
         if (key->type == Int::class_type) {
-            int_t index = reinterpret_cast<Int *>(key)->data;
+            int_t index = get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
 
             // Outside of bounds
             if (index < 0 || index >= me->data.size()) {
-                throw_fmt(
-                    IndexError,
-                    "Index '%lld' outside of bounds for Str of length '%zu'",
-                    (long long)index, me->data.size());
+                THROW_OUT_OF_BOUNDS(me->data.size(), index);
 
                 return nullptr;
             }
@@ -222,15 +219,11 @@ void Str::init_class_type() {
 
         // TODO : Slice
         if (key->type == Int::class_type) {
-            // TODO index : Index mapping (-1)
-            int_t index = reinterpret_cast<Int *>(key)->data;
+            int_t index = get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
 
             // Outside of bounds
             if (index < 0 || index >= me->data.size()) {
-                throw_fmt(
-                    IndexError,
-                    "Index '%lld' outside of bounds for Str of length '%zu'",
-                    (long long)index, me->data.size());
+                THROW_OUT_OF_BOUNDS(me->data.size(), index);
 
                 return nullptr;
             }
