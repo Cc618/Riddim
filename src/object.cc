@@ -71,7 +71,16 @@ Object *Object::cmp(Object *o) {
         return result;
     }
 
-    return type->fn_cmp(this, o);
+    auto result = type->fn_cmp(this, o);
+
+    if (result->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF(type->name + ".@cmp", result->type,
+                              Int::class_type);
+
+        return nullptr;
+    }
+
+    return result;
 }
 
 Object *Object::copy() {
@@ -133,7 +142,16 @@ Object *Object::hash() {
         return result;
     }
 
-    return type->fn_hash(this);
+    auto result = type->fn_hash(this);
+
+    if (result->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF(type->name + ".@hash", result->type,
+                              Int::class_type);
+
+        return nullptr;
+    }
+
+    return result;
 }
 
 Object *Object::in(Object *val) {

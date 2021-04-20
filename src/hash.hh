@@ -4,6 +4,7 @@
 // Exception safe (no throws)
 
 #include "utils.hh"
+#include "object.hh"
 
 // TODO : Set seed at runtime
 
@@ -46,3 +47,7 @@ int_t hash_iterator(
 
     return base;
 }
+
+// Returns whether objects have the same hash and the same type
+// Can throw
+bool hash_equal(Object *a, Object *b);

@@ -135,14 +135,18 @@ void Vec::init_class_type() {
     class_type->fn_in = [](Object *self, Object *val) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
-        bool result =
-            find_if(me->data.begin(), me->data.end(), [val](Object *o) -> bool {
-                auto threeway = o->cmp(val);
+        auto it = me->data.begin();
+        for (; it != me->data.end(); ++it) {
+                auto threeway = (*it)->cmp(val);
 
-                if (!threeway || threeway->type != Int::class_type) return false;
+                if (!threeway) return nullptr;
 
-                return reinterpret_cast<Int*>(threeway)->data == 0;
-            }) != me->data.end();
+                // Int type guaranted
+                if (reinterpret_cast<Int*>(threeway)->data == 0)
+                    break;
+        }
+
+        bool result = it != me->data.end();
 
         return result ? istrue : isfalse;
     };

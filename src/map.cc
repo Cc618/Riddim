@@ -305,6 +305,13 @@ hmap_t::iterator HashMap::find(Object *key) {
 
     size_t h_key = hash_sz(reinterpret_cast<Int *>(h)->data);
 
+    auto it = data.begin();
+    for (; it != data.end(); ++it) {
+        if ((*it).first == h_key &&
+            (*it).second.first->type == key->type)
+            return it;
+    }
+
     return data.find(h_key);
 }
 
@@ -393,12 +400,14 @@ void AttrObject::init_class_type() {
         auto map_hash = me->data->hash();
 
         // Dispatch error
-        if (!map_hash) return nullptr;
+        if (!map_hash)
+            return nullptr;
 
         int_t h = class_hash;
 
         // The type Int* is guaranted for builtin type hashes
-        auto result = new (nothrow) Int(hash_combine(h, reinterpret_cast<Int*>(map_hash)->data));
+        auto result = new (nothrow)
+            Int(hash_combine(h, reinterpret_cast<Int *>(map_hash)->data));
 
         if (!result) {
             THROW_MEMORY_ERROR;

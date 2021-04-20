@@ -1,4 +1,5 @@
 #include "hash.hh"
+#include "int.hh"
 #include <functional>
 
 using namespace std;
@@ -23,4 +24,20 @@ int_t hash_str(const str_t &val) {
 
 int_t hash_combine(const int_t &base, const int_t &val) {
     return base ^ (hash_int(val) + HASH_SEED + (base << 6) + (base >> 2));
+}
+
+bool hash_equal(Object *a, Object *b) {
+    if (a->type != b->type)
+        return false;
+
+    auto ha = a->hash();
+    if (!ha)
+        return false;
+
+    auto hb = b->hash();
+    if (!hb)
+        return false;
+
+    // Int type guaranted
+    return reinterpret_cast<Int *>(a)->data == reinterpret_cast<Int *>(b)->data;
 }
