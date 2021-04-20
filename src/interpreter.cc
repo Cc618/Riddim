@@ -737,6 +737,22 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(0);
         }
 
+        case UnaNeg: {
+            CHECK_STACKLEN(1);
+
+            POPTOP(tos);
+
+            auto result = tos->neg();
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(0);
+        }
+
         case UnaTypeOf: {
             CHECK_STACKLEN(1);
 

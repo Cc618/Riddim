@@ -72,6 +72,8 @@ struct Object {
 
     Object *mul(Object *o);
 
+    Object *neg();
+
     Object *setattr(Object *name, Object *value);
 
     Object *setitem(Object *key, Object *value);
@@ -135,14 +137,17 @@ struct Type : public Object {
     // Returns a Bool
     fn_binary_t fn_in;
 
+    // Container length
+    fn_unary_t fn_len;
+
     // % operator, returns the modulo
     fn_binary_t fn_mod;
 
     // * operator, returns the product
     fn_binary_t fn_mul;
 
-    // Container length
-    fn_unary_t fn_len;
+    // - operator (unary), returns the negation, the opposite
+    fn_unary_t fn_neg;
 
     // Set map attribute (not read only)
     fn_ternary_t fn_setattr;

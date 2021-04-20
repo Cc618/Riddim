@@ -176,6 +176,16 @@ Object *Object::mul(Object *o) {
     return type->fn_mul(this, o);
 }
 
+Object *Object::neg() {
+    if (!type->fn_neg) {
+        THROW_NOBUILTIN(this->type, neg);
+
+        return nullptr;
+    }
+
+    return type->fn_neg(this);
+}
+
 Object *Object::setattr(Object *name, Object *value) {
     if (!type->fn_setattr) {
         auto name_str = name->str();

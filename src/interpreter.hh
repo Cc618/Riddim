@@ -138,6 +138,9 @@ enum OpCode : opcode_t {
     // - id_offset : Offset of the name of the symbol (constant)
     StoreVar,
     // - pop 1
+    // - push -TOS
+    UnaNeg,
+    // - pop 1
     // - push not TOS (must be bool)
     UnaNot,
     // - pop 1

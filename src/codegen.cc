@@ -651,6 +651,10 @@ void UnaExp::gen_code(Module *module, Code *_code) {
     exp->gen_code(module, _code);
 
     switch (op) {
+    case UnaExp::Neg:
+        PUSH_CODE(UnaNeg);
+        break;
+
     case UnaExp::Not:
         PUSH_CODE(UnaNot);
         break;

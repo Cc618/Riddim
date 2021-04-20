@@ -384,7 +384,10 @@ struct BinExp : public Exp {
 // Unary expression
 // not etc.
 struct UnaExp : public Exp {
-    enum Op { Not };
+    enum Op {
+        Neg,
+        Not,
+    };
 
     Op op;
     Exp *exp;

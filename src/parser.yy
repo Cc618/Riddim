@@ -387,6 +387,7 @@ binary : unary { $$ = $1; }
 
 // Unaries
 unary: primary { $$ = $1; }
+    | "-" primary { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Neg); }
     ;
 
 // Primaries

@@ -34,6 +34,7 @@
 | @in | Whether an item is within a collection | Bool | 1 in [1, 2, 3] == true |
 | @mod | % operator | | 2 % 2 |
 | @mul | * operator | | 2 * 2 |
+| @neg | - (unary, negation) operator | | -2 |
 | @setattr | Set map attribute (not a read only attribute) | | a.foo = 42 which is a.@setattr('foo', 42) |
 | @setitem | Index / subscript setter | Null | a[42] = 2 which is a.@setitem(42, 2) |
 | @str | String representation (by default it returns 'TypeName()' | Str | @str(Int) which returns 'Type(Int)' |
