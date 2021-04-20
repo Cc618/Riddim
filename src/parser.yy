@@ -48,7 +48,10 @@
     EOF 0       "<<EOF>>"
     ASSIGN      "="
     RADD        "+="
+    RSUB        "-="
     RMUL        "*="
+    RDIV        "/="
+    RMOD        "%="
     AND         "and"
     OR          "or"
     NOT         "not"
@@ -132,7 +135,7 @@
 %token <int_t> INT "int"
 
 // The lower it is declared, the sooner the token will be used
-%right "=";
+%right "=" "+=" "-=" "*=" "/=" "%=";
 %left "..";
 %left "or";
 %left "and";

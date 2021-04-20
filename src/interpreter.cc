@@ -213,13 +213,13 @@ void interpret_fragment(Code *_code, size_t &ip) {
             POPTOP(tos);
             POPTOP(tos1);
 
-            auto prod = tos1->div(tos);
+            auto result = tos1->div(tos);
 
-            if (!prod) {
+            if (!result) {
                 DISPATCH_ERROR;
             }
 
-            PUSH(prod);
+            PUSH(result);
 
             NEXT(0);
         }
