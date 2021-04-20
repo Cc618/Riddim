@@ -131,15 +131,17 @@ void Vec::init_class_type() {
         return result;
     };
 
+    // @in
     class_type->fn_in = [](Object *self, Object *val) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
-        // TODO : Override equal operator
         bool result =
             find_if(me->data.begin(), me->data.end(), [val](Object *o) -> bool {
-                // TODO : Unsafe (no error handling), rm (see todo above)
-                return reinterpret_cast<Int *>(o->hash())->data ==
-                       reinterpret_cast<Int *>(val->hash())->data;
+                auto threeway = o->cmp(val);
+
+                if (!threeway || threeway->type != Int::class_type) return false;
+
+                return reinterpret_cast<Int*>(threeway)->data == 0;
             }) != me->data.end();
 
         return result ? istrue : isfalse;
