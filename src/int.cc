@@ -229,5 +229,4 @@ void Int::init_class_type() {
 
         return result;
     };
-
 }

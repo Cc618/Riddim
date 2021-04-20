@@ -230,7 +230,20 @@ Object *Object::str() {
 }
 
 Object *Object::sub(Object *o) {
-    if (!type->fn_div) {
+    if (!type->fn_sub) {
+        // a - b == a + (-b)
+        if (type->fn_add && type->fn_neg) {
+            auto negated = o->neg();
+
+            if (!negated) return nullptr;
+
+            auto result = add(negated);
+
+            if (!result) return nullptr;
+
+            return result;
+        }
+
         THROW_NOBUILTIN(this->type, sub);
 
         return nullptr;
