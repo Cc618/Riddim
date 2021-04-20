@@ -18,6 +18,8 @@ Object *builtin_assert(Object *self, Object *args, Object *kwargs);
 // Throws if is not Int
 Object *builtin_hash(Object *self, Object *args, Object *kwargs);
 
+Object *builtin_len(Object *self, Object *args, Object *kwargs);
+
 Object *builtin_print(Object *self, Object *args, Object *kwargs);
 
 Object *builtin_throw(Object *self, Object *args, Object *kwargs);

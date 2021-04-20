@@ -103,6 +103,21 @@ void Vec::init_class_type() {
         return result;
     };
 
+    // @len
+    class_type->fn_len = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Vec *>(self);
+
+        auto result = new (nothrow) Int(me->data.size());
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);

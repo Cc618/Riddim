@@ -64,6 +64,8 @@ struct Object {
 
     Object *in(Object *value);
 
+    Object *len();
+
     Object *mul(Object *o);
 
     Object *setattr(Object *name, Object *value);
@@ -126,6 +128,9 @@ struct Type : public Object {
 
     // * operator, returns the product
     fn_binary_t fn_mul;
+
+    // Container length
+    fn_unary_t fn_len;
 
     // Set map attribute (not read only)
     fn_ternary_t fn_setattr;

@@ -63,6 +63,7 @@ void init_builtins() {
     // Functions
     INIT_BUILTIN("assert", builtin_assert);
     INIT_BUILTIN("hash", builtin_hash);
+    INIT_BUILTIN("len", builtin_len);
     INIT_BUILTIN("print", builtin_print);
     INIT_BUILTIN("throw", builtin_throw);
     INIT_BUILTIN("typeof", builtin_typeof);
@@ -126,6 +127,28 @@ Object *builtin_hash(Object *self, Object *args, Object *kwargs) {
 
     if (result->type != Int::class_type) {
         THROW_TYPE_ERROR_PREF(o->type->name + ".@hash", result->type,
+                              Int::class_type);
+
+        return nullptr;
+    }
+
+    return result;
+}
+
+Object *builtin_len(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "len");
+
+    CHECK_NOKWARGS("len");
+    CHECK_ARGSLEN(1, "len");
+
+    auto o = args_data[0];
+    auto result = o->len();
+
+    if (!result)
+        return nullptr;
+
+    if (result->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF(o->type->name + ".@len", result->type,
                               Int::class_type);
 
         return nullptr;

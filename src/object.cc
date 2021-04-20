@@ -136,6 +136,16 @@ Object *Object::in(Object *val) {
     return type->fn_in(this, val);
 }
 
+Object *Object::len() {
+    if (!type->fn_len) {
+        THROW_NOBUILTIN(this->type, len);
+
+        return nullptr;
+    }
+
+    return type->fn_len(this);
+}
+
 Object *Object::mul(Object *o) {
     if (!type->fn_mul) {
         THROW_NOBUILTIN(this->type, mul);
