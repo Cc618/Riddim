@@ -180,6 +180,18 @@ struct ReturnStmt : public Stmt {
     virtual void gen_code(Module *module, Code *code) override;
 };
 
+// Either break or continue
+struct LoopControlStmt : public Stmt {
+    // Break or continue ?
+    bool isbreak;
+
+    LoopControlStmt(line_t fileline, bool isbreak);
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 // The rethrow instruction
 struct RethrowStmt : public Stmt {
     RethrowStmt(line_t fileline) : Stmt(fileline) {}

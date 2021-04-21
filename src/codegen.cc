@@ -314,6 +314,14 @@ void ReturnStmt::gen_code(Module *module, Code *_code) {
     PUSH_CODE(Return);
 }
 
+void LoopControlStmt::gen_code(Module *module, Code *_code) {
+    Stmt::gen_code(module, _code);
+
+    auto &code = _code->code;
+
+    // TODO C
+}
+
 void RethrowStmt::gen_code(Module *module, Code *_code) {
     Stmt::gen_code(module, _code);
 

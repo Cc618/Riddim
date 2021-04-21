@@ -133,6 +133,15 @@ void ReturnStmt::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+LoopControlStmt::LoopControlStmt(line_t fileline, bool isbreak)
+    : Stmt(fileline), isbreak(isbreak) {}
+
+void LoopControlStmt::debug(int indent) {
+    cout << str_indent(indent) << "LoopControlStmt(" << endl;
+    cout << str_indent(indent + 1) << "line=" << fileline << endl;
+    cout << str_indent(indent) << ")" << endl;
+}
+
 void RethrowStmt::debug(int indent) {
     cout << str_indent(indent) << "RethrowStmt()" << endl;
 }

@@ -144,6 +144,8 @@ comment     #.*
 "catch"         return yy::parser::make_CATCH(loc);
 "as"            return yy::parser::make_AS(loc);
 "rethrow"       return yy::parser::make_RETHROW(loc);
+"break"         return yy::parser::make_BREAK(loc);
+"continue"      return yy::parser::make_CONTINUE(loc);
 "return"        return yy::parser::make_RETURN(loc);
 "fn"            return yy::parser::make_FN(loc);
 

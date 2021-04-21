@@ -87,6 +87,8 @@
     CATCH       "catch"
     AS          "as"
     RETHROW     "rethrow"
+    BREAK       "break"
+    CONTINUE    "continue"
     RETURN      "return"
     FN          "fn"
     TRUE        "true"
@@ -111,6 +113,7 @@
 %nterm <ast::TryStmt::CatchClause> trystmt_catch trystmt_catchall
 %nterm <ast::Block*> ifstmt_else
 %nterm <ast::ReturnStmt*> returnstmt
+%nterm <ast::LoopControlStmt*> loopcontrolstmt
 %nterm <ast::RethrowStmt*> rethrowstmt
 %nterm <ast::ExpStmt*> expstmt
 
@@ -225,6 +228,7 @@ stmt: expstmt { $$ = $1; }
     | trystmt { $$ = $1; }
     | whilestmt { $$ = $1; }
     | returnstmt { $$ = $1; }
+    | loopcontrolstmt { $$ = $1; }
     | rethrowstmt { $$ = $1; }
     | fndecl { $$ = $1; }
     ;
@@ -288,6 +292,10 @@ trystmt_catch: "catch" exp "as" ID block {
 
 returnstmt: "return" exp stop { $$ = new ReturnStmt(@1.begin.line, $2); }
     | "return" stop { $$ = new ReturnStmt(@1.begin.line); }
+    ;
+
+loopcontrolstmt: "break" stop { $$ = new LoopControlStmt(@1.begin.line, true); }
+    | "continue" stop { $$ = new LoopControlStmt(@1.begin.line, false); }
     ;
 
 rethrowstmt: "rethrow" stop { $$ = new RethrowStmt(@1.begin.line); }
