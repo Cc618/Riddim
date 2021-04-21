@@ -9,6 +9,10 @@
 typedef size_t opcode_t;
 typedef std::vector<opcode_t> code_t;
 
+namespace ast {
+struct LoopStmt;
+} // namespace ast
+
 struct Code : public Object {
     static Type *class_type;
 
@@ -25,6 +29,9 @@ struct Code : public Object {
     // instruction at offset off starts delta lines after start_lineno
     // (not after the previous instruction)
     std::vector<std::pair<size_t, size_t>> line_deltas;
+
+    // Loop stack to generate code and handle break / continue statements
+    std::vector<ast::LoopStmt*> loop_stack;
 
     // Returns the line number of the instruction at offset 'offset' within code
     size_t lineof(size_t offset);

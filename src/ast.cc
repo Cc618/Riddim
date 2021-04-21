@@ -62,7 +62,7 @@ void Block::debug(int indent) {
 
 // --- Stmts ---
 WhileStmt::WhileStmt(Exp *condition, Block *body)
-    : Stmt(condition->fileline), condition(condition), body(body) {}
+    : LoopStmt(condition->fileline), condition(condition), body(body) {}
 
 WhileStmt::~WhileStmt() {
     delete condition;

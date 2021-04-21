@@ -319,7 +319,16 @@ void LoopControlStmt::gen_code(Module *module, Code *_code) {
 
     auto &code = _code->code;
 
-    // TODO C
+    if (_code->loop_stack.empty()) {
+        throw CodeGenException("Break or continue outside of loop", _code->filename, fileline);
+    }
+
+    // Register this control
+    _code->loop_stack.back()->controls.push_back(this);
+
+    PUSH_CODE(Jmp);
+    jmp_offset = code.size();
+    PUSH_CODE(Nop);
 }
 
 void RethrowStmt::gen_code(Module *module, Code *_code) {
@@ -331,7 +340,9 @@ void RethrowStmt::gen_code(Module *module, Code *_code) {
 }
 
 void WhileStmt::gen_code(Module *module, Code *_code) {
-    Stmt::gen_code(module, _code);
+    LoopStmt::gen_code(module, _code);
+
+    _code->loop_stack.push_back(this);
 
     auto &code = _code->code;
 
@@ -360,6 +371,13 @@ void WhileStmt::gen_code(Module *module, Code *_code) {
 
     // Finally section
     code[finally_offset] = code.size();
+
+    // Solve control statements
+    for (auto ctrl : controls) {
+        code[ctrl->jmp_offset] = ctrl->isbreak ? code.size() : start_offset;
+    }
+
+    _code->loop_stack.pop_back();
 }
 
 void CallExp::gen_code(Module *module, Code *_code) {

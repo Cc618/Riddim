@@ -115,8 +115,18 @@ struct Block : public ASTNode {
 };
 
 // --- Stmts ---
+struct LoopControlStmt;
+
+// Abstract statement describing loops
+struct LoopStmt : public Stmt {
+    using Stmt::Stmt;
+
+    // Gathers all control statements like break / continue
+    std::vector<LoopControlStmt*> controls;
+};
+
 // While statement
-struct WhileStmt : public Stmt {
+struct WhileStmt : public LoopStmt {
     Exp *condition;
     Block *body;
 
@@ -184,6 +194,11 @@ struct ReturnStmt : public Stmt {
 struct LoopControlStmt : public Stmt {
     // Break or continue ?
     bool isbreak;
+
+    // Used in codegen to solve jump address
+    // This is the index of the address of the Jmp
+    // instruction in code
+    size_t jmp_offset;
 
     LoopControlStmt(line_t fileline, bool isbreak);
 
