@@ -164,6 +164,17 @@ Object *Object::in(Object *val) {
     return type->fn_in(this, val);
 }
 
+Object *Object::iter() {
+    if (!type->fn_iter) {
+        THROW_NOBUILTIN(this->type, iter);
+
+        return nullptr;
+    }
+
+    return type->fn_iter(this);
+}
+
+
 Object *Object::len() {
     if (!type->fn_len) {
         THROW_NOBUILTIN(this->type, len);
@@ -202,6 +213,16 @@ Object *Object::neg() {
     }
 
     return type->fn_neg(this);
+}
+
+Object *Object::next() {
+    if (!type->fn_next) {
+        THROW_NOBUILTIN(this->type, next);
+
+        return nullptr;
+    }
+
+    return type->fn_next(this);
 }
 
 Object *Object::setattr(Object *name, Object *value) {

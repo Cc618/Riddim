@@ -14,6 +14,7 @@
 #include "str.hh"
 #include "trace.hh"
 #include "code.hh"
+#include "iterator.hh"
 #include "vec.hh"
 
 // --- Init ---
@@ -69,6 +70,8 @@ static void init_types() {
     INIT_TYPE(Function);
     INIT_TYPE(Trace);
     INIT_TYPE(Code);
+    INIT_TYPE(Global);
+    INIT_TYPE(Iterator);
 
 #undef INIT_TYPE
 }

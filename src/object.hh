@@ -66,6 +66,8 @@ struct Object {
 
     Object *in(Object *value);
 
+    Object *iter();
+
     Object *len();
 
     Object *mod(Object *o);
@@ -73,6 +75,8 @@ struct Object {
     Object *mul(Object *o);
 
     Object *neg();
+
+    Object *next();
 
     Object *setattr(Object *name, Object *value);
 
@@ -137,6 +141,9 @@ struct Type : public Object {
     // Returns a Bool
     fn_binary_t fn_in;
 
+    // Returns the iterator from the first element of the collection
+    fn_unary_t fn_iter;
+
     // Container length
     fn_unary_t fn_len;
 
@@ -148,6 +155,9 @@ struct Type : public Object {
 
     // - operator (unary), returns the negation, the opposite
     fn_unary_t fn_neg;
+
+    // Next iter item (or enditer)
+    fn_unary_t fn_next;
 
     // Set map attribute (not read only)
     fn_ternary_t fn_setattr;

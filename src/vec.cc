@@ -8,6 +8,8 @@
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
+#include "iterator.hh"
+#include "builtins.hh"
 #include <algorithm>
 #include <string>
 
@@ -189,6 +191,27 @@ void Vec::init_class_type() {
         bool result = it != me->data.end();
 
         return result ? istrue : isfalse;
+    };
+
+    // @iter
+    class_type->fn_iter = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Vec *>(self);
+
+        // TODO A : Verify no errors with i
+        auto iter = new (nothrow) Iterator([](Iterator *it) -> Object * {
+            int_t &i = it->custom_data;
+            Vec *me = reinterpret_cast<Vec *>(it->collection);
+
+            if (i >= me->data.size()) return enditer;
+
+            auto result = me->data[i];
+
+            ++i;
+
+            return result;
+        }, me, 0);
+
+        return iter;
     };
 
     class_type->fn_mul = [](Object *self, Object *o) -> Object * {

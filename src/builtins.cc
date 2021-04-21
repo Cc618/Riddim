@@ -39,6 +39,24 @@ static Object *print_object(Object *o) {
     return null;
 }
 
+// --- Global Object ---
+Type *Global::class_type = nullptr;
+
+Global::Global() : Object(Global::class_type) {}
+
+void Global::init_class_type() {
+    class_type = new (nothrow) Type("Global");
+
+    if (!class_type) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+}
+
+// --- Globals ---
+Global *enditer = nullptr;
+
 // --- Init ---
 void init_builtins() {
     auto &global_frame = Program::instance->global_frame;
@@ -63,10 +81,19 @@ void init_builtins() {
     // Functions
     INIT_BUILTIN("assert", builtin_assert);
     INIT_BUILTIN("hash", builtin_hash);
+    INIT_BUILTIN("iter", builtin_iter);
     INIT_BUILTIN("len", builtin_len);
+    INIT_BUILTIN("next", builtin_next);
     INIT_BUILTIN("print", builtin_print);
     INIT_BUILTIN("throw", builtin_throw);
     INIT_BUILTIN("typeof", builtin_typeof);
+
+    // Globals
+    enditer = new (nothrow) Global();
+    if (!enditer) return;
+    auto enditer_str = new (nothrow) Str("enditer");
+    if (!enditer_str) return;
+    Program::instance->global_frame->setitem(enditer_str, enditer);
 
 #undef INIT_BUILTIN
 }
@@ -135,6 +162,15 @@ Object *builtin_hash(Object *self, Object *args, Object *kwargs) {
     return result;
 }
 
+Object *builtin_iter(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "iter");
+
+    CHECK_ARGSLEN(1, "iter");
+    CHECK_NOKWARGS("iter");
+
+    return args_data[0]->iter();
+}
+
 Object *builtin_len(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Object, "len");
 
@@ -155,6 +191,15 @@ Object *builtin_len(Object *self, Object *args, Object *kwargs) {
     }
 
     return result;
+}
+
+Object *builtin_next(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "next");
+
+    CHECK_ARGSLEN(1, "next");
+    CHECK_NOKWARGS("next");
+
+    return args_data[0]->next();
 }
 
 // Print
