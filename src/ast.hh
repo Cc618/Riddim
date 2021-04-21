@@ -76,6 +76,7 @@ struct AstModule : public ASTNode {
 };
 
 // --- Decls ---
+struct Target;
 struct FnDecl : public Decl {
     struct Args {
         Args() {}
@@ -88,11 +89,11 @@ struct FnDecl : public Decl {
         int n_required = 0;
     } * args;
 
-    str_t name;
+    Target *target;
     Block *body;
 
-    FnDecl(line_t fileline, const str_t &name, Args *args, Block *body)
-        : Decl(fileline), name(name), args(args), body(body) {}
+    FnDecl(line_t fileline, Target *target, Args *args, Block *body)
+        : Decl(fileline), target(target), args(args), body(body) {}
 
     virtual ~FnDecl();
 

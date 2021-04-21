@@ -91,6 +91,10 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     finalize_function_code(module, fncode);
 
+    auto id_target = dynamic_cast<IdTarget *>(target);
+
+    auto name = id_target ? id_target->id->id : "<anonymous>";
+
     auto fn = Function::New(fncode, name);
     fn->n_required_args = args->n_required;
 
@@ -134,16 +138,18 @@ void FnDecl::gen_code(Module *module, Code *_code) {
     PUSH_CODE(off_fn);
 
     // Store it
-    PUSH_CODE(StoreVar);
+    target->gen_code(module, _code);
 
-    auto const_name = new (nothrow) Str(name);
+    // PUSH_CODE(StoreVar);
 
-    if (!const_name) {
-        throw CodeGenException("Not enough memory", module->filepath, fileline);
-    }
+    // auto const_name = new (nothrow) Str(name);
 
-    auto off_name = ADD_CONST(const_name);
-    PUSH_CODE(off_name);
+    // if (!const_name) {
+    //     throw CodeGenException("Not enough memory", module->filepath, fileline);
+    // }
+
+    // auto off_name = ADD_CONST(const_name);
+    // PUSH_CODE(off_name);
 
     // Pop since it's a statement
     PUSH_CODE(Pop);

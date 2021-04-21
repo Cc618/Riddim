@@ -35,11 +35,13 @@ FnDecl::Args::~Args() {
 
 FnDecl::~FnDecl() {
     delete body;
+    delete target;
     delete args;
 }
 
 void FnDecl::debug(int indent) {
-    cout << str_indent(indent) << "FnDecl<" << name << "(" << endl;
+    cout << str_indent(indent) << "FnDecl(" << endl;
+    target->debug(indent + 1);
     body->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }

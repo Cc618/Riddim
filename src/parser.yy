@@ -97,6 +97,9 @@
 // Declarations
 %nterm <ast::FnDecl*> fndecl
 %nterm <ast::FnDecl::Args*> fndecl_all_args fndecl_args fndecl_kwargs
+%nterm <ast::Target*> fndecl_target
+%nterm <ast::AttrTarget*> fndecl_attrtarget
+%nterm <ast::IdTarget*> fndecl_idtarget
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 
@@ -160,10 +163,28 @@ module: stop stmtlist {
 
 // --- Declarations ---
 // Function declaration
-// TODO : Compound ID (target)
-fndecl: "fn" ID lparen fndecl_all_args rparen block stop {
+fndecl: "fn" fndecl_target lparen fndecl_all_args rparen block stop {
         $$ = new FnDecl(@1.begin.line, $2, $4, $6);
     }
+    ;
+
+fndecl_target: fndecl_idtarget { $$ = $1; }
+    | fndecl_attrtarget { $$ = $1; }
+    ;
+
+fndecl_attrtarget: ID "." ID {
+        $$ = new AttrTarget(
+            new Attr(@1.begin.line,
+                new Id(@1.begin.line, $1), $3));
+    }
+    | fndecl_attrtarget "." ID {
+        $$ = $1;
+        auto newattr = new Attr(@1.begin.line, $1->attr, $3);
+        $1->attr = newattr;
+    }
+    ;
+
+fndecl_idtarget: ID { $$ = new IdTarget(@1.begin.line, new Id(@1.begin.line, $1)); }
     ;
 
 // kwargs are arguments with default values
