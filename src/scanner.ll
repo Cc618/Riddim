@@ -140,6 +140,7 @@ comment     #.*
 "elif"          return yy::parser::make_ELIF(loc);
 "else"          return yy::parser::make_ELSE(loc);
 "while"         return yy::parser::make_WHILE(loc);
+"for"           return yy::parser::make_FOR(loc);
 "try"           return yy::parser::make_TRY(loc);
 "catch"         return yy::parser::make_CATCH(loc);
 "as"            return yy::parser::make_AS(loc);

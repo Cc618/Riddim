@@ -71,6 +71,11 @@ enum OpCode : opcode_t {
     CatchTerminate,
     // Duplicates the TOS
     Dup,
+    // If it remains elements in the iterator, pushes the next element
+    // Otherwise, jumps to the specified offset (end of loop)
+    // - offset
+    // - push @next(TOS) if != enditer, push nothing otherwise but Jmp at the offset
+    ForNext,
     // Jump at offset
     Jmp,
     // Jump if TOS is false
@@ -137,6 +142,9 @@ enum OpCode : opcode_t {
     // Stores the TOS to a variable
     // - id_offset : Offset of the name of the symbol (constant)
     StoreVar,
+    // - pop 1
+    // - push @iter(TOS)
+    UnaIter,
     // - pop 1
     // - push -TOS
     UnaNeg,

@@ -130,9 +130,26 @@ struct WhileStmt : public LoopStmt {
     Exp *condition;
     Block *body;
 
-    WhileStmt(Exp *condition, Block *body);
+    WhileStmt(line_t fileline, Exp *condition, Block *body);
 
     virtual ~WhileStmt();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
+struct IdTarget;
+
+// For each statement
+struct ForStmt : public LoopStmt {
+    IdTarget *id;
+    Exp *iterable;
+    Block *body;
+
+    ForStmt(line_t fileline, IdTarget *id, Exp *iterable, Block *body);
+
+    virtual ~ForStmt();
 
     virtual void debug(int indent = 0) override;
 

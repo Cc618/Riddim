@@ -425,12 +425,36 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(0);
         }
 
+        case ForNext: {
+            CHECK_STACKLEN(1);
+
+            auto tos = TOP;
+            auto nextitem = tos->next();
+
+            if (!nextitem) {
+                DISPATCH_ERROR;
+            }
+
+            // End of loop, jump
+            if (nextitem == enditer) {
+                auto offset = ARG(1);
+
+                gc_step();
+                JMP(offset);
+            }
+
+            // Otherwise, push the next item
+            PUSH(nextitem);
+
+            NEXT(1);
+        }
+
         case Jmp: {
             auto offset = ARG(1);
 
-            JMP(offset);
-
             gc_step();
+
+            JMP(offset);
         }
 
         case JmpFalse: {
@@ -446,13 +470,13 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
+            gc_step();
+
             if (reinterpret_cast<Bool *>(tos)->data) {
                 NEXT(1);
             } else {
                 JMP(offset);
             }
-
-            gc_step();
         }
 
         case LoadAttr: {
@@ -719,6 +743,22 @@ void interpret_fragment(Code *_code, size_t &ip) {
             frame->setitem(name, val);
 
             NEXT(1);
+        }
+
+        case UnaIter: {
+            CHECK_STACKLEN(1);
+
+            POPTOP(tos);
+
+            auto result = tos->iter();
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(0);
         }
 
         case UnaNot: {

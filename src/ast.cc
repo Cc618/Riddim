@@ -61,8 +61,8 @@ void Block::debug(int indent) {
 }
 
 // --- Stmts ---
-WhileStmt::WhileStmt(Exp *condition, Block *body)
-    : LoopStmt(condition->fileline), condition(condition), body(body) {}
+WhileStmt::WhileStmt(line_t fileline, Exp *condition, Block *body)
+    : LoopStmt(fileline), condition(condition), body(body) {}
 
 WhileStmt::~WhileStmt() {
     delete condition;
@@ -73,6 +73,23 @@ void WhileStmt::debug(int indent) {
     cout << str_indent(indent) << "WhileStmt(" << endl;
     cout << str_indent(indent + 1) << "line=" << fileline << endl;
     condition->debug(indent + 1);
+    body->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
+ForStmt::ForStmt(line_t fileline, IdTarget *id, Exp *iterable, Block *body)
+    : LoopStmt(fileline), id(id), iterable(iterable), body(body) {}
+
+ForStmt::~ForStmt() {
+    delete id;
+    delete iterable;
+    delete body;
+}
+
+void ForStmt::debug(int indent) {
+    cout << str_indent(indent) << "ForStmt(" << endl;
+    cout << str_indent(indent + 1) << "line=" << fileline << endl;
+    iterable->debug(indent + 1);
     body->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
 }

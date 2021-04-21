@@ -380,6 +380,58 @@ void WhileStmt::gen_code(Module *module, Code *_code) {
     _code->loop_stack.pop_back();
 }
 
+void ForStmt::gen_code(Module *module, Code *_code) {
+    LoopStmt::gen_code(module, _code);
+
+    _code->loop_stack.push_back(this);
+
+    auto &code = _code->code;
+
+    // The pseudo code of the generation
+    // push iter
+    // start:
+    // push next iter element / goto finally if next item == enditer
+    // body
+    // goto start
+    // finally:
+    // pop iter
+
+    // Push iter
+    iterable->gen_code(module, _code);
+    PUSH_CODE(UnaIter);
+
+    // Generate condition
+    auto start_offset = code.size();
+    PUSH_CODE(ForNext);
+
+    auto finally_offset = code.size();
+    PUSH_CODE(Nop);
+
+    // Store the next item within the id
+    id->gen_code(module, _code);
+    PUSH_CODE(Pop);
+
+    // Execute body
+    body->gen_code(module, _code);
+
+    // Jump at the start section (loop again)
+    PUSH_CODE(Jmp);
+    PUSH_CODE(start_offset);
+
+    // Finally section
+    code[finally_offset] = code.size();
+
+    // Solve control statements
+    for (auto ctrl : controls) {
+        code[ctrl->jmp_offset] = ctrl->isbreak ? code.size() : start_offset;
+    }
+
+    // Pop iter
+    PUSH_CODE(Pop);
+
+    _code->loop_stack.pop_back();
+}
+
 void CallExp::gen_code(Module *module, Code *_code) {
     // Push exp
     exp->gen_code(module, _code);

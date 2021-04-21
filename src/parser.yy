@@ -83,6 +83,7 @@
     ELIF        "elif"
     ELSE        "else"
     WHILE       "while"
+    FOR         "for"
     TRY         "try"
     CATCH       "catch"
     AS          "as"
@@ -108,6 +109,7 @@
 // Statements
 %nterm <ast::Stmt*> stmt
 %nterm <ast::WhileStmt*> whilestmt
+%nterm <ast::ForStmt*> forstmt
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
 %nterm <ast::TryStmt*> trystmt trystmt_start
 %nterm <ast::TryStmt::CatchClause> trystmt_catch trystmt_catchall
@@ -227,6 +229,7 @@ stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     | trystmt { $$ = $1; }
     | whilestmt { $$ = $1; }
+    | forstmt { $$ = $1; }
     | returnstmt { $$ = $1; }
     | loopcontrolstmt { $$ = $1; }
     | rethrowstmt { $$ = $1; }
@@ -301,7 +304,12 @@ loopcontrolstmt: "break" stop { $$ = new LoopControlStmt(@1.begin.line, true); }
 rethrowstmt: "rethrow" stop { $$ = new RethrowStmt(@1.begin.line); }
     ;
 
-whilestmt: "while" exp block stop { $$ = new WhileStmt($2, $3); }
+whilestmt: "while" exp block stop { $$ = new WhileStmt(@1.begin.line, $2, $3); }
+    ;
+
+forstmt: "for" target_id "in" exp block stop {
+        $$ = new ForStmt(@1.begin.line, static_cast<IdTarget*>($2), $4, $5);
+    }
     ;
 
 expstmt: exp stop { $$ = new ExpStmt($1); }

@@ -197,7 +197,6 @@ void Vec::init_class_type() {
     class_type->fn_iter = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
-        // TODO A : Verify no errors with i
         auto iter = new (nothrow) Iterator([](Iterator *it) -> Object * {
             int_t &i = it->custom_data;
             Vec *me = reinterpret_cast<Vec *>(it->collection);
