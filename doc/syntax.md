@@ -133,6 +133,26 @@ for i in 0 -> 4 {
 >>> 3
 ```
 
+#### Iterables and Iterators
+An iterable is an object that overrides the @iter method.
+This function returns a new Iterator located at the beginning
+of the iteration.
+
+For instance, 0 -> 2 is an Iterable that will return an Iterator
+when @iter is called.
+
+An iterator is an object that overrides the @next function.
+This method returns the next item or enditer.
+enditer is a special object that describes the end of the iterator.
+
+For instance, when iterating through 0 -> 2, the @next method yields :
+- 0
+- 1
+- enditer
+
+For loops call the @iter method of the object to iterate through (like a range).
+And then, @next is called every iteration until it returns enditer.
+
 <!-- TODO : Not an h2 -->
 ## Indexing
 Indexing is done with brackets like in many languages.
