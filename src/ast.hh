@@ -390,6 +390,22 @@ struct Cascade : public Exp {
     virtual ASTNode **fetch_cascade_id() override;
 };
 
+// The range operator (..)
+struct RangeExp : public Exp {
+    Exp *start;
+    Exp *end;
+    Exp *step;
+    bool inclusive;
+
+    RangeExp(Exp *start, Exp *end, Exp *step, bool inclusive);
+
+    ~RangeExp();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 // Binary expression
 // + * in etc.
 struct BinExp : public Exp {

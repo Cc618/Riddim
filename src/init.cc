@@ -16,6 +16,7 @@
 #include "code.hh"
 #include "iterator.hh"
 #include "vec.hh"
+#include "range.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -72,6 +73,7 @@ static void init_types() {
     INIT_TYPE(Code);
     INIT_TYPE(Global);
     INIT_TYPE(Iterator);
+    INIT_TYPE(Range);
 
 #undef INIT_TYPE
 }

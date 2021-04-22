@@ -104,6 +104,8 @@ comment     #.*
 {str}           return make_STR(loc, yytext);
 
 ".."            return yy::parser::make_CASCADE(loc);
+"->"            return yy::parser::make_RANGE(loc);
+"->="           return yy::parser::make_RANGEINC(loc);
 "."             return yy::parser::make_DOT(loc);
 ","             return yy::parser::make_COMMA(loc);
 ":"             return yy::parser::make_COLON(loc);

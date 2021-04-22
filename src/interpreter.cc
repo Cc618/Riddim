@@ -3,8 +3,10 @@
 #include "builtins.hh"
 #include "debug.hh"
 #include "error.hh"
+#include "int.hh"
 #include "map.hh"
 #include "program.hh"
+#include "range.hh"
 
 // TODO
 #include <iostream>
@@ -559,6 +561,49 @@ void interpret_fragment(Code *_code, size_t &ip) {
             }
 
             COPY_IF_POD(result);
+
+            PUSH(result);
+
+            NEXT(1);
+        }
+
+        case MakeRange: {
+            CHECK_STACKLEN(3);
+
+            POPTOP(step);
+            POPTOP(end);
+            POPTOP(start);
+            auto inclusive = ARG(1);
+
+            if (start->type != Int::class_type) {
+                THROW_TYPE_ERROR_PREF("Range operator (..), start argument",
+                                      start->type, Int::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            if (end->type != Int::class_type) {
+                THROW_TYPE_ERROR_PREF("Range operator (..), end argument",
+                                      end->type, Int::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            if (step->type != Int::class_type) {
+                THROW_TYPE_ERROR_PREF("Range operator (..), step argument",
+                                      step->type, Int::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            auto result =
+                Range::New(reinterpret_cast<Int *>(start)->data,
+                           reinterpret_cast<Int *>(end)->data,
+                           reinterpret_cast<Int *>(step)->data, inclusive);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
 
             PUSH(result);
 

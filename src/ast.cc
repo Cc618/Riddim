@@ -315,6 +315,23 @@ ASTNode **Cascade::fetch_cascade_id() {
     return right->fetch_cascade_id();
 }
 
+RangeExp::RangeExp(Exp *start, Exp *end, Exp *step, bool inclusive)
+    : Exp(start->fileline), start(start), end(end), step(step), inclusive(inclusive) {}
+
+RangeExp::~RangeExp() {
+    delete start;
+    delete end;
+
+    if (step) delete step;
+}
+
+void RangeExp::debug(int indent) {
+    cout << str_indent(indent) << "RangeExp(" << endl;
+    start->debug(indent + 1);
+    end->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 BinExp::BinExp(line_t fileline, Exp *left, Op op, Exp *right)
     : Exp(fileline), left(left), op(op), right(right) {}
 

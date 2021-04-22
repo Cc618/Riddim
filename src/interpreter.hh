@@ -101,6 +101,11 @@ enum OpCode : opcode_t {
     // - push 1
     // * Copies PODs
     LoadVar,
+    // Makes a range object
+    // - inclusive : Boolean, whether end is inclusive or exclusive
+    // - pop 3 : start, end, step
+    // - push the range object
+    MakeRange,
     // No operation, used usually as a placeholder during code generation
     Nop,
     // Packs 'count' variables of the stack in a Vec

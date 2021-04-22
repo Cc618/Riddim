@@ -638,6 +638,28 @@ void Cascade::gen_code(Module *module, Code *_code) {
     // PUSH_CODE(Pop);
 }
 
+void RangeExp::gen_code(Module *module, Code *_code) {
+    start->gen_code(module, _code);
+    end->gen_code(module, _code);
+
+    if (step)
+        step->gen_code(module, _code);
+    else {
+        auto one = new (nothrow) Int(1);
+
+        if (!one) {
+            throw CodeGenException("Cannot allocate memory", _code->filename, fileline);
+        }
+
+        PUSH_CODE(LoadConst);
+        auto one_offset = ADD_CONST(one);
+        PUSH_CODE(one_offset);
+    }
+
+    PUSH_CODE(MakeRange);
+    PUSH_CODE(static_cast<size_t>(inclusive));
+}
+
 // Generates the binary expression op code
 void gen_binexp(Module *module, Code *_code, BinExp::Op op, int fileline) {
     switch (op) {

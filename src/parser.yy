@@ -75,6 +75,8 @@
     LBRACK      "["
     RBRACK      "]"
     CASCADE     ".."
+    RANGE       "->"
+    RANGEINC    "->="
     DOT         "."
     COMMA       ","
     COLON       ":"
@@ -407,6 +409,11 @@ comparison: binary { $$ = $1; }
     | comparison "not" "in" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::NotIn, $4); }
     | comparison "is" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Is, $3); }
     | comparison "is" "not" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::IsNot, $4); }
+    // TODO A : Step
+    | comparison "->" binary { $$ = new RangeExp($1, $3, nullptr, false); }
+    | comparison "->=" binary { $$ = new RangeExp($1, $3, nullptr, true); }
+    | comparison "->" binary ".." binary { $$ = new RangeExp($1, $3, $5, false); }
+    | comparison "->=" binary ".." binary { $$ = new RangeExp($1, $3, $5, true); }
     ;
 
 // TODO : Multiple comparisons

@@ -5,35 +5,6 @@
 
 using namespace std;
 
-// --- Iterator Objects ---
-Iterator *Range(int_t start, int_t end, int_t step = 1, bool inclusive) {
-    auto iter = new (nothrow) Iterator([start, end, step, inclusive](Iterator *it) -> Object * {
-        int_t &i = reinterpret_cast<int_t&>(it->custom_data);
-
-        if (inclusive && i > end || !inclusive && i >= end) return enditer;
-
-        auto result = new (nothrow) Int(i);
-
-        if (!result) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        i += step;
-
-        return result;
-    }, nullptr, reinterpret_cast<void*>(start));
-
-    if (!iter) {
-        THROW_MEMORY_ERROR;
-
-        return nullptr;
-    }
-
-    return iter;
-}
-
 // --- Iterator ---
 Type *Iterator::class_type = nullptr;
 

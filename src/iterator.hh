@@ -13,8 +13,6 @@ struct Iterator;
 typedef std::function<Object *(Iterator *it)> fn_iterator_next_item_t;
 typedef std::function<void(Iterator *it)> fn_iterator_delete_item_t;
 
-Iterator *Range(int_t start, int_t end, int_t step = 1, bool inclusive = false);
-
 struct Iterator : public Object {
     static Type *class_type;
 
