@@ -2,18 +2,18 @@
 ## General
 ### Comment
 Comments are line comments starting with # :
-```py
+```python
 # I am a comment
 ```
 
 ### Statement ending
 All statements are terminated by a line feed.
-```py
+```python
 a = 10
 ```
 
 You can escape line feeds using a backslash (\\) :
-```py
+```python
 a = 5 + \
     5
 ```
@@ -36,13 +36,13 @@ Integers can be written in multiple ways :
 
 ### String
 Strings can be declared by single or double quotes :
-```py
+```python
 a = 'Hello'
 b = "World"
 ```
 
 Some characters can be escaped :
-```py
+```python
 a = 'Hello\tworld.\nI\'m coding in Riddim !'
 ```
 
@@ -59,7 +59,7 @@ Here is the list of all escapes :
 ## Control Flow
 ### If / Else / Elif
 Here is the if syntax :
-```
+```python
 if condition1 {
     # Do something
 } elif condition2 {
@@ -71,7 +71,7 @@ if condition1 {
 
 All conditions must be booleans, it is not possible to check whether
 a variable is null like in this example :
-```
+```python
 # Error if a is not a Bool
 if a {
     # ...
@@ -80,10 +80,57 @@ if a {
 
 ### While
 While is the most simple loop :
-```
+```python
 while condition {
     # ...
 }
+```
+
+### For
+A for loop iterates within an iterable.
+An iterable can be a collection like a Vec or
+an object like Range
+```rust
+vec = [1, 2, 3]
+for item in vec {
+    print(item)
+}
+```
+
+```python
+>>> 1
+>>> 2
+>>> 3
+```
+
+#### Ranges
+A range is an iterable that creates an iterator yielding a sequence of
+number.
+It can be created with the arrow syntax :
+```python
+# 0 to 3 excluded (0, 1, 2)
+0 -> 3
+
+# 0 to 8 excluded with step 2 (0, 2, 4, 6)
+0 -> 8 .. 2
+
+# 0 to 2 included (0, 1, 2)
+0 ->= 2
+
+# 0 to 4 included with step 2 (0, 2, 4)
+0 ->= 4 .. 2
+
+# Use ranges like this
+for i in 0 -> 4 {
+    print(i)
+}
+```
+
+```python
+>>> 0
+>>> 1
+>>> 2
+>>> 3
 ```
 
 <!-- TODO : Not an h2 -->
