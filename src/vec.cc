@@ -198,7 +198,7 @@ void Vec::init_class_type() {
         auto me = reinterpret_cast<Vec *>(self);
 
         auto iter = new (nothrow) Iterator([](Iterator *it) -> Object * {
-            int_t &i = it->custom_data;
+            int_t &i = reinterpret_cast<int_t&>(it->custom_data);
             Vec *me = reinterpret_cast<Vec *>(it->collection);
 
             if (i >= me->data.size()) return enditer;
@@ -209,6 +209,12 @@ void Vec::init_class_type() {
 
             return result;
         }, me, 0);
+
+        if (!iter) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
 
         return iter;
     };
