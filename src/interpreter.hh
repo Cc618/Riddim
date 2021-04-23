@@ -74,7 +74,8 @@ enum OpCode : opcode_t {
     // If it remains elements in the iterator, pushes the next element
     // Otherwise, jumps to the specified offset (end of loop)
     // - offset
-    // - push @next(TOS) if != enditer, push nothing otherwise but Jmp at the offset
+    // - push @next(TOS) if != enditer, push nothing otherwise but Jmp at the
+    // offset
     ForNext,
     // Jump at offset
     Jmp,
@@ -170,7 +171,9 @@ bool interpret_program(Module *main_module);
 // Interprets the code
 // - vars : The default variables of the frame
 // Can throw
-void interpret(Code *code, const str_t &id, const std::unordered_map<str_t, Object*> &vars={});
+void interpret(Code *code, const str_t &id,
+               const std::unordered_map<str_t, Object *> &vars = {},
+               Module *module = nullptr);
 
 // Interprets a fragment of code
 // Compared to interpret, it doesn't create a new frame (it uses the top frame)

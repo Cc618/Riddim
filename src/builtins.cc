@@ -1,4 +1,5 @@
 #include "builtins.hh"
+#include "bool.hh"
 #include "error.hh"
 #include "frame.hh"
 #include "function.hh"
@@ -8,7 +9,6 @@
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
-#include "bool.hh"
 #include "vec.hh"
 #include <iostream>
 
@@ -89,14 +89,16 @@ void init_builtins() {
     INIT_BUILTIN("typeof", builtin_typeof);
 
     // Globals
-#define REGISTER_GLOBAL(NAME, ID) \
-    auto NAME##_str = new (nothrow) Str(#NAME); \
-    if (!NAME##_str) return; \
+#define REGISTER_GLOBAL(NAME, ID)                                              \
+    auto NAME##_str = new (nothrow) Str(#NAME);                                \
+    if (!NAME##_str)                                                           \
+        return;                                                                \
     Program::instance->global_frame->setitem(NAME##_str, ID);
 
     // enditer
     enditer = new (nothrow) Global();
-    if (!enditer) return;
+    if (!enditer)
+        return;
     REGISTER_GLOBAL(enditer, enditer);
 
     REGISTER_GLOBAL(true, istrue);
@@ -139,7 +141,9 @@ Object *builtin_assert(Object *self, Object *args, Object *kwargs) {
     }
 
     if (!reinterpret_cast<Bool *>(condition)->data) {
-        str_t msg_str = msg ? " : " C_GREEN + reinterpret_cast<Str*>(msg)->data + C_NORMAL : "";
+        str_t msg_str =
+            msg ? " : " C_GREEN + reinterpret_cast<Str *>(msg)->data + C_NORMAL
+                : "";
 
         throw_fmt(AssertError, "Assert failed%s", msg_str.c_str());
 
@@ -255,4 +259,3 @@ Object *builtin_throw(Object *self, Object *args, Object *kwargs) {
 
     return nullptr;
 }
-

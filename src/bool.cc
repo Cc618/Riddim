@@ -11,7 +11,6 @@ Type *Bool::class_type = nullptr;
 Bool *istrue = nullptr;
 Bool *isfalse = nullptr;
 
-
 static string bool_cmpop_str(CmpOp op) {
     switch (op) {
     case CmpOp::Equal:

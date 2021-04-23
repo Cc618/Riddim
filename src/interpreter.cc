@@ -88,7 +88,7 @@ bool interpret_program(Module *main_module) {
     Program::instance->main_module = main_module;
     Program::instance->add_module(main_module);
 
-    interpret(main_module->code, "Module<main>");
+    interpret(main_module->code, "Module<main>", {}, main_module);
 
     if (on_error()) {
         // Print stack trace
@@ -109,9 +109,25 @@ bool interpret_program(Module *main_module) {
 }
 
 void interpret(Code *_code, const str_t &id,
-               const std::unordered_map<str_t, Object *> &vars) {
+               const std::unordered_map<str_t, Object *> &vars, Module *module) {
     // Push new frame
     auto frame = Frame::New(id, _code->filename, Program::instance->top_frame);
+
+    // Set mod variable
+    if (module) {
+        auto mod_str = new (nothrow) Str("mod");
+        if (!mod_str) {
+            THROW_MEMORY_ERROR;
+
+            return;
+        }
+
+        Program::instance->global_frame->setitem(mod_str, module);
+
+        // Set module frame
+        module->frame = frame;
+    }
+
     for (const auto &[id, val] : vars) {
         auto o_id = new (nothrow) Str(id);
         if (!o_id)
@@ -133,6 +149,8 @@ void interpret(Code *_code, const str_t &id,
     interpret_fragment(_code, frame->ip);
 
     Program::pop_frame();
+
+    if (module) module->frame = nullptr;
 }
 
 void interpret_fragment(Code *_code, size_t &ip) {

@@ -25,13 +25,21 @@ void Module::init_class_type() {
         visit(me->code);
     };
 
-    class_type->fn_getitem = [](Object *self, Object *key) -> Object* {
+    // @getattr
+    class_type->fn_getattr = [](Object *self, Object *key) -> Object * {
         Module *me = reinterpret_cast<Module *>(self);
 
-        return me->code->getitem(key);
+        if (!me->frame) {
+            throw_fmt(InternalError, "Module's frame not found");
+
+            return nullptr;
+        }
+
+        return me->frame->getitem(key);
     };
 
-    class_type->fn_str = [](Object *self) -> Object* {
+    // @str
+    class_type->fn_str = [](Object *self) -> Object * {
         Module *me = reinterpret_cast<Module *>(self);
 
         auto s = new (nothrow) Str("Module(" + me->name->data + ")");
@@ -45,10 +53,18 @@ void Module::init_class_type() {
         return s;
     };
 
-    class_type->fn_setitem = [](Object *self, Object *key, Object *value) -> Object* {
+    // @setattr
+    class_type->fn_setattr = [](Object *self, Object *key,
+                                Object *value) -> Object * {
         Module *me = reinterpret_cast<Module *>(self);
 
-        return me->code->setitem(key, value);
+        if (!me->frame) {
+            throw_fmt(InternalError, "Module's frame not found");
+
+            return nullptr;
+        }
+
+        return me->frame->setitem(key, value);
     };
 }
 

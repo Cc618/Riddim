@@ -3,14 +3,15 @@
 #include "code.hh"
 #include "object.hh"
 #include "str.hh"
+#include "frame.hh"
 
 struct Module : public Object {
     static Type *class_type;
 
-    // TODO : Str object ?
     str_t filepath;
     Str *name;
     Code *code;
+    Frame *frame;
 
     static Module *New(const str_t &name, const str_t &filepath);
 
