@@ -94,9 +94,6 @@
     CONTINUE    "continue"
     RETURN      "return"
     FN          "fn"
-    TRUE        "true"
-    FALSE       "false"
-    NULL        "null"
 ;
 
 // Declarations
@@ -514,10 +511,6 @@ vec_content_filled: exp { $$ = { $1 }; }
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
     | STR { $$ = new Const(@1.begin.line, $1); }
-    // TODO : As global constants
-    | TRUE { $$ = new Const(@1.begin.line, Const::True); }
-    | FALSE { $$ = new Const(@1.begin.line, Const::False); }
-    | NULL { $$ = new Const(@1.begin.line, Const::Null); }
     ;
 
 id: ID { $$ = new Id(@1.begin.line, $1); }

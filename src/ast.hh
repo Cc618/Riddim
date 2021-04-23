@@ -357,9 +357,6 @@ struct Const : public Exp {
     enum Type {
         Int,
         Str,
-        True,
-        False,
-        Null,
     } type;
 
     const_val_t val;

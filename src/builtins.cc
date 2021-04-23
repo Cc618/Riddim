@@ -89,12 +89,21 @@ void init_builtins() {
     INIT_BUILTIN("typeof", builtin_typeof);
 
     // Globals
+#define REGISTER_GLOBAL(NAME, ID) \
+    auto NAME##_str = new (nothrow) Str(#NAME); \
+    if (!NAME##_str) return; \
+    Program::instance->global_frame->setitem(NAME##_str, ID);
+
+    // enditer
     enditer = new (nothrow) Global();
     if (!enditer) return;
-    auto enditer_str = new (nothrow) Str("enditer");
-    if (!enditer_str) return;
-    Program::instance->global_frame->setitem(enditer_str, enditer);
+    REGISTER_GLOBAL(enditer, enditer);
 
+    REGISTER_GLOBAL(true, istrue);
+    REGISTER_GLOBAL(false, isfalse);
+    REGISTER_GLOBAL(null, null);
+
+#undef REGISTER_GLOBAL
 #undef INIT_BUILTIN
 }
 

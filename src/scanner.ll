@@ -152,10 +152,6 @@ comment     #.*
 "return"        return yy::parser::make_RETURN(loc);
 "fn"            return yy::parser::make_FN(loc);
 
-"true"          return yy::parser::make_TRUE(loc);
-"false"         return yy::parser::make_FALSE(loc);
-"null"          return yy::parser::make_NULL(loc);
-
 {id}            return yy::parser::make_ID(yytext, loc);
 
 .               {

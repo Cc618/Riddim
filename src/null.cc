@@ -40,8 +40,6 @@ void Null::init_singleton() {
 
         return;
     }
-
-    Program::instance->globals.push_back(null);
 }
 
 Null::Null() : Object(Null::class_type) {}
