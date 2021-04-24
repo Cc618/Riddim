@@ -108,7 +108,7 @@
 
 // Statements
 %nterm <ast::Stmt*> stmt
-%nterm <ast::UseStmt*> usestmt
+%nterm <ast::UseStmt*> usestmt usestmt_start
 %nterm <ast::WhileStmt*> whilestmt
 %nterm <ast::ForStmt*> forstmt
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
@@ -306,9 +306,13 @@ loopcontrolstmt: "break" stop { $$ = new LoopControlStmt(@1.begin.line, true); }
 rethrowstmt: "rethrow" stop { $$ = new RethrowStmt(@1.begin.line); }
     ;
 
-// TODO C : Dot + super + wildcard
-usestmt: "use" ID stop { $$ = new UseStmt(@1.begin.line, $2, $2); }
-    | "use" ID "as" ID stop { $$ = new UseStmt(@1.begin.line, $2, $4); }
+// TODO C : Wildcard
+usestmt: usestmt_start stop { $$ = $1; }
+    | usestmt_start "as" ID stop { $$ = $1; $$->asname = $3; }
+    ;
+
+usestmt_start: "use" ID { $$ = new UseStmt(@1.begin.line, $2, $2); }
+    | usestmt_start "." ID { $$ = $1; $$->modname += "." + $3; $$->asname = $3; }
     ;
 
 whilestmt: "while" exp block stop { $$ = new WhileStmt(@1.begin.line, $2, $3); }

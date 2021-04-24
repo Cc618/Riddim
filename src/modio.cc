@@ -1,6 +1,8 @@
 #include "modio.hh"
 #include "codegen.hh"
 #include "utils.hh"
+#include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -84,8 +86,29 @@ Module *parse_module(str_t module_path) {
 }
 
 Module *load_module(const str_t &name) {
-    // TODO A : Parse . + super + path
-    const str_t path = "./" + name + ".rid";
+    stringstream name_stream(name);
+    vector<str_t> dirs;
+    // Not really a line but a directory
+    str_t line;
+    while (getline(name_stream, line, '.')) {
+        dirs.push_back(line);
+    }
+
+    // Parse path, replace . by / and super by ..
+    str_t parsed_path;
+    for (int i = 0; i < dirs.size(); ++i) {
+        str_t item = dirs[i];
+
+        if (item == "super")
+            item = "..";
+
+        parsed_path += "/" + item;
+    }
+
+    // TODO A : mod_dir can be a directory in RIDDIMPATH...
+    auto mod_dir = ".";
+
+    const str_t path = mod_dir + parsed_path + ".rid";
 
     return parse_module(path);
 }
