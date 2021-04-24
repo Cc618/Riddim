@@ -42,15 +42,23 @@ str_t read_source_line(const str_t &filename, int line) {
 }
 
 str_t module_name(const str_t &path) {
-    fs::path filepath(path);
+    try {
+        fs::path filepath(path);
 
-    auto extension = filepath.extension();
+        auto extension = filepath.extension();
 
-    if (extension != ".rid") return "";
+        if (extension != ".rid") return "";
 
-    return filepath.stem();
+        return filepath.stem();
+    } catch (...) {
+        return "";
+    }
 }
 
 str_t abs_path(const str_t &path) {
-    return fs::canonical(path).string();
+    try {
+        return fs::canonical(path).string();
+    } catch (...) {
+        return "";
+    }
 }

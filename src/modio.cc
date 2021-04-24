@@ -85,7 +85,7 @@ Module *parse_module(str_t module_path) {
 
 Module *load_module(const str_t &name) {
     // TODO A : Parse . + super + path
-    const str_t path = "../" + name + ".rid";
+    const str_t path = "./" + name + ".rid";
 
     return parse_module(path);
 }

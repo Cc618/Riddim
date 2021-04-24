@@ -113,7 +113,7 @@ void interpret(Code *_code, const str_t &id,
                const std::unordered_map<str_t, Object *> &vars,
                Module *module) {
     // Push new frame
-    auto frame = Frame::New(id, _code->filename, Program::instance->top_frame);
+    Frame *frame = nullptr;
 
     // Set mod variable
     if (module) {
@@ -126,8 +126,10 @@ void interpret(Code *_code, const str_t &id,
 
         Program::instance->global_frame->setitem(mod_str, module);
 
-        // Set module frame
-        module->frame = frame;
+        frame = module->frame;
+        frame->previous = Program::instance->top_frame;
+    } else {
+        frame = Frame::New(id, _code->filename, Program::instance->top_frame);
     }
 
     for (const auto &[id, val] : vars) {
@@ -151,9 +153,6 @@ void interpret(Code *_code, const str_t &id,
     interpret_fragment(_code, frame->ip);
 
     Program::pop_frame();
-
-    if (module)
-        module->frame = nullptr;
 }
 
 void interpret_fragment(Code *_code, size_t &ip) {
@@ -590,8 +589,9 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
-            // TODO A : Update
             interpret(result->code, result->name->data, {}, result);
+            // Pop the return value of the module
+            POPTOP(_unused);
 
             PUSH(result);
 
@@ -823,6 +823,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case StoreVar: {
+            CHECK_STACKLEN(1);
+
             auto name_off = ARG(1);
             CHECK_CONST(name_off);
 

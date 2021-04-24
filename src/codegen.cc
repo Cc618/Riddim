@@ -365,6 +365,7 @@ void UseStmt::gen_code(Module *module, Code *_code) {
 
     PUSH_CODE(StoreVar);
     PUSH_CODE(asname_offset);
+    PUSH_CODE(Pop);
 }
 
 void WhileStmt::gen_code(Module *module, Code *_code) {

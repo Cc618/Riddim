@@ -19,5 +19,5 @@ struct Module : public Object {
     static void init_class_type();
 
 private:
-    Module(Str *name, Code *code, const str_t &filepath);
+    Module(Str *name, Code *code, Frame *frame, const str_t &filepath);
 };
