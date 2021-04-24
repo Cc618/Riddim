@@ -7,6 +7,7 @@
 #include "module.hh"
 #include "object.hh"
 #include "program.hh"
+#include "utils.hh"
 #include <iostream>
 
 using namespace std;
@@ -16,12 +17,17 @@ Module *gen_module(Driver &driver) {
     auto ast = driver.module;
     driver.module = nullptr;
 
-    // TODO : Absolute
     auto file_path = driver.file;
+    auto mod_name = module_name(file_path);
 
-    // TODO : Module name not file path
+    if (mod_name == "") {
+        cerr << "Invalid module path" << endl;
+
+        return nullptr;
+    }
+
     // Generate code
-    auto module = Module::New(file_path, file_path);
+    auto module = Module::New(mod_name, file_path);
 
     if (!module) {
         cerr << "Can't allocate module " << file_path << endl;
@@ -59,7 +65,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    string main_module_path = argv[1];
+    string main_module_path = abs_path(argv[1]);
 
     // Init VM
     init_program();

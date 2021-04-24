@@ -1,8 +1,10 @@
 #include "utils.hh"
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 str_t string_repr(const str_t &s) {
     // TODO : Escape chars
@@ -37,4 +39,18 @@ str_t read_source_line(const str_t &filename, int line) {
     }
 
     return "";
+}
+
+str_t module_name(const str_t &path) {
+    fs::path filepath(path);
+
+    auto extension = filepath.extension();
+
+    if (extension != ".rid") return "";
+
+    return filepath.stem();
+}
+
+str_t abs_path(const str_t &path) {
+    return fs::canonical(path).string();
 }

@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <string>
+#include <optional>
 
 #define C_RED "\x1b[1;31m"
 #define C_GREEN "\x1b[1;32m"
@@ -48,3 +49,10 @@ void show_source_line(const str_t &filename, int line);
 
 // Returns the content of the line in filename
 str_t read_source_line(const str_t &filename, int line);
+
+// Returns the name of the module
+// If the extension is not .rid or the path is invalid, returns an empty string
+str_t module_name(const str_t &path);
+
+// Absolute path
+str_t abs_path(const str_t &path);
