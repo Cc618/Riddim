@@ -5,6 +5,7 @@
 #include "error.hh"
 #include "int.hh"
 #include "map.hh"
+#include "modio.hh"
 #include "program.hh"
 #include "range.hh"
 
@@ -15,7 +16,7 @@ using namespace std;
 using namespace OpCode;
 
 // Prints the stack
-// TODO : Rm
+// TODO F : Rm
 void debug_stack(const vector<Object *> &obj_stack) {
     cout << "Stack (" << obj_stack.size() << ") :" << endl;
     int staki = obj_stack.size();
@@ -109,7 +110,8 @@ bool interpret_program(Module *main_module) {
 }
 
 void interpret(Code *_code, const str_t &id,
-               const std::unordered_map<str_t, Object *> &vars, Module *module) {
+               const std::unordered_map<str_t, Object *> &vars,
+               Module *module) {
     // Push new frame
     auto frame = Frame::New(id, _code->filename, Program::instance->top_frame);
 
@@ -150,7 +152,8 @@ void interpret(Code *_code, const str_t &id,
 
     Program::pop_frame();
 
-    if (module) module->frame = nullptr;
+    if (module)
+        module->frame = nullptr;
 }
 
 void interpret_fragment(Code *_code, size_t &ip) {
@@ -560,6 +563,39 @@ void interpret_fragment(Code *_code, size_t &ip) {
             PUSH(newtos);
 
             NEXT(0);
+        }
+
+        case LoadModule: {
+            // Load name
+            auto name_off = ARG(1);
+            CHECK_CONST(name_off);
+
+            auto name = GET_CONST(name_off);
+
+            if (!name) {
+                DISPATCH_ERROR;
+            }
+
+            if (name->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("LoadModule", name->type,
+                                      Str::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            auto result = load_module(reinterpret_cast<Str *>(name)->data);
+
+            if (!result) {
+                // TODO C : Verify errors (don't output to stdout)
+                DISPATCH_ERROR;
+            }
+
+            // TODO A : Update
+            interpret(result->code, result->name->data, {}, result);
+
+            PUSH(result);
+
+            NEXT(1);
         }
 
         case LoadVar: {

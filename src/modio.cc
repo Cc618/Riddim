@@ -4,7 +4,6 @@
 
 using namespace std;
 
-// Generates a module object from an AST
 Module *gen_module(Driver &driver) {
     // Take ownership of the ast
     auto ast = driver.module;
@@ -47,7 +46,6 @@ Module *gen_module(Driver &driver) {
     return module;
 }
 
-// Parses a source file, returns its module object
 Module *parse_module(str_t module_path) {
     Driver driver;
     module_path = abs_path(module_path);
@@ -83,4 +81,11 @@ Module *parse_module(str_t module_path) {
     }
 
     return nullptr;
+}
+
+Module *load_module(const str_t &name) {
+    // TODO A : Parse . + super + path
+    const str_t path = "../" + name + ".rid";
+
+    return parse_module(path);
 }

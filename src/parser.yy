@@ -84,6 +84,7 @@
     IF          "if"
     ELIF        "elif"
     ELSE        "else"
+    USE         "use"
     WHILE       "while"
     FOR         "for"
     TRY         "try"
@@ -107,6 +108,7 @@
 
 // Statements
 %nterm <ast::Stmt*> stmt
+%nterm <ast::UseStmt*> usestmt
 %nterm <ast::WhileStmt*> whilestmt
 %nterm <ast::ForStmt*> forstmt
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
@@ -228,6 +230,7 @@ stmt: expstmt { $$ = $1; }
     | ifstmt { $$ = $1; }
     | trystmt { $$ = $1; }
     | whilestmt { $$ = $1; }
+    | usestmt { $$ = $1; }
     | forstmt { $$ = $1; }
     | returnstmt { $$ = $1; }
     | loopcontrolstmt { $$ = $1; }
@@ -301,6 +304,11 @@ loopcontrolstmt: "break" stop { $$ = new LoopControlStmt(@1.begin.line, true); }
     ;
 
 rethrowstmt: "rethrow" stop { $$ = new RethrowStmt(@1.begin.line); }
+    ;
+
+// TODO C : Dot + super + wildcard
+usestmt: "use" ID stop { $$ = new UseStmt(@1.begin.line, $2, $2); }
+    | "use" ID "as" ID stop { $$ = new UseStmt(@1.begin.line, $2, $4); }
     ;
 
 whilestmt: "while" exp block stop { $$ = new WhileStmt(@1.begin.line, $2, $3); }

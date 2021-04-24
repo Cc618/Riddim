@@ -141,6 +141,7 @@ comment     #.*
 "if"            return yy::parser::make_IF(loc);
 "elif"          return yy::parser::make_ELIF(loc);
 "else"          return yy::parser::make_ELSE(loc);
+"use"           return yy::parser::make_USE(loc);
 "while"         return yy::parser::make_WHILE(loc);
 "for"           return yy::parser::make_FOR(loc);
 "try"           return yy::parser::make_TRY(loc);

@@ -115,6 +115,21 @@ struct Block : public ASTNode {
 };
 
 // --- Stmts ---
+// Use (import) statement
+struct UseStmt : public Stmt {
+    str_t modname;
+    // If empty, all symbols will be merged in the module
+    str_t asname;
+
+    UseStmt(line_t fileline, const str_t &modname, const str_t &asname);
+
+    virtual ~UseStmt();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 struct LoopControlStmt;
 
 // Abstract statement describing loops

@@ -97,6 +97,9 @@ enum OpCode : opcode_t {
     // - push TOS1[TOS]
     // * Copies PODs
     LoadIndex,
+    // Loads a module to the TOS
+    // - modname : Module's name
+    LoadModule,
     // Loads a variable (object associated to a symbol) on the TOS
     // - id_offset : Offset of the name of the symbol (constant)
     // - push 1
