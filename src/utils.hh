@@ -56,3 +56,6 @@ str_t module_name(const str_t &path);
 
 // Absolute path
 str_t abs_path(const str_t &path);
+
+// Exists and is readible
+bool is_file(const str_t &path);

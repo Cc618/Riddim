@@ -15,7 +15,7 @@ Module *gen_module(Driver &driver) {
     auto mod_name = module_name(file_path);
 
     if (mod_name == "") {
-        cerr << "Invalid module path" << endl;
+        throw_fmt(ImportError, "Invalid module path");
 
         return nullptr;
     }
@@ -24,7 +24,8 @@ Module *gen_module(Driver &driver) {
     auto module = Module::New(mod_name, file_path);
 
     if (!module) {
-        cerr << "Can't allocate module " << file_path << endl;
+        throw_fmt(ImportError, "Can't allocate module %s%s%s", C_BLUE,
+                  file_path.c_str(), C_NORMAL);
 
         return nullptr;
     }
@@ -49,10 +50,19 @@ Module *gen_module(Driver &driver) {
 }
 
 Module *parse_module(str_t module_path) {
-    Driver driver;
-    module_path = abs_path(module_path);
+    auto new_module_path = abs_path(module_path);
+
+    if (!is_file(new_module_path)) {
+        throw_fmt(ImportError, "File %s%s%s not found", C_BLUE,
+                  module_path.c_str(), C_NORMAL);
+
+        return nullptr;
+    }
+
+    module_path = new_module_path;
 
     // Parse main module
+    Driver driver;
     int res = driver.parse(module_path);
 
     if (res) {

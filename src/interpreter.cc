@@ -585,7 +585,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
             auto result = load_module(reinterpret_cast<Str *>(name)->data);
 
             if (!result) {
-                // TODO C : Verify errors (don't output to stdout)
                 DISPATCH_ERROR;
             }
 
@@ -662,6 +661,24 @@ void interpret_fragment(Code *_code, size_t &ip) {
             PUSH(result);
 
             NEXT(1);
+        }
+
+        case MergeModule: {
+            CHECK_STACKLEN(1);
+
+            POPTOP(tos);
+
+            if (tos->type != Module::class_type) {
+                THROW_TYPE_ERROR_PREF("MergeModule", tos->type, Module::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            auto mod = reinterpret_cast<Module*>(tos);
+
+            frame->vars->data.merge(mod->frame->vars->data);
+
+            NEXT(0);
         }
 
         case Nop: {

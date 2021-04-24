@@ -306,8 +306,8 @@ loopcontrolstmt: "break" stop { $$ = new LoopControlStmt(@1.begin.line, true); }
 rethrowstmt: "rethrow" stop { $$ = new RethrowStmt(@1.begin.line); }
     ;
 
-// TODO C : Wildcard
 usestmt: usestmt_start stop { $$ = $1; }
+    | usestmt_start "." "*" stop { $$ = $1; $$->asname = ""; }
     | usestmt_start "as" ID stop { $$ = $1; $$->asname = $3; }
     ;
 

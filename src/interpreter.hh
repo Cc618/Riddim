@@ -110,6 +110,9 @@ enum OpCode : opcode_t {
     // - pop 3 : start, end, step
     // - push the range object
     MakeRange,
+    // Merges variables of the TOS (a Module) to the current frame
+    // - pop 1
+    MergeModule,
     // No operation, used usually as a placeholder during code generation
     Nop,
     // Packs 'count' variables of the stack in a Vec

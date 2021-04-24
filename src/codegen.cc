@@ -342,6 +342,7 @@ void RethrowStmt::gen_code(Module *module, Code *_code) {
 void UseStmt::gen_code(Module *module, Code *_code) {
     Stmt::gen_code(module, _code);
 
+    // Load module
     auto modname_const = new (nothrow) Str(modname);
 
     if (!modname_const) {
@@ -350,22 +351,26 @@ void UseStmt::gen_code(Module *module, Code *_code) {
 
     auto modname_offset = ADD_CONST(modname_const);
 
-    auto asname_const = new (nothrow) Str(asname);
-
-    if (!asname_const) {
-        throw CodeGenException("Cannot allocate memory", _code->filename, fileline);
-    }
-
-    auto asname_offset = ADD_CONST(asname_const);
-
     PUSH_CODE(LoadModule);
     PUSH_CODE(modname_offset);
 
-    // TODO C : Wildcard
+    if (asname.empty()) {
+        // Merge module
+        PUSH_CODE(MergeModule);
+    } else {
+        // Alias
+        auto asname_const = new (nothrow) Str(asname);
 
-    PUSH_CODE(StoreVar);
-    PUSH_CODE(asname_offset);
-    PUSH_CODE(Pop);
+        if (!asname_const) {
+            throw CodeGenException("Cannot allocate memory", _code->filename, fileline);
+        }
+
+        auto asname_offset = ADD_CONST(asname_const);
+
+        PUSH_CODE(StoreVar);
+        PUSH_CODE(asname_offset);
+        PUSH_CODE(Pop);
+    }
 }
 
 void WhileStmt::gen_code(Module *module, Code *_code) {
