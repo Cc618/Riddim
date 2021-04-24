@@ -1,4 +1,3 @@
-#include "codegen.hh"
 #include "driver.hh"
 #include "error.hh"
 #include "frame.hh"
@@ -8,55 +7,13 @@
 #include "object.hh"
 #include "program.hh"
 #include "utils.hh"
+#include "modio.hh"
 #include <iostream>
 
 using namespace std;
 
-Module *gen_module(Driver &driver) {
-    // Take ownership of the ast
-    auto ast = driver.module;
-    driver.module = nullptr;
-
-    auto file_path = driver.file;
-    auto mod_name = module_name(file_path);
-
-    if (mod_name == "") {
-        cerr << "Invalid module path" << endl;
-
-        return nullptr;
-    }
-
-    // Generate code
-    auto module = Module::New(mod_name, file_path);
-
-    if (!module) {
-        cerr << "Can't allocate module " << file_path << endl;
-
-        return nullptr;
-    }
-
-    // Empty
-    if (!ast)
-        return module;
-
-    bool success = gen_module_code(ast, module);
-
-    // Delete all ast nodes
-    delete ast;
-
-    // Errors
-    if (!success) {
-        delete module;
-
-        return nullptr;
-    }
-
-    return module;
-}
-
 int main(int argc, char *argv[]) {
     int res = 0;
-    Driver driver;
 
     // Invalid arguments
     if (argc != 2) {
@@ -81,42 +38,14 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    // Parse main module
-    res = driver.parse(main_module_path);
+    // Parse main module to a module object
+    auto module = parse_module(main_module_path);
 
-    if (res) {
-        cerr << "Error : Failed to parse file " << main_module_path << endl;
-
-        if (driver.module) {
-            driver.module = nullptr;
-        }
-
-        goto on_parse_error;
+    // Interpret code if no errors
+    if (!module || !interpret_program(module)) {
+        res = -1;
     }
 
-    try {
-        // Generate code from the AST
-        auto module = gen_module(driver);
-
-        if (!module) {
-            res = -1;
-
-            goto on_error;
-        }
-
-        // Interpret code
-        if (!interpret_program(module)) {
-            res = -1;
-
-            goto on_error;
-        }
-
-    on_error:;
-    } catch (...) {
-        throw_str(InternalError, "Internal error");
-    }
-
-on_parse_error:;
     end_program();
 
     return res;
