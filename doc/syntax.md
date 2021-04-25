@@ -59,7 +59,7 @@ Here is the list of all escapes :
 ## Primary expressions
 ### Indexing
 Indexing is done with brackets like in many languages.
-```
+```python
 a[key1] = b[key2]
 ```
 
@@ -68,7 +68,7 @@ The key can be any object (Int for Vec, Object for HashMap...).
 ### Calls
 Calls have a Dart-like syntax, keyword valued arguments (kwargs)
 have the colon symbol to separate keywords and values.
-```
+```python
 # Only positional arguments
 fun(a, b, c)
 
@@ -227,7 +227,35 @@ return
 b = 2
 ```
 
-<!-- TODO : Errors -->
+## Error handling
+<!-- TODO G : Throw -->
+<!-- ### Throw
+To raise an error, the throw keyword can be used.
+Theorically, any object can be thrown, even a non error object. -->
+
+### Try catch
+Try catch blocks are supported, they allow you to catch a specific
+(or any) exception.
+Here is the syntax :
+```cpp
+try {
+    my_dangerous_code()
+} catch ErrorType1 as error {
+    print('ErrorType1 :', error)
+} catch ErrorType2 {
+    print('ErrorType2 caught')
+} catch error {
+    print('Unknown error type :', error)
+}
+```
+
+In this example, if my_dangerous_code leaves an error of type ErrorType1,
+the first catch block is executed and error is set to the current error.
+Otherwise the second block is executed if ErrorType2 matches the type of
+the error.
+Finally, the last block is executed if there is another error.
+Note that only one catch block can be used.
+You can throw in a catch block, it is useful to rethrow the current error.
 
 ## Imports (use keyword)
 The use keyword is used to import modules.
