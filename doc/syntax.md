@@ -182,10 +182,57 @@ For instance, when iterating through 0 -> 2, the @next method yields :
 For loops call the @iter method of the object to iterate through (like a range).
 And then, @next is called every iteration until it returns enditer.
 
+## Declarations
+### Functions
+#### Statement
+Function declarations are like assignment statements.
+They store a functor object interpreting the body of the function in a variable.
+```python
+# foo is now a function
+fn foo(s) {
+    print('foo() :', s)
+}
+
+# The attribute foo of the obj variable is set
+fn obj.foo(s) {
+    print('obj.foo() :', s)
+}
+```
+
+#### Arguments
+Arguments can have a default value :
+```python
+# a and b can be omitted in a call
+# Note that only b can be set using kwargs (see calls section)
+fn fun(a: 42, b: 618) {
+    print(a, b)
+}
+```
+
+#### Return value
+Like Python, the return keyword returns a value from a function :
+```rust
+fn fun(a, b) {
+    return a + b
+}
+```
+
+Note that the return keyword can be use to exit from a module :
+```python
+# main.rid
+a = 1
+return
+
+# Unreachable
+b = 2
+```
+
+<!-- TODO : Errors -->
+
 ## Imports (use keyword)
 The use keyword is used to import modules.
 A module is a Riddim file (with the .rid extension).
-```
+```python
 # Loads ./dir/lib.rid into the lib variable
 use dir.lib
 
