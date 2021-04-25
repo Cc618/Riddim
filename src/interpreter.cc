@@ -582,7 +582,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
-            auto result = load_module(reinterpret_cast<Str *>(name)->data);
+            auto result = load_module(reinterpret_cast<Str *>(name)->data, _code->filename);
 
             if (!result) {
                 DISPATCH_ERROR;

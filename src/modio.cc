@@ -95,7 +95,7 @@ Module *parse_module(str_t module_path) {
     return nullptr;
 }
 
-Module *load_module(const str_t &name) {
+Module *load_module(const str_t &name, const str_t &current_path) {
     stringstream name_stream(name);
     vector<str_t> dirs;
     // Not really a line but a directory
@@ -115,8 +115,8 @@ Module *load_module(const str_t &name) {
         parsed_path += "/" + item;
     }
 
-    // TODO A : mod_dir can be a directory in RIDDIMPATH...
-    auto mod_dir = ".";
+    // The search path
+    auto mod_dir = dir_path(current_path);
 
     const str_t path = mod_dir + parsed_path + ".rid";
 

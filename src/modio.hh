@@ -14,6 +14,7 @@ Module *gen_module(Driver &driver);
 // Parses a source file, returns its module object
 Module *parse_module(str_t module_path);
 
-// TODO D
 // Loads a module from its special name (path.to.mod -> /path/to/mod.rid)
-Module *load_module(const str_t &name);
+// - current_path : The path of the module that loads the new module (where
+// there is the use keyword), used for search path
+Module *load_module(const str_t &name, const str_t &current_path);

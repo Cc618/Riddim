@@ -63,6 +63,14 @@ str_t abs_path(const str_t &path) {
     }
 }
 
+str_t dir_path(const str_t &path) {
+    try {
+        return fs::canonical(path).parent_path().string();
+    } catch (...) {
+        return "";
+    }
+}
+
 bool is_file(const str_t &path) {
     return fs::is_regular_file(path);
 }
