@@ -56,6 +56,35 @@ Here is the list of all escapes :
 | \\n | Line feed |
 | \\t | Tab |
 
+## Primary expressions
+### Indexing
+Indexing is done with brackets like in many languages.
+```
+a[key1] = b[key2]
+```
+
+The key can be any object (Int for Vec, Object for HashMap...).
+
+### Calls
+Calls have a Dart-like syntax, keyword valued arguments (kwargs)
+have the colon symbol to separate keywords and values.
+```
+# Only positional arguments
+fun(a, b, c)
+
+# Positional (first) and then keyword (last) arguments
+# Kwargs don't have a specific position
+# fun : fn(a, b, c)
+fun(a, c: 1, b: 7)
+```
+
+Moreover in Riddim, everything is an object.
+That is, we don't really have functions, we have functor objects.
+```
+impostor = print
+impostor('I am not print')
+```
+
 ## Control Flow
 ### If / Else / Elif
 Here is the if syntax :
@@ -152,13 +181,6 @@ For instance, when iterating through 0 -> 2, the @next method yields :
 
 For loops call the @iter method of the object to iterate through (like a range).
 And then, @next is called every iteration until it returns enditer.
-
-<!-- TODO : Not an h2 -->
-## Indexing
-Indexing is done with brackets like in many languages.
-```
-a[key1] = b[key2]
-```
 
 ## Imports (use keyword)
 The use keyword is used to import modules.
