@@ -8,6 +8,7 @@
 #include "interpreter.hh"
 #include "module.hh"
 #include "null.hh"
+#include "program.hh"
 #include "str.hh"
 #include <iostream>
 #include <unordered_set>
@@ -48,13 +49,13 @@ bool gen_module_code(AstModule *ast, ModuleObject *module) {
 
         return true;
     } catch (const CodeGenException &e) {
-        cerr << e.what() << endl;
+        Program::instance->errout << "Code generation error : " << e.what()
+                                  << endl;
 
         return false;
     } catch (...) {
-        auto e = CodeGenException("Fatal internal error during code generation",
-                                  module->filepath, 1);
-        cerr << e.what() << endl;
+        Program::instance->errout
+            << "Fatal internal error during code generation" << endl;
 
         return false;
     }
@@ -145,7 +146,8 @@ void FnDecl::gen_code(Module *module, Code *_code) {
     // auto const_name = new (nothrow) Str(name);
 
     // if (!const_name) {
-    //     throw CodeGenException("Not enough memory", module->filepath, fileline);
+    //     throw CodeGenException("Not enough memory", module->filepath,
+    //     fileline);
     // }
 
     // auto off_name = ADD_CONST(const_name);
@@ -320,7 +322,8 @@ void LoopControlStmt::gen_code(Module *module, Code *_code) {
     auto &code = _code->code;
 
     if (_code->loop_stack.empty()) {
-        throw CodeGenException("Break or continue outside of loop", _code->filename, fileline);
+        throw CodeGenException("Break or continue outside of loop",
+                               _code->filename, fileline);
     }
 
     // Register this control
@@ -346,7 +349,8 @@ void UseStmt::gen_code(Module *module, Code *_code) {
     auto modname_const = new (nothrow) Str(modname);
 
     if (!modname_const) {
-        throw CodeGenException("Cannot allocate memory", _code->filename, fileline);
+        throw CodeGenException("Cannot allocate memory", _code->filename,
+                               fileline);
     }
 
     auto modname_offset = ADD_CONST(modname_const);
@@ -362,7 +366,8 @@ void UseStmt::gen_code(Module *module, Code *_code) {
         auto asname_const = new (nothrow) Str(asname);
 
         if (!asname_const) {
-            throw CodeGenException("Cannot allocate memory", _code->filename, fileline);
+            throw CodeGenException("Cannot allocate memory", _code->filename,
+                                   fileline);
         }
 
         auto asname_offset = ADD_CONST(asname_const);
@@ -636,7 +641,8 @@ void Cascade::gen_code(Module *module, Code *_code) {
     auto c_id = *cascade_id;
 
     // TODO : Delete shallow
-    *cascade_id = new Attr(c_id->fileline, left, reinterpret_cast<Id*&>(c_id)->id);
+    *cascade_id =
+        new Attr(c_id->fileline, left, reinterpret_cast<Id *&>(c_id)->id);
 
     // *cascade_id = new Attr(1, new Id(1, "o"), "a");
 
@@ -670,7 +676,8 @@ void RangeExp::gen_code(Module *module, Code *_code) {
         auto one = new (nothrow) Int(1);
 
         if (!one) {
-            throw CodeGenException("Cannot allocate memory", _code->filename, fileline);
+            throw CodeGenException("Cannot allocate memory", _code->filename,
+                                   fileline);
         }
 
         PUSH_CODE(LoadConst);

@@ -1,5 +1,6 @@
 #include "modio.hh"
 #include "codegen.hh"
+#include "program.hh"
 #include "utils.hh"
 #include <algorithm>
 #include <sstream>
@@ -66,8 +67,14 @@ Module *parse_module(str_t module_path) {
     int res = driver.parse(module_path);
 
     if (res) {
-        throw_fmt(ImportError, "Failed to parse file %s%s%s", C_BLUE,
-                  module_path.c_str(), C_NORMAL);
+        auto msg = Program::instance->errout.str();
+        Program::instance->errout.clear();
+
+        if (msg.empty())
+            throw_fmt(ImportError, "%s%s%s: Syntax error", C_BLUE,
+                        module_path.c_str(), C_NORMAL);
+        else
+            throw_fmt(ImportError, "\n%s", msg.c_str());
 
         if (driver.module) {
             driver.module = nullptr;
@@ -81,8 +88,14 @@ Module *parse_module(str_t module_path) {
         auto module = gen_module(driver);
 
         if (!module) {
-            throw_fmt(ImportError, "%s%s%s: Syntax error", C_BLUE,
-                      module_path.c_str(), C_NORMAL);
+            auto msg = Program::instance->errout.str();
+            Program::instance->errout.clear();
+
+            if (msg.empty())
+                throw_fmt(ImportError, "%s%s%s: Syntax error", C_BLUE,
+                            module_path.c_str(), C_NORMAL);
+            else
+                throw_fmt(ImportError, "\n%s", msg.c_str());
 
             return nullptr;
         }

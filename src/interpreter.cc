@@ -589,9 +589,15 @@ void interpret_fragment(Code *_code, size_t &ip) {
             }
 
             interpret(result->code, result->name->data, {}, result);
+
+            if (on_error()) {
+                DISPATCH_ERROR;
+            }
+
             // Pop the return value of the module
             POPTOP(_unused);
 
+            // Push the module
             PUSH(result);
 
             NEXT(1);

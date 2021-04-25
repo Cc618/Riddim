@@ -44,6 +44,16 @@ int main(int argc, char *argv[]) {
     // TODO F : Try catch
     // Interpret code if no errors
     if (!module || !interpret_program(module)) {
+        if (on_error()) {
+            // Display as much information as possible
+            if (Program::instance->trace)
+                Program::instance->trace->dump();
+            else if (!Program::instance->errout.str().empty())
+                cerr << Program::instance->errout.str();
+            else
+                dump_error();
+        }
+
         res = -1;
     }
 

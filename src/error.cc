@@ -235,7 +235,6 @@ void internal_error(const str_t &msg) {
 }
 
 void dump_error_object(Object *error, ostream &out) {
-
     if (!error)
         out << "nullptr" << endl;
     else {

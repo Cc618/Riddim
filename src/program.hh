@@ -10,12 +10,17 @@
 #include "object.hh"
 #include "trace.hh"
 #include <vector>
+#include <sstream>
 
 struct Program : public Object {
     static Program *instance;
     static Type *class_type;
 
     str_t main_module_path;
+
+    // The current error description
+    // Only used outside of the runtime (codegen + parser)
+    std::stringstream errout;
 
     // Unreachable variables from Riddim
     std::vector<Object *> globals;

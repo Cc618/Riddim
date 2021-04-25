@@ -1,7 +1,8 @@
 #include "utils.hh"
+#include "program.hh"
+#include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <filesystem>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -11,10 +12,10 @@ str_t string_repr(const str_t &s) {
     return "'" + s + "'";
 }
 
-// TODO : Colors
 void parse_error(const str_t &filename, int begin_line, int begin_col,
                  int end_line, int end_col, const str_t &msg) {
-    cerr << filename << ":" << begin_line << ":" << begin_col
+    Program::instance->errout << C_BLUE << filename << C_NORMAL << ":" << C_RED << begin_line
+         << C_NORMAL << ":" << C_RED << begin_col << C_NORMAL
          << ": Error : " << msg << endl;
 
     show_source_line(filename, begin_line);
@@ -23,7 +24,7 @@ void parse_error(const str_t &filename, int begin_line, int begin_col,
 void show_source_line(const str_t &filename, int line) {
     auto text = read_source_line(filename, line);
     if (!text.empty())
-        cerr << C_RED << line << ". " << C_NORMAL << text << endl;
+        Program::instance->errout << C_RED << line << ". " << C_NORMAL << text << endl;
 }
 
 str_t read_source_line(const str_t &filename, int line) {
@@ -47,7 +48,8 @@ str_t module_name(const str_t &path) {
 
         auto extension = filepath.extension();
 
-        if (extension != ".rid") return "";
+        if (extension != ".rid")
+            return "";
 
         return filepath.stem();
     } catch (...) {
@@ -71,6 +73,4 @@ str_t dir_path(const str_t &path) {
     }
 }
 
-bool is_file(const str_t &path) {
-    return fs::is_regular_file(path);
-}
+bool is_file(const str_t &path) { return fs::is_regular_file(path); }
