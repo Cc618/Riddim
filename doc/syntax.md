@@ -160,7 +160,21 @@ Indexing is done with brackets like in many languages.
 a[key1] = b[key2]
 ```
 
-<!-- TODO : Print -->
+## Imports (use keyword)
+The use keyword is used to import modules.
+A module is a Riddim file (with the .rid extension).
+```
+# Loads ./dir/lib.rid into the lib variable
+use dir.lib
+
+# Loads ./lib2.rid into the anotherlib variable
+use lib2 as anotherlib
+
+# Merges all variables of lib3 within this module
+use lib3.*
+```
+
+<!-- TODO : Print / builtins -->
 
 ## Operator precedence
 The precedence is similar to Python.
