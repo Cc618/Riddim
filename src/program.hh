@@ -47,6 +47,10 @@ struct Program : public Object {
     // Current call count
     size_t recursion_depth = 0;
 
+    // Absolute path / module
+    // Used to avoid reloading 2 times a module
+    std::unordered_map<str_t, Module *> modules;
+
     // Factory, since it is a singleton, the result is Program::instance
     static void New(const std::vector<Type *> &types);
 
@@ -86,6 +90,5 @@ private:
     void register_type(Type *type);
 
 private:
-    std::vector<Module *> modules;
     std::vector<Type *> types;
 };

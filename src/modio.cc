@@ -62,6 +62,12 @@ Module *parse_module(str_t module_path) {
 
     module_path = new_module_path;
 
+    // Test whether this module is already loaded
+    auto it = Program::instance->modules.find(module_path);
+    if (it != Program::instance->modules.end()) {
+        return it->second;
+    }
+
     // Parse main module
     Driver driver;
     int res = driver.parse(module_path);
@@ -99,6 +105,8 @@ Module *parse_module(str_t module_path) {
 
             return nullptr;
         }
+
+        Program::add_module(module);
 
         return module;
     } catch (...) {

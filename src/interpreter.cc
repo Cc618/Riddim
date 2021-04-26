@@ -16,7 +16,7 @@ using namespace std;
 using namespace OpCode;
 
 // Prints the stack
-// TODO F : Rm
+// TODO : Rm
 void debug_stack(const vector<Object *> &obj_stack) {
     cout << "Stack (" << obj_stack.size() << ") :" << endl;
     int staki = obj_stack.size();
@@ -87,7 +87,6 @@ inline Object *pop_top() {
 
 bool interpret_program(Module *main_module) {
     Program::instance->main_module = main_module;
-    Program::instance->add_module(main_module);
 
     interpret(main_module->code, "Module<main>", {}, main_module);
 
@@ -153,6 +152,10 @@ void interpret(Code *_code, const str_t &id,
     interpret_fragment(_code, frame->ip);
 
     Program::pop_frame();
+
+    if (module) {
+        module->loaded = true;
+    }
 }
 
 void interpret_fragment(Code *_code, size_t &ip) {
@@ -588,14 +591,16 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
-            interpret(result->code, result->name->data, {}, result);
+            if (!result->loaded) {
+                interpret(result->code, result->name->data, {}, result);
 
-            if (on_error()) {
-                DISPATCH_ERROR;
+                if (on_error()) {
+                    DISPATCH_ERROR;
+                }
+
+                // Pop the return value of the module
+                POPTOP(_unused);
             }
-
-            // Pop the return value of the module
-            POPTOP(_unused);
 
             // Push the module
             PUSH(result);

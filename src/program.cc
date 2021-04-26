@@ -36,7 +36,7 @@ void Program::init_class_type() {
         for (auto child : program->globals)
             visit(child);
 
-        for (auto child : program->modules)
+        for (const auto &[p, child] : program->modules)
             visit(child);
 
         for (auto child : program->obj_stack)
@@ -99,7 +99,7 @@ void Program::add_type(Type *type) {
 void Program::add_global(Object *o) { Program::instance->globals.push_back(o); }
 
 void Program::add_module(Module *mod) {
-    Program::instance->modules.push_back(mod);
+    Program::instance->modules[mod->filepath] = mod;
 }
 
 void Program::push_frame(Frame *f) {

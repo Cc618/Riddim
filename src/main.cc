@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
     // Parse main module to a module object
     auto module = parse_module(main_module_path);
 
-    // TODO F : Try catch
     // Interpret code if no errors
     bool success = false;
     try {
