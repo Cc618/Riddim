@@ -126,10 +126,11 @@
 
 // Expressions
 %nterm <ast::Exp*> exp set /* TODO B : cascade */ boolean comparison binary unary primary
-%nterm <ast::Target*> target target_id target_indexing target_attr
+%nterm <ast::Target*> target target_id target_indexing target_attr target_multi
 %nterm <ast::CallExp*> call call_args call_args_filled
 %nterm <ast::Indexing*> indexing
 %nterm <ast::Attr*> attr
+%nterm <std::vector<ast::Target*>> target_multi_content
 
 // Atoms
 %nterm <ast::Exp*> atom
@@ -143,9 +144,9 @@
 // Tokens
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 %nterm option_stop option_comma option_comma_stop
-%token <str_t> ID "id"
-%token <str_t> STR "string"
-%token <int_t> INT "int"
+%token <str_t> ID
+%token <str_t> STR
+%token <int_t> INT
 
 // The lower it is declared, the sooner the token will be used
 %right "=" "+=" "-=" "*=" "/=" "%=";
@@ -381,6 +382,7 @@ set: boolean { $$ = $1; }
 target: target_id { $$ = $1; }
     | target_indexing { $$ = $1; }
     | target_attr { $$ = $1; }
+    | target_multi { $$ = $1; }
     ;
 
 target_indexing: indexing { $$ = new IndexingTarget($1); }
@@ -390,6 +392,26 @@ target_attr: attr { $$ = new AttrTarget($1); }
     ;
 
 target_id: id { $$ = new IdTarget(@1.begin.line, $1); }
+    ;
+
+// // TODO A
+// target_multi: "[" target_id "," target_id "]" {
+//         $$ = new MultiTarget(@1.begin.line, { $2, $4 });
+//     }
+//     ;
+
+// "(" • ID "," target_id ")" "=" set
+// ( a, b ) = c = 42
+
+// TODO A : Without brackets also
+target_multi: "[" target_multi_content "]" {
+        $$ = new MultiTarget(@1.begin.line, $2);
+    }
+    ;
+
+// TODO A : Not only ids
+target_multi_content: target_id { $$ = { $1 }; }
+    | target_multi_content "," target_id { $$ = $1; $$.push_back($3); }
     ;
 
 // cascade: boolean { $$ = $1; }
@@ -562,7 +584,7 @@ const: INT { $$ = new Const(@1.begin.line, $1); }
     ;
 
 id: ID { $$ = new Id(@1.begin.line, $1); }
-    | lparen macro_keyword rparen { $$ = new Id(@1.begin.line, $2); }
+    | "(" macro_keyword ")" { $$ = new Id(@1.begin.line, $2); }
     ;
 
 // --- Tokens ---

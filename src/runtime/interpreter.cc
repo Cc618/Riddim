@@ -585,7 +585,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
-            auto result = load_module(reinterpret_cast<Str *>(name)->data, _code->filename);
+            auto result = load_module(reinterpret_cast<Str *>(name)->data,
+                                      _code->filename);
 
             if (!result) {
                 DISPATCH_ERROR;
@@ -680,12 +681,13 @@ void interpret_fragment(Code *_code, size_t &ip) {
             POPTOP(tos);
 
             if (tos->type != Module::class_type) {
-                THROW_TYPE_ERROR_PREF("MergeModule", tos->type, Module::class_type);
+                THROW_TYPE_ERROR_PREF("MergeModule", tos->type,
+                                      Module::class_type);
 
                 DISPATCH_ERROR;
             }
 
-            auto mod = reinterpret_cast<Module*>(tos);
+            auto mod = reinterpret_cast<Module *>(tos);
 
             frame->vars->data.merge(mod->frame->vars->data);
 
@@ -930,6 +932,53 @@ void interpret_fragment(Code *_code, size_t &ip) {
             PUSH(tos->type);
 
             NEXT(0);
+        }
+
+        case Unpack: {
+            CHECK_STACKLEN(1);
+
+            auto tos = TOP;
+
+            // TODO A : Check int type in len
+            auto toslen = tos->len();
+
+            if (!toslen) {
+                DISPATCH_ERROR;
+            }
+
+            size_t required_len = ARG(1);
+            size_t current_len = reinterpret_cast<Int *>(toslen)->data;
+
+            if (required_len != current_len) {
+                throw_fmt(
+                    IndexError,
+                    "Cannot unpack %s%zu%s values, expected %s%zu%s values",
+                    C_RED, current_len, C_NORMAL, C_BLUE, required_len,
+                    C_NORMAL);
+
+                DISPATCH_ERROR;
+            }
+
+            for (size_t i = 0; i < current_len; ++i) {
+                auto index = new (nothrow) Int(i);
+
+                if (!index) {
+                    THROW_MEMORY_ERROR;
+
+                    DISPATCH_ERROR;
+                }
+
+                // Object to unpack
+                auto val = tos->getitem(index);
+
+                if (!val) {
+                    DISPATCH_ERROR;
+                }
+
+                PUSH(val);
+            }
+
+            NEXT(1);
         }
         }
 

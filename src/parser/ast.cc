@@ -380,6 +380,17 @@ void RelativeSet::debug(int indent) {
 }
 
 // --- Targets ---
+MultiTarget::~MultiTarget() {
+    for (auto t : targets) delete t;
+}
+
+void MultiTarget::debug(int indent) {
+    cout << str_indent(indent) << "MultiTarget(" << endl;
+    for (auto t : targets)
+        t->debug(indent + 1);
+    cout << str_indent(indent) << ")" << endl;
+}
+
 void IdTarget::debug(int indent) {
     cout << str_indent(indent) << "IdTarget(" << endl;
     id->debug(indent + 1);

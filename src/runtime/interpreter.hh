@@ -166,6 +166,10 @@ enum OpCode : opcode_t {
     // - pop 1
     // - push TOS->type
     UnaTypeOf,
+    // Unpacks 'count' variables to the TOS
+    // - count : Required collection size
+    // - push 'count' variables
+    Unpack,
 };
 } // namespace OpCode
 

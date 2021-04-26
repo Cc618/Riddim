@@ -502,6 +502,23 @@ struct Target : public ASTNode {
     virtual ASTNode *get_exp() = 0;
 };
 
+// [target1, target2, ...] syntax
+struct MultiTarget : public Target {
+    std::vector<Target*> targets;
+
+    MultiTarget(line_t fileline, const std::vector<Target*> &targets)
+        : Target(fileline), targets(targets) {}
+
+    virtual ~MultiTarget();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+
+    // TODO A
+    virtual ASTNode *get_exp() override { return targets[0]; }
+};
+
 // Target using an identifier
 // a = ...
 struct IdTarget : public Target {

@@ -810,6 +810,19 @@ void RelativeSet::gen_code(Module *module, Code *_code) {
 }
 
 // --- Targets ---
+void MultiTarget::gen_code(Module *module, Code *_code) {
+    // Unpack with length
+    PUSH_CODE(Unpack);
+    PUSH_CODE(targets.size());
+
+    // Gen target + pop for each target
+    for (int i = 0; i < targets.size(); ++i) {
+        targets[targets.size() - i - 1]->gen_code(module, _code);
+
+        PUSH_CODE(Pop);
+    }
+}
+
 void IdTarget::gen_code(Module *module, Code *_code) {
     PUSH_CODE(StoreVar);
 
