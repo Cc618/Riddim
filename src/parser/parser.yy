@@ -122,7 +122,7 @@
 %nterm <ast::RethrowStmt*> rethrowstmt
 %nterm <ast::ExpStmt*> expstmt
 %nterm <ast::Stmt*> macrostmt
-%nterm <str_t> macro_keyword_single macro_keyword_varargs
+%nterm <str_t> macro_keyword macro_keyword_single macro_keyword_varargs
 
 // Expressions
 %nterm <ast::Exp*> exp set /* TODO B : cascade */ boolean comparison binary unary primary
@@ -351,6 +351,11 @@ macrostmt: macro_keyword_varargs vec_content_filled stop {
     }
     ;
 
+macro_keyword: macro_keyword_varargs { $$ = $1; }
+    | macro_keyword_single { $$ = $1; }
+    | "return" { $$ = "return"; }
+    ;
+
 macro_keyword_varargs: "print" { $$ = "print"; }
     ;
 
@@ -450,7 +455,6 @@ comparison: binary { $$ = $1; }
     | comparison "not" "in" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::NotIn, $4); }
     | comparison "is" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Is, $3); }
     | comparison "is" "not" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::IsNot, $4); }
-    // TODO A : Step
     | comparison "->" binary { $$ = new RangeExp($1, $3, nullptr, false); }
     | comparison "->=" binary { $$ = new RangeExp($1, $3, nullptr, true); }
     | comparison "->" binary ".." binary { $$ = new RangeExp($1, $3, $5, false); }
@@ -558,6 +562,7 @@ const: INT { $$ = new Const(@1.begin.line, $1); }
     ;
 
 id: ID { $$ = new Id(@1.begin.line, $1); }
+    | lparen macro_keyword rparen { $$ = new Id(@1.begin.line, $2); }
     ;
 
 // --- Tokens ---
