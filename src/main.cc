@@ -43,7 +43,14 @@ int main(int argc, char *argv[]) {
 
     // TODO F : Try catch
     // Interpret code if no errors
-    if (!module || !interpret_program(module)) {
+    bool success = false;
+    try {
+        if (module && interpret_program(module))
+            success = true;
+    } catch (...) {}
+
+    // Something went wrong
+    if (!success) {
         if (on_error()) {
             // Display as much information as possible
             if (Program::instance->trace)
