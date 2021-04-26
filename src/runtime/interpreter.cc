@@ -939,7 +939,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             auto tos = TOP;
 
-            // TODO A : Check int type in len
+            // Int verified
             auto toslen = tos->len();
 
             if (!toslen) {
@@ -959,6 +959,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
+            // Push each item
             for (size_t i = 0; i < current_len; ++i) {
                 auto index = new (nothrow) Int(i);
 

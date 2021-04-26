@@ -73,9 +73,11 @@ Object *Object::cmp(Object *o) {
 
     auto result = type->fn_cmp(this, o);
 
+    if (!result) return nullptr;
+
+    // Must be int
     if (result->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF(type->name + ".@cmp", result->type,
-                              Int::class_type);
+        THROW_TYPE_ERROR_PREF(type->name + "@cmp", result->type, Int::class_type);
 
         return nullptr;
     }
@@ -182,7 +184,18 @@ Object *Object::len() {
         return nullptr;
     }
 
-    return type->fn_len(this);
+    auto result = type->fn_len(this);
+
+    if (!result) return nullptr;
+
+    // Must be int
+    if (result->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF(type->name + "@len", result->type, Int::class_type);
+
+        return nullptr;
+    }
+
+    return result;
 }
 
 Object *Object::mod(Object *o) {
@@ -252,7 +265,6 @@ Object *Object::setitem(Object *key, Object *value) {
 }
 
 Object *Object::str() {
-    // TODO : Default, return Type()
     if (!type->fn_str) {
         auto result = new (nothrow) Str(type->name + "()");
 
@@ -265,7 +277,18 @@ Object *Object::str() {
         return result;
     }
 
-    return type->fn_str(this);
+    auto result = type->fn_str(this);
+
+    if (!result) return nullptr;
+
+    // Must be str
+    if (result->type != Str::class_type) {
+        THROW_TYPE_ERROR_PREF(type->name + "@str", result->type, Str::class_type);
+
+        return nullptr;
+    }
+
+    return result;
 }
 
 Object *Object::sub(Object *o) {

@@ -49,6 +49,7 @@ struct Object {
 
     Object *call(Object *args, Object *kwargs);
 
+    // Int type verified (or nullptr)
     // Compares references by default
     Object *cmp(Object *o);
 
@@ -68,6 +69,7 @@ struct Object {
 
     Object *iter();
 
+    // Int type verified (or nullptr)
     Object *len();
 
     Object *mod(Object *o);
@@ -82,7 +84,8 @@ struct Object {
 
     Object *setitem(Object *key, Object *value);
 
-    // Returns ObjectType() by default
+    // Str type verified (or nullptr)
+    // Returns 'ObjectType()' by default
     Object *str();
 
     Object *sub(Object *o);
