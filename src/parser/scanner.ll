@@ -151,6 +151,8 @@ comment     #.*
 "break"         return yy::parser::make_BREAK(loc);
 "continue"      return yy::parser::make_CONTINUE(loc);
 "return"        return yy::parser::make_RETURN(loc);
+"print"         return yy::parser::make_PRINT(loc);
+"throw"         return yy::parser::make_THROW(loc);
 "fn"            return yy::parser::make_FN(loc);
 
 {id}            return yy::parser::make_ID(yytext, loc);

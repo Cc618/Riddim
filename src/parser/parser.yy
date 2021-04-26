@@ -94,6 +94,8 @@
     BREAK       "break"
     CONTINUE    "continue"
     RETURN      "return"
+    PRINT       "print"
+    THROW       "throw"
     FN          "fn"
 ;
 
@@ -119,6 +121,8 @@
 %nterm <ast::LoopControlStmt*> loopcontrolstmt
 %nterm <ast::RethrowStmt*> rethrowstmt
 %nterm <ast::ExpStmt*> expstmt
+%nterm <ast::Stmt*> macrostmt
+%nterm <str_t> macro_keyword_single macro_keyword_varargs
 
 // Expressions
 %nterm <ast::Exp*> exp set /* TODO B : cascade */ boolean comparison binary unary primary
@@ -235,6 +239,7 @@ stmt: expstmt { $$ = $1; }
     | returnstmt { $$ = $1; }
     | loopcontrolstmt { $$ = $1; }
     | rethrowstmt { $$ = $1; }
+    | macrostmt { $$ = $1; }
     | fndecl { $$ = $1; }
     ;
 
@@ -324,6 +329,33 @@ forstmt: "for" target_id "in" exp block stop {
     ;
 
 expstmt: exp stop { $$ = new ExpStmt($1); }
+    ;
+
+macrostmt: macro_keyword_varargs vec_content_filled stop {
+        auto call = new CallExp(@1.begin.line);
+        call->args = $2;
+        call->fileline = @1.begin.line;
+        call->exp = new Id(@1.begin.line, $1);
+        call->ismacro = true;
+
+        $$ = new ExpStmt(call);
+    }
+    | macro_keyword_single exp stop {
+        auto call = new CallExp(@1.begin.line);
+        call->args = { $2 };
+        call->fileline = @1.begin.line;
+        call->exp = new Id(@1.begin.line, $1);
+        call->ismacro = true;
+
+        $$ = new ExpStmt(call);
+    }
+    ;
+
+macro_keyword_varargs: "print" { $$ = "print"; }
+    ;
+
+// Macro keyword that accepts only one argument
+macro_keyword_single: "throw" { $$ = "throw"; }
     ;
 
 // --- Expressions ---

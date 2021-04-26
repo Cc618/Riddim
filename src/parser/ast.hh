@@ -281,6 +281,8 @@ struct CallExp : public Exp {
     Exp *exp;
     std::vector<Exp *> args;
     std::vector<std::pair<std::string, Exp *>> kwargs;
+    // Whether it is a macro call
+    bool ismacro = false;
 
     CallExp(line_t fileline);
 
