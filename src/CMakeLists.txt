@@ -15,15 +15,18 @@ endif()
 find_package(BISON)
 find_package(FLEX)
 
-bison_target(Parser parser.yy ${CMAKE_CURRENT_BINARY_DIR}/parser.cc COMPILE_FLAGS ${BISON_FLAGS})
-flex_target(Scanner scanner.ll ${CMAKE_CURRENT_BINARY_DIR}/scanner.cc)
+bison_target(Parser parser/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/parser.cc COMPILE_FLAGS ${BISON_FLAGS})
+flex_target(Scanner parser/scanner.ll ${CMAKE_CURRENT_BINARY_DIR}/scanner.cc)
 add_flex_bison_dependency(Scanner Parser)
 
-# C source
-file(GLOB SRC *.cc)
+# C++ source
+file(GLOB SRC objects/*.cc parser/*.cc runtime/*.cc)
 
 add_executable(riddim ${SRC} ${BISON_Parser_OUTPUTS} ${FLEX_Scanner_OUTPUTS})
 
+include_directories(objects)
+include_directories(parser)
+include_directories(runtime)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
