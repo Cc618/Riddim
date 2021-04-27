@@ -257,6 +257,7 @@ void dump_error_object(Object *error, ostream &out) {
 
 CodeGenException::CodeGenException(const std::string &msg,
                                    const std::string &filename, int lineno) {
-    rawmsg = filename + ":" + to_string(lineno) + " : " + msg;
+    rawmsg = C_GREEN + filename + C_NORMAL + ":" + C_RED + to_string(lineno) +
+             C_NORMAL + ": " + msg;
 }
 const char *CodeGenException::what() const noexcept { return rawmsg.c_str(); }
