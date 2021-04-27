@@ -78,8 +78,6 @@ void Block::gen_code(Module *module, Code *_code) {
 }
 
 void FnDecl::gen_code(Module *module, Code *_code) {
-    Decl::gen_code(module, _code);
-
     auto fncode = Code::New(module->filepath);
 
     if (!fncode) {
@@ -140,21 +138,6 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     // Store it
     target->gen_code(module, _code);
-
-    // PUSH_CODE(StoreVar);
-
-    // auto const_name = new (nothrow) Str(name);
-
-    // if (!const_name) {
-    //     throw CodeGenException("Not enough memory", module->filepath,
-    //     fileline);
-    // }
-
-    // auto off_name = ADD_CONST(const_name);
-    // PUSH_CODE(off_name);
-
-    // Pop since it's a statement
-    PUSH_CODE(Pop);
 }
 
 // --- Stmts ---

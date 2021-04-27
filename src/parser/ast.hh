@@ -45,16 +45,12 @@ struct Stmt : public ASTNode {
     virtual void gen_code(Module *module, Code *code) override;
 };
 
-struct Decl : public Stmt {
-    using Stmt::Stmt;
-
-    // Don't forget to call this for inherited objects (at the top of the
-    // function)
-    using Stmt::gen_code;
-};
-
 struct Exp : public ASTNode {
     using ASTNode::ASTNode;
+};
+
+struct Decl : public Exp {
+    using Exp::Exp;
 };
 
 struct Block;
@@ -91,6 +87,7 @@ struct FnDecl : public Decl {
 
     Target *target;
     Block *body;
+    bool islambda = false;
 
     FnDecl(line_t fileline, Target *target, Args *args, Block *body)
         : Decl(fileline), target(target), args(args), body(body) {}

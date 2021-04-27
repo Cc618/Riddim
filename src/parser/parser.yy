@@ -176,7 +176,7 @@ module: stop stmtlist {
 
 // --- Declarations ---
 // Function declaration
-fndecl: "fn" fndecl_target lparen fndecl_all_args rparen block stop {
+fndecl: "fn" fndecl_target lparen fndecl_all_args rparen block {
         $$ = new FnDecl(@1.begin.line, $2, $4, $6);
     }
     ;
@@ -243,7 +243,6 @@ stmt: expstmt { $$ = $1; }
     | loopcontrolstmt { $$ = $1; }
     | rethrowstmt { $$ = $1; }
     | macrostmt { $$ = $1; }
-    | fndecl { $$ = $1; }
     ;
 
 ifstmt: "if" exp block ifstmt_elif stop {
@@ -332,8 +331,8 @@ forstmt: "for" target_id "in" exp block stop {
     ;
 
 expstmt: exp stop { $$ = new ExpStmt($1); }
-    // TODO A
     | set stop { $$ = new ExpStmt($1); }
+    | fndecl stop { $$ = new ExpStmt($1); }
     ;
 
 macrostmt: macro_keyword_varargs vec_content_filled stop {
