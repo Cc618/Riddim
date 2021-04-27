@@ -515,8 +515,7 @@ struct MultiTarget : public Target {
 
     virtual void gen_code(Module *module, Code *code) override;
 
-    // TODO A
-    virtual ASTNode *get_exp() override { return targets[0]; }
+    virtual ASTNode *get_exp() override { return nullptr; }
 };
 
 // Target using an identifier

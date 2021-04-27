@@ -801,7 +801,15 @@ void UnaExp::gen_code(Module *module, Code *_code) {
 
 void RelativeSet::gen_code(Module *module, Code *_code) {
     // Perform relative operation
-    target->get_exp()->gen_code(module, _code);
+    auto target_exp = target->get_exp();
+
+    if (!target_exp)
+        throw CodeGenException(
+            "Cannot use relative assignment with this target", _code->filename,
+            fileline);
+
+    target_exp->gen_code(module, _code);
+
     exp->gen_code(module, _code);
     gen_binexp(module, _code, op, fileline);
 
