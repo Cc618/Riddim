@@ -65,6 +65,7 @@
     GE          ">="
     LESSER      "<"
     GREATER     ">"
+    PIPE        "|"
     MINUS       "-"
     PLUS        "+"
     WILDCARD    "*"
@@ -127,7 +128,7 @@
 %nterm <str_t> macro_keyword macro_keyword_single macro_keyword_varargs
 
 // Expressions
-%nterm <ast::Exp*> exp /* TODO B : cascade */ boolean comparison binary unary primary set
+%nterm <ast::Exp*> exp /* TODO B : cascade */ boolean comparison binary unary primary set lambda
 %nterm <ast::Target*> target target_simple target_id target_indexing target_attr target_multi
 %nterm <ast::CallExp*> call call_args call_args_filled
 %nterm <ast::Indexing*> indexing
@@ -441,7 +442,6 @@ target_attr: attr { $$ = new AttrTarget($1); }
 target_id: id { $$ = new IdTarget(@1.begin.line, $1); }
     ;
 
-// TODO A
 target_multi: target_multi_content {
         $$ = new MultiTarget(@1.begin.line, $1);
     }
@@ -456,6 +456,12 @@ target_multi_content: target_id "," target_id { $$ = { $1, $3 }; }
     ;
 
 exp: boolean { $$ = $1; }
+    | lambda { $$ = $1; }
+    ;
+
+lambda: "|" fndecl_args "|" block {
+        $$ = new FnDecl(@1.begin.line, nullptr, $2, $4, true);
+    }
     ;
 
 boolean: comparison { $$ = $1; }

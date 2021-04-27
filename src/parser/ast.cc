@@ -35,7 +35,8 @@ FnDecl::Args::~Args() {
 
 FnDecl::~FnDecl() {
     delete body;
-    delete target;
+    if (target)
+        delete target;
     delete args;
 }
 

@@ -23,6 +23,8 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push compare(TOS1, TOS, op)
     BinCmp,
+    // Binds the frame of a lambda
+    BindLambda,
     // - pop 2
     // - push TOS1 / TOS
     BinDiv,

@@ -37,12 +37,12 @@ struct Builtin : public AbstractFunction {
 struct Function : public AbstractFunction {
     static Type *class_type;
 
-    // TODO : Full name
     str_t name;
     Code *code;
     // Positional args with possibly default values (can be nullptr)
     std::vector<std::pair<str_t, Code*>> args;
     int n_required_args;
+    std::unordered_map<str_t, Object *> lambda_vars;
 
     static Function *New(Code *code, const str_t &name,
                              Object *self = nullptr);

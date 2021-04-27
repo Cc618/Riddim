@@ -107,6 +107,10 @@ void Function::init_class_type() {
             // Can be nullptr
             visit(v);
         }
+
+        for (const auto &[k, v] : me->lambda_vars) {
+            visit(v);
+        }
     };
 
     // @call
@@ -150,7 +154,7 @@ void Function::init_class_type() {
         auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
 
         // Bind positional arguments
-        std::unordered_map<str_t, Object *> vars;
+        std::unordered_map<str_t, Object *> vars = me->lambda_vars;
         for (size_t i = 0; i < posargs.size(); ++i) {
             auto &arg_name = me->args[i].first;
             vars[arg_name] = posargs[i];

@@ -8,6 +8,7 @@
 #include "modio.hh"
 #include "program.hh"
 #include "range.hh"
+#include "function.hh"
 
 // TODO
 #include <iostream>
@@ -230,6 +231,35 @@ void interpret_fragment(Code *_code, size_t &ip) {
             PUSH(result);
 
             NEXT(1);
+        }
+
+        case BindLambda: {
+            CHECK_STACKLEN(1);
+
+            auto fun = TOP;
+
+            if (fun->type != Function::class_type) {
+                THROW_TYPE_ERROR_PREF("BindLambda", fun->type, Function::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            auto lambda = reinterpret_cast<Function*>(fun);
+
+            // For each variable of the current frame, bind it to the lambda
+            for (const auto &[h, kv] : frame->vars->data) {
+                const auto &[k, v] = kv;
+
+                if (k->type != Str::class_type) {
+                    THROW_TYPE_ERROR_PREF("HashMap.@getitem", k->type, Str::class_type);
+
+                    DISPATCH_ERROR;
+                }
+
+                lambda->lambda_vars[reinterpret_cast<Str*>(k)->data] = v;
+            }
+
+            NEXT(0);
         }
 
         case BinDiv: {

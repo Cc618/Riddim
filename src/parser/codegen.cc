@@ -136,8 +136,13 @@ void FnDecl::gen_code(Module *module, Code *_code) {
     PUSH_CODE(LoadConst);
     PUSH_CODE(off_fn);
 
+    // Bind it
+    if (islambda)
+        PUSH_CODE(BindLambda);
+
     // Store it
-    target->gen_code(module, _code);
+    if (target)
+        target->gen_code(module, _code);
 }
 
 // --- Stmts ---

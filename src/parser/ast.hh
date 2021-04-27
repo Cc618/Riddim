@@ -85,12 +85,13 @@ struct FnDecl : public Decl {
         int n_required = 0;
     } * args;
 
+    // Can be nullptr
     Target *target;
     Block *body;
     bool islambda = false;
 
-    FnDecl(line_t fileline, Target *target, Args *args, Block *body)
-        : Decl(fileline), target(target), args(args), body(body) {}
+    FnDecl(line_t fileline, Target *target, Args *args, Block *body, bool islambda = false)
+        : Decl(fileline), target(target), args(args), body(body), islambda(islambda) {}
 
     virtual ~FnDecl();
 
