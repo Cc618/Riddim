@@ -31,6 +31,8 @@
 
 %locations
 
+%expect 1
+
 // Debugging
 // %define parse.trace
 // %define parse.error detailed
@@ -125,8 +127,8 @@
 %nterm <str_t> macro_keyword macro_keyword_single macro_keyword_varargs
 
 // Expressions
-%nterm <ast::Exp*> exp set /* TODO B : cascade */ boolean comparison binary unary primary
-%nterm <ast::Target*> target target_id target_indexing target_attr target_multi
+%nterm <ast::Exp*> exp /* TODO B : cascade */ boolean comparison binary unary primary set
+%nterm <ast::Target*> target target_simple target_id target_indexing target_attr target_multi
 %nterm <ast::CallExp*> call call_args call_args_filled
 %nterm <ast::Indexing*> indexing
 %nterm <ast::Attr*> attr
@@ -330,6 +332,8 @@ forstmt: "for" target_id "in" exp block stop {
     ;
 
 expstmt: exp stop { $$ = new ExpStmt($1); }
+    // TODO A
+    | set stop { $$ = new ExpStmt($1); }
     ;
 
 macrostmt: macro_keyword_varargs vec_content_filled stop {
@@ -365,55 +369,6 @@ macro_keyword_single: "throw" { $$ = "throw"; }
     ;
 
 // --- Expressions ---
-exp: set { $$ = $1; }
-    ;
-
-// Set and targets
-// We can chain multiple sets
-set: boolean { $$ = $1; }
-    | target "=" set { $$ = new Set(@1.begin.line, $1, $3); }
-    | target "+=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Add, $3); }
-    | target "-=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Sub, $3); }
-    | target "*=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Mul, $3); }
-    | target "/=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Div, $3); }
-    | target "%=" set { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Mod, $3); }
-    ;
-
-target: target_id { $$ = $1; }
-    | target_indexing { $$ = $1; }
-    | target_attr { $$ = $1; }
-    | target_multi { $$ = $1; }
-    ;
-
-target_indexing: indexing { $$ = new IndexingTarget($1); }
-    ;
-
-target_attr: attr { $$ = new AttrTarget($1); }
-    ;
-
-target_id: id { $$ = new IdTarget(@1.begin.line, $1); }
-    ;
-
-// // TODO A
-// target_multi: "[" target_id "," target_id "]" {
-//         $$ = new MultiTarget(@1.begin.line, { $2, $4 });
-//     }
-//     ;
-
-// "(" • ID "," target_id ")" "=" set
-// ( a, b ) = c = 42
-
-// TODO A : Without brackets also
-target_multi: "[" target_multi_content "]" {
-        $$ = new MultiTarget(@1.begin.line, $2);
-    }
-    ;
-
-// TODO A : Not only ids
-target_multi_content: target_id { $$ = { $1 }; }
-    | target_multi_content "," target_id { $$ = $1; $$.push_back($3); }
-    ;
-
 // cascade: boolean { $$ = $1; }
 // TODO B
 //     | cascade option_stop ".." boolean {
@@ -458,7 +413,51 @@ assignable_selector: "." ID
 //     ;
 */
 
+// Set and targets
+// We can chain multiple sets
+set: target "=" exp { $$ = new Set(@1.begin.line, $1, $3); }
+    | target "=" set { $$ = new Set(@1.begin.line, $1, $3); }
+    | target "+=" exp { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Add, $3); }
+    | target "-=" exp { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Sub, $3); }
+    | target "*=" exp { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Mul, $3); }
+    | target "/=" exp { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Div, $3); }
+    | target "%=" exp { $$ = new RelativeSet(@1.begin.line, $1, BinExp::Mod, $3); }
+    ;
 
+target: target_simple { $$ = $1; }
+    | target_multi { $$ = $1; }
+    ;
+
+target_simple: target_id { $$ = $1; }
+    | target_indexing { $$ = $1; }
+    | target_attr { $$ = $1; }
+    ;
+
+target_indexing: indexing { $$ = new IndexingTarget($1); }
+    ;
+
+target_attr: attr { $$ = new AttrTarget($1); }
+    ;
+
+target_id: id { $$ = new IdTarget(@1.begin.line, $1); }
+    ;
+
+// TODO A
+target_multi: target_multi_content {
+        $$ = new MultiTarget(@1.begin.line, $1);
+    }
+    ;
+
+target_multi_content: target_id "," target_id { $$ = { $1, $3 }; }
+    | target_id "," "(" target_multi ")" { $$ = { $1, $4 }; }
+    | "(" target_multi ")" "," target_id { $$ = { $2, $5 }; }
+    | "(" target_multi ")" "," "(" target_multi ")" { $$ = { $2, $6 }; }
+    | target_multi_content "," target_id { $$ = $1; $$.push_back($3); }
+    | target_multi_content "," "(" target_multi ")" { $$ = $1; $$.push_back($4); }
+    ;
+
+exp: boolean { $$ = $1; }
+    ;
 
 boolean: comparison { $$ = $1; }
     | "not" comparison { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
