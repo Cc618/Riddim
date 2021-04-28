@@ -226,7 +226,7 @@ fndecl_kwargs:
     | fndecl_kwargs "," option_stop ID ":" exp { $$ = $1; $$->args.push_back({ $4, $6 }); }
     ;
 
-block: lcurly option_stop stmtlist rcurly { $$ = $3; }
+block: lcurly stop stmtlist rcurly { $$ = $3; }
     ;
 
 // --- Statements ---
@@ -461,6 +461,11 @@ exp: boolean { $$ = $1; }
 
 lambda: "|" fndecl_args "|" block {
         $$ = new FnDecl(@1.begin.line, nullptr, $2, $4, true);
+    }
+    | "|" fndecl_args "|" exp {
+        auto block = new Block(@4.begin.line);
+        block->stmts.push_back(new ReturnStmt(@4.begin.line, $4));
+        $$ = new FnDecl(@1.begin.line, nullptr, $2, block, true);
     }
     ;
 
