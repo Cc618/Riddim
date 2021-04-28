@@ -278,13 +278,12 @@ void HashMap::set(Object *key, Object *value) {
     if (!h)
         return;
 
-    // Check type
-    if (h->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF("@hash", h->type, Int::class_type);
+    auto typeh = key->type->hash();
 
+    if (!typeh)
         return;
-    }
 
+    // size_t h_key = hash_sz(hash_combine(reinterpret_cast<Int *>(h)->data, reinterpret_cast<Int *>(typeh)->data));
     size_t h_key = hash_sz(reinterpret_cast<Int *>(h)->data);
 
     data[h_key] = {key, value};

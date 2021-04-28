@@ -459,8 +459,8 @@ exp: boolean { $$ = $1; }
     | lambda { $$ = $1; }
     ;
 
-lambda: "|" fndecl_args "|" block {
-        $$ = new FnDecl(@1.begin.line, nullptr, $2, $4, true);
+lambda: "|" fndecl_args "|" "->" block {
+        $$ = new FnDecl(@1.begin.line, nullptr, $2, $5, true);
     }
     | "|" fndecl_args "|" exp {
         auto block = new Block(@4.begin.line);
@@ -569,7 +569,7 @@ map: lcurly map_content rcurly { $$ = new MapLiteral(@1.begin.line, $2); }
     ;
 
 map_content: %empty { $$ = {}; }
-    | map_content_filled option_comma { $$ = $1; }
+    | option_stop map_content_filled option_comma_stop { $$ = $2; }
     ;
 
 map_content_filled: exp ":" exp { $$ = {{ $1, $3 }}; }
@@ -581,7 +581,7 @@ vec: lbrack vec_content rbrack { $$ = new VecLiteral(@1.begin.line, $2); }
     ;
 
 vec_content: %empty { $$ = {}; }
-    | vec_content_filled option_comma { $$ = $1; }
+    | option_stop vec_content_filled option_comma_stop { $$ = $2; }
     ;
 
 vec_content_filled: exp { $$ = { $1 }; }
@@ -624,9 +624,9 @@ option_stop: %empty
     | stop
     ;
 
-option_comma: %empty
-    | "?"
-    ;
+// option_comma: %empty
+//     | ","
+//     ;
 
 // ","? stop?
 option_comma_stop: %empty

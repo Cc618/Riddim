@@ -231,7 +231,7 @@ b = 2
 Lambdas (or closures) have a syntax similar to Rust's closures :
 ```rust
 expression_lambda = |x, y| x + y
-block_lambda = |x, y| {
+block_lambda = |x, y| -> {
     print x + y
 }
 
