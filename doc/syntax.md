@@ -227,6 +227,17 @@ return
 b = 2
 ```
 
+#### Lambas
+Lambdas (or closures) have a syntax similar to Rust's closures :
+```rust
+expression_lambda = |x, y| x + y
+block_lambda = |x, y| {
+    print x + y
+}
+
+block_lambda(expression_lambda(1, 1), 2)
+```
+
 ## Error handling
 <!-- TODO G : Throw -->
 <!-- ### Throw
