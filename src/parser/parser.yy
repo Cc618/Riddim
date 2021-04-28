@@ -31,8 +31,6 @@
 
 %locations
 
-%expect 1
-
 // Debugging
 // %define parse.trace
 // %define parse.error detailed
@@ -84,6 +82,7 @@
     COMMA       ","
     COLON       ":"
     STOP        "<LF>"
+    LET         "let"
     IF          "if"
     ELIF        "elif"
     ELSE        "else"
@@ -153,6 +152,8 @@
 
 // The lower it is declared, the sooner the token will be used
 %right "=" "+=" "-=" "*=" "/=" "%=";
+%right "let";
+%left ",";
 %left "..";
 %left "or";
 %left "and";
@@ -446,17 +447,17 @@ target_attr: attr { $$ = new AttrTarget($1); }
 target_id: id { $$ = new IdTarget(@1.begin.line, $1); }
     ;
 
-target_multi: target_multi_content {
-        $$ = new MultiTarget(@1.begin.line, $1);
+target_multi: "let" target_multi_content {
+        $$ = new MultiTarget(@1.begin.line, $2);
     }
     ;
 
 target_multi_content: target_id "," target_id { $$ = { $1, $3 }; }
-    | target_id "," "(" target_multi ")" { $$ = { $1, $4 }; }
-    | "(" target_multi ")" "," target_id { $$ = { $2, $5 }; }
-    | "(" target_multi ")" "," "(" target_multi ")" { $$ = { $2, $6 }; }
+    | target_id "," "(" target_multi_content ")" { $$ = { $1, new MultiTarget(@4.begin.line, $4) }; }
+    | "(" target_multi_content ")" "," target_id { $$ = { new MultiTarget(@2.begin.line, $2), $5 }; }
+    | "(" target_multi_content ")" "," "(" target_multi_content ")" { $$ = { new MultiTarget(@2.begin.line, $2),new MultiTarget(@6.begin.line, $6) }; }
     | target_multi_content "," target_id { $$ = $1; $$.push_back($3); }
-    | target_multi_content "," "(" target_multi ")" { $$ = $1; $$.push_back($4); }
+    | target_multi_content "," "(" target_multi_content ")" { $$ = $1; $$.push_back(new MultiTarget(@4.begin.line, $4)); }
     ;
 
 exp: boolean { $$ = $1; }

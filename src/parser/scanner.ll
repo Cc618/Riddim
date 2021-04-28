@@ -139,6 +139,7 @@ comment     #.*
 "is"            return yy::parser::make_IS(loc);
 "in"            return yy::parser::make_IN(loc);
 
+"let"           return yy::parser::make_LET(loc);
 "if"            return yy::parser::make_IF(loc);
 "elif"          return yy::parser::make_ELIF(loc);
 "else"          return yy::parser::make_ELSE(loc);
