@@ -80,8 +80,8 @@ fun(a, c: 1, b: 7)
 
 Moreover in Riddim, everything is an object.
 That is, we don't really have functions, we have functor objects.
-```
-impostor = print
+```python
+impostor = (print)
 impostor('I am not print')
 ```
 
@@ -122,7 +122,7 @@ an object like Range
 ```rust
 vec = [1, 2, 3]
 for item in vec {
-    print(item)
+    print item
 }
 ```
 
@@ -151,7 +151,7 @@ It can be created with the arrow syntax :
 
 # Use ranges like this
 for i in 0 -> 4 {
-    print(i)
+    print i
 }
 ```
 
@@ -190,12 +190,12 @@ They store a functor object interpreting the body of the function in a variable.
 ```python
 # foo is now a function
 fn foo(s) {
-    print('foo() :', s)
+    print 'foo() :', s
 }
 
 # The attribute foo of the obj variable is set
 fn obj.foo(s) {
-    print('obj.foo() :', s)
+    print 'obj.foo() :', s
 }
 ```
 
@@ -205,7 +205,7 @@ Arguments can have a default value :
 # a and b can be omitted in a call
 # Note that only b can be set using kwargs (see calls section)
 fn fun(a: 42, b: 618) {
-    print(a, b)
+    print a, b
 }
 ```
 
@@ -239,10 +239,17 @@ block_lambda(expression_lambda(1, 1), 2)
 ```
 
 ## Error handling
-<!-- TODO G : Throw -->
-<!-- ### Throw
+### Throw
 To raise an error, the throw keyword can be used.
-Theorically, any object can be thrown, even a non error object. -->
+Theorically, any object can be thrown, even a non error object.
+The syntax is simple, throw is a macro and takes one expression :
+```python
+if x <= 0 {
+    throw ArgumentError('x must be positive !')
+}
+```
+
+<!-- TODO : Assert -->
 
 ### Try catch
 Try catch blocks are supported, they allow you to catch a specific
@@ -252,11 +259,11 @@ Here is the syntax :
 try {
     my_dangerous_code()
 } catch ErrorType1 as error {
-    print('ErrorType1 :', error)
+    print 'ErrorType1 :', error
 } catch ErrorType2 {
-    print('ErrorType2 caught')
+    print 'ErrorType2 caught'
 } catch error {
-    print('Unknown error type :', error)
+    print 'Unknown error type :', error
 }
 ```
 
