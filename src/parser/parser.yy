@@ -141,7 +141,7 @@
 %nterm <ast::VecLiteral*> vec
 %nterm <ast::MapLiteral*> map
 %nterm <std::vector<std::pair<ast::Exp *, ast::Exp *>>> map_content map_content_filled
-%nterm <std::vector<ast::Exp*>> vec_content vec_content_filled
+%nterm <std::vector<ast::Exp*>> vec_content vec_content_filled list_content list_content_filled bilist_content bilist_content_filled
 %nterm <ast::Const*> const
 
 // Tokens
@@ -305,6 +305,10 @@ trystmt_catch: "catch" exp "as" ID block {
 
 returnstmt: "return" exp stop { $$ = new ReturnStmt(@1.begin.line, $2); }
     | "return" stop { $$ = new ReturnStmt(@1.begin.line); }
+    | "return" bilist_content stop {
+        $$ = new ReturnStmt(@1.begin.line,
+            new VecLiteral(@2.begin.line, $2));
+    }
     ;
 
 loopcontrolstmt: "break" stop { $$ = new LoopControlStmt(@1.begin.line, true); }
@@ -336,7 +340,7 @@ expstmt: exp stop { $$ = new ExpStmt($1); }
     | fndecl stop { $$ = new ExpStmt($1); }
     ;
 
-macrostmt: macro_keyword_varargs vec_content_filled stop {
+macrostmt: macro_keyword_varargs list_content stop {
         auto call = new CallExp(@1.begin.line);
         call->args = $2;
         call->fileline = @1.begin.line;
@@ -588,6 +592,23 @@ vec_content_filled: exp { $$ = { $1 }; }
     | vec_content_filled "," option_stop exp { $$ = $1; $$.push_back($4); }
     ;
 
+// List of expressions without line feeds
+// Contains at least one expression
+list_content: list_content_filled option_comma { $$ = $1; }
+    ;
+
+list_content_filled: exp { $$ = { $1 }; }
+    | list_content_filled "," exp { $$ = $1; $$.push_back($3); }
+    ;
+
+// Contains at least two expressions
+bilist_content: bilist_content_filled option_comma { $$ = $1; }
+    ;
+
+bilist_content_filled: exp "," exp  { $$ = { $1, $3 }; }
+    | bilist_content_filled "," exp { $$ = $1; $$.push_back($3); }
+    ;
+
 const: INT { $$ = new Const(@1.begin.line, $1); }
     | STR { $$ = new Const(@1.begin.line, $1); }
     ;
@@ -624,9 +645,9 @@ option_stop: %empty
     | stop
     ;
 
-// option_comma: %empty
-//     | ","
-//     ;
+option_comma: %empty
+    | ","
+    ;
 
 // ","? stop?
 option_comma_stop: %empty
