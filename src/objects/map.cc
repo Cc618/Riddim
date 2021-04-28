@@ -283,8 +283,8 @@ void HashMap::set(Object *key, Object *value) {
     if (!typeh)
         return;
 
-    // size_t h_key = hash_sz(hash_combine(reinterpret_cast<Int *>(h)->data, reinterpret_cast<Int *>(typeh)->data));
-    size_t h_key = hash_sz(reinterpret_cast<Int *>(h)->data);
+    size_t h_key = hash_sz(hash_combine(reinterpret_cast<Int *>(h)->data,
+                                        reinterpret_cast<Int *>(typeh)->data));
 
     data[h_key] = {key, value};
 }
@@ -296,19 +296,18 @@ hmap_t::iterator HashMap::find(Object *key) {
     if (!h)
         return data.end();
 
-    // Check type
-    if (h->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF("@hash", h->type, Int::class_type);
 
+    auto typeh = key->type->hash();
+
+    if (!typeh)
         return data.end();
-    }
 
-    size_t h_key = hash_sz(reinterpret_cast<Int *>(h)->data);
+    size_t h_key = hash_sz(hash_combine(reinterpret_cast<Int *>(h)->data,
+                                        reinterpret_cast<Int *>(typeh)->data));
 
     auto it = data.begin();
     for (; it != data.end(); ++it) {
-        if ((*it).first == h_key &&
-            (*it).second.first->type == key->type)
+        if ((*it).first == h_key && (*it).second.first->type == key->type)
             return it;
     }
 
