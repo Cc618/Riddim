@@ -350,12 +350,14 @@ use lib3.*
 
 ## Operator precedence
 The precedence is similar to Python.
-- =
-- or
-- and
-- not
-- == <= >= < > is in
-- \+ -
-- \* / %
-- Attribute reference
-- Indexing
+| Operator |
+| - |
+| = |
+| or |
+| and |
+| not |
+| == <= >= < > is in |
+| \+ - |
+| \* / % |
+| Attribute reference |
+| Indexing |
