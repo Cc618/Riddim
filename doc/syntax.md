@@ -99,10 +99,11 @@ Here is the list of all macros :
 
 | Keyword | Args | Description |
 | ------- | ---- | ----------- |
+| assert | The expression to test and optionally an error message | Prints to stdout all its args |
 | print | Variadic | Prints to stdout all its args |
-| typeof | The target | Returns the type of the target |
-| throw | The error | Throws the error |
 | rethrow | None | Rethrows the error caught within the catch block |
+| throw | The error | Throws the error |
+| typeof | The target | Returns the type of the target |
 
 Macros cannot be defined by the user, they are always associated to a specific
 keyword unavailable to the user.
@@ -345,8 +346,6 @@ use lib2 as anotherlib
 # Merges all variables of lib3 within this module
 use lib3.*
 ```
-
-<!-- TODO : Print / builtins -->
 
 ## Operator precedence
 The precedence is similar to Python.

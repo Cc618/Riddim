@@ -149,12 +149,13 @@ comment     #.*
 "try"           return yy::parser::make_TRY(loc);
 "catch"         return yy::parser::make_CATCH(loc);
 "as"            return yy::parser::make_AS(loc);
+"throw"         return yy::parser::make_THROW(loc);
+"assert"        return yy::parser::make_ASSERT(loc);
 "rethrow"       return yy::parser::make_RETHROW(loc);
 "break"         return yy::parser::make_BREAK(loc);
 "continue"      return yy::parser::make_CONTINUE(loc);
 "return"        return yy::parser::make_RETURN(loc);
 "print"         return yy::parser::make_PRINT(loc);
-"throw"         return yy::parser::make_THROW(loc);
 "fn"            return yy::parser::make_FN(loc);
 
 {id}            return yy::parser::make_ID(yytext, loc);

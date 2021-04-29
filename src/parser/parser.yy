@@ -92,12 +92,13 @@
     TRY         "try"
     CATCH       "catch"
     AS          "as"
+    THROW       "throw"
+    ASSERT      "assert"
     RETHROW     "rethrow"
     BREAK       "break"
     CONTINUE    "continue"
     RETURN      "return"
     PRINT       "print"
-    THROW       "throw"
     FN          "fn"
 ;
 
@@ -403,6 +404,7 @@ macro_keyword: macro_keyword_varargs { $$ = $1; }
     ;
 
 macro_keyword_varargs: "print" { $$ = "print"; }
+    | "assert" { $$ = "assert"; }
     ;
 
 // Macro keyword that accepts only one argument

@@ -108,7 +108,7 @@ void internal_error(const str_t &msg);
 // Invalid argument
 static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
                                         const str_t &MSG) {
-    throw_fmt(ArgumentError, "%s : Argument %s%s%s :  %s",
+    throw_fmt(ArgumentError, "%s : Argument %s%s%s : %s",
         FUNC.c_str(), C_BLUE, ARG.c_str(), C_NORMAL, MSG.c_str());
 }
 
