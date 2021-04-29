@@ -29,7 +29,8 @@ struct Builtin : public AbstractFunction {
     // Can throw
     static void init_class_type();
 
-    Builtin(const fn_ternary_t &data, const str_t &name, Object *self = nullptr);
+    Builtin(const fn_ternary_t &data, const str_t &name,
+            Object *self = nullptr);
 };
 
 // A function containing code to interpret
@@ -40,17 +41,15 @@ struct Function : public AbstractFunction {
     str_t name;
     Code *code;
     // Positional args with possibly default values (can be nullptr)
-    std::vector<std::pair<str_t, Code*>> args;
+    std::vector<std::pair<str_t, Code *>> args;
     int n_required_args;
-    std::unordered_map<str_t, Object *> lambda_vars;
+    Frame *lambda_frame;
 
-    static Function *New(Code *code, const str_t &name,
-                             Object *self = nullptr);
+    static Function *New(Code *code, const str_t &name, Object *self = nullptr);
 
     // Can throw
     static void init_class_type();
 
 protected:
-    Function(Code *code, const str_t &name,
-                 Object *self);
+    Function(Code *code, const str_t &name, Object *self);
 };

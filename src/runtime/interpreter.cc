@@ -111,7 +111,7 @@ bool interpret_program(Module *main_module) {
 
 void interpret(Code *_code, const str_t &id,
                const std::unordered_map<str_t, Object *> &vars,
-               Module *module) {
+               Module *module, Frame *lambda_frame) {
     // Push new frame
     Frame *frame = nullptr;
 
@@ -127,6 +127,9 @@ void interpret(Code *_code, const str_t &id,
         Program::instance->global_frame->setitem(mod_str, module);
 
         frame = module->frame;
+        frame->previous = Program::instance->top_frame;
+    } else if (lambda_frame) {
+        frame = lambda_frame;
         frame->previous = Program::instance->top_frame;
     } else {
         frame = Frame::New(id, _code->filename, Program::instance->top_frame);
@@ -245,6 +248,11 @@ void interpret_fragment(Code *_code, size_t &ip) {
             }
 
             auto lambda = reinterpret_cast<Function*>(fun);
+            lambda->lambda_frame = Frame::New(lambda->name, lambda->code->filename);
+
+            if (!lambda->lambda_frame) {
+                DISPATCH_ERROR;
+            }
 
             // For each variable of the current frame, bind it to the lambda
             for (const auto &[h, kv] : frame->vars->data) {
@@ -256,7 +264,9 @@ void interpret_fragment(Code *_code, size_t &ip) {
                     DISPATCH_ERROR;
                 }
 
-                lambda->lambda_vars[reinterpret_cast<Str*>(k)->data] = v;
+                if (!lambda->lambda_frame->setitem(k, v)) {
+                    DISPATCH_ERROR;
+                }
             }
 
             NEXT(0);

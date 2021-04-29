@@ -18,7 +18,8 @@ AbstractFunction::AbstractFunction(Type *type, Object *self)
 Type *Builtin::class_type = nullptr;
 
 Builtin::Builtin(const fn_ternary_t &data, const str_t &name, Object *self)
-    : AbstractFunction(Builtin::class_type, self ? self : null), data(data), name(name) {}
+    : AbstractFunction(Builtin::class_type, self ? self : null), data(data),
+      name(name) {}
 
 void Builtin::init_class_type() {
     class_type = new (nothrow) Type("Builtin");
@@ -85,8 +86,8 @@ Function *Function::New(Code *code, const str_t &name, Object *_self) {
 }
 
 Function::Function(Code *code, const str_t &name, Object *self)
-    : AbstractFunction(Function::class_type, self ? self : null),
-      code(code), name(name) {}
+    : AbstractFunction(Function::class_type, self ? self : null), code(code),
+      name(name) {}
 
 void Function::init_class_type() {
     class_type = new (nothrow) Type("Function");
@@ -108,9 +109,7 @@ void Function::init_class_type() {
             visit(v);
         }
 
-        for (const auto &[k, v] : me->lambda_vars) {
-            visit(v);
-        }
+        visit(me->lambda_frame);
     };
 
     // @call
@@ -119,8 +118,8 @@ void Function::init_class_type() {
         auto me = reinterpret_cast<Function *>(self);
 
         if (args->type != args_t::class_type) {
-            THROW_TYPE_ERROR_PREF("Function<" + me->name + ">.@call{args}", args->type,
-                                  args_t::class_type);
+            THROW_TYPE_ERROR_PREF("Function<" + me->name + ">.@call{args}",
+                                  args->type, args_t::class_type);
 
             return nullptr;
         }
@@ -154,7 +153,7 @@ void Function::init_class_type() {
         auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
 
         // Bind positional arguments
-        std::unordered_map<str_t, Object *> vars = me->lambda_vars;
+        std::unordered_map<str_t, Object *> vars;
         for (size_t i = 0; i < posargs.size(); ++i) {
             auto &arg_name = me->args[i].first;
             vars[arg_name] = posargs[i];
@@ -165,7 +164,8 @@ void Function::init_class_type() {
             const auto &[k, v] = kv;
 
             if (k->type != Str::class_type) {
-                THROW_TYPE_ERROR_PREF("Function.@call", k->type, Str::class_type);
+                THROW_TYPE_ERROR_PREF("Function.@call", k->type,
+                                      Str::class_type);
 
                 return nullptr;
             }
@@ -174,7 +174,8 @@ void Function::init_class_type() {
 
             // This argument is already set
             if (vars.find(key) != vars.end()) {
-                THROW_ARGUMENT_ERROR(me->name, key, "This argument has been set multiple times");
+                THROW_ARGUMENT_ERROR(
+                    me->name, key, "This argument has been set multiple times");
 
                 return nullptr;
             }
@@ -190,7 +191,8 @@ void Function::init_class_type() {
 
             // Throw error
             if (!exists) {
-                THROW_ARGUMENT_ERROR(me->name, key, "This argument doesn't exist");
+                THROW_ARGUMENT_ERROR(me->name, key,
+                                     "This argument doesn't exist");
 
                 return nullptr;
             }
@@ -204,7 +206,8 @@ void Function::init_class_type() {
             // This argument is not set
             if (vars.find(arg_name) == vars.end()) {
                 if (!arg_default) {
-                    THROW_ARGUMENT_ERROR(me->name, arg_name, "Argument not set but required");
+                    THROW_ARGUMENT_ERROR(me->name, arg_name,
+                                         "Argument not set but required");
 
                     return nullptr;
                 }
@@ -225,7 +228,8 @@ void Function::init_class_type() {
             }
         }
 
-        interpret(me->code, "Function<" + me->name + ">", vars);
+        interpret(me->code, "Function<" + me->name + ">", vars, nullptr,
+                  me->lambda_frame);
 
         if (on_error())
             return nullptr;

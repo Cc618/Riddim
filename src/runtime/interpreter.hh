@@ -186,7 +186,7 @@ bool interpret_program(Module *main_module);
 // Can throw
 void interpret(Code *code, const str_t &id,
                const std::unordered_map<str_t, Object *> &vars = {},
-               Module *module = nullptr);
+               Module *module = nullptr, Frame *lambda_frame = nullptr);
 
 // Interprets a fragment of code
 // Compared to interpret, it doesn't create a new frame (it uses the top frame)
