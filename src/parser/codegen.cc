@@ -253,7 +253,10 @@ void TryStmt::gen_code(Module *module, Code *_code) {
         PUSH_CODE(CatchError);
 
         // Gen id
-        auto id = new (nothrow) Str(catchbody.id);
+        Object *id =
+            catchbody.id.empty()
+                ? static_cast<Object *>(null)
+                : static_cast<Object *>(new (nothrow) Str(catchbody.id));
 
         if (!id) {
             throw CodeGenException("Can't allocate memory", _code->filename,

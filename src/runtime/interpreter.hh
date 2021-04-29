@@ -63,6 +63,7 @@ enum OpCode : opcode_t {
     CallProc,
     // Tries to catch the error if it matches the specific type at the TOS
     // If caught, the exception is stored in a new variable named 'id'
+    // * The id can be null if we don't want to store the error
     // - id_offset : Offset of the constant
     // - nomatch_offset : Offset where to jump if no such match
     // - pop 1

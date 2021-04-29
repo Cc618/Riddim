@@ -441,16 +441,19 @@ void interpret_fragment(Code *_code, size_t &ip) {
             if (error_type == null || error->type == error_type) {
                 auto id = GET_CONST(ARG(1));
 
-                if (id->type != Str::class_type) {
-                    throw_fmt(InternalError,
-                              "Opcode CatchError : Invalid catch id type '%s'",
-                              id->type->name.c_str());
+                if (id != null) {
+                    if (id->type != Str::class_type) {
+                        throw_fmt(InternalError,
+                                "Opcode CatchError : Invalid catch id type '%s'",
+                                id->type->name.c_str());
 
-                    DISPATCH_ERROR;
+                        DISPATCH_ERROR;
+                    }
+
+                    // Set this variable to the error
+                    frame->setitem(id, error);
                 }
 
-                // Set this variable to the error
-                frame->setitem(id, error);
                 clear_error();
             } else {
                 auto nomatch_offset = ARG(2);
