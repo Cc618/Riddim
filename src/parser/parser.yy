@@ -363,7 +363,43 @@ macrostmt: macro_keyword_varargs list_content stop {
 
 macro_keyword: macro_keyword_varargs { $$ = $1; }
     | macro_keyword_single { $$ = $1; }
+    | "use" { $$ = "use"; }
+    | "fn" { $$ = "fn"; }
     | "return" { $$ = "return"; }
+    | "if" { $$ = "if"; }
+    | "else" { $$ = "else"; }
+    | "elif" { $$ = "elif"; }
+    | "while" { $$ = "while"; }
+    | "for" { $$ = "for"; }
+    | "break" { $$ = "break"; }
+    | "continue" { $$ = "continue"; }
+    | "try" { $$ = "try"; }
+    | "catch" { $$ = "catch"; }
+    | "rethrow" { $$ = "rethrow"; }
+    | "as" { $$ = "as"; }
+    | "let" { $$ = "let"; }
+    | "+" { $$ = "+"; }
+    | "-" { $$ = "-"; }
+    | "*" { $$ = "*"; }
+    | "/" { $$ = "/"; }
+    | "%" { $$ = "%"; }
+    | "=" { $$ = "="; }
+    | "<" { $$ = "<"; }
+    | ">" { $$ = ">"; }
+    | "<=" { $$ = "<="; }
+    | ">=" { $$ = ">="; }
+    | "==" { $$ = "=="; }
+    | "!=" { $$ = "!="; }
+    | "and" { $$ = "and"; }
+    | "or" { $$ = "or"; }
+    | "not" { $$ = "not"; }
+    | "is" { $$ = "is"; }
+    | "in" { $$ = "in"; }
+    | "." { $$ = "."; }
+    | ":" { $$ = ":"; }
+    | "->" { $$ = "->"; }
+    | "->=" { $$ = "->="; }
+    | ".." { $$ = ".."; }
     ;
 
 macro_keyword_varargs: "print" { $$ = "print"; }

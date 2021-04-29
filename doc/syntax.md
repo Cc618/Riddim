@@ -85,6 +85,51 @@ impostor = (print)
 impostor('I am not print')
 ```
 
+### Macros
+Macros are normal functions, only the syntax is different.
+There is no parenthesis and every argument is passed on the same line.
+
+```python
+macro_keyword
+macro_keyword arg1
+macro_keyword arg1, arg2, etc
+```
+
+Here is the list of all macros :
+
+| Keyword | Args | Description |
+| ------- | ---- | ----------- |
+| print | Variadic | Prints to stdout all its args |
+| typeof | The target | Returns the type of the target |
+| throw | The error | Throws the error |
+| rethrow | None | Rethrows the error caught within the catch block |
+
+Macros cannot be defined by the user, they are always associated to a specific
+keyword unavailable to the user.
+That is, it is not possible to create a variable named print with the normal syntax.
+Nevertheless, it is possible to surround a macro keyword with parenthesis to
+make it an identifier :
+
+```python
+# Syntax error
+print throw
+
+# Sets the throw variable
+(throw) = 42
+print (throw)
+
+# Prints Builtin<print>
+print (print)
+
+# In addition to macros keywords, it is possible to use other keywords :
+(if) = 618
+print (if)
+
+# Or even operators
+(+) = |a, b| a + b
+print (+)(42, 618)
+```
+
 ## Control Flow
 ### If / Else / Elif
 Here is the if syntax :
