@@ -260,7 +260,7 @@ try {
     my_dangerous_code()
 } catch ErrorType1 as error {
     print 'ErrorType1 :', error
-} catch ErrorType2 {
+} catch ErrorType2 as _ {
     print 'ErrorType2 caught'
 } catch error {
     print 'Unknown error type :', error
@@ -274,6 +274,18 @@ the error.
 Finally, the last block is executed if there is another error.
 Note that only one catch block can be used.
 You can throw in a catch block, it is useful to rethrow the current error.
+
+### Rethrow
+You are allowed to rethrow the current error in a catch block with the rethrow keyword :
+```cpp
+try {
+    throw 404
+} catch Int as error {
+    if error == 404 {
+        rethrow
+    }
+}
+```
 
 ## Imports (use keyword)
 The use keyword is used to import modules.
