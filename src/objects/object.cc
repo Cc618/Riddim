@@ -1,17 +1,19 @@
 #include "object.hh"
+#include "bool.hh"
 #include "error.hh"
 #include "hash.hh"
 #include "int.hh"
 #include "program.hh"
 #include "str.hh"
-#include "bool.hh"
 #include <iostream>
 
 using namespace std;
 
 bool is_pod_object(Object *o) {
-    if (o->type == Int::class_type) return true;
-    if (o->type == Bool::class_type) return true;
+    if (o->type == Int::class_type)
+        return true;
+    if (o->type == Bool::class_type)
+        return true;
 
     return false;
 }
@@ -73,11 +75,13 @@ Object *Object::cmp(Object *o) {
 
     auto result = type->fn_cmp(this, o);
 
-    if (!result) return nullptr;
+    if (!result)
+        return nullptr;
 
     // Must be int
     if (result->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF(type->name + "@cmp", result->type, Int::class_type);
+        THROW_TYPE_ERROR_PREF(type->name + "@cmp", result->type,
+                              Int::class_type);
 
         return nullptr;
     }
@@ -176,7 +180,6 @@ Object *Object::iter() {
     return type->fn_iter(this);
 }
 
-
 Object *Object::len() {
     if (!type->fn_len) {
         THROW_NOBUILTIN(this->type, len);
@@ -186,11 +189,13 @@ Object *Object::len() {
 
     auto result = type->fn_len(this);
 
-    if (!result) return nullptr;
+    if (!result)
+        return nullptr;
 
     // Must be int
     if (result->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF(type->name + "@len", result->type, Int::class_type);
+        THROW_TYPE_ERROR_PREF(type->name + "@len", result->type,
+                              Int::class_type);
 
         return nullptr;
     }
@@ -279,11 +284,13 @@ Object *Object::str() {
 
     auto result = type->fn_str(this);
 
-    if (!result) return nullptr;
+    if (!result)
+        return nullptr;
 
     // Must be str
     if (result->type != Str::class_type) {
-        THROW_TYPE_ERROR_PREF(type->name + "@str", result->type, Str::class_type);
+        THROW_TYPE_ERROR_PREF(type->name + "@str", result->type,
+                              Str::class_type);
 
         return nullptr;
     }
@@ -297,11 +304,13 @@ Object *Object::sub(Object *o) {
         if (type->fn_add && type->fn_neg) {
             auto negated = o->neg();
 
-            if (!negated) return nullptr;
+            if (!negated)
+                return nullptr;
 
             auto result = add(negated);
 
-            if (!result) return nullptr;
+            if (!result)
+                return nullptr;
 
             return result;
         }
@@ -335,16 +344,47 @@ void Type::init_class_type() {
 
     // @call
     // Call the constructor
-    class_type->fn_call = [](Object *self, Object *args, Object *kwargs) -> Object * {
+    class_type->fn_call = [](Object *self, Object *args,
+                             Object *kwargs) -> Object * {
         auto me = reinterpret_cast<Type *>(self);
 
         if (!me->constructor) {
-            throw_fmt(NameError, "Type %s has no constructor", me->name.c_str());
+            throw_fmt(NameError, "Type %s has no constructor",
+                      me->name.c_str());
 
             return nullptr;
         }
 
         return me->constructor(self, args, kwargs);
+    };
+
+    // @getattr
+    class_type->fn_getattr = [](Object *self, Object *name) -> Object * {
+        auto me = reinterpret_cast<Type *>(self);
+
+        if (name->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("Type.@getattr", name->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(name)->data;
+
+        if (attr == "name") {
+            auto result = new (nothrow) Str(me->name);
+
+            if (!result) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return result;
+        }
+
+        THROW_ATTR_ERROR(me->type, attr);
+
+        return nullptr;
     };
 
     // @str
