@@ -119,9 +119,9 @@ void Str::init_class_type() {
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         Str *me = reinterpret_cast<Str *>(self);
 
-        // TODO : Slice
         if (key->type == Int::class_type) {
-            int_t index = get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
+            int_t index = get_mod_index(reinterpret_cast<Int *>(key)->data,
+                                        me->data.size());
 
             // Outside of bounds
             if (index < 0 || index >= me->data.size()) {
@@ -141,24 +141,27 @@ void Str::init_class_type() {
 
             return result;
         } else {
+            // Slice
             // Collect indices
-            // TODO : -1
-            auto collect = try_collect_int_iterator(key, 0, me->data.size());
+            auto collect = try_collect_int_iterator(key, -me->data.size(),
+                                                    me->data.size());
 
             if (on_error()) {
                 clear_error();
 
                 // Rethrow another one
-                throw_fmt(TypeError, "Invalid type '%s' to index Str",
-                      key->type->name.c_str());
+                throw_fmt(TypeError,
+                          "Invalid type '%s' to index Str (must be Int or an "
+                          "iterable)",
+                          key->type->name.c_str());
 
                 return nullptr;
             }
 
-            // TODO : -1
             str_t result;
-            for (auto i : collect)
-                result += me->data[i];
+            for (auto i : collect) {
+                result += me->data[get_mod_index(i, me->data.size())];
+            }
 
             auto ret = new (nothrow) Str(result);
 
@@ -243,7 +246,8 @@ void Str::init_class_type() {
 
         // TODO : Slice
         if (key->type == Int::class_type) {
-            int_t index = get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
+            int_t index = get_mod_index(reinterpret_cast<Int *>(key)->data,
+                                        me->data.size());
 
             // Outside of bounds
             if (index < 0 || index >= me->data.size()) {

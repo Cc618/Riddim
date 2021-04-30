@@ -1,15 +1,15 @@
 #include "vec.hh"
 #include "bool.hh"
+#include "builtins.hh"
 #include "error.hh"
 #include "function.hh"
 #include "hash.hh"
 #include "int.hh"
+#include "iterator.hh"
 #include "methods.hh"
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
-#include "iterator.hh"
-#include "builtins.hh"
 #include <algorithm>
 #include <string>
 
@@ -197,18 +197,21 @@ void Vec::init_class_type() {
     class_type->fn_iter = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
-        auto iter = new (nothrow) Iterator([](Iterator *it) -> Object * {
-            int_t &i = reinterpret_cast<int_t&>(it->custom_data);
-            Vec *me = reinterpret_cast<Vec *>(it->collection);
+        auto iter = new (nothrow) Iterator(
+            [](Iterator *it) -> Object * {
+                int_t &i = reinterpret_cast<int_t &>(it->custom_data);
+                Vec *me = reinterpret_cast<Vec *>(it->collection);
 
-            if (i >= me->data.size()) return enditer;
+                if (i >= me->data.size())
+                    return enditer;
 
-            auto result = me->data[i];
+                auto result = me->data[i];
 
-            ++i;
+                ++i;
 
-            return result;
-        }, me, 0);
+                return result;
+            },
+            me, 0);
 
         if (!iter) {
             THROW_MEMORY_ERROR;
@@ -294,26 +297,53 @@ void Vec::init_class_type() {
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
-        // TODO : Slice
-        if (key->type != Int::class_type) {
-            THROW_TYPE_ERROR_PREF("Vec.@getitem", key->type, Int::class_type);
+        if (key->type == Int::class_type) {
+            auto len = me->data.size();
+            auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data, len);
 
-            return nullptr;
+            // Out of bounds
+            if (idx < 0 || idx >= len) {
+                THROW_OUT_OF_BOUNDS(me->data.size(), idx);
+
+                return nullptr;
+            }
+
+            auto result = me->data[idx];
+
+            return result;
+        } else {
+            // Slice
+            // Collect indices
+            auto collect = try_collect_int_iterator(key, -me->data.size(),
+                                                    me->data.size());
+
+            if (on_error()) {
+                clear_error();
+
+                // Rethrow another one
+                throw_fmt(TypeError,
+                          "Invalid type '%s' to index Vec (must be Int or an "
+                          "iterable)",
+                          key->type->name.c_str());
+
+                return nullptr;
+            }
+
+            vector<Object *> result;
+            for (auto i : collect) {
+                result.push_back(me->data[get_mod_index(i, me->data.size())]);
+            }
+
+            auto ret = new (nothrow) Vec(result);
+
+            if (!ret) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return ret;
         }
-
-        auto len = me->data.size();
-        auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data, len);
-
-        // Out of bounds
-        if (idx < 0 || idx >= len) {
-            THROW_OUT_OF_BOUNDS(me->data.size(), idx);
-
-            return nullptr;
-        }
-
-        auto result = me->data[idx];
-
-        return result;
     };
 
     // @str
@@ -376,7 +406,8 @@ void Vec::init_class_type() {
             return nullptr;
         }
 
-        auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
+        auto idx =
+            get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
 
         // Out of bounds
         if (idx < 0 || idx >= me->data.size()) {
