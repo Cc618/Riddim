@@ -51,7 +51,6 @@ void Program::init_class_type() {
 
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
-        // TODO : Display modules, types...
         auto result = new (nothrow) Str("Program()");
 
         if (!result) {

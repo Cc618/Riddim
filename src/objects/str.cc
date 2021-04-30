@@ -141,10 +141,34 @@ void Str::init_class_type() {
 
             return result;
         } else {
-            throw_fmt(TypeError, "Invalid type '%s' to index Str",
+            // Collect indices
+            // TODO : -1
+            auto collect = try_collect_int_iterator(key, 0, me->data.size());
+
+            if (on_error()) {
+                clear_error();
+
+                // Rethrow another one
+                throw_fmt(TypeError, "Invalid type '%s' to index Str",
                       key->type->name.c_str());
 
-            return nullptr;
+                return nullptr;
+            }
+
+            // TODO : -1
+            str_t result;
+            for (auto i : collect)
+                result += me->data[i];
+
+            auto ret = new (nothrow) Str(result);
+
+            if (!ret) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return ret;
         }
     };
 

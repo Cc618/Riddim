@@ -1,5 +1,7 @@
 #include "utils.hh"
+#include "int.hh"
 #include "program.hh"
+#include "builtins.hh"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -74,3 +76,43 @@ str_t dir_path(const str_t &path) {
 }
 
 bool is_file(const str_t &path) { return fs::is_regular_file(path); }
+
+std::vector<int_t> try_collect_int_iterator(Object *iterable, int_t low, int_t high) {
+    vector<int_t> result;
+
+    auto iter = iterable->iter();
+
+    if (!iter) {
+        return {};
+    }
+
+    // Get all values within the range
+    Object *i = nullptr;
+    while (true) {
+        i = iter->next();
+
+        // Error
+        if (i == nullptr) {
+            return {};
+        }
+
+        // End of iterator
+        if (i == enditer) {
+            break;
+        }
+
+        if (i->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Iterator Collection", i->type, Int::class_type);
+
+            return {};
+        }
+
+        int_t data = reinterpret_cast<Int*>(i)->data;
+
+        if (data >= low && data < high) {
+            result.push_back(data);
+        }
+    }
+
+    return result;
+}

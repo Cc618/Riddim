@@ -5,6 +5,7 @@
 #include <functional>
 #include <string>
 #include <optional>
+#include <vector>
 
 #define C_RED "\x1b[1;31m"
 #define C_GREEN "\x1b[1;32m"
@@ -62,3 +63,8 @@ str_t dir_path(const str_t &path);
 
 // Exists and is readible
 bool is_file(const str_t &path);
+
+// Tries to collect a range like iterator with values from low (included)
+// to high (excluded)
+// Can throw
+std::vector<int_t> try_collect_int_iterator(Object *iterable, int_t low, int_t high);
