@@ -258,22 +258,90 @@ void Str::init_class_type() {
 
             str_t val;
 
-            // TODO : Char
             if (value->type == Str::class_type) {
                 val = reinterpret_cast<Str *>(value)->data;
-            } else
+            } else {
                 THROW_TYPE_ERROR_PREF("Str.@setitem", value->type,
                                       Str::class_type);
+
+                return nullptr;
+            }
 
             me->data =
                 me->data.substr(0, index) + val + me->data.substr(index + 1);
 
             return null;
         } else {
-            throw_fmt(TypeError, "Invalid type '%s' to index Str",
-                      key->type->name.c_str());
+            // Slice
+            // Collect indices
+            auto collect = try_collect_int_iterator(key, -me->data.size(),
+                                                    me->data.size());
 
-            return nullptr;
+            if (on_error()) {
+                clear_error();
+
+                // Rethrow another one
+                throw_fmt(TypeError,
+                          "Invalid type '%s' to index Str (must be Int or an "
+                          "iterable)",
+                          key->type->name.c_str());
+
+                return nullptr;
+            }
+
+            // Map modular index to use only positive indinces
+            for (auto &i : collect) {
+                i = get_mod_index(i, me->data.size());
+            }
+
+            // Verify |step| is 1
+            for (int i = 1; i < collect.size(); ++i) {
+                int prev = collect[i - 1];
+                int current = collect[i];
+
+                if (abs(prev - current) != 1) {
+                    throw_fmt(IndexError,
+                              "Invalid slice for %sStr.@setitem%s, the step "
+                              "size must be %s1%s or %s-1%s",
+                              C_GREEN, C_NORMAL,
+                              C_BLUE, C_NORMAL,
+                              C_BLUE, C_NORMAL);
+
+                    return nullptr;
+                }
+
+            }
+
+            const auto &[mn_it, mx_it] = minmax_element(collect.begin(), collect.end());
+
+            if (mn_it == collect.end() || mx_it == collect.end()) {
+                // Rethrow another one
+                throw_fmt(TypeError,
+                          "Invalid type '%s' to index Str (must be Int or an "
+                          "iterable)",
+                          key->type->name.c_str());
+
+                return nullptr;
+            }
+
+            int_t mn = *mn_it;
+            int_t mx = *mx_it;
+
+            str_t val;
+
+            if (value->type == Str::class_type) {
+                val = reinterpret_cast<Str *>(value)->data;
+            } else {
+                THROW_TYPE_ERROR_PREF("Str.@setitem", value->type,
+                                      Str::class_type);
+
+                return nullptr;
+            }
+
+            me->data =
+                me->data.substr(0, mn) + val + me->data.substr(mx + 1);
+
+            return null;
         }
     };
 

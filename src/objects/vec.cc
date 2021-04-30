@@ -399,26 +399,93 @@ void Vec::init_class_type() {
                                 Object *value) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
-        // TODO : Slice
-        if (key->type != Int::class_type) {
-            THROW_TYPE_ERROR_PREF("Vec.@setitem", key->type, Int::class_type);
+        if (key->type == Int::class_type) {
+            auto idx =
+                get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
 
-            return nullptr;
+            // Out of bounds
+            if (idx < 0 || idx >= me->data.size()) {
+                THROW_OUT_OF_BOUNDS(me->data.size(), idx);
+
+                return nullptr;
+            }
+
+            me->data[idx] = value;
+
+            return null;
+        } else {
+            // Slice
+            // Collect indices
+            auto collect = try_collect_int_iterator(key, -me->data.size(),
+                                                    me->data.size());
+
+            if (on_error()) {
+                clear_error();
+
+                // Rethrow another one
+                throw_fmt(TypeError,
+                          "Invalid type '%s' to index Vec (must be Int or an "
+                          "iterable)",
+                          key->type->name.c_str());
+
+                return nullptr;
+            }
+
+            // Map modular index to use only positive indinces
+            for (auto &i : collect) {
+                i = get_mod_index(i, me->data.size());
+            }
+
+            // Verify |step| is 1
+            for (int i = 1; i < collect.size(); ++i) {
+                int prev = collect[i - 1];
+                int current = collect[i];
+
+                if (abs(prev - current) != 1) {
+                    throw_fmt(IndexError,
+                              "Invalid slice for %sVec.@setitem%s, the step "
+                              "size must be %s1%s or %s-1%s",
+                              C_GREEN, C_NORMAL,
+                              C_BLUE, C_NORMAL,
+                              C_BLUE, C_NORMAL);
+
+                    return nullptr;
+                }
+
+            }
+
+            const auto &[mn_it, mx_it] = minmax_element(collect.begin(), collect.end());
+
+            if (mn_it == collect.end() || mx_it == collect.end()) {
+                // Rethrow another one
+                throw_fmt(TypeError,
+                          "Invalid type '%s' to index Vec (must be Int or an "
+                          "iterable)",
+                          key->type->name.c_str());
+
+                return nullptr;
+            }
+
+            int_t mn = *mn_it;
+            int_t mx = *mx_it;
+
+            str_t val;
+
+            vector<Object *> newdata;
+
+            for (int i = 0; i < mn; ++i)
+                newdata.push_back(me->data[i]);
+
+            newdata.push_back(value);
+
+            for (int i = mx + 1; i < me->data.size(); ++i)
+                newdata.push_back(me->data[i]);
+
+            me->data = newdata;
+
+            return null;
         }
 
-        auto idx =
-            get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
-
-        // Out of bounds
-        if (idx < 0 || idx >= me->data.size()) {
-            THROW_OUT_OF_BOUNDS(me->data.size(), idx);
-
-            return nullptr;
-        }
-
-        me->data[idx] = value;
-
-        return null;
     };
 }
 
