@@ -296,7 +296,6 @@ hmap_t::iterator HashMap::find(Object *key) {
     if (!h)
         return data.end();
 
-
     auto typeh = key->type->hash();
 
     if (!typeh)
@@ -466,7 +465,9 @@ void AttrObject::init_class_type() {
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<AttrObject *>(self);
 
-        str_t result = "AttrObject(";
+        // Since AttrObject is used for a user defined type
+        // The type can derive from AttrObject and have a different name
+        str_t result = me->type->name + "(";
 
         auto attrs = me->data->str();
 

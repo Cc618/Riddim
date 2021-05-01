@@ -3,14 +3,13 @@
 #include "builtins.hh"
 #include "debug.hh"
 #include "error.hh"
+#include "function.hh"
 #include "int.hh"
 #include "map.hh"
 #include "modio.hh"
 #include "program.hh"
 #include "range.hh"
-#include "function.hh"
-
-// TODO
+#include "usertype.hh"
 #include <iostream>
 
 using namespace std;
@@ -110,8 +109,8 @@ bool interpret_program(Module *main_module) {
 }
 
 void interpret(Code *_code, const str_t &id,
-               const std::unordered_map<str_t, Object *> &vars,
-               Module *module, Frame *lambda_frame) {
+               const std::unordered_map<str_t, Object *> &vars, Module *module,
+               Frame *lambda_frame) {
     // Push new frame
     Frame *frame = nullptr;
 
@@ -242,13 +241,15 @@ void interpret_fragment(Code *_code, size_t &ip) {
             auto fun = TOP;
 
             if (fun->type != Function::class_type) {
-                THROW_TYPE_ERROR_PREF("BindLambda", fun->type, Function::class_type);
+                THROW_TYPE_ERROR_PREF("BindLambda", fun->type,
+                                      Function::class_type);
 
                 DISPATCH_ERROR;
             }
 
-            auto lambda = reinterpret_cast<Function*>(fun);
-            lambda->lambda_frame = Frame::New(lambda->name, lambda->code->filename);
+            auto lambda = reinterpret_cast<Function *>(fun);
+            lambda->lambda_frame =
+                Frame::New(lambda->name, lambda->code->filename);
 
             if (!lambda->lambda_frame) {
                 DISPATCH_ERROR;
@@ -259,7 +260,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 const auto &[k, v] = kv;
 
                 if (k->type != Str::class_type) {
-                    THROW_TYPE_ERROR_PREF("HashMap.@getitem", k->type, Str::class_type);
+                    THROW_TYPE_ERROR_PREF("HashMap.@getitem", k->type,
+                                          Str::class_type);
 
                     DISPATCH_ERROR;
                 }
@@ -453,9 +455,10 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
                 if (id != null) {
                     if (id->type != Str::class_type) {
-                        throw_fmt(InternalError,
-                                "Opcode CatchError : Invalid catch id type '%s'",
-                                id->type->name.c_str());
+                        throw_fmt(
+                            InternalError,
+                            "Opcode CatchError : Invalid catch id type '%s'",
+                            id->type->name.c_str());
 
                         DISPATCH_ERROR;
                     }
@@ -743,19 +746,17 @@ void interpret_fragment(Code *_code, size_t &ip) {
             auto name_obj = GET_CONST(name_offset);
 
             if (name_obj->type != Str::class_type) {
-                THROW_TYPE_ERROR_PREF("NewType", name_obj->type, Str::class_type);
+                THROW_TYPE_ERROR_PREF("NewType", name_obj->type,
+                                      Str::class_type);
 
                 DISPATCH_ERROR;
             }
 
-            str_t name = reinterpret_cast<Str*>(name_obj)->data;
+            str_t name = reinterpret_cast<Str *>(name_obj)->data;
 
-            // TODO A : Register
-            auto result = new (nothrow) Type(name);
+            auto result = NewUserType(name);
 
             if (!result) {
-                THROW_MEMORY_ERROR;
-
                 DISPATCH_ERROR;
             }
 
