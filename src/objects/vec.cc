@@ -111,6 +111,52 @@ void Vec::init_class_type() {
         return result;
     };
 
+    // @cmp
+    class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Vec *>(self);
+
+        int_t res = 0;
+
+        if (o->type != Vec::class_type) {
+            res = -1;
+        } else {
+            // Algorithm :
+            // - If not the same size, return the size difference
+            // - Return the difference between the first different
+            // item pair (where me[i] != other[i]) or 0 if none
+            auto other = reinterpret_cast<Vec *>(o)->data;
+
+            if (me->data.size() != other.size()) {
+                res = me->data.size() - other.size();
+            } else {
+                for (size_t i = 0; i < me->data.size(); ++i) {
+                    // Int type verified
+                    auto cmp = me->data[i]->cmp(other[i]);
+
+                    // Error
+                    if (!cmp) {
+                        return nullptr;
+                    }
+
+                    if (cmp) {
+                        res = reinterpret_cast<Int*>(cmp)->data;
+                        break;
+                    }
+                }
+            }
+        }
+
+        auto result = new (nothrow) Int(res);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @hash
     class_type->fn_hash = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
