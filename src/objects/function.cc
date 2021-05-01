@@ -54,6 +54,19 @@ void Builtin::init_class_type() {
         return me->data(me->self, args, kwargs);
     };
 
+    // @copy
+    class_type->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Builtin *>(self);
+
+        auto result = new (nothrow) Builtin(me->data, me->name, me->self);
+
+        if (!result) {
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Builtin *>(self);
@@ -239,6 +252,19 @@ void Function::init_class_type() {
         Program::instance->obj_stack.pop_back();
 
         return ret;
+    };
+
+    // @copy
+    class_type->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Function *>(self);
+
+        auto result = Function::New(me->code, me->name, me->self);
+
+        if (!result) {
+            return nullptr;
+        }
+
+        return result;
     };
 
     // @str
