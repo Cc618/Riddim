@@ -156,11 +156,11 @@ struct IdTarget;
 
 // For each statement
 struct ForStmt : public LoopStmt {
-    IdTarget *id;
+    Target *target;
     Exp *iterable;
     Block *body;
 
-    ForStmt(line_t fileline, IdTarget *id, Exp *iterable, Block *body);
+    ForStmt(line_t fileline, Target *target, Exp *iterable, Block *body);
 
     virtual ~ForStmt();
 

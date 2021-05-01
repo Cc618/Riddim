@@ -87,11 +87,11 @@ void WhileStmt::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
-ForStmt::ForStmt(line_t fileline, IdTarget *id, Exp *iterable, Block *body)
-    : LoopStmt(fileline), id(id), iterable(iterable), body(body) {}
+ForStmt::ForStmt(line_t fileline, Target *target, Exp *iterable, Block *body)
+    : LoopStmt(fileline), target(target), iterable(iterable), body(body) {}
 
 ForStmt::~ForStmt() {
-    delete id;
+    delete target;
     delete iterable;
     delete body;
 }

@@ -438,7 +438,7 @@ void ForStmt::gen_code(Module *module, Code *_code) {
     PUSH_CODE(Nop);
 
     // Store the next item within the id
-    id->gen_code(module, _code);
+    target->gen_code(module, _code);
     PUSH_CODE(Pop);
 
     // Execute body

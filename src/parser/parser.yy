@@ -333,7 +333,10 @@ whilestmt: "while" exp block stop { $$ = new WhileStmt(@1.begin.line, $2, $3); }
     ;
 
 forstmt: "for" target_id "in" exp block stop {
-        $$ = new ForStmt(@1.begin.line, static_cast<IdTarget*>($2), $4, $5);
+        $$ = new ForStmt(@1.begin.line, $2, $4, $5);
+    }
+    | "for" target_multi "in" exp block stop {
+        $$ = new ForStmt(@1.begin.line, $2, $4, $5);
     }
     ;
 
