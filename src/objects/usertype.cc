@@ -1,5 +1,6 @@
 #include "usertype.hh"
 #include "error.hh"
+#include "function.hh"
 #include "methods.hh"
 #include "null.hh"
 #include "str.hh"
@@ -18,15 +19,31 @@ UserTypeType *NewUserType(const str_t &name) {
                                Object *kwargs) -> Object * {
         INIT_METHOD(UserTypeType, name);
 
-        auto result = NewUserObject(me);
+        auto instance = NewUserObject(me);
 
         // Dispatch error
-        if (!result)
+        if (!instance)
             return nullptr;
 
-        // TODO C : Custom constructor
+        // Add attributes and methods
+        for (const auto &[h, kv] : me->attrs->data) {
+            const auto &[k, v] = kv;
 
-        return result;
+            auto newv = v->copy();
+
+            if (!newv) return nullptr;
+
+            // If function, bind self
+            if (newv->type == Builtin::class_type || newv->type == Function::class_type) {
+                auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
+                newv_fun->self = instance;
+            }
+
+            if (!instance->setattr(k, newv))
+                return nullptr;
+        }
+
+        return instance;
     };
 
     // Default slots
@@ -76,13 +93,14 @@ void UserTypeType::init_class_type() {
     // Inherit from super type (Type)
     Type::init_slots(class_type);
 
-    class_type->fn_traverse_objects =
-        [](Object *self, const fn_visit_object_t &visit) {
+    class_type->fn_traverse_objects = [](Object *self,
+                                         const fn_visit_object_t &visit) {
         // Override and call super
         if (Type::class_type->fn_traverse_objects) {
             Type::class_type->fn_traverse_objects(self, visit);
 
-            if (on_error()) return;
+            if (on_error())
+                return;
         }
 
         auto me = reinterpret_cast<UserTypeType *>(self);
@@ -102,26 +120,32 @@ void UserTypeType::init_class_type() {
                                 Object *value) -> Object * {
         auto me = reinterpret_cast<UserTypeType *>(self);
 
-        return me->attrs->setitem(key, value);
-    };
-
-    // @call
-    // Call the constructor
-    class_type->fn_call = [](Object *self, Object *args,
-                             Object *kwargs) -> Object * {
-        auto me = reinterpret_cast<UserTypeType *>(self);
-
-        // TODO C : Init slots
-        // TODO C : Custom constructor + no constructor
-        if (!me->constructor) {
-            throw_fmt(NameError, "Type %s has no constructor",
-                      me->name.c_str());
+        if (key->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("UserTypeType.@setattr{key}", key->type,
+                                  Str::class_type);
 
             return nullptr;
         }
 
+        auto keystr = reinterpret_cast<Str *>(key)->data;
 
-        return me->constructor(self, args, kwargs);
+        // TODO D : @str
+        if (keystr == "str") {
+            if (value->type != Function::class_type) {
+                THROW_TYPE_ERROR_PREF("UserTypeType.@setattr{value}(@str)",
+                                      value->type, Function::class_type);
+
+                return nullptr;
+            }
+
+            // auto val = reinterpret_cast<Function*>(value);
+
+            // me->fn_str = [](Object *self) -> Object* {
+            //     auto fn
+            // }
+        }
+
+        return me->attrs->setitem(key, value);
     };
 }
 
