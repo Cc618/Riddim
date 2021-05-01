@@ -328,9 +328,10 @@ static int type_global_id = 0;
 
 Type *Type::class_type = nullptr;
 
-Type::Type(const str_t &name) : Object(Type::class_type), name(name) {
+Type::Type(const str_t &name, bool register_type)
+    : Object(Type::class_type), name(name) {
     // Register this type to the program
-    if (Program::instance)
+    if (register_type && Program::instance)
         Program::add_type(this);
 
     id = ++type_global_id;
@@ -342,10 +343,15 @@ void Type::init_class_type() {
     // Was not initialized
     class_type->type = class_type;
 
+    init_slots(class_type);
+}
+
+bool Type::operator==(const Type &other) const { return id == other.id; }
+
+void Type::init_slots(Type *type) {
     // @call
     // Call the constructor
-    class_type->fn_call = [](Object *self, Object *args,
-                             Object *kwargs) -> Object * {
+    type->fn_call = [](Object *self, Object *args, Object *kwargs) -> Object * {
         auto me = reinterpret_cast<Type *>(self);
 
         if (!me->constructor) {
@@ -359,7 +365,7 @@ void Type::init_class_type() {
     };
 
     // @getattr
-    class_type->fn_getattr = [](Object *self, Object *name) -> Object * {
+    type->fn_getattr = [](Object *self, Object *name) -> Object * {
         auto me = reinterpret_cast<Type *>(self);
 
         if (name->type != Str::class_type) {
@@ -388,7 +394,7 @@ void Type::init_class_type() {
     };
 
     // @str
-    class_type->fn_str = [](Object *self) -> Object * {
+    type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Type *>(self);
         auto result = new (nothrow) Str("Type(" + me->name + ")");
 
@@ -401,5 +407,3 @@ void Type::init_class_type() {
         return result;
     };
 }
-
-bool Type::operator==(const Type &other) const { return id == other.id; }

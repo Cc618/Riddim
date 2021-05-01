@@ -91,6 +91,8 @@ struct Object {
     Object *sub(Object *o);
 };
 
+struct UserTypeType;
+
 // Every type must have a unique instance of this class
 struct Type : public Object {
     static Type *class_type;
@@ -176,10 +178,15 @@ struct Type : public Object {
     fn_binary_t fn_sub;
 
     // A type is always global
-    Type(const str_t &name);
+    Type(const str_t &name, bool register_type = true);
 
     static void init_class_type();
 
     // Compares the unique identifier
     bool operator==(const Type &other) const;
+
+protected:
+    // Inits all slots
+    // Not in init_class_type to be called from UserType (inherited)
+    static void init_slots(Type *type);
 };

@@ -17,6 +17,7 @@
 #include "iterator.hh"
 #include "vec.hh"
 #include "range.hh"
+#include "usertype.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -74,6 +75,7 @@ static void init_types() {
     INIT_TYPE(Global);
     INIT_TYPE(Iterator);
     INIT_TYPE(Range);
+    INIT_TYPE(UserTypeType);
 
 #undef INIT_TYPE
 }
