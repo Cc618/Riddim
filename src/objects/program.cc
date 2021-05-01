@@ -1,5 +1,6 @@
 #include "program.hh"
 #include "str.hh"
+#include <iostream>
 
 using namespace std;
 
@@ -126,6 +127,12 @@ void Program::push_trace(Trace *t) {
 
 void Program::pop_trace() {
     Program::instance->trace = Program::instance->trace->prev;
+}
+
+void Program::output_errout() {
+    cerr << Program::instance->errout.str();
+    Program::instance->errout.str("");
+    Program::instance->errout.clear();
 }
 
 void Program::register_type(Type *type) {

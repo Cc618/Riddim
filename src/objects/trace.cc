@@ -47,8 +47,10 @@ void Trace::init_class_type() {
 void Trace::display() {
     auto line = code->lineof(ip);
 
-    cerr << C_GREEN << code->filename << ":" << C_RED << to_string(line) << " " << C_BLUE << id << C_NORMAL << endl;
+    cerr << C_GREEN << code->filename << ":" << C_RED << to_string(line) << " "
+         << C_BLUE << id << C_NORMAL << endl;
     show_source_line(code->filename, line);
+    Program::output_errout();
 }
 
 void Trace::dump() {

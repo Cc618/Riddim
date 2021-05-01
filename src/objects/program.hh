@@ -76,6 +76,10 @@ struct Program : public Object {
     static void push_trace(Trace *t);
     static void pop_trace();
 
+    // Outputs to cerr the errout stream
+    // The stream is cleared
+    static void output_errout();
+
     // Init attributes that were impossible to init in New
     // - filename : Main module file path
     void init_attributes();
