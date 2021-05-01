@@ -2,6 +2,8 @@
 #include "error.hh"
 #include "map.hh"
 #include "str.hh"
+#include "vec.hh"
+#include "methods.hh"
 
 using namespace std;
 
@@ -16,55 +18,26 @@ Type *NewUserType(const str_t &name) {
         return nullptr;
     }
 
-    type->constructor = [](Object *self, Object *args,
+    type->constructor = [name](Object *self, Object *args,
                                  Object *kwargs) -> Object * {
-        // INIT_METHOD(HashMap, "HashMap");
+        INIT_METHOD(Type, name);
 
-        // CHECK_NOARGS("HashMap");
-        // CHECK_NOKWARGS("HashMap");
-
-        auto me = reinterpret_cast<Type*>(self);
-
-        // TODO A
         auto result = NewUserObject(me);
 
         // Dispatch error
         if (!result)
             return nullptr;
 
+        // TODO C : Custom constructor
+
         return result;
     };
 
+    // Default slots
+    type->fn_copy = UserObject::class_type->fn_copy;
     type->fn_getattr = UserObject::class_type->fn_getattr;
     type->fn_setattr = UserObject::class_type->fn_setattr;
     type->fn_str = UserObject::class_type->fn_str;
-
-    // // @str
-    // type->fn_str = [](Object *self) -> Object * {
-    //     auto me = reinterpret_cast<Type *>(self);
-
-    //     str_t result = me->name + "(";
-
-    //     auto attrs = me->data->str();
-
-    //     // Don't display attributes
-    //     if (!attrs || attrs->type != Str::class_type) {
-    //         clear_error();
-    //         result += "{}";
-    //     } else
-    //         result += reinterpret_cast<Str *>(attrs)->data;
-
-    //     auto result_str = new (nothrow) Str(result + ")");
-
-    //     if (!result_str) {
-    //         THROW_MEMORY_ERROR;
-
-    //         return nullptr;
-    //     }
-
-    //     return result_str;
-    // };
-
 
     return type;
 }

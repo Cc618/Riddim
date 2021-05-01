@@ -30,6 +30,8 @@ void init_builtins();
 // --- Functions ---
 Object *builtin_assert(Object *self, Object *args, Object *kwargs);
 
+Object *builtin_copy(Object *self, Object *args, Object *kwargs);
+
 // Throws if is not Int
 Object *builtin_hash(Object *self, Object *args, Object *kwargs);
 

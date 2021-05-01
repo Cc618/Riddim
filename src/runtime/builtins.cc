@@ -80,6 +80,7 @@ void init_builtins() {
 
     // Functions
     INIT_BUILTIN("assert", builtin_assert);
+    INIT_BUILTIN("copy", builtin_copy);
     INIT_BUILTIN("hash", builtin_hash);
     INIT_BUILTIN("iter", builtin_iter);
     INIT_BUILTIN("len", builtin_len);
@@ -151,6 +152,21 @@ Object *builtin_assert(Object *self, Object *args, Object *kwargs) {
     }
 
     return null;
+}
+
+Object *builtin_copy(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "copy");
+
+    CHECK_ARGSLEN(1, "copy");
+    CHECK_NOKWARGS("copy");
+
+    auto result = args_data[0]->copy();
+
+    if (!result) {
+        return nullptr;
+    }
+
+    return result;
 }
 
 Object *builtin_hash(Object *self, Object *args, Object *kwargs) {

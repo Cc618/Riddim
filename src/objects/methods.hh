@@ -5,15 +5,16 @@
 // FN_NAME c string
 #define CHECK_ARGS(FN_NAME)                                                    \
     if (args->type != Vec::class_type) {                                       \
-        THROW_TYPE_ERROR_PREF(FN_NAME "{args}", args->type, Vec::class_type);  \
+        THROW_TYPE_ERROR_PREF((std::string(FN_NAME) + "{args}").c_str(),       \
+                              args->type, Vec::class_type);                    \
         return nullptr;                                                        \
     }
 
 // FN_NAME c string
 #define CHECK_KWARGS(FN_NAME)                                                  \
     if (kwargs->type != HashMap::class_type) {                                 \
-        THROW_TYPE_ERROR_PREF(FN_NAME "{kwargs}", kwargs->type,                \
-                              HashMap::class_type);                            \
+        THROW_TYPE_ERROR_PREF((std::string(FN_NAME) + "{kwargs}").c_str(),     \
+                              kwargs->type, HashMap::class_type);              \
         return nullptr;                                                        \
     }
 
@@ -52,8 +53,9 @@
     }
 
 // Inits a method in the factory of an object (self is the object)
-#define NEW_METHOD(TYPE, NAME)                                                       \
-    self->me_##NAME = new Builtin(self->me_##NAME##_handler, #TYPE "." #NAME, self);
+#define NEW_METHOD(TYPE, NAME)                                                 \
+    self->me_##NAME =                                                          \
+        new Builtin(self->me_##NAME##_handler, #TYPE "." #NAME, self);
 
 // Declares a new method inside the class of an object
 #define DECL_METHOD(NAME)                                                      \
