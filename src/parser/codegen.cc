@@ -369,6 +369,28 @@ void UseStmt::gen_code(Module *module, Code *_code) {
     }
 }
 
+void NewTypeStmt::gen_code(Module *module, Code *_code) {
+    Stmt::gen_code(module, _code);
+
+    auto name_const = new (nothrow) Str(name);
+
+    if (!name_const) {
+        throw CodeGenException("Cannot allocate memory", _code->filename,
+                               fileline);
+    }
+
+    auto name_offset = ADD_CONST(name_const);
+
+    // Create
+    PUSH_CODE(NewType);
+    PUSH_CODE(name_offset);
+
+    // Save it to a variable
+    PUSH_CODE(StoreVar);
+    PUSH_CODE(name_offset);
+    PUSH_CODE(Pop);
+}
+
 void WhileStmt::gen_code(Module *module, Code *_code) {
     LoopStmt::gen_code(module, _code);
 

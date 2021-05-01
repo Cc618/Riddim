@@ -737,6 +737,33 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(0);
         }
 
+        case NewType: {
+            auto name_offset = ARG(1);
+            CHECK_CONST(name_offset);
+            auto name_obj = GET_CONST(name_offset);
+
+            if (name_obj->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("NewType", name_obj->type, Str::class_type);
+
+                DISPATCH_ERROR;
+            }
+
+            str_t name = reinterpret_cast<Str*>(name_obj)->data;
+
+            // TODO A : Register
+            auto result = new (nothrow) Type(name);
+
+            if (!result) {
+                THROW_MEMORY_ERROR;
+
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(1);
+        }
+
         case Nop: {
             NEXT(0);
         }

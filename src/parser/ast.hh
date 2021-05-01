@@ -128,6 +128,19 @@ struct UseStmt : public Stmt {
     virtual void gen_code(Module *module, Code *code) override;
 };
 
+// Type declaration
+struct NewTypeStmt : public Stmt {
+    str_t name;
+
+    NewTypeStmt(line_t fileline, const str_t &name);
+
+    virtual ~NewTypeStmt();
+
+    virtual void debug(int indent = 0) override;
+
+    virtual void gen_code(Module *module, Code *code) override;
+};
+
 struct LoopControlStmt;
 
 // Abstract statement describing loops

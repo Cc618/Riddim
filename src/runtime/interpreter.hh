@@ -116,6 +116,10 @@ enum OpCode : opcode_t {
     // Merges variables of the TOS (a Module) to the current frame
     // - pop 1
     MergeModule,
+    // Registers a new type and pushes it to the TOS
+    // - name : Name of the new type
+    // - push 1
+    NewType,
     // No operation, used usually as a placeholder during code generation
     Nop,
     // Packs 'count' variables of the stack in a Vec

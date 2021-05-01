@@ -71,6 +71,15 @@ void UseStmt::debug(int indent) {
     cout << str_indent(indent) << "UseStmt(" << modname << ", " << asname << ")" << endl;
 }
 
+NewTypeStmt::NewTypeStmt(line_t fileline, const str_t &name)
+    : Stmt(fileline), name(name) {}
+
+NewTypeStmt::~NewTypeStmt() {}
+
+void NewTypeStmt::debug(int indent) {
+    cout << str_indent(indent) << "NewTypeStmt(" << name << ")" << endl;
+}
+
 WhileStmt::WhileStmt(line_t fileline, Exp *condition, Block *body)
     : LoopStmt(fileline), condition(condition), body(body) {}
 

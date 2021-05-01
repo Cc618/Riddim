@@ -87,6 +87,7 @@
     ELIF        "elif"
     ELSE        "else"
     USE         "use"
+    NEWTYPE     "newtype"
     WHILE       "while"
     FOR         "for"
     TRY         "try"
@@ -114,6 +115,7 @@
 // Statements
 %nterm <ast::Stmt*> stmt
 %nterm <ast::UseStmt*> usestmt usestmt_start
+%nterm <ast::NewTypeStmt*> newtypestmt
 %nterm <ast::WhileStmt*> whilestmt
 %nterm <ast::ForStmt*> forstmt
 %nterm <ast::IfStmt*> ifstmt ifstmt_elif
@@ -241,6 +243,7 @@ stmt: expstmt { $$ = $1; }
     | trystmt { $$ = $1; }
     | whilestmt { $$ = $1; }
     | usestmt { $$ = $1; }
+    | newtypestmt { $$ = $1; }
     | forstmt { $$ = $1; }
     | returnstmt { $$ = $1; }
     | loopcontrolstmt { $$ = $1; }
@@ -327,6 +330,9 @@ usestmt: usestmt_start stop { $$ = $1; }
 
 usestmt_start: "use" ID { $$ = new UseStmt(@1.begin.line, $2, $2); }
     | usestmt_start "." ID { $$ = $1; $$->modname += "." + $3; $$->asname = $3; }
+    ;
+
+newtypestmt: "newtype" ID stop { $$ = new NewTypeStmt(@1.begin.line, $2); }
     ;
 
 whilestmt: "while" exp block stop { $$ = new WhileStmt(@1.begin.line, $2, $3); }
