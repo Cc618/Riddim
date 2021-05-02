@@ -148,8 +148,8 @@ void Function::init_class_type() {
             } else {
                 THROW_ARGUMENT_ERROR(me->name, "length (too many arguments)",
                                      "This function requires from " +
-                                         to_string(me->n_required_args) +
-                                         " to " + to_string(me->args.size()) +
+                                         to_string(me->args.size()) +
+                                         " to " + to_string(me->n_required_args) +
                                          " arguments");
             }
 
@@ -241,6 +241,10 @@ void Function::init_class_type() {
             }
         }
 
+        // Add the 'me' variable
+        if (me->self)
+            vars["me"] = me->self;
+
         interpret(me->code, "Function<" + me->name + ">", vars, nullptr,
                   me->lambda_frame);
 
@@ -263,6 +267,10 @@ void Function::init_class_type() {
         if (!result) {
             return nullptr;
         }
+
+        result->n_required_args = me->n_required_args;
+        result->args = me->args;
+        result->lambda_frame = me->lambda_frame;
 
         return result;
     };

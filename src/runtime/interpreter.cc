@@ -134,6 +134,9 @@ void interpret(Code *_code, const str_t &id,
         frame = Frame::New(id, _code->filename, Program::instance->top_frame);
     }
 
+    if (!frame)
+        return;
+
     for (const auto &[id, val] : vars) {
         auto o_id = new (nothrow) Str(id);
         if (!o_id)
@@ -142,9 +145,6 @@ void interpret(Code *_code, const str_t &id,
         if (!frame->setitem(o_id, val))
             return;
     }
-
-    if (!frame)
-        return;
 
     Program::push_frame(frame);
 

@@ -42,8 +42,8 @@ struct Function : public AbstractFunction {
     Code *code;
     // Positional args with possibly default values (can be nullptr)
     std::vector<std::pair<str_t, Code *>> args;
-    int n_required_args;
-    Frame *lambda_frame;
+    int n_required_args = 0;
+    Frame *lambda_frame = nullptr;
 
     static Function *New(Code *code, const str_t &name, Object *self = nullptr);
 

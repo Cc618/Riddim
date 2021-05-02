@@ -90,6 +90,7 @@ void FnDecl::gen_code(Module *module, Code *_code) {
 
     finalize_function_code(module, fncode);
 
+    // TODO E
     auto id_target = dynamic_cast<IdTarget *>(target);
 
     auto name = id_target ? id_target->id->id : "<anonymous>";
