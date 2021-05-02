@@ -352,8 +352,6 @@ if x <= 0 {
 }
 ```
 
-<!-- TODO : Assert -->
-
 ### Try catch
 Try catch blocks are supported, they allow you to catch a specific
 (or any) exception.
@@ -388,6 +386,20 @@ try {
         rethrow
     }
 }
+```
+
+### Assert
+A useful macro is **assert**.
+It throws an AssertError if the condition is not fulfilled.
+In addition, an (optional) error message can be provided to explain
+in depth why the error is thrown.
+
+```python
+# Without message
+assert x >= 0
+
+# With message
+assert x >= 0, 'x must be non negative'
 ```
 
 ## Imports (use keyword)
