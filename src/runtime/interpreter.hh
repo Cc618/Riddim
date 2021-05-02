@@ -116,8 +116,10 @@ enum OpCode : opcode_t {
     // Merges variables of the TOS (a Module) to the current frame
     // - pop 1
     MergeModule,
-    // Registers a new type and pushes it to the TOS
+    // Registers a new type with its constructor on the TOS (may be null)
+    // and pushes the new type to the TOS
     // - name : Name of the new type
+    // - pop 1
     // - push 1
     NewType,
     // No operation, used usually as a placeholder during code generation

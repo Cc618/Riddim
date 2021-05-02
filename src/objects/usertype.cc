@@ -1,6 +1,7 @@
 #include "usertype.hh"
 #include "error.hh"
 #include "function.hh"
+#include "bool.hh"
 #include "methods.hh"
 #include "null.hh"
 #include "str.hh"
@@ -41,6 +42,46 @@ UserTypeType *NewUserType(const str_t &name) {
 
             if (!instance->setattr(k, newv))
                 return nullptr;
+        }
+
+        // Call constructor if present
+        auto new_key = new (nothrow) Str("@new");
+        auto has_new = instance->data->in(new_key);
+        bool is_constructed = false;
+
+        if (!has_new) {
+            return nullptr;
+        }
+
+        // @new present
+        if (has_new == istrue) {
+            auto new_attr = instance->getattr(new_key);
+
+            if (!new_attr) {
+                return nullptr;
+            }
+
+            if (new_attr != null) {
+                // Call the constructor
+                auto result = new_attr->call(args, kwargs);
+
+                if (!result) {
+                    return nullptr;
+                }
+
+                if (result != null) {
+                    THROW_TYPE_ERROR_PREF((me->name + ".@new").c_str(), result->type, Null::class_type);
+
+                    return nullptr;
+                }
+
+                is_constructed = true;
+            }
+        }
+
+        // No args if no constructor
+        if (!is_constructed && (!args_data.empty() || !kwargs_data.empty())) {
+            THROW_ARGUMENT_ERROR((me->name + ".@new").c_str(), "length", "No arguments required");
         }
 
         return instance;

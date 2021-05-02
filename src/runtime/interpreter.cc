@@ -741,6 +741,10 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case NewType: {
+            CHECK_STACKLEN(1);
+
+            POPTOP(constructor);
+
             auto name_offset = ARG(1);
             CHECK_CONST(name_offset);
             auto name_obj = GET_CONST(name_offset);
@@ -758,6 +762,20 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             if (!result) {
                 DISPATCH_ERROR;
+            }
+
+            if (constructor != null) {
+                auto constructor_key = new (nothrow) Str("@new");
+
+                if (!constructor_key) {
+                    THROW_MEMORY_ERROR;
+
+                    DISPATCH_ERROR;
+                }
+
+                if (!result->setattr(constructor_key, constructor)) {
+                    DISPATCH_ERROR;
+                }
             }
 
             PUSH(result);

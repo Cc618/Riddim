@@ -90,8 +90,10 @@ struct FnDecl : public Decl {
     Block *body;
     bool islambda = false;
 
-    FnDecl(line_t fileline, Target *target, Args *args, Block *body, bool islambda = false)
-        : Decl(fileline), target(target), args(args), body(body), islambda(islambda) {}
+    FnDecl(line_t fileline, Target *target, Args *args, Block *body,
+           bool islambda = false)
+        : Decl(fileline), target(target), args(args), body(body),
+          islambda(islambda) {}
 
     virtual ~FnDecl();
 
@@ -131,8 +133,10 @@ struct UseStmt : public Stmt {
 // Type declaration
 struct NewTypeStmt : public Stmt {
     str_t name;
+    FnDecl *constructor;
 
-    NewTypeStmt(line_t fileline, const str_t &name);
+    NewTypeStmt(line_t fileline, const str_t &name,
+                FnDecl *constructor = nullptr);
 
     virtual ~NewTypeStmt();
 
@@ -148,7 +152,7 @@ struct LoopStmt : public Stmt {
     using Stmt::Stmt;
 
     // Gathers all control statements like break / continue
-    std::vector<LoopControlStmt*> controls;
+    std::vector<LoopControlStmt *> controls;
 };
 
 // While statement
@@ -515,9 +519,9 @@ struct Target : public ASTNode {
 
 // [target1, target2, ...] syntax
 struct MultiTarget : public Target {
-    std::vector<Target*> targets;
+    std::vector<Target *> targets;
 
-    MultiTarget(line_t fileline, const std::vector<Target*> &targets)
+    MultiTarget(line_t fileline, const std::vector<Target *> &targets)
         : Target(fileline), targets(targets) {}
 
     virtual ~MultiTarget();

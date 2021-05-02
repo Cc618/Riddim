@@ -333,6 +333,10 @@ usestmt_start: "use" ID { $$ = new UseStmt(@1.begin.line, $2, $2); }
     ;
 
 newtypestmt: "newtype" ID stop { $$ = new NewTypeStmt(@1.begin.line, $2); }
+    | "newtype" ID lparen fndecl_all_args rparen block stop {
+        auto constructor = new FnDecl(@1.begin.line, nullptr, $4, $6);
+        $$ = new NewTypeStmt(@1.begin.line, $2, constructor);
+    }
     ;
 
 whilestmt: "while" exp block stop { $$ = new WhileStmt(@1.begin.line, $2, $3); }

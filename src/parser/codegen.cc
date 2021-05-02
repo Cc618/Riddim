@@ -373,6 +373,16 @@ void UseStmt::gen_code(Module *module, Code *_code) {
 void NewTypeStmt::gen_code(Module *module, Code *_code) {
     Stmt::gen_code(module, _code);
 
+    // Push constructor if declared (push null otherwise)
+    if (constructor) {
+        constructor->gen_code(module, _code);
+    } else {
+        // Load null
+        PUSH_CODE(LoadConst);
+        auto null_off = ADD_CONST(null);
+        PUSH_CODE(null_off);
+    }
+
     auto name_const = new (nothrow) Str(name);
 
     if (!name_const) {
