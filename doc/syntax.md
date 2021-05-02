@@ -284,6 +284,63 @@ block_lambda = |x, y| -> {
 block_lambda(expression_lambda(1, 1), 2)
 ```
 
+### Custom Types (classes)
+In Riddim, classes are named types and instances objects.
+It is possible to create custom types with custom methods and attributes.
+
+#### Declaration and creation
+To declare a new type, use the **newtype** keyword :
+```python
+newtype Obj
+```
+
+Now, Obj can be called to create a new object of the *Obj* type :
+```python
+myobject = Obj()
+```
+
+Any custom object has dynamic attributes.
+That is, we can set attributes / methods anywhere in the code.
+```python
+myobject.name = 'Cc'
+print myobject
+# Displays Obj({name: Cc})
+```
+
+This type has no constructor (only a default one that does not take any argument).
+To provide a custom constructor, declare after the newtype declaration :
+```python
+newtype Person(name, age) {
+    me.name = name
+    me.age = age
+}
+```
+
+The variable *me* is like *this* or *self* in most object oriented languages,  it contains the object to instantiate.
+
+Now, a person can be created like this :
+```python
+# Like in functions, you can use positional or keyword arguments
+person = Person('Ada', 205)
+person2 = Person(name: 'Cc', age: 618)
+```
+
+#### Methods
+Like in Rust, methods can be declared anywhere in the source file.
+As said in the previous section, **me** is equivalent to *this* or *self* in object oriented languages.
+
+```python
+fn Person.display() {
+    print 'Person( name:', me.name, 'age:', me.age, ')'
+}
+
+fn Person.birthday() {
+    me.age += 1
+}
+```
+
+<!-- TODO : Operator / special functions (@...) -->
+
 ## Error handling
 ### Throw
 To raise an error, the throw keyword can be used.
