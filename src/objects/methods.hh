@@ -2,6 +2,12 @@
 
 // Method utilities
 
+#include <string>
+
+struct Vec;
+struct HashMap;
+struct Builtin;
+
 // FN_NAME c string
 #define CHECK_ARGS(FN_NAME)                                                    \
     if (args->type != Vec::class_type) {                                       \

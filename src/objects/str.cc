@@ -3,13 +3,20 @@
 #include "hash.hh"
 #include "int.hh"
 #include "null.hh"
+#include "map.hh"
+#include "vec.hh"
+#include "function.hh"
 #include <cstring>
 
 using namespace std;
 
 Type *Str::class_type = nullptr;
 
-Str::Str(const str_t &data) : Object(Str::class_type), data(data) {}
+Str::Str(const str_t &data) : Object(Str::class_type), data(data) {
+    auto self = this;
+
+    NEW_METHOD(Str, index);
+}
 
 void Str::init_class_type() {
     class_type = new (nothrow) Type("Str");
@@ -19,6 +26,13 @@ void Str::init_class_type() {
 
         return;
     }
+
+    class_type->fn_traverse_objects = [](Object *self,
+                                         const fn_visit_object_t &visit) {
+        Str *me = reinterpret_cast<Str *>(self);
+
+        visit(me->me_index);
+    };
 
     // @add
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
@@ -96,8 +110,11 @@ void Str::init_class_type() {
         Object *result = nullptr;
 
         // Length
+        // TODO : Use AttrObject
         if (attr == "len") {
             result = new (nothrow) Int(me->data.size());
+        } else if (attr == "index") {
+            result = me->me_index;
         } else {
             // No such attribute
             THROW_ATTR_ERROR(Str::class_type, attr);
@@ -347,4 +364,32 @@ void Str::init_class_type() {
 
     // @str
     class_type->fn_str = [](Object *self) { return self; };
+}
+
+// --- Methods ---
+Object *Str::me_index_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Str, "index");
+
+    CHECK_ARGSLEN(1, "Str.index");
+    CHECK_NOKWARGS("Str.index");
+
+    auto target = args_data[0];
+
+    if (target->type != Str::class_type) {
+        THROW_TYPE_ERROR_PREF("Str.index", target->type, Str::class_type);
+    }
+
+    auto s = reinterpret_cast<Str*>(target)->data;
+    auto idx = me->data.find(s);
+    if (idx >= me->data.size()) idx = -1;
+
+    auto result = new (nothrow) Int(idx);
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
 }
