@@ -59,6 +59,7 @@ static void init_types() {
         return;
 
     INIT_TYPE(Error);
+    INIT_TYPE(AttrType);
     INIT_TYPE(Str);
     INIT_TYPE(Int);
     INIT_TYPE(Null);

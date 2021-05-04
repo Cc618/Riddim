@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 struct Str : public Object {
-    static Type *class_type;
+    static AttrType *class_type;
 
     str_t data;
 

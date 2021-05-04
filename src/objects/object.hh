@@ -6,6 +6,7 @@
 #include "utils.hh"
 #include <iterator>
 #include <vector>
+#include <unordered_map>
 
 struct Type;
 struct Object;
@@ -189,4 +190,18 @@ protected:
     // Inits all slots
     // Not in init_class_type to be called from UserType (inherited)
     static void init_slots(Type *type);
+};
+
+// Type that has attributes within a map
+struct AttrType : public Type {
+    static Type *class_type;
+
+    std::unordered_map<str_t, Object*> attrs;
+
+    static AttrType *New(const str_t &name);
+
+    static void init_class_type();
+
+private:
+    AttrType(const str_t &name);
 };

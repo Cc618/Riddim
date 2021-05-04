@@ -13,7 +13,7 @@ UserTypeType *NewUserType(const str_t &name);
 UserObject *NewUserObject(Type *type);
 
 // A subclass of type that handles user declared methods
-// UserObject -> UserType (a Type) -> UserTypeType -> Type
+// UserObject -> UserTypeType -> Type
 struct UserTypeType : public Type {
     static Type *class_type;
 

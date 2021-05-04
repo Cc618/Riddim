@@ -3,6 +3,7 @@
 #include "error.hh"
 #include "hash.hh"
 #include "int.hh"
+#include "null.hh"
 #include "program.hh"
 #include "str.hh"
 #include <iostream>
@@ -406,4 +407,84 @@ void Type::init_slots(Type *type) {
 
         return result;
     };
+}
+
+// --- AttrType ---
+AttrType *AttrType::New(const str_t &name) {
+    auto me = new (nothrow) AttrType(name);
+
+    if (!me) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return me;
+}
+
+Type *AttrType::class_type = nullptr;
+
+void AttrType::init_class_type() {
+    class_type = new Type("AttrType");
+
+    // Inherit from super type (Type)
+    Type::init_slots(class_type);
+
+    // @getattr
+    class_type->fn_getattr = [](Object *self, Object *key) -> Object * {
+        auto me = reinterpret_cast<AttrType *>(self);
+
+        if (key->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF((me->type->name + ".@getattr").c_str(),
+                                  key->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(key)->data;
+
+        // Find target attribute
+        auto result_it = me->attrs.find(attr);
+        if (result_it == me->attrs.end()) {
+            // No such attribute
+            THROW_ATTR_ERROR(Str::class_type, attr);
+
+            return nullptr;
+        }
+
+        Object *result = result_it->second;
+
+        // Check whether the object has been allocated
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
+    // @setattr
+    class_type->fn_setattr = [](Object *self, Object *key,
+                                Object *val) -> Object * {
+        auto me = reinterpret_cast<AttrType *>(self);
+
+        if (key->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF((me->type->name + ".@setattr").c_str(),
+                                  key->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(key)->data;
+
+        me->attrs[attr] = val;
+
+        return null;
+    };
+}
+
+AttrType::AttrType(const str_t &name) : Type(name) {
+    // Override type
+    type = AttrType::class_type;
 }

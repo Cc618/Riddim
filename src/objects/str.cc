@@ -10,30 +10,101 @@
 
 using namespace std;
 
-Type *Str::class_type = nullptr;
+AttrType *Str::class_type = nullptr;
 
 Str::Str(const str_t &data) : Object(Str::class_type), data(data) {
     auto self = this;
 
+    // TODO A : Within AttrType
     NEW_ATTR_METHOD(Str, index);
     NEW_ATTR_METHOD(Str, len);
+
+    // Add attributes and methods
+    for (const auto &[k, v] : reinterpret_cast<AttrType*>(type)->attrs) {
+        auto newv = v->copy();
+
+        if (!newv) {
+            // TODO A
+            // return nullptr;
+        }
+
+        // If function, bind self
+        if (newv->type == Builtin::class_type ||
+            newv->type == Function::class_type) {
+            auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
+            newv_fun->self = this;
+        }
+
+        attrs[k] = newv;
+    }
 }
 
 void Str::init_class_type() {
-    class_type = new (nothrow) Type("Str");
+    class_type = AttrType::New("Str");
 
     if (!class_type) {
-        THROW_MEMORY_ERROR;
-
         return;
     }
 
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {
+        // Override and call super
+        if (Type::class_type->fn_traverse_objects) {
+            Type::class_type->fn_traverse_objects(self, visit);
+
+            if (on_error())
+                return;
+        }
+
         Str *me = reinterpret_cast<Str *>(self);
 
         visit(me->me_index);
+        visit(me->me_len);
     };
+
+    // // TODO A : In New
+    // class_type->constructor = [](Object *self, Object *args,
+    //                              Object *kwargs) -> Object * {
+    //     // TODO A
+    //     INIT_METHOD(AttrType, "Str");
+
+    //     // TODO A : Data...
+    //     auto instance = new (nothrow) Str("");
+
+    //     // Dispatch error
+    //     if (!instance) {
+    //         THROW_MEMORY_ERROR;
+
+    //         return nullptr;
+    //     }
+
+    //     // Add attributes and methods
+    //     for (const auto &[k, v] : me->attrs) {
+    //         auto newv = v->copy();
+
+    //         if (!newv)
+    //             return nullptr;
+
+    //         // If function, bind self
+    //         if (newv->type == Builtin::class_type ||
+    //             newv->type == Function::class_type) {
+    //             auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
+    //             newv_fun->self = instance;
+    //         }
+
+    //         instance->attrs[k] = newv;
+    //     }
+
+    //     // TODO A : Move up
+    //     if (!args_data.empty() || !kwargs_data.empty()) {
+    //         THROW_ARGUMENT_ERROR((me->name + ".@new").c_str(), "length",
+    //                              "No arguments required");
+
+    //         return nullptr;
+    //     }
+
+    //     return instance;
+    // };
 
     // @add
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
@@ -108,8 +179,6 @@ void Str::init_class_type() {
 
         auto attr = reinterpret_cast<Str *>(name)->data;
 
-        Object *result = nullptr;
-
         // Find target attribute
         auto result_it = me->attrs.find(attr);
         if (result_it == me->attrs.end()) {
@@ -119,7 +188,7 @@ void Str::init_class_type() {
             return nullptr;
         }
 
-        result = result_it->second;
+        Object *result = result_it->second;
 
         // Check whether the object has been allocated
         if (!result) {

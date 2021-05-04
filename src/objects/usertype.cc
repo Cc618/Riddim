@@ -1,7 +1,7 @@
 #include "usertype.hh"
+#include "bool.hh"
 #include "error.hh"
 #include "function.hh"
-#include "bool.hh"
 #include "methods.hh"
 #include "null.hh"
 #include "str.hh"
@@ -32,10 +32,12 @@ UserTypeType *NewUserType(const str_t &name) {
 
             auto newv = v->copy();
 
-            if (!newv) return nullptr;
+            if (!newv)
+                return nullptr;
 
             // If function, bind self
-            if (newv->type == Builtin::class_type || newv->type == Function::class_type) {
+            if (newv->type == Builtin::class_type ||
+                newv->type == Function::class_type) {
                 auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
                 newv_fun->self = instance;
             }
@@ -70,7 +72,8 @@ UserTypeType *NewUserType(const str_t &name) {
                 }
 
                 if (result != null) {
-                    THROW_TYPE_ERROR_PREF((me->name + ".@new").c_str(), result->type, Null::class_type);
+                    THROW_TYPE_ERROR_PREF((me->name + ".@new").c_str(),
+                                          result->type, Null::class_type);
 
                     return nullptr;
                 }
@@ -81,7 +84,10 @@ UserTypeType *NewUserType(const str_t &name) {
 
         // No args if no constructor
         if (!is_constructed && (!args_data.empty() || !kwargs_data.empty())) {
-            THROW_ARGUMENT_ERROR((me->name + ".@new").c_str(), "length", "No arguments required");
+            THROW_ARGUMENT_ERROR((me->name + ".@new").c_str(), "length",
+                                 "No arguments required");
+
+            return nullptr;
         }
 
         return instance;
