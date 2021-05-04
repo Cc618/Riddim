@@ -38,11 +38,9 @@ void Module::init_class_type() {
     class_type->fn_str = [](Object *self) -> Object * {
         Module *me = reinterpret_cast<Module *>(self);
 
-        auto s = new (nothrow) Str("Module(" + me->name->data + ")");
+        auto s = Str::New("Module(" + me->name->data + ")");
 
         if (!s) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -59,11 +57,9 @@ void Module::init_class_type() {
 }
 
 Module *Module::New(const str_t &name, const str_t &filepath) {
-    auto namestr = new (nothrow) Str(name);
+    auto namestr = Str::New(name);
 
     if (!namestr) {
-        THROW_MEMORY_ERROR;
-
         return nullptr;
     }
 

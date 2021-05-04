@@ -68,9 +68,8 @@ void init_builtins() {
             THROW_MEMORY_ERROR;                                                \
             return;                                                            \
         }                                                                      \
-        auto name = new (nothrow) Str(NAME);                                   \
+        auto name = Str::New(NAME);                                            \
         if (!name) {                                                           \
-            THROW_MEMORY_ERROR;                                                \
             return;                                                            \
         }                                                                      \
         if (!global_frame->setitem(name, obj)) {                               \
@@ -91,7 +90,7 @@ void init_builtins() {
 
     // Globals
 #define REGISTER_GLOBAL(NAME, ID)                                              \
-    auto NAME##_str = new (nothrow) Str(#NAME);                                \
+    auto NAME##_str = Str::New(#NAME);                                \
     if (!NAME##_str)                                                           \
         return;                                                                \
     Program::instance->global_frame->setitem(NAME##_str, ID);

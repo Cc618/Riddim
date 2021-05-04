@@ -155,11 +155,9 @@ void Bool::init_class_type() {
     class_type->fn_str = [](Object *self) -> Object * {
         Bool *me = reinterpret_cast<Bool *>(self);
 
-        auto s = new (nothrow) Str(me->data ? "true" : "false");
+        auto s = Str::New(me->data ? "true" : "false");
 
         if (!s) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 

@@ -14,10 +14,10 @@ struct Str : public Object {
 
     std::unordered_map<str_t, Object*> attrs;
 
+    static Str *New(str_t data = "");
+
     // Can throw
     static void init_class_type();
-
-    Str(const str_t &data);
 
     // Methods
     // Returns the index of the first occurence of a string
@@ -26,4 +26,7 @@ struct Str : public Object {
 
     // Returns the length of the string
     DECL_METHOD(len);
+
+protected:
+    Str(const str_t &data);
 };

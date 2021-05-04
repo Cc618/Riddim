@@ -71,11 +71,9 @@ void Builtin::init_class_type() {
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Builtin *>(self);
 
-        auto result = new (nothrow) Str("Builtin<" + me->name + ">");
+        auto result = Str::New("Builtin<" + me->name + ">");
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -279,11 +277,9 @@ void Function::init_class_type() {
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Function *>(self);
 
-        auto result = new (nothrow) Str("Function<" + me->name + ">");
+        auto result = Str::New("Function<" + me->name + ">");
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 

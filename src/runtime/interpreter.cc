@@ -116,10 +116,8 @@ void interpret(Code *_code, const str_t &id,
 
     // Set mod variable
     if (module) {
-        auto mod_str = new (nothrow) Str("mod");
+        auto mod_str = Str::New("mod");
         if (!mod_str) {
-            THROW_MEMORY_ERROR;
-
             return;
         }
 
@@ -138,7 +136,7 @@ void interpret(Code *_code, const str_t &id,
         return;
 
     for (const auto &[id, val] : vars) {
-        auto o_id = new (nothrow) Str(id);
+        auto o_id = Str::New(id);
         if (!o_id)
             return;
 
@@ -765,11 +763,9 @@ void interpret_fragment(Code *_code, size_t &ip) {
             }
 
             if (constructor != null) {
-                auto constructor_key = new (nothrow) Str("@new");
+                auto constructor_key = Str::New("@new");
 
                 if (!constructor_key) {
-                    THROW_MEMORY_ERROR;
-
                     DISPATCH_ERROR;
                 }
 

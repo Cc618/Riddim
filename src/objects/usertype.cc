@@ -47,7 +47,11 @@ UserTypeType *NewUserType(const str_t &name) {
         }
 
         // Call constructor if present
-        auto new_key = new (nothrow) Str("@new");
+        auto new_key = Str::New("@new");
+        if (!new_key) {
+            return nullptr;
+        }
+
         auto has_new = instance->data->in(new_key);
         bool is_constructed = false;
 

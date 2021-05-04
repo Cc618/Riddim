@@ -20,11 +20,9 @@ void Null::init_class_type() {
 
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
-        auto result = new (nothrow) Str("null");
+        auto result = Str::New("null");
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 

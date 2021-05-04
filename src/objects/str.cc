@@ -12,31 +12,42 @@ using namespace std;
 
 AttrType *Str::class_type = nullptr;
 
-Str::Str(const str_t &data) : Object(Str::class_type), data(data) {
-    auto self = this;
+Str *Str::New(str_t data) {
+    auto self = new (nothrow) Str(data);
 
-    // TODO A : Within AttrType
-    NEW_ATTR_METHOD(Str, index);
-    NEW_ATTR_METHOD(Str, len);
+    if (!self) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
 
     // Add attributes and methods
-    for (const auto &[k, v] : reinterpret_cast<AttrType*>(type)->attrs) {
+    for (const auto &[k, v] : reinterpret_cast<AttrType*>(self->type)->attrs) {
         auto newv = v->copy();
 
         if (!newv) {
-            // TODO A
-            // return nullptr;
+            return nullptr;
         }
 
         // If function, bind self
         if (newv->type == Builtin::class_type ||
             newv->type == Function::class_type) {
             auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
-            newv_fun->self = this;
+            newv_fun->self = self;
         }
 
-        attrs[k] = newv;
+        self->attrs[k] = newv;
     }
+
+    return self;
+}
+
+Str::Str(const str_t &data) : Object(Str::class_type), data(data) {
+    auto self = this;
+
+    // TODO A : Within AttrType
+    NEW_ATTR_METHOD(Str, index);
+    NEW_ATTR_METHOD(Str, len);
 }
 
 void Str::init_class_type() {
@@ -62,50 +73,6 @@ void Str::init_class_type() {
         visit(me->me_len);
     };
 
-    // // TODO A : In New
-    // class_type->constructor = [](Object *self, Object *args,
-    //                              Object *kwargs) -> Object * {
-    //     // TODO A
-    //     INIT_METHOD(AttrType, "Str");
-
-    //     // TODO A : Data...
-    //     auto instance = new (nothrow) Str("");
-
-    //     // Dispatch error
-    //     if (!instance) {
-    //         THROW_MEMORY_ERROR;
-
-    //         return nullptr;
-    //     }
-
-    //     // Add attributes and methods
-    //     for (const auto &[k, v] : me->attrs) {
-    //         auto newv = v->copy();
-
-    //         if (!newv)
-    //             return nullptr;
-
-    //         // If function, bind self
-    //         if (newv->type == Builtin::class_type ||
-    //             newv->type == Function::class_type) {
-    //             auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
-    //             newv_fun->self = instance;
-    //         }
-
-    //         instance->attrs[k] = newv;
-    //     }
-
-    //     // TODO A : Move up
-    //     if (!args_data.empty() || !kwargs_data.empty()) {
-    //         THROW_ARGUMENT_ERROR((me->name + ".@new").c_str(), "length",
-    //                              "No arguments required");
-
-    //         return nullptr;
-    //     }
-
-    //     return instance;
-    // };
-
     // @add
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Str *>(self);
@@ -117,11 +84,9 @@ void Str::init_class_type() {
         }
 
         auto result =
-            new (nothrow) Str(me->data + reinterpret_cast<Str *>(o)->data);
+            Str::New(me->data + reinterpret_cast<Str *>(o)->data);
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -156,11 +121,9 @@ void Str::init_class_type() {
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Str *>(self);
 
-        auto result = new (nothrow) Str(me->data);
+        auto result = Str::New(me->data);
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -216,11 +179,9 @@ void Str::init_class_type() {
             }
 
             // Build string with one char
-            auto result = new (nothrow) Str(str_t(1, me->data[index]));
+            auto result = Str::New(str_t(1, me->data[index]));
 
             if (!result) {
-                THROW_MEMORY_ERROR;
-
                 return nullptr;
             }
 
@@ -248,11 +209,9 @@ void Str::init_class_type() {
                 result += me->data[get_mod_index(i, me->data.size())];
             }
 
-            auto ret = new (nothrow) Str(result);
+            auto ret = Str::New(result);
 
             if (!ret) {
-                THROW_MEMORY_ERROR;
-
                 return nullptr;
             }
 
@@ -313,11 +272,9 @@ void Str::init_class_type() {
         for (size_t i = 0; i < multiplier; ++i)
             data += me->data;
 
-        auto result = new (nothrow) Str(data);
+        auto result = Str::New(data);
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 

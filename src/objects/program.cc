@@ -52,11 +52,9 @@ void Program::init_class_type() {
 
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
-        auto result = new (nothrow) Str("Program()");
+        auto result = Str::New("Program()");
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -136,11 +134,9 @@ void Program::output_errout() {
 }
 
 void Program::register_type(Type *type) {
-    auto type_id = new (nothrow) Str(type->name);
+    auto type_id = Str::New(type->name);
 
     if (!type_id) {
-        THROW_MEMORY_ERROR;
-
         return;
     }
 

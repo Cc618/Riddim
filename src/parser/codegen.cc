@@ -257,7 +257,7 @@ void TryStmt::gen_code(Module *module, Code *_code) {
         Object *id =
             catchbody.id.empty()
                 ? static_cast<Object *>(null)
-                : static_cast<Object *>(new (nothrow) Str(catchbody.id));
+                : static_cast<Object *>(Str::New(catchbody.id));
 
         if (!id) {
             throw CodeGenException("Can't allocate memory", _code->filename,
@@ -338,7 +338,7 @@ void UseStmt::gen_code(Module *module, Code *_code) {
     Stmt::gen_code(module, _code);
 
     // Load module
-    auto modname_const = new (nothrow) Str(modname);
+    auto modname_const = Str::New(modname);
 
     if (!modname_const) {
         throw CodeGenException("Cannot allocate memory", _code->filename,
@@ -355,7 +355,7 @@ void UseStmt::gen_code(Module *module, Code *_code) {
         PUSH_CODE(MergeModule);
     } else {
         // Alias
-        auto asname_const = new (nothrow) Str(asname);
+        auto asname_const = Str::New(asname);
 
         if (!asname_const) {
             throw CodeGenException("Cannot allocate memory", _code->filename,
@@ -383,7 +383,7 @@ void NewTypeStmt::gen_code(Module *module, Code *_code) {
         PUSH_CODE(null_off);
     }
 
-    auto name_const = new (nothrow) Str(name);
+    auto name_const = Str::New(name);
 
     if (!name_const) {
         throw CodeGenException("Cannot allocate memory", _code->filename,
@@ -527,7 +527,7 @@ void CallExp::gen_code(Module *module, Code *_code) {
 
         // Generate kwargs
         for (const auto &[id, val] : kwargs) {
-            auto const_id = new (nothrow) Str(id);
+            auto const_id = Str::New(id);
 
             if (!const_id) {
                 throw CodeGenException("Can't allocate memory",
@@ -590,10 +590,10 @@ void Attr::gen_code(Module *module, Code *_code) {
 
     PUSH_CODE(LoadAttr);
 
-    auto const_attr = new (nothrow) Str(attr);
+    auto const_attr = Str::New(attr);
 
     if (!const_attr) {
-        throw CodeGenException("Not enough memory", module->filepath, fileline);
+        throw CodeGenException("Cannot allocate memory", module->filepath, fileline);
     }
 
     auto off_attr = ADD_CONST(const_attr);
@@ -607,7 +607,7 @@ void Indexing::gen_code(Module *module, Code *_code) {
 }
 
 void Id::gen_code(Module *module, Code *_code) {
-    Object *name = new (nothrow) Str(id);
+    Object *name = Str::New(id);
 
     if (!name) {
         throw CodeGenException("Can't allocate memory", module->filepath,
@@ -629,7 +629,7 @@ void Const::gen_code(Module *module, Code *_code) {
         break;
 
     case Const::Type::Str:
-        const_val = new (nothrow)::Str(get<str_t>(val));
+        const_val = ::Str::New(get<str_t>(val));
         break;
 
     default:
@@ -858,10 +858,10 @@ void MultiTarget::gen_code(Module *module, Code *_code) {
 void IdTarget::gen_code(Module *module, Code *_code) {
     PUSH_CODE(StoreVar);
 
-    auto const_id = new (nothrow) Str(id->id);
+    auto const_id = Str::New(id->id);
 
     if (!const_id) {
-        throw CodeGenException("Not enough memory", module->filepath, fileline);
+        throw CodeGenException("Cannot allocate memory", module->filepath, fileline);
     }
 
     auto off_id = ADD_CONST(const_id);
@@ -883,7 +883,7 @@ void AttrTarget::gen_code(Module *module, Code *_code) {
     attr->exp->gen_code(module, _code);
 
     // Add attribute name constant
-    auto const_attr = new (nothrow) Str(attr->attr);
+    auto const_attr = Str::New(attr->attr);
 
     if (!const_attr) {
         throw CodeGenException("Can't allocate memory", module->filepath,

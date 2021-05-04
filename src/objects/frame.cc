@@ -94,11 +94,9 @@ void Frame::init_class_type() {
             return nullptr;
         }
 
-        auto result = new (nothrow) Str("Frame(" + me->id + ", " + reinterpret_cast<Str*>(varstr)->data + ")");
+        auto result = Str::New("Frame(" + me->id + ", " + reinterpret_cast<Str*>(varstr)->data + ")");
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 

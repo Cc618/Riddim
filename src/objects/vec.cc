@@ -429,11 +429,9 @@ void Vec::init_class_type() {
             result += "]";
         }
 
-        auto result_str = new (nothrow) Str(result);
+        auto result_str = Str::New(result);
 
         if (!result_str) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 

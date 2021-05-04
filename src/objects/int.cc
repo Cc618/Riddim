@@ -204,11 +204,9 @@ void Int::init_class_type() {
         auto me = reinterpret_cast<Int *>(self);
 
         // TODO : Unicode
-        auto result = new (nothrow) Str(to_string(me->data));
+        auto result = Str::New(to_string(me->data));
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 

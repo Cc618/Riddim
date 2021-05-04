@@ -272,11 +272,9 @@ Object *Object::setitem(Object *key, Object *value) {
 
 Object *Object::str() {
     if (!type->fn_str) {
-        auto result = new (nothrow) Str(type->name + "()");
+        auto result = Str::New(type->name + "()");
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -378,11 +376,9 @@ void Type::init_slots(Type *type) {
         auto attr = reinterpret_cast<Str *>(name)->data;
 
         if (attr == "name") {
-            auto result = new (nothrow) Str(me->name);
+            auto result = Str::New(me->name);
 
             if (!result) {
-                THROW_MEMORY_ERROR;
-
                 return nullptr;
             }
 
@@ -397,11 +393,9 @@ void Type::init_slots(Type *type) {
     // @str
     type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Type *>(self);
-        auto result = new (nothrow) Str("Type(" + me->name + ")");
+        auto result = Str::New("Type(" + me->name + ")");
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 

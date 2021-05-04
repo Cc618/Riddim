@@ -35,11 +35,9 @@ void Error::init_class_type() {
         auto attr = reinterpret_cast<Str *>(name)->data;
 
         if (attr == "msg") {
-            auto result = new (nothrow) Str(me->msg);
+            auto result = Str::New(me->msg);
 
             if (!result) {
-                THROW_MEMORY_ERROR;
-
                 return nullptr;
             }
 
@@ -55,12 +53,10 @@ void Error::init_class_type() {
     auto error_str = [](Object *self) -> Object * {
         Error *me = reinterpret_cast<Error *>(self);
 
-        auto result = new (nothrow)
-            Str(C_RED + me->type->name + C_NORMAL + "(" + me->msg + ")");
+        auto result =
+            Str::New(C_RED + me->type->name + C_NORMAL + "(" + me->msg + ")");
 
         if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
