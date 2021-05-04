@@ -435,6 +435,13 @@ DynamicType *DynamicType::New(const str_t &name) {
         return nullptr;
     }
 
+    me->fn_traverse_objects = [](Object *self, const fn_visit_object_t &visit) {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        for (const auto &[k, v] : me->attrs)
+            visit(v);
+    };
+
     // @getattr
     me->fn_getattr = [](Object *self, Object *name) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
@@ -497,6 +504,13 @@ void DynamicType::init_class_type() {
 
     // Inherit from super type (Type)
     Type::init_slots(class_type);
+
+    class_type->fn_traverse_objects = [](Object *self, const fn_visit_object_t &visit) {
+        auto me = reinterpret_cast<DynamicType *>(self);
+
+        for (const auto &[k, v] : me->attrs)
+            visit(v);
+    };
 
     // @getattr
     class_type->fn_getattr = [](Object *self, Object *key) -> Object * {
