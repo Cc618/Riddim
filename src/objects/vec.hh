@@ -11,17 +11,21 @@ struct Builtin;
 // Internal Vec
 typedef std::vector<Object*> vec_t;
 
-struct Vec : public Object {
-    static Type *class_type;
+struct Vec : public DynamicObject {
+    static DynamicType *class_type;
     static Vec *empty;
 
     vec_t data;
 
     // Methods
     // Push back a new object
-    DECL_METHOD(add);
+    DECL_ATTR_METHOD(add);
+
     // Pop back
-    DECL_METHOD(pop);
+    DECL_ATTR_METHOD(pop);
+
+    // Length
+    DECL_ATTR_METHOD(len);
 
     static Vec *New(const vec_t &data = {});
 

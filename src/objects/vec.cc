@@ -15,7 +15,7 @@
 
 using namespace std;
 
-Type *Vec::class_type = nullptr;
+DynamicType *Vec::class_type = nullptr;
 
 Vec *Vec::empty = nullptr;
 
@@ -30,18 +30,20 @@ Vec *Vec::New(const vec_t &data) {
         return nullptr;
     }
 
-    NEW_METHOD(Vec, add);
-    NEW_METHOD(Vec, pop);
+    DynamicObject::init(self);
+
+    if (on_error())
+        return nullptr;
 
     return self;
 }
 
-Vec::Vec(const vec_t &data) : Object(Vec::class_type), data(data) {}
+Vec::Vec(const vec_t &data) : DynamicObject(Vec::class_type), data(data) {}
 
 void Vec::init_class_type() {
-    class_type = new (nothrow) Type("Vec");
+    class_type = DynamicType::New("Vec");
+
     if (!class_type) {
-        THROW_MEMORY_ERROR;
         return;
     }
 
@@ -63,14 +65,19 @@ void Vec::init_class_type() {
 
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {
+        // Override and call super
+        if (Type::class_type->fn_traverse_objects) {
+            Type::class_type->fn_traverse_objects(self, visit);
+
+            if (on_error())
+                return;
+        }
+
         Vec *me = reinterpret_cast<Vec *>(self);
 
         for (auto o : me->data) {
             visit(o);
         }
-
-        visit(me->me_add);
-        visit(me->me_pop);
     };
 
     // @add
@@ -139,7 +146,7 @@ void Vec::init_class_type() {
                     }
 
                     if (cmp) {
-                        res = reinterpret_cast<Int*>(cmp)->data;
+                        res = reinterpret_cast<Int *>(cmp)->data;
                         break;
                     }
                 }
@@ -301,45 +308,6 @@ void Vec::init_class_type() {
         return result;
     };
 
-    // @getattr
-    class_type->fn_getattr = [](Object *self, Object *name) -> Object * {
-        auto me = reinterpret_cast<Vec *>(self);
-
-        if (name->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF("Vec.@getattr", name->type, Str::class_type);
-
-            return nullptr;
-        }
-
-        auto attr = reinterpret_cast<Str *>(name)->data;
-
-        Object *result = nullptr;
-
-        // Length
-        // TODO : Use AttrObject
-        if (attr == "len") {
-            result = new (nothrow) Int(me->data.size());
-        } else if (attr == "add") {
-            return me->me_add;
-        } else if (attr == "pop") {
-            return me->me_pop;
-        } else {
-            // No such attribute
-            THROW_ATTR_ERROR(Str::class_type, attr);
-
-            return nullptr;
-        }
-
-        // Check whether the object has been allocated
-        if (!result) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        return result;
-    };
-
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<Vec *>(self);
 
@@ -444,8 +412,8 @@ void Vec::init_class_type() {
         auto me = reinterpret_cast<Vec *>(self);
 
         if (key->type == Int::class_type) {
-            auto idx =
-                get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
+            auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data,
+                                     me->data.size());
 
             // Out of bounds
             if (idx < 0 || idx >= me->data.size()) {
@@ -489,16 +457,15 @@ void Vec::init_class_type() {
                     throw_fmt(IndexError,
                               "Invalid slice for %sVec.@setitem%s, the step "
                               "size must be %s1%s or %s-1%s",
-                              C_GREEN, C_NORMAL,
-                              C_BLUE, C_NORMAL,
-                              C_BLUE, C_NORMAL);
+                              C_GREEN, C_NORMAL, C_BLUE, C_NORMAL, C_BLUE,
+                              C_NORMAL);
 
                     return nullptr;
                 }
-
             }
 
-            const auto &[mn_it, mx_it] = minmax_element(collect.begin(), collect.end());
+            const auto &[mn_it, mx_it] =
+                minmax_element(collect.begin(), collect.end());
 
             if (mn_it == collect.end() || mx_it == collect.end()) {
                 // Rethrow another one
@@ -529,7 +496,6 @@ void Vec::init_class_type() {
 
             return null;
         }
-
     };
 }
 
@@ -543,6 +509,10 @@ void Vec::init_class_objects() {
     Program::add_global(empty);
 
     class_hash = std::hash<str_t>()("Vec");
+
+    NEW_ATTR_METHOD(Vec, add);
+    NEW_ATTR_METHOD(Vec, pop);
+    NEW_ATTR_METHOD(Vec, len);
 }
 
 // --- Methods ---
@@ -573,4 +543,21 @@ Object *Vec::me_pop_handler(Object *self, Object *args, Object *kwargs) {
     me->data.pop_back();
 
     return null;
+}
+
+Object *Vec::me_len_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Vec, "len");
+
+    CHECK_NOARGS("Vec.len");
+    CHECK_NOKWARGS("Vec.len");
+
+    auto result = new (nothrow) Int(me->data.size());
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
 }
