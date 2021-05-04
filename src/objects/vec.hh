@@ -24,9 +24,6 @@ struct Vec : public DynamicObject {
     // Pop back
     DECL_ATTR_METHOD(pop);
 
-    // Length
-    DECL_ATTR_METHOD(len);
-
     static Vec *New(const vec_t &data = {});
 
     // Can throw

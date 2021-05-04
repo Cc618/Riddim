@@ -512,7 +512,6 @@ void Vec::init_class_objects() {
 
     NEW_ATTR_METHOD(Vec, add);
     NEW_ATTR_METHOD(Vec, pop);
-    NEW_ATTR_METHOD(Vec, len);
 }
 
 // --- Methods ---
@@ -543,21 +542,4 @@ Object *Vec::me_pop_handler(Object *self, Object *args, Object *kwargs) {
     me->data.pop_back();
 
     return null;
-}
-
-Object *Vec::me_len_handler(Object *self, Object *args, Object *kwargs) {
-    INIT_METHOD(Vec, "len");
-
-    CHECK_NOARGS("Vec.len");
-    CHECK_NOKWARGS("Vec.len");
-
-    auto result = new (nothrow) Int(me->data.size());
-
-    if (!result) {
-        THROW_MEMORY_ERROR;
-
-        return nullptr;
-    }
-
-    return result;
 }

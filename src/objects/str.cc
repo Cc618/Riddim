@@ -323,7 +323,6 @@ void Str::init_class_type() {
 void Str::init_class_objects() {
     // Init methods
     NEW_ATTR_METHOD(Str, index);
-    NEW_ATTR_METHOD(Str, len);
 }
 
 // --- Methods ---
@@ -345,23 +344,6 @@ Object *Str::me_index_handler(Object *self, Object *args, Object *kwargs) {
         idx = -1;
 
     auto result = new (nothrow) Int(idx);
-
-    if (!result) {
-        THROW_MEMORY_ERROR;
-
-        return nullptr;
-    }
-
-    return result;
-}
-
-Object *Str::me_len_handler(Object *self, Object *args, Object *kwargs) {
-    INIT_METHOD(Str, "len");
-
-    CHECK_NOARGS("Str.len");
-    CHECK_NOKWARGS("Str.len");
-
-    auto result = new (nothrow) Int(me->data.size());
 
     if (!result) {
         THROW_MEMORY_ERROR;

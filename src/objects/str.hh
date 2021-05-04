@@ -25,9 +25,6 @@ struct Str : public DynamicObject {
     // Returns -1 if not found
     DECL_ATTR_METHOD(index);
 
-    // Returns the length of the string
-    DECL_ATTR_METHOD(len);
-
 protected:
     Str(const str_t &data);
 };
