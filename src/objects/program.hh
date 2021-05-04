@@ -16,6 +16,9 @@ struct Program : public Object {
     static Program *instance;
     static Type *class_type;
 
+    static bool types_loaded;
+    static bool instances_loaded;
+
     str_t main_module_path;
 
     // The current error description

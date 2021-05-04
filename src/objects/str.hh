@@ -3,8 +3,8 @@
 // String type
 // TODO : Unicode
 
-#include "object.hh"
 #include "methods.hh"
+#include "object.hh"
 #include <unordered_map>
 
 struct Str : public DynamicObject {
@@ -17,13 +17,16 @@ struct Str : public DynamicObject {
     // Can throw
     static void init_class_type();
 
+    // Can throw
+    static void init_class_objects();
+
     // Methods
     // Returns the index of the first occurence of a string
     // Returns -1 if not found
-    DECL_METHOD(index);
+    DECL_ATTR_METHOD(index);
 
     // Returns the length of the string
-    DECL_METHOD(len);
+    DECL_ATTR_METHOD(len);
 
 protected:
     Str(const str_t &data);

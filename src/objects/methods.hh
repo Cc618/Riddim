@@ -58,21 +58,33 @@ struct Builtin;
         return nullptr;                                                        \
     }
 
+// TODO : rm (no error handling)
 // Inits a method in the factory of an object (self is the object)
 #define NEW_METHOD(TYPE, NAME)                                                 \
     self->me_##NAME =                                                          \
         new Builtin(self->me_##NAME##_handler, #TYPE "." #NAME, self);
 
-// NEW_METHOD with attribute set
-#define NEW_ATTR_METHOD(TYPE, NAME)                                            \
-    {                                                                          \
-        self->me_##NAME =                                                      \
-            new Builtin(self->me_##NAME##_handler, #TYPE "." #NAME, self);     \
-        attrs[#NAME] = me_##NAME;                                              \
-    }
-
 // Declares a new method inside the class of an object
 #define DECL_METHOD(NAME)                                                      \
     Builtin *me_##NAME;                                                        \
+    static Object *me_##NAME##_handler(Object *self, Object *args,             \
+                                       Object *kwargs);
+
+// NEW_METHOD with attribute set
+// Call it within init_class_objects
+#define NEW_ATTR_METHOD(TYPE, NAME)                                            \
+    {                                                                          \
+        auto method = new Builtin(TYPE::me_##NAME##_handler, #TYPE "." #NAME,  \
+                                  TYPE::class_type);                           \
+        if (!method) {                                                         \
+            THROW_MEMORY_ERROR;                                                \
+            return;                                                            \
+        }                                                                      \
+        TYPE::class_type->attrs[#NAME] = method;                               \
+    }
+
+// Declares a new method inside the class of an object
+// (as an attribute)
+#define DECL_ATTR_METHOD(NAME)                                                 \
     static Object *me_##NAME##_handler(Object *self, Object *args,             \
                                        Object *kwargs);

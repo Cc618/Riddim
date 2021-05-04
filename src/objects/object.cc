@@ -435,6 +435,58 @@ DynamicType *DynamicType::New(const str_t &name) {
         return nullptr;
     }
 
+    // @getattr
+    me->fn_getattr = [](Object *self, Object *name) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        if (name->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF((me->type->name + ".@getattr").c_str(), name->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(name)->data;
+
+        // Find target attribute
+        auto result_it = me->attrs.find(attr);
+        if (result_it == me->attrs.end()) {
+            // No such attribute
+            THROW_ATTR_ERROR(me->type, attr);
+
+            return nullptr;
+        }
+
+        Object *result = result_it->second;
+
+        // Check whether the object has been allocated
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
+    // @setattr
+    me->fn_setattr = [](Object *self, Object *key,
+                                Object *val) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        if (key->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF((me->type->name + ".@setattr").c_str(),
+                                  key->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(key)->data;
+
+        me->attrs[attr] = val;
+
+        return null;
+    };
+
     return me;
 }
 

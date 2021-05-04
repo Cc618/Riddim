@@ -79,6 +79,8 @@ static void init_types() {
     INIT_TYPE(UserTypeType);
 
 #undef INIT_TYPE
+
+    Program::types_loaded = true;
 }
 
 static void init_program_instance() { Program::New(types); }
@@ -90,6 +92,11 @@ static void init_objects() {
         return;
 
     Bool::init_class_objects();
+
+    if (on_error())
+        return;
+
+    Str::init_class_objects();
 
     if (on_error())
         return;
@@ -117,6 +124,8 @@ static void init_objects() {
 
     // Register builtins
     init_builtins();
+
+    Program::instances_loaded = true;
 }
 
 // --- End ---

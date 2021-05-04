@@ -5,6 +5,7 @@
 #include "int.hh"
 #include "map.hh"
 #include "null.hh"
+#include "program.hh"
 #include "vec.hh"
 #include <cstring>
 
@@ -23,18 +24,13 @@ Str *Str::New(str_t data) {
 
     DynamicObject::init(self);
 
-    if (on_error()) return nullptr;
+    if (on_error())
+        return nullptr;
 
     return self;
 }
 
-Str::Str(const str_t &data) : DynamicObject(Str::class_type), data(data) {
-    auto self = this;
-
-    // TODO A : Within DynamicType
-    NEW_ATTR_METHOD(Str, index);
-    NEW_ATTR_METHOD(Str, len);
-}
+Str::Str(const str_t &data) : DynamicObject(Str::class_type), data(data) {}
 
 void Str::init_class_type() {
     class_type = DynamicType::New("Str");
@@ -42,22 +38,6 @@ void Str::init_class_type() {
     if (!class_type) {
         return;
     }
-
-    class_type->fn_traverse_objects = [](Object *self,
-                                         const fn_visit_object_t &visit) {
-        // Override and call super
-        if (Type::class_type->fn_traverse_objects) {
-            Type::class_type->fn_traverse_objects(self, visit);
-
-            if (on_error())
-                return;
-        }
-
-        Str *me = reinterpret_cast<Str *>(self);
-
-        visit(me->me_index);
-        visit(me->me_len);
-    };
 
     // @add
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
@@ -69,8 +49,7 @@ void Str::init_class_type() {
             return nullptr;
         }
 
-        auto result =
-            Str::New(me->data + reinterpret_cast<Str *>(o)->data);
+        auto result = Str::New(me->data + reinterpret_cast<Str *>(o)->data);
 
         if (!result) {
             return nullptr;
@@ -110,39 +89,6 @@ void Str::init_class_type() {
         auto result = Str::New(me->data);
 
         if (!result) {
-            return nullptr;
-        }
-
-        return result;
-    };
-
-    // @getattr
-    class_type->fn_getattr = [](Object *self, Object *name) -> Object * {
-        auto me = reinterpret_cast<Str *>(self);
-
-        if (name->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF("Str.@getattr", name->type, Str::class_type);
-
-            return nullptr;
-        }
-
-        auto attr = reinterpret_cast<Str *>(name)->data;
-
-        // Find target attribute
-        auto result_it = me->attrs.find(attr);
-        if (result_it == me->attrs.end()) {
-            // No such attribute
-            THROW_ATTR_ERROR(Str::class_type, attr);
-
-            return nullptr;
-        }
-
-        Object *result = result_it->second;
-
-        // Check whether the object has been allocated
-        if (!result) {
-            THROW_MEMORY_ERROR;
-
             return nullptr;
         }
 
@@ -272,7 +218,6 @@ void Str::init_class_type() {
                                 Object *value) -> Object * {
         Str *me = reinterpret_cast<Str *>(self);
 
-        // TODO : Slice
         if (key->type == Int::class_type) {
             int_t index = get_mod_index(reinterpret_cast<Int *>(key)->data,
                                         me->data.size());
@@ -373,6 +318,12 @@ void Str::init_class_type() {
 
     // @str
     class_type->fn_str = [](Object *self) { return self; };
+}
+
+void Str::init_class_objects() {
+    // Init methods
+    NEW_ATTR_METHOD(Str, index);
+    NEW_ATTR_METHOD(Str, len);
 }
 
 // --- Methods ---

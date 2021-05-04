@@ -205,6 +205,7 @@ struct DynamicObject : public Object {
 };
 
 // Type that has attributes within a map
+// Must be bind with a DynamicObject
 struct DynamicType : public Type {
     static Type *class_type;
 

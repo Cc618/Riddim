@@ -9,6 +9,9 @@ constexpr size_t MAX_RECURSION_DEPTH = 1000;
 Program *Program::instance = nullptr;
 Type *Program::class_type = nullptr;
 
+bool Program::types_loaded = false;
+bool Program::instances_loaded = false;
+
 void Program::New(const std::vector<Type *> &types) {
     // We can't handle memory exceptions at this state
     Program::instance = new Program(types);
