@@ -510,8 +510,8 @@ void Vec::init_class_objects() {
 
     class_hash = std::hash<str_t>()("Vec");
 
-    NEW_ATTR_METHOD(Vec, add);
-    NEW_ATTR_METHOD(Vec, pop);
+    NEW_METHOD(Vec, add);
+    NEW_METHOD(Vec, pop);
 }
 
 // --- Methods ---

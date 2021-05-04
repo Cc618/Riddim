@@ -322,7 +322,7 @@ void Str::init_class_type() {
 
 void Str::init_class_objects() {
     // Init methods
-    NEW_ATTR_METHOD(Str, index);
+    NEW_METHOD(Str, index);
 }
 
 // --- Methods ---

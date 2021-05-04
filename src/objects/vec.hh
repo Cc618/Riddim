@@ -19,10 +19,10 @@ struct Vec : public DynamicObject {
 
     // Methods
     // Push back a new object
-    DECL_ATTR_METHOD(add);
+    DECL_METHOD(add);
 
     // Pop back
-    DECL_ATTR_METHOD(pop);
+    DECL_METHOD(pop);
 
     static Vec *New(const vec_t &data = {});
 

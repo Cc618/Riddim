@@ -23,7 +23,7 @@ struct Str : public DynamicObject {
     // Methods
     // Returns the index of the first occurence of a string
     // Returns -1 if not found
-    DECL_ATTR_METHOD(index);
+    DECL_METHOD(index);
 
 protected:
     Str(const str_t &data);

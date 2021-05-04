@@ -58,21 +58,9 @@ struct Builtin;
         return nullptr;                                                        \
     }
 
-// TODO : rm (no error handling)
-// Inits a method in the factory of an object (self is the object)
-#define NEW_METHOD(TYPE, NAME)                                                 \
-    self->me_##NAME =                                                          \
-        new Builtin(self->me_##NAME##_handler, #TYPE "." #NAME, self);
-
-// Declares a new method inside the class of an object
-#define DECL_METHOD(NAME)                                                      \
-    Builtin *me_##NAME;                                                        \
-    static Object *me_##NAME##_handler(Object *self, Object *args,             \
-                                       Object *kwargs);
-
-// NEW_METHOD with attribute set
+// Inits a method in the factory of a dynamic object (self is the object)
 // Call it within init_class_objects
-#define NEW_ATTR_METHOD(TYPE, NAME)                                            \
+#define NEW_METHOD(TYPE, NAME)                                                 \
     {                                                                          \
         auto method = new Builtin(TYPE::me_##NAME##_handler, #TYPE "." #NAME,  \
                                   TYPE::class_type);                           \
@@ -83,8 +71,8 @@ struct Builtin;
         TYPE::class_type->attrs[#NAME] = method;                               \
     }
 
-// Declares a new method inside the class of an object
+// Declares a new method inside the class of a dynamic object
 // (as an attribute)
-#define DECL_ATTR_METHOD(NAME)                                                 \
+#define DECL_METHOD(NAME)                                                      \
     static Object *me_##NAME##_handler(Object *self, Object *args,             \
                                        Object *kwargs);
