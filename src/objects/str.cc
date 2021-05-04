@@ -1,11 +1,11 @@
 #include "str.hh"
 #include "error.hh"
+#include "function.hh"
 #include "hash.hh"
 #include "int.hh"
-#include "null.hh"
 #include "map.hh"
+#include "null.hh"
 #include "vec.hh"
-#include "function.hh"
 #include <cstring>
 
 using namespace std;
@@ -15,7 +15,8 @@ Type *Str::class_type = nullptr;
 Str::Str(const str_t &data) : Object(Str::class_type), data(data) {
     auto self = this;
 
-    NEW_METHOD(Str, index);
+    NEW_ATTR_METHOD(Str, index);
+    NEW_ATTR_METHOD(Str, len);
 }
 
 void Str::init_class_type() {
@@ -109,18 +110,16 @@ void Str::init_class_type() {
 
         Object *result = nullptr;
 
-        // Length
-        // TODO : Use AttrObject
-        if (attr == "len") {
-            result = new (nothrow) Int(me->data.size());
-        } else if (attr == "index") {
-            result = me->me_index;
-        } else {
+        // Find target attribute
+        auto result_it = me->attrs.find(attr);
+        if (result_it == me->attrs.end()) {
             // No such attribute
             THROW_ATTR_ERROR(Str::class_type, attr);
 
             return nullptr;
         }
+
+        result = result_it->second;
 
         // Check whether the object has been allocated
         if (!result) {
@@ -320,16 +319,15 @@ void Str::init_class_type() {
                     throw_fmt(IndexError,
                               "Invalid slice for %sStr.@setitem%s, the step "
                               "size must be %s1%s or %s-1%s",
-                              C_GREEN, C_NORMAL,
-                              C_BLUE, C_NORMAL,
-                              C_BLUE, C_NORMAL);
+                              C_GREEN, C_NORMAL, C_BLUE, C_NORMAL, C_BLUE,
+                              C_NORMAL);
 
                     return nullptr;
                 }
-
             }
 
-            const auto &[mn_it, mx_it] = minmax_element(collect.begin(), collect.end());
+            const auto &[mn_it, mx_it] =
+                minmax_element(collect.begin(), collect.end());
 
             if (mn_it == collect.end() || mx_it == collect.end()) {
                 // Rethrow another one
@@ -355,8 +353,7 @@ void Str::init_class_type() {
                 return nullptr;
             }
 
-            me->data =
-                me->data.substr(0, mn) + val + me->data.substr(mx + 1);
+            me->data = me->data.substr(0, mn) + val + me->data.substr(mx + 1);
 
             return null;
         }
@@ -379,11 +376,29 @@ Object *Str::me_index_handler(Object *self, Object *args, Object *kwargs) {
         THROW_TYPE_ERROR_PREF("Str.index", target->type, Str::class_type);
     }
 
-    auto s = reinterpret_cast<Str*>(target)->data;
+    auto s = reinterpret_cast<Str *>(target)->data;
     auto idx = me->data.find(s);
-    if (idx >= me->data.size()) idx = -1;
+    if (idx >= me->data.size())
+        idx = -1;
 
     auto result = new (nothrow) Int(idx);
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
+}
+
+Object *Str::me_len_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Str, "len");
+
+    CHECK_NOARGS("Str.len");
+    CHECK_NOKWARGS("Str.len");
+
+    auto result = new (nothrow) Int(me->data.size());
 
     if (!result) {
         THROW_MEMORY_ERROR;

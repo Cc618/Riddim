@@ -63,6 +63,14 @@ struct Builtin;
     self->me_##NAME =                                                          \
         new Builtin(self->me_##NAME##_handler, #TYPE "." #NAME, self);
 
+// NEW_METHOD with attribute set
+#define NEW_ATTR_METHOD(TYPE, NAME)                                            \
+    {                                                                          \
+        self->me_##NAME =                                                      \
+            new Builtin(self->me_##NAME##_handler, #TYPE "." #NAME, self);     \
+        attrs[#NAME] = me_##NAME;                                              \
+    }
+
 // Declares a new method inside the class of an object
 #define DECL_METHOD(NAME)                                                      \
     Builtin *me_##NAME;                                                        \
