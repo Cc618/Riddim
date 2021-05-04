@@ -204,6 +204,8 @@ struct DynamicObject : public Object {
     static void init(DynamicObject *o);
 };
 
+// TODO A : Traverse
+
 // Type that has attributes within a map
 // Must be bind with a DynamicObject
 struct DynamicType : public Type {

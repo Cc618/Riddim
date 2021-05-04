@@ -12,7 +12,7 @@
 using namespace std;
 
 // --- HashMap ---
-Type *HashMap::class_type = nullptr;
+DynamicType *HashMap::class_type = nullptr;
 
 HashMap *HashMap::empty = nullptr;
 
@@ -27,16 +27,21 @@ HashMap *HashMap::New(const hmap_t &data) {
         return nullptr;
     }
 
+    DynamicObject::init(self);
+
+    if (on_error())
+        return nullptr;
+
     return self;
 }
 
 HashMap::HashMap(const hmap_t &data)
-    : Object(HashMap::class_type), data(data) {}
+    : DynamicObject(HashMap::class_type), data(data) {}
 
 void HashMap::init_class_type() {
-    class_type = new (nothrow) Type("HashMap");
+    class_type = DynamicType::New("HashMap");
+
     if (!class_type) {
-        THROW_MEMORY_ERROR;
         return;
     }
 
@@ -58,6 +63,14 @@ void HashMap::init_class_type() {
 
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {
+        // Override and call super
+        if (Type::class_type->fn_traverse_objects) {
+            Type::class_type->fn_traverse_objects(self, visit);
+
+            if (on_error())
+                return;
+        }
+
         HashMap *me = reinterpret_cast<HashMap *>(self);
 
         for (const auto &[h, kv] : me->data) {

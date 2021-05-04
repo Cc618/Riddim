@@ -12,8 +12,9 @@ typedef std::unordered_map<size_t, std::pair<Object *, Object *>> hmap_t;
 
 // An unordered map that provides a mapping in O(1) average time
 // (up to O(N))
-struct HashMap : public Object {
-    static Type *class_type;
+struct HashMap : public DynamicObject {
+    static DynamicType *class_type;
+
     // An hashmap without objects, do not modify
     static HashMap *empty;
 
@@ -44,6 +45,7 @@ private:
     static size_t class_hash;
 };
 
+// TODO F : Useful ?
 // An object that can contains attributes
 // These attributes are set /
 struct AttrObject : public Object {
