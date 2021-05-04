@@ -7,12 +7,10 @@
 #include "methods.hh"
 #include <unordered_map>
 
-struct Str : public Object {
-    static AttrType *class_type;
+struct Str : public DynamicObject {
+    static DynamicType *class_type;
 
     str_t data;
-
-    std::unordered_map<str_t, Object*> attrs;
 
     static Str *New(str_t data = "");
 

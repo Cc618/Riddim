@@ -192,16 +192,28 @@ protected:
     static void init_slots(Type *type);
 };
 
+// Object with DynamicType as type
+// Methods and static attributes can be set
+struct DynamicObject : public Object {
+    std::unordered_map<str_t, Object*> attrs;
+
+    using Object::Object;
+
+    // Inits a dynamic object instance
+    // Can throw
+    static void init(DynamicObject *o);
+};
+
 // Type that has attributes within a map
-struct AttrType : public Type {
+struct DynamicType : public Type {
     static Type *class_type;
 
     std::unordered_map<str_t, Object*> attrs;
 
-    static AttrType *New(const str_t &name);
+    static DynamicType *New(const str_t &name);
 
     static void init_class_type();
 
 private:
-    AttrType(const str_t &name);
+    DynamicType(const str_t &name);
 };

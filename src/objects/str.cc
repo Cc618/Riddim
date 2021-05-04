@@ -10,7 +10,7 @@
 
 using namespace std;
 
-AttrType *Str::class_type = nullptr;
+DynamicType *Str::class_type = nullptr;
 
 Str *Str::New(str_t data) {
     auto self = new (nothrow) Str(data);
@@ -21,37 +21,23 @@ Str *Str::New(str_t data) {
         return nullptr;
     }
 
-    // Add attributes and methods
-    for (const auto &[k, v] : reinterpret_cast<AttrType*>(self->type)->attrs) {
-        auto newv = v->copy();
+    DynamicObject::init(self);
 
-        if (!newv) {
-            return nullptr;
-        }
-
-        // If function, bind self
-        if (newv->type == Builtin::class_type ||
-            newv->type == Function::class_type) {
-            auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
-            newv_fun->self = self;
-        }
-
-        self->attrs[k] = newv;
-    }
+    if (on_error()) return nullptr;
 
     return self;
 }
 
-Str::Str(const str_t &data) : Object(Str::class_type), data(data) {
+Str::Str(const str_t &data) : DynamicObject(Str::class_type), data(data) {
     auto self = this;
 
-    // TODO A : Within AttrType
+    // TODO A : Within DynamicType
     NEW_ATTR_METHOD(Str, index);
     NEW_ATTR_METHOD(Str, len);
 }
 
 void Str::init_class_type() {
-    class_type = AttrType::New("Str");
+    class_type = DynamicType::New("Str");
 
     if (!class_type) {
         return;

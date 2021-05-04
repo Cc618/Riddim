@@ -6,6 +6,7 @@
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
+#include "function.hh"
 #include <iostream>
 
 using namespace std;
@@ -403,9 +404,30 @@ void Type::init_slots(Type *type) {
     };
 }
 
-// --- AttrType ---
-AttrType *AttrType::New(const str_t &name) {
-    auto me = new (nothrow) AttrType(name);
+// --- DynamicObject ---
+void DynamicObject::init(DynamicObject *self) {
+    // Add attributes and methods
+    for (const auto &[k, v] : reinterpret_cast<DynamicType*>(self->type)->attrs) {
+        auto newv = v->copy();
+
+        if (!newv) {
+            return;
+        }
+
+        // If function, bind self
+        if (newv->type == Builtin::class_type ||
+            newv->type == Function::class_type) {
+            auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
+            newv_fun->self = self;
+        }
+
+        self->attrs[k] = newv;
+    }
+}
+
+// --- DynamicType ---
+DynamicType *DynamicType::New(const str_t &name) {
+    auto me = new (nothrow) DynamicType(name);
 
     if (!me) {
         THROW_MEMORY_ERROR;
@@ -416,17 +438,17 @@ AttrType *AttrType::New(const str_t &name) {
     return me;
 }
 
-Type *AttrType::class_type = nullptr;
+Type *DynamicType::class_type = nullptr;
 
-void AttrType::init_class_type() {
-    class_type = new Type("AttrType");
+void DynamicType::init_class_type() {
+    class_type = new Type("DynamicType");
 
     // Inherit from super type (Type)
     Type::init_slots(class_type);
 
     // @getattr
     class_type->fn_getattr = [](Object *self, Object *key) -> Object * {
-        auto me = reinterpret_cast<AttrType *>(self);
+        auto me = reinterpret_cast<DynamicType *>(self);
 
         if (key->type != Str::class_type) {
             THROW_TYPE_ERROR_PREF((me->type->name + ".@getattr").c_str(),
@@ -461,7 +483,7 @@ void AttrType::init_class_type() {
     // @setattr
     class_type->fn_setattr = [](Object *self, Object *key,
                                 Object *val) -> Object * {
-        auto me = reinterpret_cast<AttrType *>(self);
+        auto me = reinterpret_cast<DynamicType *>(self);
 
         if (key->type != Str::class_type) {
             THROW_TYPE_ERROR_PREF((me->type->name + ".@setattr").c_str(),
@@ -478,7 +500,7 @@ void AttrType::init_class_type() {
     };
 }
 
-AttrType::AttrType(const str_t &name) : Type(name) {
+DynamicType::DynamicType(const str_t &name) : Type(name) {
     // Override type
-    type = AttrType::class_type;
+    type = DynamicType::class_type;
 }
