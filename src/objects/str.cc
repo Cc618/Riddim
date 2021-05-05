@@ -39,6 +39,23 @@ void Str::init_class_type() {
         return;
     }
 
+    class_type->constructor = [](Object *self, Object *args,
+                                 Object *kwargs) -> Object * {
+        INIT_METHOD(Str, "Str");
+
+        CHECK_ARGSLEN(1, "Str");
+        CHECK_NOKWARGS("Str");
+
+        auto result = args_data[0]->str();
+
+        // Dispatch error
+        if (!result)
+            return nullptr;
+
+        return result;
+    };
+
+
     // @add
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Str *>(self);
