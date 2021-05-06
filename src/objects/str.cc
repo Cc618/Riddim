@@ -55,7 +55,6 @@ void Str::init_class_type() {
         return result;
     };
 
-
     // @add
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Str *>(self);

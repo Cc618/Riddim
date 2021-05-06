@@ -105,7 +105,7 @@
 
 // Declarations
 %nterm <ast::FnDecl*> fndecl
-%nterm <ast::FnDecl::Args*> fndecl_all_args fndecl_args fndecl_kwargs
+%nterm <ast::FnDecl::Args*> fndecl_all_args fndecl_args fndecl_kwargs option_fndecl_args
 %nterm <ast::Target*> fndecl_target
 %nterm <ast::AttrTarget*> fndecl_attrtarget
 %nterm <ast::IdTarget*> fndecl_idtarget
@@ -515,10 +515,10 @@ exp: boolean { $$ = $1; }
     | lambda { $$ = $1; }
     ;
 
-lambda: "|" fndecl_args "|" "->" block {
+lambda: "|" option_fndecl_args "|" "->" block {
         $$ = new FnDecl(@1.begin.line, nullptr, $2, $5, true);
     }
-    | "|" fndecl_args "|" exp {
+    | "|" option_fndecl_args "|" exp {
         auto block = new Block(@4.begin.line);
         block->stmts.push_back(new ReturnStmt(@4.begin.line, $4));
         $$ = new FnDecl(@1.begin.line, nullptr, $2, block, true);
@@ -706,6 +706,10 @@ option_comma_stop: %empty
     | stop
     | ","
     | "," stop
+    ;
+
+option_fndecl_args: %empty { $$ = new FnDecl::Args(); }
+    | fndecl_args { $$ = $1; }
     ;
 %%
 

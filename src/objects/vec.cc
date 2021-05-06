@@ -66,12 +66,10 @@ void Vec::init_class_type() {
     class_type->fn_traverse_objects = [](Object *self,
                                          const fn_visit_object_t &visit) {
         // Override and call super
-        if (Type::class_type->fn_traverse_objects) {
-            Type::class_type->fn_traverse_objects(self, visit);
+        DynamicType::default_traverse_objects(self, visit);
 
-            if (on_error())
-                return;
-        }
+        if (on_error())
+            return;
 
         Vec *me = reinterpret_cast<Vec *>(self);
 

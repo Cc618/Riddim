@@ -76,7 +76,6 @@ static void init_types() {
     INIT_TYPE(Global);
     INIT_TYPE(Iterator);
     INIT_TYPE(Range);
-    INIT_TYPE(UserTypeType);
 
 #undef INIT_TYPE
 

@@ -197,14 +197,12 @@ protected:
 struct DynamicObject : public Object {
     std::unordered_map<str_t, Object*> attrs;
 
-    using Object::Object;
+    DynamicObject(Type *type) : Object(type) {}
 
     // Inits a dynamic object instance
     // Can throw
     static void init(DynamicObject *o);
 };
-
-// TODO A : Traverse
 
 // Type that has attributes within a map
 // Must be bind with a DynamicObject
@@ -214,6 +212,8 @@ struct DynamicType : public Type {
     std::unordered_map<str_t, Object*> attrs;
 
     static DynamicType *New(const str_t &name);
+
+    static void default_traverse_objects(Object *self, const fn_visit_object_t &visit);
 
     static void init_class_type();
 

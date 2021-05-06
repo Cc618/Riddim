@@ -44,8 +44,7 @@ void garbage_collect(Object *parent) {
             auto obj = to_mark.back();
             to_mark.pop_back();
 
-            // Add all objects that can be accessed from obj
-            obj->traverse_objects([&to_mark](Object *child) {
+            auto visit_object = [&to_mark](Object *child) {
                 if (!child)
                     return;
 
@@ -54,7 +53,13 @@ void garbage_collect(Object *parent) {
                     child->gc_data.alive = true;
                     to_mark.push_back(child);
                 }
-            });
+            };
+
+            if (!obj->type->gc_data.alive)
+                visit_object(obj->type);
+
+            // Add all objects that can be accessed from obj
+            obj->traverse_objects(visit_object);
         }
     }
 

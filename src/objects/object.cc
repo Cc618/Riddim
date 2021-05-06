@@ -1,12 +1,12 @@
 #include "object.hh"
 #include "bool.hh"
 #include "error.hh"
+#include "function.hh"
 #include "hash.hh"
 #include "int.hh"
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
-#include "function.hh"
 #include <iostream>
 
 using namespace std;
@@ -407,7 +407,8 @@ void Type::init_slots(Type *type) {
 // --- DynamicObject ---
 void DynamicObject::init(DynamicObject *self) {
     // Add attributes and methods
-    for (const auto &[k, v] : reinterpret_cast<DynamicType*>(self->type)->attrs) {
+    for (const auto &[k, v] :
+         reinterpret_cast<DynamicType *>(self->type)->attrs) {
         auto newv = v->copy();
 
         if (!newv) {
@@ -426,6 +427,14 @@ void DynamicObject::init(DynamicObject *self) {
 }
 
 // --- DynamicType ---
+void DynamicType::default_traverse_objects(Object *self,
+                                           const fn_visit_object_t &visit) {
+    auto me = reinterpret_cast<DynamicObject *>(self);
+
+    for (const auto &[k, v] : me->attrs)
+        visit(v);
+}
+
 DynamicType *DynamicType::New(const str_t &name) {
     auto me = new (nothrow) DynamicType(name);
 
@@ -435,19 +444,15 @@ DynamicType *DynamicType::New(const str_t &name) {
         return nullptr;
     }
 
-    me->fn_traverse_objects = [](Object *self, const fn_visit_object_t &visit) {
-        auto me = reinterpret_cast<DynamicObject *>(self);
-
-        for (const auto &[k, v] : me->attrs)
-            visit(v);
-    };
+    me->fn_traverse_objects = default_traverse_objects;
 
     // @getattr
     me->fn_getattr = [](Object *self, Object *name) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
 
         if (name->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF((me->type->name + ".@getattr").c_str(), name->type, Str::class_type);
+            THROW_TYPE_ERROR_PREF((me->type->name + ".@getattr").c_str(),
+                                  name->type, Str::class_type);
 
             return nullptr;
         }
@@ -476,8 +481,7 @@ DynamicType *DynamicType::New(const str_t &name) {
     };
 
     // @setattr
-    me->fn_setattr = [](Object *self, Object *key,
-                                Object *val) -> Object * {
+    me->fn_setattr = [](Object *self, Object *key, Object *val) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
 
         if (key->type != Str::class_type) {
@@ -505,7 +509,8 @@ void DynamicType::init_class_type() {
     // Inherit from super type (Type)
     Type::init_slots(class_type);
 
-    class_type->fn_traverse_objects = [](Object *self, const fn_visit_object_t &visit) {
+    class_type->fn_traverse_objects = [](Object *self,
+                                         const fn_visit_object_t &visit) {
         auto me = reinterpret_cast<DynamicType *>(self);
 
         for (const auto &[k, v] : me->attrs)

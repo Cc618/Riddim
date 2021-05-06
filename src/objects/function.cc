@@ -30,7 +30,12 @@ void Builtin::init_class_type() {
         return;
     }
 
-    // TODO : Mul = combination operator ? [(f * g)(x) == f(g(x))]
+    class_type->fn_traverse_objects = [](Object *self,
+                                         const fn_visit_object_t &visit) {
+        Builtin *me = reinterpret_cast<Builtin *>(self);
+
+        visit(me->self);
+    };
 
     // @call
     class_type->fn_call = [](Object *self, Object *args,
@@ -121,6 +126,7 @@ void Function::init_class_type() {
         }
 
         visit(me->lambda_frame);
+        visit(me->self);
     };
 
     // @call
@@ -146,8 +152,8 @@ void Function::init_class_type() {
             } else {
                 THROW_ARGUMENT_ERROR(me->name, "length (too many arguments)",
                                      "This function requires from " +
-                                         to_string(me->args.size()) +
-                                         " to " + to_string(me->n_required_args) +
+                                         to_string(me->n_required_args) +
+                                         " to " + to_string(me->args.size()) +
                                          " arguments");
             }
 
