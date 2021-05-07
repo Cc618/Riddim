@@ -14,6 +14,9 @@ int_t get_mod_index(int_t i, int_t len) {
 
 Type *Int::class_type = nullptr;
 
+Object *Int::zero = nullptr;
+Object *Int::one = nullptr;
+
 Int::Int(const int_t &data) : Object(Int::class_type), data(data) {}
 
 void Int::init_class_type() {
@@ -234,4 +237,22 @@ void Int::init_class_type() {
 
         return result;
     };
+}
+
+void Int::init_class_objects() {
+    zero = new (nothrow) Int(0);
+
+    if (!zero) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    one = new (nothrow) Int(1);
+
+    if (!one) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
 }

@@ -13,10 +13,15 @@ int_t get_mod_index(int_t i, int_t len);
 struct Int : public Object {
     static Type *class_type;
 
+    static Object *zero;
+    static Object *one;
+
     int_t data;
 
     // Can throw
     static void init_class_type();
+
+    static void init_class_objects();
 
     Int(const int_t &data);
 };

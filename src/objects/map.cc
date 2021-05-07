@@ -1,5 +1,6 @@
 #include "map.hh"
 #include "bool.hh"
+#include "builtins.hh"
 #include "error.hh"
 #include "hash.hh"
 #include "int.hh"
@@ -49,14 +50,77 @@ void HashMap::init_class_type() {
                                  Object *kwargs) -> Object * {
         INIT_METHOD(HashMap, "HashMap");
 
-        CHECK_NOARGS("HashMap");
         CHECK_NOKWARGS("HashMap");
 
-        auto result = HashMap::New();
+        HashMap *result = nullptr;
+        if (args_data.empty()) {
+            result = HashMap::New();
 
-        // Dispatch error
-        if (!result)
-            return nullptr;
+            // Dispatch error
+            if (!result)
+                return nullptr;
+        } else if (args_data.size() == 1) {
+            result = HashMap::New();
+
+            // Dispatch error
+            if (!result)
+                return nullptr;
+
+            // Construct from iterable
+            auto iter = args_data[0]->iter();
+
+            if (!iter) {
+                THROW_ARGUMENT_ERROR("HashMap.@new", "iterable",
+                                     "Requires an iterable object");
+
+                return nullptr;
+            }
+
+            Object *obj = nullptr;
+            int i = 0;
+            while (1) {
+                obj = iter->next();
+
+                if (!obj) {
+                    return nullptr;
+                }
+
+                if (obj == enditer)
+                    break;
+
+                auto len = obj->len();
+
+                if (!len) {
+                    return nullptr;
+                }
+
+                if (reinterpret_cast<Int *>(len)->data != 2) {
+                    THROW_ARGUMENT_ERROR("HashMap.@new",
+                                         "iterable[" + to_string(i) + "]",
+                                         "Must contain 2 items");
+
+                    return nullptr;
+                }
+
+                auto k = obj->getitem(Int::zero);
+
+                if (!k) {
+                    return nullptr;
+                }
+
+                auto v = obj->getitem(Int::one);
+
+                if (!v) {
+                    return nullptr;
+                }
+
+                result->set(k, v);
+                ++i;
+            }
+        } else {
+            THROW_ARGUMENT_ERROR("HashMap.@new", "length",
+                                 "0 or 1 arguments required");
+        }
 
         return result;
     };
