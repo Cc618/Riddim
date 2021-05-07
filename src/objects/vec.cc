@@ -51,10 +51,39 @@ void Vec::init_class_type() {
                                  Object *kwargs) -> Object * {
         INIT_METHOD(Vec, "Vec");
 
-        CHECK_NOARGS("Vec");
         CHECK_NOKWARGS("Vec");
 
-        auto result = Vec::New();
+        Vec *result = nullptr;
+        if (args_data.empty()) {
+            result = Vec::New();
+        } else if (args_data.size() == 1) {
+            // Construct from iterable
+            auto iter = args_data[0]->iter();
+
+            if (!iter) {
+                THROW_ARGUMENT_ERROR("Vec.@new", "iterable", "Requires an iterable object");
+
+                return nullptr;
+            }
+
+            vector<Object *> collect;
+            Object *obj = nullptr;
+            while (1) {
+                obj = iter->next();
+
+                if (!obj) {
+                    return nullptr;
+                }
+
+                if (obj == enditer) break;
+
+                collect.push_back(obj);
+            }
+
+            result = Vec::New(collect);
+        } else {
+            THROW_ARGUMENT_ERROR("Vec.@new", "length", "0 or 1 arguments required");
+        }
 
         // Dispatch error
         if (!result)
