@@ -64,6 +64,7 @@ using namespace ast;
 %option noyywrap nounput noinput batch
 
 id          [a-zA-Z_][a-zA-Z_0-9]*
+slot        @({id})
 int_dec     [0-9][0-9_']*
 int_hex     0[xX][0-9a-fA-F][0-9a-fA-F_']*
 int_bin     0[bB][01][01_']*
@@ -159,6 +160,7 @@ comment     #.*
 "print"         return yy::parser::make_PRINT(loc);
 "fn"            return yy::parser::make_FN(loc);
 
+{slot}          return yy::parser::make_SLOT(yytext, loc);
 {id}            return yy::parser::make_ID(yytext, loc);
 
 .               {

@@ -107,7 +107,7 @@
 %nterm <ast::FnDecl*> fndecl
 %nterm <ast::FnDecl::Args*> fndecl_all_args fndecl_args fndecl_kwargs option_fndecl_args
 %nterm <ast::Target*> fndecl_target
-%nterm <ast::AttrTarget*> fndecl_attrtarget
+%nterm <ast::AttrTarget*> fndecl_attrtarget fndecl_slottarget
 %nterm <ast::IdTarget*> fndecl_idtarget
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
@@ -150,6 +150,7 @@
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 %nterm option_stop option_comma option_comma_stop
 %token <str_t> ID
+%token <str_t> SLOT
 %token <str_t> STR
 %token <int_t> INT
 
@@ -181,13 +182,16 @@ module: stop stmtlist {
 
 // --- Declarations ---
 // Function declaration
-fndecl: "fn" fndecl_target lparen fndecl_all_args rparen block {
-        $$ = new FnDecl(@1.begin.line, $2, $4, $6);
+fndecl: "fn" fndecl_target lparen fndecl_all_args
+            rparen block {
+        $$ = new FnDecl(@1.begin.line, $fndecl_target,
+            $fndecl_all_args, $block, false);
     }
     ;
 
 fndecl_target: fndecl_idtarget { $$ = $1; }
     | fndecl_attrtarget { $$ = $1; }
+    | fndecl_slottarget { $$ = $1; }
     ;
 
 fndecl_attrtarget: ID "." ID {
@@ -199,6 +203,14 @@ fndecl_attrtarget: ID "." ID {
         $$ = $1;
         auto newattr = new Attr(@1.begin.line, $1->attr, $3);
         $1->attr = newattr;
+    }
+    ;
+
+// Type@slot
+fndecl_slottarget: ID SLOT {
+        $$ = new AttrTarget(
+            new Attr(@ID.begin.line,
+                new Id(@ID.begin.line, $ID), $SLOT));
     }
     ;
 

@@ -498,6 +498,19 @@ DynamicType *DynamicType::New(const str_t &name) {
         return null;
     };
 
+    // @str
+    me->fn_str = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@str");
+        if (it != me->attrs.end()) {
+            return it->second->call(Vec::empty, HashMap::empty);
+        }
+
+        // TODO : Map like print
+        return null;
+    };
+
     return me;
 }
 
