@@ -108,6 +108,7 @@ comment     #.*
 "->"            return yy::parser::make_RANGE(loc);
 "->="           return yy::parser::make_RANGEINC(loc);
 "."             return yy::parser::make_DOT(loc);
+"@"             return yy::parser::make_AT(loc);
 ","             return yy::parser::make_COMMA(loc);
 ":"             return yy::parser::make_COLON(loc);
 "+"             return yy::parser::make_PLUS(loc);
@@ -160,7 +161,6 @@ comment     #.*
 "print"         return yy::parser::make_PRINT(loc);
 "fn"            return yy::parser::make_FN(loc);
 
-{slot}          return yy::parser::make_SLOT(yytext, loc);
 {id}            return yy::parser::make_ID(yytext, loc);
 
 .               {

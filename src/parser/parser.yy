@@ -79,6 +79,7 @@
     RANGE       "->"
     RANGEINC    "->="
     DOT         "."
+    AT          "@"
     COMMA       ","
     COLON       ":"
     STOP        "<LF>"
@@ -150,7 +151,6 @@
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 %nterm option_stop option_comma option_comma_stop
 %token <str_t> ID
-%token <str_t> SLOT
 %token <str_t> STR
 %token <int_t> INT
 
@@ -207,10 +207,10 @@ fndecl_attrtarget: ID "." ID {
     ;
 
 // Type@slot
-fndecl_slottarget: ID SLOT {
+fndecl_slottarget: ID[left] "@" ID[right] {
         $$ = new AttrTarget(
-            new Attr(@ID.begin.line,
-                new Id(@ID.begin.line, $ID), $SLOT));
+            new Attr(@left.begin.line,
+                new Id(@left.begin.line, $left), "@" + $right));
     }
     ;
 
@@ -422,6 +422,7 @@ macro_keyword: macro_keyword_varargs { $$ = $1; }
     | "is" { $$ = "is"; }
     | "in" { $$ = "in"; }
     | "." { $$ = "."; }
+    | "@" { $$ = "@"; }
     | ":" { $$ = ":"; }
     | "->" { $$ = "->"; }
     | "->=" { $$ = "->="; }
@@ -590,7 +591,9 @@ primary: atom { $$ = $1; }
     // TODO B : | cascade { $$ = $1; }
     ;
 
+// TODO A : Verify
 attr: primary "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
+    | primary "@" ID { $$ = new Attr(@1.begin.line, $1, "@" + $ID); }
     ;
 
 // TODO B : Handle stops + multiples
