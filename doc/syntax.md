@@ -339,7 +339,42 @@ fn Person.birthday() {
 }
 ```
 
-<!-- TODO : Operator / special functions (@...) -->
+#### Special methods / operator overloading (slots)
+It is possible to overload most object slots.
+A slot is a special function that handle the behaviour of
+and operator or other internal functions.
+
+All slots begin with the **@** symbol.
+
+```python
+newtype Number(n) {
+    me.n = n
+}
+
+fn Number@add(other) {
+    return Number(me.n + other.n)
+}
+
+fn Number@neg() {
+    return Number(-me.n)
+}
+
+fn Number@str() {
+    return Str(me.n) + "!"
+}
+
+a = Number(314)
+b = Number(304)
+
+print a + b # 618!
+print -a # -314!
+# If @neg is overloaded, @sub can be omitted and is
+# replaced by a + (-b)
+print a - b # 10!
+```
+
+To have a list and a description of all slots, see [object.md].
+Note that not all slots are allowed to be overloaded.
 
 ## Error handling
 ### Throw
