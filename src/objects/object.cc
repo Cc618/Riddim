@@ -82,7 +82,7 @@ Object *Object::cmp(Object *o) {
 
     // Must be int
     if (result->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF(type->name + "@cmp", result->type,
+        THROW_TYPE_ERROR_PREF((type->name + "@cmp").c_str(), result->type,
                               Int::class_type);
 
         return nullptr;
@@ -153,7 +153,7 @@ Object *Object::hash() {
     auto result = type->fn_hash(this);
 
     if (result->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF(type->name + ".@hash", result->type,
+        THROW_TYPE_ERROR_PREF((type->name + ".@hash").c_str(), result->type,
                               Int::class_type);
 
         return nullptr;
@@ -196,7 +196,7 @@ Object *Object::len() {
 
     // Must be int
     if (result->type != Int::class_type) {
-        THROW_TYPE_ERROR_PREF(type->name + "@len", result->type,
+        THROW_TYPE_ERROR_PREF((type->name + "@len").c_str(), result->type,
                               Int::class_type);
 
         return nullptr;
@@ -289,7 +289,7 @@ Object *Object::str() {
 
     // Must be str
     if (result->type != Str::class_type) {
-        THROW_TYPE_ERROR_PREF(type->name + "@str", result->type,
+        THROW_TYPE_ERROR_PREF((type->name + "@str").c_str(), result->type,
                               Str::class_type);
 
         return nullptr;
@@ -507,8 +507,43 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(Vec::empty, HashMap::empty);
         }
 
-        // TODO : Map like print
-        return null;
+        // Default print
+        str_t result = me->type->name;
+
+        if (me->attrs.empty()) {
+            result += "{}";
+        } else {
+            result += "{";
+            bool isfirst = true;
+            for (const auto &[k, v] : me->attrs) {
+                // Don't display slots
+                if (k.empty() || k[0] == '@') continue;
+
+                if (isfirst)
+                    isfirst = false;
+                else
+                    result += ", ";
+
+                // Print attributes
+                auto v_str = v->str();
+
+                // Error
+                if (!v_str)
+                    return nullptr;
+
+                result += k + ": " + reinterpret_cast<Str *>(v_str)->data;
+            }
+
+            result += "}";
+        }
+
+        auto result_str = Str::New(result);
+
+        if (!result_str) {
+            return nullptr;
+        }
+
+        return result_str;
     };
 
     return me;
