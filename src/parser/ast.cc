@@ -409,6 +409,10 @@ void IdTarget::debug(int indent) {
     cout << str_indent(indent) << ")" << endl;
 }
 
+str_t IdTarget::to_str() {
+    return id->id;
+}
+
 void IndexingTarget::debug(int indent) {
     cout << str_indent(indent) << "IndexingTarget(" << endl;
     indexing->debug(indent + 1);
@@ -419,5 +423,9 @@ void AttrTarget::debug(int indent) {
     cout << str_indent(indent) << "AttrTarget(" << endl;
     attr->debug(indent + 1);
     cout << str_indent(indent) << ")" << endl;
+}
+
+str_t AttrTarget::to_str() {
+    return repr;
 }
 } // namespace ast

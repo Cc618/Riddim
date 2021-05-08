@@ -198,11 +198,13 @@ fndecl_attrtarget: ID "." ID {
         $$ = new AttrTarget(
             new Attr(@1.begin.line,
                 new Id(@1.begin.line, $1), $3));
+        $$->repr = $1 + "." + $3;
     }
     | fndecl_attrtarget "." ID {
         $$ = $1;
         auto newattr = new Attr(@1.begin.line, $1->attr, $3);
         $1->attr = newattr;
+        $$->repr += "." + $3;
     }
     ;
 
@@ -211,6 +213,7 @@ fndecl_slottarget: ID[left] "@" ID[right] {
         $$ = new AttrTarget(
             new Attr(@left.begin.line,
                 new Id(@left.begin.line, $left), "@" + $right));
+        $$->repr = $1 + "@" + $3;
     }
     ;
 
@@ -591,7 +594,6 @@ primary: atom { $$ = $1; }
     // TODO B : | cascade { $$ = $1; }
     ;
 
-// TODO A : Verify
 attr: primary "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
     | primary "@" ID { $$ = new Attr(@1.begin.line, $1, "@" + $ID); }
     ;

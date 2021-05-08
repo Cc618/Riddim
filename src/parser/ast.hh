@@ -515,6 +515,10 @@ struct Target : public ASTNode {
 
     // Returns the wrapped expression
     virtual ASTNode *get_exp() = 0;
+
+    // Returns the string version of the attribute
+    // Might return empty if no string version
+    virtual str_t to_str() { return ""; }
 };
 
 // [target1, target2, ...] syntax
@@ -547,6 +551,8 @@ struct IdTarget : public Target {
     virtual void gen_code(Module *module, Code *code) override;
 
     virtual ASTNode *get_exp() override { return id; }
+
+    virtual str_t to_str() override;
 };
 
 // Target using an index assignment
@@ -569,6 +575,7 @@ struct IndexingTarget : public Target {
 // Target using an attribute assignment
 // exp.attr = ...
 struct AttrTarget : public Target {
+    str_t repr;
     Attr *attr;
 
     AttrTarget(Attr *attr) : Target(attr->fileline), attr(attr) {}
@@ -580,5 +587,7 @@ struct AttrTarget : public Target {
     virtual void gen_code(Module *module, Code *code) override;
 
     virtual ASTNode *get_exp() override { return attr; }
+
+    virtual str_t to_str() override;
 };
 } // namespace ast
