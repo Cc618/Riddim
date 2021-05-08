@@ -60,19 +60,23 @@ Object *Object::call(Object *args, Object *kwargs) {
     return type->fn_call(this, args, kwargs);
 }
 
+static Object *default_cmp(Object *self, Object *o) {
+    bool iseq = self == o;
+
+    auto result = new (nothrow) Int(iseq ? 0 : -1);
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
+}
+
 Object *Object::cmp(Object *o) {
     if (!type->fn_cmp) {
-        bool iseq = this == o;
-
-        auto result = new (nothrow) Int(iseq ? 0 : -1);
-
-        if (!result) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        return result;
+        return default_cmp(this, o);
     }
 
     auto result = type->fn_cmp(this, o);
@@ -91,9 +95,11 @@ Object *Object::cmp(Object *o) {
     return result;
 }
 
+static Object *default_copy(Object *self) { return self; }
+
 Object *Object::copy() {
     if (!type->fn_copy) {
-        return this;
+        return default_copy(this);
     }
 
     return type->fn_copy(this);
@@ -109,17 +115,21 @@ Object *Object::div(Object *o) {
     return type->fn_div(this, o);
 }
 
+static Object *default_getattr(Object *self, Object *name) {
+    auto name_str = name->str();
+
+    if (!name_str || name_str->type != Str::class_type) {
+        clear_error();
+        throw_fmt(NameError, "No such attribute for type %s", self->type);
+    } else
+        THROW_ATTR_ERROR(self->type, reinterpret_cast<Str *>(name_str)->data);
+
+    return nullptr;
+}
+
 Object *Object::getattr(Object *name) {
     if (!type->fn_getattr) {
-        auto name_str = name->str();
-
-        if (!name_str || name_str->type != Str::class_type) {
-            clear_error();
-            throw_fmt(NameError, "No such attribute for type %s", type);
-        } else
-            THROW_ATTR_ERROR(type, reinterpret_cast<Str *>(name_str)->data);
-
-        return nullptr;
+        return default_getattr(this, name);
     }
 
     return type->fn_getattr(this, name);
@@ -135,19 +145,23 @@ Object *Object::getitem(Object *args) {
     return type->fn_getitem(this, args);
 }
 
+static Object *default_hash(Object *self) {
+    auto result =
+        new (nothrow) Int(hash_combine(hash_ptr(self), hash_ptr(self->type)));
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
+}
+
 Object *Object::hash() {
     // Default hash using the object memory address and its type
     if (!type->fn_hash) {
-        auto result =
-            new (nothrow) Int(hash_combine(hash_ptr(this), hash_ptr(type)));
-
-        if (!result) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        return result;
+        return default_hash(this);
     }
 
     auto result = type->fn_hash(this);
@@ -245,17 +259,21 @@ Object *Object::next() {
     return type->fn_next(this);
 }
 
+static Object *default_setattr(Object *self, Object *name, Object *value) {
+    auto name_str = name->str();
+
+    if (!name_str || name_str->type != Str::class_type) {
+        clear_error();
+        throw_fmt(NameError, "No such attribute for type %s", self->type);
+    } else
+        THROW_ATTR_ERROR(self->type, reinterpret_cast<Str *>(name_str)->data);
+
+    return nullptr;
+}
+
 Object *Object::setattr(Object *name, Object *value) {
     if (!type->fn_setattr) {
-        auto name_str = name->str();
-
-        if (!name_str || name_str->type != Str::class_type) {
-            clear_error();
-            throw_fmt(NameError, "No such attribute for type %s", type);
-        } else
-            THROW_ATTR_ERROR(type, reinterpret_cast<Str *>(name_str)->data);
-
-        return nullptr;
+        return default_setattr(this, name, value);
     }
 
     return type->fn_setattr(this, name, value);
@@ -271,15 +289,19 @@ Object *Object::setitem(Object *key, Object *value) {
     return type->fn_setitem(this, key, value);
 }
 
+static Object *default_str(Object *self) {
+    auto result = Str::New(self->type->name + "()");
+
+    if (!result) {
+        return nullptr;
+    }
+
+    return result;
+}
+
 Object *Object::str() {
     if (!type->fn_str) {
-        auto result = Str::New(type->name + "()");
-
-        if (!result) {
-            return nullptr;
-        }
-
-        return result;
+        return default_str(this);
     }
 
     auto result = type->fn_str(this);
@@ -298,26 +320,30 @@ Object *Object::str() {
     return result;
 }
 
+static Object *default_sub(Object *self, Object *o) {
+    // a - b == a + (-b)
+    if (self->type->fn_add && self->type->fn_neg) {
+        auto negated = o->neg();
+
+        if (!negated)
+            return nullptr;
+
+        auto result = self->add(negated);
+
+        if (!result)
+            return nullptr;
+
+        return result;
+    }
+
+    THROW_NOBUILTIN(self->type, sub);
+
+    return nullptr;
+}
+
 Object *Object::sub(Object *o) {
     if (!type->fn_sub) {
-        // a - b == a + (-b)
-        if (type->fn_add && type->fn_neg) {
-            auto negated = o->neg();
-
-            if (!negated)
-                return nullptr;
-
-            auto result = add(negated);
-
-            if (!result)
-                return nullptr;
-
-            return result;
-        }
-
-        THROW_NOBUILTIN(this->type, sub);
-
-        return nullptr;
+        return default_sub(this, o);
     }
 
     return type->fn_sub(this, o);
@@ -480,7 +506,6 @@ DynamicType *DynamicType::New(const str_t &name) {
         return nullptr;
     };
 
-    // TODO D : Default builtin cmp
     // @cmp
     me->fn_cmp = [](Object *self, Object *other) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
@@ -496,9 +521,7 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, cmp);
-
-        return nullptr;
+        return default_cmp(self, other);
     };
 
     // @div
@@ -555,9 +578,6 @@ DynamicType *DynamicType::New(const str_t &name) {
         return result;
     };
 
-
-
-
     // @getitem
     me->fn_getitem = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
@@ -578,7 +598,6 @@ DynamicType *DynamicType::New(const str_t &name) {
         return nullptr;
     };
 
-    // TODO D : Default
     // @hash
     me->fn_hash = [](Object *self) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
@@ -588,9 +607,7 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(Vec::empty, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, hash);
-
-        return nullptr;
+        return default_hash(self);
     };
 
     // @in
@@ -811,9 +828,7 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, sub);
-
-        return nullptr;
+        return default_sub(self, other);
     };
 
     return me;
