@@ -206,7 +206,7 @@ Object *Object::len() {
 }
 
 Object *Object::mod(Object *o) {
-    if (!type->fn_div) {
+    if (!type->fn_mod) {
         THROW_NOBUILTIN(this->type, mod);
 
         return nullptr;
@@ -446,6 +446,81 @@ DynamicType *DynamicType::New(const str_t &name) {
 
     me->fn_traverse_objects = default_traverse_objects;
 
+    // @add
+    me->fn_add = [](Object *self, Object *other) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@add");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({other});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, add);
+
+        return nullptr;
+    };
+
+    // @call
+    me->fn_call = [](Object *self, Object *args, Object *kwargs) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@call");
+        if (it != me->attrs.end()) {
+            return it->second->call(args, kwargs);
+        }
+
+        THROW_NOBUILTIN(me->type, call);
+
+        return nullptr;
+    };
+
+    // TODO D : Default builtin cmp
+    // @cmp
+    me->fn_cmp = [](Object *self, Object *other) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@cmp");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({other});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, cmp);
+
+        return nullptr;
+    };
+
+    // @div
+    me->fn_div = [](Object *self, Object *other) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@div");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({other});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, div);
+
+        return nullptr;
+    };
+
     // @getattr
     me->fn_getattr = [](Object *self, Object *name) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
@@ -480,6 +555,160 @@ DynamicType *DynamicType::New(const str_t &name) {
         return result;
     };
 
+
+
+
+    // @getitem
+    me->fn_getitem = [](Object *self, Object *key) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@getitem");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({key});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, getitem);
+
+        return nullptr;
+    };
+
+    // TODO D : Default
+    // @hash
+    me->fn_hash = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@hash");
+        if (it != me->attrs.end()) {
+            return it->second->call(Vec::empty, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, hash);
+
+        return nullptr;
+    };
+
+    // @in
+    me->fn_in = [](Object *self, Object *other) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@in");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({other});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, in);
+
+        return nullptr;
+    };
+
+    // @iter
+    me->fn_iter = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@iter");
+        if (it != me->attrs.end()) {
+            return it->second->call(Vec::empty, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, iter);
+
+        return nullptr;
+    };
+
+    // @len
+    me->fn_len = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@len");
+        if (it != me->attrs.end()) {
+            return it->second->call(Vec::empty, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, len);
+
+        return nullptr;
+    };
+
+    // @mod
+    me->fn_mod = [](Object *self, Object *other) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@mod");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({other});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, mod);
+
+        return nullptr;
+    };
+
+    // @mul
+    me->fn_mul = [](Object *self, Object *other) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@mul");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({other});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, mul);
+
+        return nullptr;
+    };
+
+    // @neg
+    me->fn_neg = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@neg");
+        if (it != me->attrs.end()) {
+            return it->second->call(Vec::empty, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, neg);
+
+        return nullptr;
+    };
+
+    // @next
+    me->fn_next = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@next");
+        if (it != me->attrs.end()) {
+            return it->second->call(Vec::empty, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, next);
+
+        return nullptr;
+    };
+
     // @setattr
     me->fn_setattr = [](Object *self, Object *key, Object *val) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
@@ -496,6 +725,26 @@ DynamicType *DynamicType::New(const str_t &name) {
         me->attrs[attr] = val;
 
         return null;
+    };
+
+    // @setitem
+    me->fn_setitem = [](Object *self, Object *key, Object *value) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@setitem");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({key, value});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, setitem);
+
+        return nullptr;
     };
 
     // @str
@@ -517,7 +766,8 @@ DynamicType *DynamicType::New(const str_t &name) {
             bool isfirst = true;
             for (const auto &[k, v] : me->attrs) {
                 // Don't display slots
-                if (k.empty() || k[0] == '@') continue;
+                if (k.empty() || k[0] == '@')
+                    continue;
 
                 if (isfirst)
                     isfirst = false;
@@ -544,6 +794,26 @@ DynamicType *DynamicType::New(const str_t &name) {
         }
 
         return result_str;
+    };
+
+    // @sub
+    me->fn_sub = [](Object *self, Object *other) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@sub");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({other});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, sub);
+
+        return nullptr;
     };
 
     return me;
