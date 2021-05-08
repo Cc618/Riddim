@@ -228,6 +228,54 @@ For instance, when iterating through 0 -> 2, the @next method yields :
 For loops call the @iter method of the object to iterate through (like a range).
 And then, @next is called every iteration until it returns enditer.
 
+```python
+# The iterator is the object that can be
+# advanced with the @next slot
+newtype MyIterator(n) {
+    me.i = 1
+    me.n = n
+}
+
+# Yields the next value or enditer
+fn MyIterator@next() {
+    if me.i > me.n {
+        return enditer
+    }
+
+    val = me.i
+    me.i *= 2
+
+    return val
+}
+
+# The main object, yields its iterator (MyIterator)
+# in the @iter slot
+newtype MyIterable(n) {
+    me.n = n
+}
+
+fn MyIterable@iter() {
+    # Works also with iter(1 ->= me.n)
+    # to yield all numbers from 1 to n included
+    return MyIterator(me.n)
+}
+
+iterable = MyIterable(64)
+
+# Prints 1, 2, 4, 8, ..., 64
+for i in iterable {
+    print i
+}
+
+# Collects all values in a vector
+print Vec(iterable)
+```
+
+This example shows how to create a custom iterable and iterator.
+Note that you can create only an iterable and return a iterator
+object of another iteratable using the iter builtin (see the
+commented section of MyIterable@iter).
+
 ## Declarations
 ### Functions
 #### Statement
@@ -373,7 +421,7 @@ print -a # -314!
 print a - b # 10!
 ```
 
-To have a list and a description of all slots, see [object.md].
+To have a list and a description of all slots, see [the object/Slots documentation](object.md).
 Note that not all slots are allowed to be overloaded.
 
 ## Error handling

@@ -19,8 +19,13 @@
 | HashMap | A collection that serves as a mapping between keys and values, mappings are made given the hash of the key |
 | AttrObject | An object that can contain custom attributes |
 
-### Default methods
-<!-- TODO : Abstract -->
+### Slots (default methods)
+A slot is a special function that handle the behaviour of
+and operator or other internal functions.
+They are called mostly on the C++ side of Riddim but can
+be called from a Riddim program using the @ operator (used
+like the . operator).
+
 | Name | Description | Expected Return Type | Example | Can be overloaded |
 | ---- | ----------- | -------------------- | ------- | ----------------- |
 | @add | + operator | | 2 + 2 | Yes |
