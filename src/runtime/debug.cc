@@ -3,6 +3,7 @@
 
 using namespace std;
 
+#ifdef DEBUG
 void debug_info(const str_t &msg) {
     cout << msg << endl;
 }
@@ -15,3 +16,4 @@ void debug_warn(const str_t &msg) {
 void debug_err(const str_t &msg) {
     cerr << "[DEBUG:ERROR] " << msg << endl;
 }
+#endif

@@ -1,10 +1,20 @@
 # CMake flags (see the debug section in the documentation for more details)
 set(DEBUG_PARSER_CONFLICTS 1)
 
-# C flags (see the debug section in the documentation for more details)
-add_compile_definitions(DEBUG)
-# add_compile_definitions(DEBUG_ERRORS)
-# add_compile_definitions(DEBUG_GC)
+# # C flags (see the debug section in the documentation for more details)
+if (DEFINED ENV{RID_DEBUG})
+    add_compile_definitions(DEBUG)
+endif()
+
+if (DEFINED ENV{RID_DEBUG_ERRORS})
+    add_compile_definitions(DEBUG_ERRORS)
+endif()
+
+if (DEFINED ENV{RID_DEBUG_GC})
+    add_compile_definitions(DEBUG_GC)
+endif()
+
+add_compile_definitions(RID_STD_PATH="$ENV{RID_STD_PATH}")
 
 # Parse CMake flags
 if (${DEBUG_PARSER_CONFLICTS})

@@ -13,6 +13,17 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    // TODO C : WIP
+    str_t stdpath = RID_STD_PATH;
+    cout << "RID_STD_PATH: " << stdpath << endl;
+
+    // TODO C : WIP
+#ifdef DEBUG
+    cout << "DEBUG" << endl;
+#endif
+
+    return 0;
+
     int res = 0;
 
     // Invalid arguments
