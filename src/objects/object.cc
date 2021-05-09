@@ -520,6 +520,34 @@ DynamicType *DynamicType::New(const str_t &name) {
         return default_cmp(self, other);
     };
 
+    // @copy
+    me->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        unordered_map<str_t, Object*> attrs;
+        for (const auto &[k, v] : me->attrs) {
+            auto newval = v->copy();
+
+            if (!newval) {
+                return nullptr;
+            }
+
+            attrs[k] = newval;
+        }
+
+        auto copy = new (nothrow) DynamicObject(me->type);
+
+        if (!copy) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        copy->attrs = move(attrs);
+
+        return copy;
+    };
+
     // @div
     me->fn_div = [](Object *self, Object *other) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
