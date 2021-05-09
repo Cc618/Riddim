@@ -15,18 +15,6 @@
 using namespace std;
 using namespace OpCode;
 
-// Prints the stack
-// TODO : Rm
-void debug_stack(const vector<Object *> &obj_stack) {
-    cout << "Stack (" << obj_stack.size() << ") :" << endl;
-    int staki = obj_stack.size();
-    for (auto o : obj_stack) {
-        cout << --staki << ". "
-             << (o ? reinterpret_cast<Str *>(o->str())->data : "nullptr")
-             << endl;
-    }
-}
-
 // Pops the top of the stack and returns its value
 inline Object *pop_top() {
     auto top = Program::instance->obj_stack.back();

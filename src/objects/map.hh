@@ -45,9 +45,7 @@ private:
     static size_t class_hash;
 };
 
-// TODO F : Useful ?
-// An object that can contains attributes
-// These attributes are set /
+// An object that can contain attributes
 struct AttrObject : public Object {
     static Type *class_type;
 

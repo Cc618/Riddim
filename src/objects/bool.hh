@@ -44,8 +44,6 @@ struct Bool : public Object {
 
     bool data;
 
-    // TODO : fn_istrue
-
     // Can throw
     static void init_class_type();
 

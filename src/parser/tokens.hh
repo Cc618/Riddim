@@ -9,7 +9,6 @@
 // Throws a lexer error
 void lexer_error(const yy::parser::location_type &l, const std::string &msg);
 
-// TODO Negate : Remove negate rule
 yy::parser::symbol_type make_INT(const yy::parser::location_type &loc,
                                  const str_t &raw, const std::string &s,
                                  int base, bool negate = false);

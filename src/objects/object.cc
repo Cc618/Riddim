@@ -27,13 +27,9 @@ void Object::init_class_type() { class_type = new Type("Object"); }
 
 Object::Object(Type *type) : type(type) {
     init_gc_data(this);
-
-    // TODO : Call new function (of the type) ?
 }
 
-Object::~Object() {
-    // TODO : Call delete function (of the type) ?
-}
+Object::~Object() {}
 
 void Object::traverse_objects(const fn_visit_object_t &visit) {
     if (type->fn_traverse_objects)

@@ -45,7 +45,6 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push TOS1 - TOS
     BinSub,
-    // TODO : Self
     // Only positional args call
     // Calls TOS1 with TOS (a Vec) as positional args
     // - pop 2

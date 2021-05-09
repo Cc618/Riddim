@@ -43,8 +43,6 @@ static void init_types() {
     TYPE::init_class_type();                                                   \
     types.push_back(TYPE::class_type);
 
-    // TODO : Add functions like fn_str in *::init_class_type
-
     INIT_TYPE(Type);
     INIT_TYPE(Object);
     INIT_TYPE(Program);

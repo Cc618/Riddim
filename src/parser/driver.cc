@@ -12,7 +12,6 @@ Driver *Driver::instance = nullptr;
 Driver::Driver() { instance = this; }
 
 int Driver::parse(const string &f) {
-    // TODO : Convert to absolute path
     file = f;
     location.initialize(&file);
 

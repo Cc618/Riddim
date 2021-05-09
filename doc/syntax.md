@@ -238,6 +238,7 @@ newtype MyIterator(n) {
 
 # Yields the next value or enditer
 fn MyIterator@next() {
+    # Terminate the iteration loop
     if me.i > me.n {
         return enditer
     }

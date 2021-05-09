@@ -99,7 +99,6 @@ comment     #.*
 }
 
 {int_dec}       return make_INT(loc, yytext, yytext, 10);
--{int_dec}      return make_INT(loc, yytext, yytext + 1, 10, true);
 {int_hex}       return make_INT(loc, yytext, yytext + 2, 16);
 {int_bin}       return make_INT(loc, yytext, yytext + 2, 2);
 {str}           return make_STR(loc, yytext);

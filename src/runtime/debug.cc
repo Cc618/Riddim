@@ -3,8 +3,6 @@
 
 using namespace std;
 
-// TODO : Colors
-
 void debug_info(const str_t &msg) {
     cout << msg << endl;
 }

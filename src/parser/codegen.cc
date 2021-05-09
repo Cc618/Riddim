@@ -645,6 +645,7 @@ void Const::gen_code(Module *module, Code *_code) {
 }
 
 // TODO B : Cascade
+// TODO : --- This section is WIP ---
 void Cascade::gen_code(Module *module, Code *_code) {
     this->debug();
 
