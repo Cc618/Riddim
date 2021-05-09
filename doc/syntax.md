@@ -278,6 +278,41 @@ object of another iteratable using the iter builtin (see the
 commented section of MyIterable@iter).
 
 ## Declarations
+### Variables
+We call variable declarations assignments.
+An assignment is firstly an expression, that is, we can assign
+multiple variables at once :
+```python
+a = b = 'I am a or b'
+```
+
+Riddim has also relative assignments :
+```python
+a += ' (I am a finally)'
+```
+
+The let keyword is used to make tuple assignments (variable destructuring).
+It can be used in an assignment or in a for loop :
+```python
+# a = 1, b = 2
+let a, b = [1, 2]
+
+# a = 1, b = 2, c = 3
+let a, (b, c) = [1, [2, 3]]
+
+for let a, b in [[1, 2], [3, 4]] {
+    print a, b
+}
+```
+
+Note that it is possible to return a tuple from a return statement :
+```python
+return 1, 2, 3
+
+# Same as
+return [1, 2, 3]
+```
+
 ### Functions
 #### Statement
 Function declarations are like assignment statements.
