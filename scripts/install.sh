@@ -16,6 +16,7 @@ echo Installing...
 
 # Std lib
 mkdir -p "$RID_STD_PATH"
+rm -rf "$RID_STD_PATH"/*
 cp -r "$PWD/std"/* "$RID_STD_PATH"
 
 # Binaries
