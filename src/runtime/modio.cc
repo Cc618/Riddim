@@ -4,8 +4,10 @@
 #include "utils.hh"
 #include <algorithm>
 #include <sstream>
+#include <filesystem>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 Module *gen_module(Driver &driver) {
     // Take ownership of the ast
@@ -136,10 +138,29 @@ Module *load_module(const str_t &name, const str_t &current_path) {
         parsed_path += "/" + item;
     }
 
-    // The search path
+    // Current directory
     auto mod_dir = dir_path(current_path);
 
-    const str_t path = mod_dir + parsed_path + ".rid";
+    // Std lib modules directory
+    auto std_dir = Program::std_path;
 
-    return parse_module(path);
+    // All directories that can contain the module
+    // The first one has the highest priority
+    // This is similar to PYTHONPATH
+    vector<str_t> search_path;
+    search_path.push_back(mod_dir);
+    search_path.push_back(std_dir);
+
+    for (auto dir : search_path) {
+        str_t path = dir + parsed_path + ".rid";
+
+        if (is_file(path)) {
+            return parse_module(path);
+        }
+    }
+
+    throw_fmt(ImportError, "Module %s%s%s not found", C_BLUE,
+                name.c_str(), C_NORMAL);
+
+    return nullptr;
 }

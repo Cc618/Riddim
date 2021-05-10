@@ -8,6 +8,7 @@ constexpr size_t MAX_RECURSION_DEPTH = 1000;
 
 Program *Program::instance = nullptr;
 Type *Program::class_type = nullptr;
+str_t Program::std_path = RID_STD_PATH;
 
 bool Program::types_loaded = false;
 bool Program::instances_loaded = false;

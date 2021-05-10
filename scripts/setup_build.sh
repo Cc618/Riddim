@@ -7,9 +7,9 @@ set -e
 
 source scripts/setup_env.sh
 
-if [ -n "$RID_DEBUG" ]
+if ! [ -z "$RID_DEBUG" ]
 then
-    set DEBUG_FLAGS="-DCMAKE_BUILD_TYPE=Debug"
+    export DEBUG_FLAGS="-DCMAKE_BUILD_TYPE=Debug"
     echo Debug mode
 fi
 

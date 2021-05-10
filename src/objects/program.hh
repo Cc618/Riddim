@@ -16,6 +16,9 @@ struct Program : public Object {
     static Program *instance;
     static Type *class_type;
 
+    // Standard library modules path
+    static str_t std_path;
+
     static bool types_loaded;
     static bool instances_loaded;
 
