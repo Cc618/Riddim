@@ -535,6 +535,13 @@ use lib2 as anotherlib
 use lib3.*
 ```
 
+It is possible to refer to the parent directory
+using the **super** keyword.
+```python
+# Searches for ../../mod.rid
+use super.super.mod
+```
+
 ## Operator precedence
 The precedence is similar to Python.
 | Operator |
