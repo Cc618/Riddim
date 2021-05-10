@@ -38,5 +38,17 @@ a root privilege may be necessary.
 sudo scripts/install.sh
 ```
 
+### Uninstallation
+There is also an uninstallation script.
+If you used a custom configuration, source
+it before uninstalling riddim.
+
+```sh
+# If you have a custom configuration
+source configure.sh
+# sudo may be useless if you have a custom configuration
+sudo scripts/uninstall.sh
+```
+
 ## Documentation
 The documentation can be found [HERE](doc).
