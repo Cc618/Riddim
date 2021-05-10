@@ -1,10 +1,23 @@
-# Debug
+# Build / install configuration
+Riddim can be customized with the **configure.sh** script located at the
+root of the project.
+In this script, multiple variables can be overriden like the location
+of the riddim binary.
+All variables are commented and described in this script.
+
+## Debug
 When developing Riddim, it can be useful to print some informations.
 It is possible to define some definitions to display those messages.
 
-## Flags (defines)
-These definitions are added to the CMakeLists.txt file in the src directory.
-If the type is C, the constant is a C definition (#define), otherwise it is a CMake variable with value 1.
+### Flags (defines)
+These definitions can be defined in the configure.sh script, the variable
+must be exported with this syntax :
+```sh
+export RID_$DEBUGFLAGNAME=1
+
+# Will define the DEBUG definition
+export RID_DEBUG=1
+```
 
 | Name | C / CMake | Description |
 | ---- | --------- | ----------- |
