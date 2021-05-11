@@ -151,7 +151,7 @@
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 %nterm option_stop option_comma option_comma_stop
 %token <str_t> ID
-%token <str_t> STR
+%token <str_t> STR RAWSTR
 %token <int_t> INT
 
 // The lower it is declared, the sooner the token will be used
@@ -680,6 +680,7 @@ bilist_content_filled: exp "," exp  { $$ = { $1, $3 }; }
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
     | STR { $$ = new Const(@1.begin.line, $1); }
+    | RAWSTR { $$ = new Const(@1.begin.line, $1); }
     ;
 
 id: ID { $$ = new Id(@1.begin.line, $1); }

@@ -15,3 +15,6 @@ yy::parser::symbol_type make_INT(const yy::parser::location_type &loc,
 
 yy::parser::symbol_type make_STR(const yy::parser::location_type &loc,
                                  const std::string &s);
+
+yy::parser::symbol_type make_RAWSTR(const yy::parser::location_type &loc,
+                                    std::string s);

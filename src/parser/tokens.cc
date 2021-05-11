@@ -74,6 +74,60 @@ parser::symbol_type make_STR(const parser::location_type &loc, const str_t &s) {
             result += s[i];
     }
 
-    // Remove leading and trailing quotes
     return parser::make_STR(result, loc);
+}
+
+yy::parser::symbol_type make_RAWSTR(const yy::parser::location_type &loc,
+                                    std::string s) {
+    static const string BLANK = "\t\n\r ";
+
+    if (!s.empty()) {
+        auto first = s.front() == '\n' != string::npos
+                         ? s.find_first_not_of("\n")
+                         : string::npos;
+
+        if (first != string::npos && first > 0)
+            s.erase(s.begin(), s.begin() + first);
+
+        if (!s.empty()) {
+            auto last = BLANK.find(s.back()) != string::npos
+                            ? s.find_last_not_of(BLANK) + 1
+                            : string::npos;
+
+            if (last != string::npos && last < s.size())
+                s.erase(s.begin() + last, s.end());
+        }
+    }
+
+    // Handle indentation
+    int min_indent = s.size();
+    vector<int> indents;
+    for (int i = 0; i < s.size(); ++i) {
+        if (i == 0 || s[i] == '\n') {
+            int current_indent = 0;
+
+            if (i != 0)
+                ++i;
+
+            // Save the indent index
+            indents.push_back(i);
+
+            // Count indentation size
+            for (; i < s.size() && (s[i] == ' ' || s[i] == '\t');
+                 ++i, ++current_indent)
+                ;
+
+            min_indent = min(min_indent, current_indent);
+        }
+    }
+
+    // Remove extra indentation
+    if (min_indent != 0) {
+        for (int i = indents.size() - 1; i >= 0; --i) {
+            s.erase(indents[i], min_indent);
+        }
+    }
+
+    // Remove leading and trailing quotes
+    return parser::make_STR(s, loc);
 }

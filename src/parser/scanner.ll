@@ -74,12 +74,23 @@ str         ({str_single})|({str_double})
 blank       [ \t\r]
 comment     #.*
 
+/* Multi line comment state */
+%x MULTI_COMMENT
+
+/* Multi line string states */
+/* TODO A */
+%x MULTI_STRING_SINGLE
+%x MULTI_STRING_DOUBLE
+
 %{
     // Every time a pattern is matched
     #define YY_USER_ACTION loc.columns(yyleng);
 %}
 %%
 %{
+    // Accumulates the raw (multiline) string content
+    std::string rawstring_buf;
+
     // Every time yylex is called
     yy::location& loc = drv.location;
     loc.step();
@@ -102,6 +113,33 @@ comment     #.*
 {int_hex}       return make_INT(loc, yytext, yytext + 2, 16);
 {int_bin}       return make_INT(loc, yytext, yytext + 2, 2);
 {str}           return make_STR(loc, yytext);
+
+"@#"                    BEGIN(MULTI_COMMENT);
+<MULTI_COMMENT>"@#"     BEGIN(INITIAL);
+<MULTI_COMMENT>\n       ;
+<MULTI_COMMENT>.        ;
+
+"@'"                        {
+        rawstring_buf.clear();
+        BEGIN(MULTI_STRING_SINGLE);
+}
+<MULTI_STRING_SINGLE>"@'"   {
+        BEGIN(INITIAL);
+        return make_RAWSTR(loc, rawstring_buf);
+}
+<MULTI_STRING_SINGLE>\n     rawstring_buf += yytext; loc.lines(1);
+<MULTI_STRING_SINGLE>.      rawstring_buf += yytext;
+
+"@\""                        {
+        rawstring_buf.clear();
+        BEGIN(MULTI_STRING_SINGLE);
+}
+<MULTI_STRING_SINGLE>"@\""   {
+        BEGIN(INITIAL);
+        return make_RAWSTR(loc, rawstring_buf);
+}
+<MULTI_STRING_SINGLE>\n     rawstring_buf += yytext; loc.lines(1);
+<MULTI_STRING_SINGLE>.      rawstring_buf += yytext;
 
 ".."            return yy::parser::make_CASCADE(loc);
 "->"            return yy::parser::make_RANGE(loc);
