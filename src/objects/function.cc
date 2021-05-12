@@ -11,14 +11,14 @@
 using namespace std;
 
 // --- AbstractFunction ---
-AbstractFunction::AbstractFunction(Type *type, Object *self)
-    : Object(type), self(self) {}
+AbstractFunction::AbstractFunction(Type *type, Object *self, const str_t &doc_str)
+    : Object(type), self(self), doc_str(doc_str) {}
 
 // --- Builtin ---
 Type *Builtin::class_type = nullptr;
 
-Builtin::Builtin(const fn_ternary_t &data, const str_t &name, Object *self)
-    : AbstractFunction(Builtin::class_type, self ? self : null), data(data),
+Builtin::Builtin(const fn_ternary_t &data, const str_t &name, Object *self, const str_t &doc_str)
+    : AbstractFunction(Builtin::class_type, self ? self : null, doc_str), data(data),
       name(name) {}
 
 void Builtin::init_class_type() {
@@ -35,6 +35,20 @@ void Builtin::init_class_type() {
         Builtin *me = reinterpret_cast<Builtin *>(self);
 
         visit(me->self);
+    };
+
+    // @doc
+    class_type->fn_doc = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Builtin *>(self);
+
+        if (me->doc_str.empty())
+            return null;
+
+        auto doc = Str::New(me->doc_str);
+
+        if (!doc) return nullptr;
+
+        return doc;
     };
 
     // @call
@@ -63,7 +77,7 @@ void Builtin::init_class_type() {
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Builtin *>(self);
 
-        auto result = new (nothrow) Builtin(me->data, me->name, me->self);
+        auto result = new (nothrow) Builtin(me->data, me->name, me->self, me->doc_str);
 
         if (!result) {
             return nullptr;
@@ -89,8 +103,8 @@ void Builtin::init_class_type() {
 // --- Function ---
 Type *Function::class_type = nullptr;
 
-Function *Function::New(Code *code, const str_t &name, Object *_self) {
-    auto self = new (nothrow) Function(code, name, _self);
+Function *Function::New(Code *code, const str_t &name, Object *_self, const str_t &doc_str) {
+    auto self = new (nothrow) Function(code, name, _self, doc_str);
 
     if (!self) {
         THROW_MEMORY_ERROR;
@@ -101,8 +115,8 @@ Function *Function::New(Code *code, const str_t &name, Object *_self) {
     return self;
 }
 
-Function::Function(Code *code, const str_t &name, Object *self)
-    : AbstractFunction(Function::class_type, self ? self : null), code(code),
+Function::Function(Code *code, const str_t &name, Object *self, const str_t &doc_str)
+    : AbstractFunction(Function::class_type, self ? self : null, doc_str), code(code),
       name(name) {}
 
 void Function::init_class_type() {
@@ -127,6 +141,20 @@ void Function::init_class_type() {
 
         visit(me->lambda_frame);
         visit(me->self);
+    };
+
+    // @doc
+    class_type->fn_doc = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Function *>(self);
+
+        if (me->doc_str.empty())
+            return null;
+
+        auto doc = Str::New(me->doc_str);
+
+        if (!doc) return nullptr;
+
+        return doc;
     };
 
     // @call
@@ -266,7 +294,7 @@ void Function::init_class_type() {
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Function *>(self);
 
-        auto result = Function::New(me->code, me->name, me->self);
+        auto result = Function::New(me->code, me->name, me->self, me->doc_str);
 
         if (!result) {
             return nullptr;

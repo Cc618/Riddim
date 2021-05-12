@@ -90,6 +90,7 @@ comment     #.*
 %{
     // Accumulates the raw (multiline) string content
     std::string rawstring_buf;
+    bool is_doc_str = false;
 
     // Every time yylex is called
     yy::location& loc = drv.location;
@@ -113,30 +114,34 @@ comment     #.*
 {int_hex}       return make_INT(loc, yytext, yytext + 2, 16);
 {int_bin}       return make_INT(loc, yytext, yytext + 2, 2);
 {str}           return make_STR(loc, yytext);
+doc{str}        return make_STR(loc, yytext, true);
 
 "@#"                    BEGIN(MULTI_COMMENT);
 <MULTI_COMMENT>"@#"     BEGIN(INITIAL);
 <MULTI_COMMENT>\n       ;
 <MULTI_COMMENT>.        ;
 
-"@'"                        {
+@(doc)?'                    {
+        is_doc_str = yyleng > 2;
         rawstring_buf.clear();
+
         BEGIN(MULTI_STRING_SINGLE);
 }
 <MULTI_STRING_SINGLE>"@'"   {
         BEGIN(INITIAL);
-        return make_RAWSTR(loc, rawstring_buf);
+        return make_RAWSTR(loc, rawstring_buf, is_doc_str);
 }
 <MULTI_STRING_SINGLE>\n     rawstring_buf += yytext; loc.lines(1);
 <MULTI_STRING_SINGLE>.      rawstring_buf += yytext;
 
-"@\""                        {
+@(doc)?\"                    {
+        is_doc_str = yyleng > 2;
         rawstring_buf.clear();
         BEGIN(MULTI_STRING_DOUBLE);
 }
 <MULTI_STRING_DOUBLE>"@\""   {
         BEGIN(INITIAL);
-        return make_RAWSTR(loc, rawstring_buf);
+        return make_RAWSTR(loc, rawstring_buf, is_doc_str);
 }
 <MULTI_STRING_DOUBLE>\n     rawstring_buf += yytext; loc.lines(1);
 <MULTI_STRING_DOUBLE>.      rawstring_buf += yytext;

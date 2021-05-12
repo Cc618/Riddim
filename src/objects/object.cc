@@ -121,7 +121,7 @@ Object *Object::doc() {
     }
 
     // Must be Str
-    if (result->type != Str::class_type) {
+    if (result->type != Null::class_type && result->type != Str::class_type) {
         THROW_TYPE_ERROR_PREF((type->name + "@doc").c_str(), result->type,
                               Str::class_type);
 

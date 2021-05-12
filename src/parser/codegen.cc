@@ -93,7 +93,7 @@ void FnDecl::gen_code(Module *module, Code *_code) {
     auto target_str = target ? target->to_str() : "";
     auto name = target_str.empty() ? "<anonymous>" : move(target_str);
 
-    auto fn = Function::New(fncode, name);
+    auto fn = Function::New(fncode, name, nullptr, doc);
     fn->n_required_args = args->n_required;
 
     // To disallow functions with same arguments (fn f(a, a) ...)

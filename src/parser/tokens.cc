@@ -31,7 +31,7 @@ parser::symbol_type make_INT(const parser::location_type &loc, const str_t &raw,
     }
 }
 
-parser::symbol_type make_STR(const parser::location_type &loc, const str_t &s) {
+parser::symbol_type make_STR(const parser::location_type &loc, const str_t &s, bool is_doc_str) {
     errno = 0;
 
     str_t result;
@@ -74,11 +74,14 @@ parser::symbol_type make_STR(const parser::location_type &loc, const str_t &s) {
             result += s[i];
     }
 
-    return parser::make_STR(result, loc);
+    if (is_doc_str)
+        return parser::make_DOCSTR(result, loc);
+    else
+        return parser::make_STR(result, loc);
 }
 
 yy::parser::symbol_type make_RAWSTR(const yy::parser::location_type &loc,
-                                    std::string s) {
+                                    std::string s, bool is_doc_str) {
     static const string BLANK = "\t\n\r ";
 
     if (!s.empty()) {
@@ -129,5 +132,8 @@ yy::parser::symbol_type make_RAWSTR(const yy::parser::location_type &loc,
     }
 
     // Remove leading and trailing quotes
-    return parser::make_STR(s, loc);
+    if (is_doc_str)
+        return parser::make_DOCSTR(s, loc);
+    else
+        return parser::make_STR(s, loc);
 }

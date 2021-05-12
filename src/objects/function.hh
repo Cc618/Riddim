@@ -14,7 +14,11 @@ struct AbstractFunction : public Object {
     // null by default
     Object *self;
 
-    AbstractFunction(Type *type, Object *self = nullptr);
+    // Documentation content
+    str_t doc_str;
+
+    AbstractFunction(Type *type, Object *self = nullptr,
+                     const str_t &doc_str = "");
 };
 
 // Built in function
@@ -29,8 +33,8 @@ struct Builtin : public AbstractFunction {
     // Can throw
     static void init_class_type();
 
-    Builtin(const fn_ternary_t &data, const str_t &name,
-            Object *self = nullptr);
+    Builtin(const fn_ternary_t &data, const str_t &name, Object *self = nullptr,
+            const str_t &doc_str = "");
 };
 
 // A function containing code to interpret
@@ -45,11 +49,12 @@ struct Function : public AbstractFunction {
     int n_required_args = 0;
     Frame *lambda_frame = nullptr;
 
-    static Function *New(Code *code, const str_t &name, Object *self = nullptr);
+    static Function *New(Code *code, const str_t &name, Object *self = nullptr,
+                         const str_t &doc_str = "");
 
     // Can throw
     static void init_class_type();
 
 protected:
-    Function(Code *code, const str_t &name, Object *self);
+    Function(Code *code, const str_t &name, Object *self, const str_t &doc_str);
 };

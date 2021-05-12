@@ -72,7 +72,7 @@ a@str = null
 a!doc = 'I do not contain a string representation'
 ```
 
-See the special methods sections for more details.
+See the special methods section for more details.
 
 ### Indexing
 Indexing is done with brackets like in many languages.

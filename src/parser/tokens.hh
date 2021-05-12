@@ -14,7 +14,7 @@ yy::parser::symbol_type make_INT(const yy::parser::location_type &loc,
                                  int base, bool negate = false);
 
 yy::parser::symbol_type make_STR(const yy::parser::location_type &loc,
-                                 const std::string &s);
+                                 const std::string &s, bool is_doc_str = false);
 
 yy::parser::symbol_type make_RAWSTR(const yy::parser::location_type &loc,
-                                    std::string s);
+                                    std::string s, bool is_doc_str = false);

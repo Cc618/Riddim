@@ -111,6 +111,7 @@
 %nterm <ast::Target*> fndecl_target
 %nterm <ast::AttrTarget*> fndecl_attrtarget fndecl_slottarget
 %nterm <ast::IdTarget*> fndecl_idtarget
+%nterm <str_t> fndecl_doc
 %nterm <ast::Block*> block
 %nterm <ast::Block*> stmtlist
 
@@ -147,12 +148,13 @@
 %nterm <std::vector<std::pair<ast::Exp *, ast::Exp *>>> map_content map_content_filled
 %nterm <std::vector<ast::Exp*>> vec_content vec_content_filled list_content list_content_filled bilist_content bilist_content_filled
 %nterm <ast::Const*> const
+%nterm <str_t> const_str
 
 // Tokens
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
 %nterm option_stop option_comma option_comma_stop
 %token <str_t> ID
-%token <str_t> STR RAWSTR
+%token <str_t> STR RAWSTR DOCSTR
 %token <int_t> INT
 
 // The lower it is declared, the sooner the token will be used
@@ -183,11 +185,15 @@ module: stop stmtlist {
 
 // --- Declarations ---
 // Function declaration
-fndecl: "fn" fndecl_target lparen fndecl_all_args
+fndecl: fndecl_doc "fn" fndecl_target lparen fndecl_all_args
             rparen block {
-        $$ = new FnDecl(@1.begin.line, $fndecl_target,
+        $$ = new FnDecl(@1.begin.line, $fndecl_doc, $fndecl_target,
             $fndecl_all_args, $block, false);
     }
+    ;
+
+fndecl_doc: %empty { $$ = ""; }
+    | DOCSTR stop { $$ = $1; }
     ;
 
 fndecl_target: fndecl_idtarget { $$ = $1; }
@@ -350,7 +356,7 @@ usestmt_start: "use" ID { $$ = new UseStmt(@1.begin.line, $2, $2); }
 
 newtypestmt: "newtype" ID stop { $$ = new NewTypeStmt(@1.begin.line, $2); }
     | "newtype" ID lparen fndecl_all_args rparen block stop {
-        auto constructor = new FnDecl(@1.begin.line, nullptr, $4, $6);
+        auto constructor = new FnDecl(@1.begin.line, "", nullptr, $4, $6);
         $$ = new NewTypeStmt(@1.begin.line, $2, constructor);
     }
     ;
@@ -533,12 +539,12 @@ exp: boolean { $$ = $1; }
     ;
 
 lambda: "|" option_fndecl_args "|" "->" block {
-        $$ = new FnDecl(@1.begin.line, nullptr, $2, $5, true);
+        $$ = new FnDecl(@1.begin.line, "", nullptr, $2, $5, true);
     }
     | "|" option_fndecl_args "|" exp {
         auto block = new Block(@4.begin.line);
         block->stmts.push_back(new ReturnStmt(@4.begin.line, $4));
-        $$ = new FnDecl(@1.begin.line, nullptr, $2, block, true);
+        $$ = new FnDecl(@1.begin.line, "", nullptr, $2, block, true);
     }
     ;
 
@@ -681,8 +687,11 @@ bilist_content_filled: exp "," exp  { $$ = { $1, $3 }; }
     ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
-    | STR { $$ = new Const(@1.begin.line, $1); }
-    | RAWSTR { $$ = new Const(@1.begin.line, $1); }
+    | const_str { $$ = new Const(@1.begin.line, $1); }
+    ;
+
+const_str: STR
+    | RAWSTR
     ;
 
 id: ID { $$ = new Id(@1.begin.line, $1); }
