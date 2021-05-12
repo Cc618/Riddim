@@ -25,9 +25,7 @@ Type *Object::class_type = nullptr;
 
 void Object::init_class_type() { class_type = new Type("Object"); }
 
-Object::Object(Type *type) : type(type) {
-    init_gc_data(this);
-}
+Object::Object(Type *type) : type(type) { init_gc_data(this); }
 
 Object::~Object() {}
 
@@ -109,6 +107,24 @@ Object *Object::div(Object *o) {
     }
 
     return type->fn_div(this, o);
+}
+
+Object *Object::doc() {
+    if (!type->fn_doc) {
+        return null;
+    }
+
+    auto result = type->fn_doc(this);
+
+    // Must be Str
+    if (result->type != Str::class_type) {
+        THROW_TYPE_ERROR_PREF((type->name + "@doc").c_str(), result->type,
+                              Str::class_type);
+
+        return nullptr;
+    }
+
+    return result;
 }
 
 static Object *default_getattr(Object *self, Object *name) {
@@ -524,7 +540,7 @@ DynamicType *DynamicType::New(const str_t &name) {
     me->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<DynamicObject *>(self);
 
-        unordered_map<str_t, Object*> attrs;
+        unordered_map<str_t, Object *> attrs;
         for (const auto &[k, v] : me->attrs) {
             auto newval = v->copy();
 
@@ -564,6 +580,20 @@ DynamicType *DynamicType::New(const str_t &name) {
         }
 
         THROW_NOBUILTIN(me->type, div);
+
+        return nullptr;
+    };
+
+    // @doc
+    me->fn_doc = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<DynamicObject *>(self);
+
+        auto it = me->attrs.find("@doc");
+        if (it != me->attrs.end()) {
+            return it->second->call(Vec::empty, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(me->type, doc);
 
         return nullptr;
     };

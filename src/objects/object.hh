@@ -59,6 +59,9 @@ struct Object {
 
     Object *div(Object *o);
 
+    // Either Str or Null
+    Object *doc();
+
     Object *getattr(Object *name);
 
     Object *getitem(Object *key);
@@ -132,6 +135,10 @@ struct Type : public Object {
 
     // / operator, returns the quotient
     fn_binary_t fn_div;
+
+    // Returns the documentation of the object
+    // Returns null if no documentation
+    fn_unary_t fn_doc;
 
     // Get map attribute (not read only)
     fn_binary_t fn_getattr;
