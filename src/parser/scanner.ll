@@ -132,20 +132,21 @@ comment     #.*
 
 "@\""                        {
         rawstring_buf.clear();
-        BEGIN(MULTI_STRING_SINGLE);
+        BEGIN(MULTI_STRING_DOUBLE);
 }
-<MULTI_STRING_SINGLE>"@\""   {
+<MULTI_STRING_DOUBLE>"@\""   {
         BEGIN(INITIAL);
         return make_RAWSTR(loc, rawstring_buf);
 }
-<MULTI_STRING_SINGLE>\n     rawstring_buf += yytext; loc.lines(1);
-<MULTI_STRING_SINGLE>.      rawstring_buf += yytext;
+<MULTI_STRING_DOUBLE>\n     rawstring_buf += yytext; loc.lines(1);
+<MULTI_STRING_DOUBLE>.      rawstring_buf += yytext;
 
 ".."            return yy::parser::make_CASCADE(loc);
 "->"            return yy::parser::make_RANGE(loc);
 "->="           return yy::parser::make_RANGEINC(loc);
 "."             return yy::parser::make_DOT(loc);
 "@"             return yy::parser::make_AT(loc);
+"!"             return yy::parser::make_BANG(loc);
 ","             return yy::parser::make_COMMA(loc);
 ":"             return yy::parser::make_COLON(loc);
 "+"             return yy::parser::make_PLUS(loc);

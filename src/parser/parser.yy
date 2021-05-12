@@ -80,6 +80,7 @@
     RANGEINC    "->="
     DOT         "."
     AT          "@"
+    BANG        "!"
     COMMA       ","
     COLON       ":"
     STOP        "<LF>"
@@ -596,6 +597,7 @@ primary: atom { $$ = $1; }
 
 attr: primary "." ID { $$ = new Attr(@1.begin.line, $1, $3); }
     | primary "@" ID { $$ = new Attr(@1.begin.line, $1, "@" + $ID); }
+    | primary "!" ID { $$ = new Attr(@1.begin.line, $1, "!" + $ID); }
     ;
 
 // TODO B : Handle stops + multiples

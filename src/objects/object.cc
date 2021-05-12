@@ -593,9 +593,13 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(Vec::empty, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, doc);
+        // The !doc attribute may contain the documentation
+        auto it2 = me->attrs.find("!doc");
+        if (it2 != me->attrs.end()) {
+            return it2->second;
+        }
 
-        return nullptr;
+        return null;
     };
 
     // @getattr
