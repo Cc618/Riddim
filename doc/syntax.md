@@ -56,6 +56,46 @@ Here is the list of all escapes :
 | \\n | Line feed |
 | \\t | Tab |
 
+#### Multi line strings / Raw strings
+It is possible to make multi line / raw strings using this syntax :
+```
+@'
+My raw string
+Note that you can't escape characters like \n
+@'
+
+@"I can be inline or with double quotes too@"
+```
+
+#### Doc strings
+It is possible to document your functions / types using doc strings :
+```python
+# Functions
+doc'My fib function'
+fn fib() {
+}
+
+# Types
+doc"My type"
+newtype MyType
+
+# Methods
+@doc'
+You can use raw strings too
+@'
+fn MyType.fac() {
+}
+```
+
+To display this documentation, use the **doc** builtin :
+```
+print doc(fib)
+# prints 'My fib function'
+```
+
+<!-- TODO : Help builtin -->
+<!-- TODO doc : Markdown syntax -->
+
 ## Primary expressions
 ### Attributes
 The . operator is used to access attributes.

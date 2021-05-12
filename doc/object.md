@@ -32,6 +32,7 @@ like the . operator).
 | @call | Call operator (for functor like objects) | | f(2, a=22) | Yes |
 | @cmp | Comparison, returns 0 on equality, < 0 if lesser or on inequality and > 0 if greater | Int | 1 <=> 2 returns -1 | Yes |
 | @copy | Shallow copy / clone (by default it is the identity function) | | | No |
+| @doc | Returns the doc string | String / Null | doc(myobject) | Yes |
 | @div | / operator | | 2 / 2 | Yes |
 | @getattr | Get map attribute (not a read only attribute) | | a.foo which is a.@getattr('foo') | No |
 | @getitem | Index / subscript getter | | a[42] which is a.@getitem(42) | Yes |
