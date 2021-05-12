@@ -114,7 +114,7 @@ comment     #.*
 {int_hex}       return make_INT(loc, yytext, yytext + 2, 16);
 {int_bin}       return make_INT(loc, yytext, yytext + 2, 2);
 {str}           return make_STR(loc, yytext);
-doc{str}        return make_STR(loc, yytext, true);
+doc{str}        return make_STR(loc, yytext + 3, true);
 
 "@#"                    BEGIN(MULTI_COMMENT);
 <MULTI_COMMENT>"@#"     BEGIN(INITIAL);

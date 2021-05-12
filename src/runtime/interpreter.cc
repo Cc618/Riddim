@@ -489,6 +489,14 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(0);
         }
 
+        case DupTos1: {
+            CHECK_STACKLEN(2);
+
+            obj_stack.push_back(obj_stack[obj_stack.size() - 2]);
+
+            NEXT(0);
+        }
+
         case ForNext: {
             CHECK_STACKLEN(1);
 

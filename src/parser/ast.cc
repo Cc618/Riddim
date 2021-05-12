@@ -71,8 +71,8 @@ void UseStmt::debug(int indent) {
     cout << str_indent(indent) << "UseStmt(" << modname << ", " << asname << ")" << endl;
 }
 
-NewTypeStmt::NewTypeStmt(line_t fileline, const str_t &name, FnDecl *constructor)
-    : Stmt(fileline), name(name), constructor(constructor) {}
+NewTypeStmt::NewTypeStmt(line_t fileline, const str_t &doc, const str_t &name, FnDecl *constructor)
+    : Stmt(fileline), doc(doc), name(name), constructor(constructor) {}
 
 NewTypeStmt::~NewTypeStmt() {
     if (constructor) delete constructor;

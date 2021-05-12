@@ -394,6 +394,42 @@ void NewTypeStmt::gen_code(Module *module, Code *_code) {
     PUSH_CODE(NewType);
     PUSH_CODE(name_offset);
 
+    // Documentation
+    if (!doc.empty()) {
+        // Load documentation
+        auto doc_const = Str::New(doc);
+
+        if (!doc_const) {
+            throw CodeGenException("Cannot allocate memory", _code->filename,
+                                fileline);
+        }
+
+        auto doc_offset = ADD_CONST(doc_const);
+
+        PUSH_CODE(LoadConst);
+        PUSH_CODE(doc_offset);
+
+        // Duplicates the type to the TOS
+        PUSH_CODE(DupTos1);
+
+        // Set documentation
+        auto doc_key_const = Str::New("!doc");
+
+        if (!doc_key_const) {
+            throw CodeGenException("Cannot allocate memory", _code->filename,
+                                fileline);
+        }
+
+        auto doc_key_offset = ADD_CONST(doc_key_const);
+
+        // This pops the duplicated type on the TOS
+        PUSH_CODE(StoreAttr);
+        PUSH_CODE(doc_key_offset);
+
+        // Remove the loaded doc
+        PUSH_CODE(Pop);
+    }
+
     // Save it to a variable
     PUSH_CODE(StoreVar);
     PUSH_CODE(name_offset);

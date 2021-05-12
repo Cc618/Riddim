@@ -73,6 +73,8 @@ enum OpCode : opcode_t {
     CatchTerminate,
     // Duplicates the TOS
     Dup,
+    // Duplicates TOS1 to the TOS
+    DupTos1,
     // If it remains elements in the iterator, pushes the next element
     // Otherwise, jumps to the specified offset (end of loop)
     // - offset

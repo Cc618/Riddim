@@ -354,10 +354,10 @@ usestmt_start: "use" ID { $$ = new UseStmt(@1.begin.line, $2, $2); }
     | usestmt_start "." ID { $$ = $1; $$->modname += "." + $3; $$->asname = $3; }
     ;
 
-newtypestmt: "newtype" ID stop { $$ = new NewTypeStmt(@1.begin.line, $2); }
-    | "newtype" ID lparen fndecl_all_args rparen block stop {
-        auto constructor = new FnDecl(@1.begin.line, "", nullptr, $4, $6);
-        $$ = new NewTypeStmt(@1.begin.line, $2, constructor);
+newtypestmt: fndecl_doc "newtype" ID stop { $$ = new NewTypeStmt(@1.begin.line, $fndecl_doc, $3); }
+    | fndecl_doc "newtype" ID lparen fndecl_all_args rparen block stop {
+        auto constructor = new FnDecl(@1.begin.line, $fndecl_doc, nullptr, $5, $7);
+        $$ = new NewTypeStmt(@1.begin.line, $fndecl_doc, $3, constructor);
     }
     ;
 

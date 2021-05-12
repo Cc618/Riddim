@@ -135,9 +135,10 @@ struct UseStmt : public Stmt {
 // Type declaration
 struct NewTypeStmt : public Stmt {
     str_t name;
+    str_t doc;
     FnDecl *constructor;
 
-    NewTypeStmt(line_t fileline, const str_t &name,
+    NewTypeStmt(line_t fileline, const str_t &doc, const str_t &name,
                 FnDecl *constructor = nullptr);
 
     virtual ~NewTypeStmt();
