@@ -107,6 +107,7 @@ void Error::init_class_type() {
     INIT_ERROR(ArgumentError);
     INIT_ERROR(ArithmeticError);
     INIT_ERROR(AssertError);
+    INIT_ERROR(ExitError);
     INIT_ERROR(ImportError);
     INIT_ERROR(IndexError);
     INIT_ERROR(InternalError);
@@ -148,6 +149,7 @@ Error *NewError(error_msg_t msg) {
 DECL_ERROR(ArgumentError);
 DECL_ERROR(ArithmeticError);
 DECL_ERROR(AssertError);
+DECL_ERROR(ExitError);
 DECL_ERROR(ImportError);
 DECL_ERROR(IndexError);
 DECL_ERROR(InternalError);

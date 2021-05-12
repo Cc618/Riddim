@@ -40,6 +40,9 @@ NEW_ERROR(ArithmeticError);
 // False assertion
 NEW_ERROR(AssertError);
 
+// Used by exit builtin
+NEW_ERROR(ExitError);
+
 // Import not found
 NEW_ERROR(ImportError);
 

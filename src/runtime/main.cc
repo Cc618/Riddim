@@ -3,11 +3,11 @@
 #include "frame.hh"
 #include "init.hh"
 #include "interpreter.hh"
+#include "modio.hh"
 #include "module.hh"
 #include "object.hh"
 #include "program.hh"
 #include "utils.hh"
-#include "modio.hh"
 #include <iostream>
 
 using namespace std;
@@ -46,21 +46,26 @@ int main(int argc, char *argv[]) {
     try {
         if (module && interpret_program(module))
             success = true;
-    } catch (...) {}
+    } catch (...) {
+    }
 
     // Something went wrong
     if (!success) {
         if (on_error()) {
-            // Display as much information as possible
-            if (Program::instance->trace)
-                Program::instance->trace->dump();
-            else if (!Program::instance->errout.str().empty())
-                cerr << Program::instance->errout.str();
-            else
-                dump_error();
-        }
+            if (Program::instance->current_error->type == ExitError) {
+                res = Program::instance->exit_code;
+            } else {
+                // Display as much information as possible
+                if (Program::instance->trace)
+                    Program::instance->trace->dump();
+                else if (!Program::instance->errout.str().empty())
+                    cerr << Program::instance->errout.str();
+                else
+                    dump_error();
 
-        res = -1;
+                res = -1;
+            }
+        }
     }
 
     end_program();

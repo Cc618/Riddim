@@ -24,6 +24,8 @@ struct Program : public Object {
 
     str_t main_module_path;
 
+    int_t exit_code = 0;
+
     // The current error description
     // Only used outside of the runtime (codegen + parser)
     std::stringstream errout;

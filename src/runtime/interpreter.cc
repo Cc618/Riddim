@@ -79,6 +79,10 @@ bool interpret_program(Module *main_module) {
     interpret(main_module->code, "Module<main>", {}, main_module);
 
     if (on_error()) {
+        if (Program::instance->current_error->type == ExitError) {
+            return false;
+        }
+
         // Print stack trace
         if (Program::instance->trace)
             Program::instance->trace->dump();
@@ -425,6 +429,9 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             // Can be null
             POPTOP(error_type);
+
+            // Avoid exit error issues
+            Program::instance->exit_code = 0;
 
             if (error_type != null && error_type->type != Type::class_type) {
                 THROW_TYPE_ERROR_PREF("catch", error_type->type,

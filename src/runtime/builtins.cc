@@ -80,6 +80,7 @@ void init_builtins() {
     // Functions
     INIT_BUILTIN("assert", builtin_assert);
     INIT_BUILTIN("copy", builtin_copy);
+    INIT_BUILTIN("exit", builtin_exit);
     INIT_BUILTIN("hash", builtin_hash);
     INIT_BUILTIN("iter", builtin_iter);
     INIT_BUILTIN("len", builtin_len);
@@ -90,7 +91,7 @@ void init_builtins() {
 
     // Globals
 #define REGISTER_GLOBAL(NAME, ID)                                              \
-    auto NAME##_str = Str::New(#NAME);                                \
+    auto NAME##_str = Str::New(#NAME);                                         \
     if (!NAME##_str)                                                           \
         return;                                                                \
     Program::instance->global_frame->setitem(NAME##_str, ID);
@@ -166,6 +167,36 @@ Object *builtin_copy(Object *self, Object *args, Object *kwargs) {
     }
 
     return result;
+}
+
+Object *builtin_exit(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "exit");
+
+    CHECK_NOKWARGS("exit");
+
+    int_t code = 0;
+
+    if (args_data.size() == 1) {
+        auto arg = args_data.front();
+
+        if (arg->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("exit", arg->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        code = reinterpret_cast<Int *>(arg)->data;
+    } else if (!args_data.empty()) {
+        THROW_ARGUMENT_ERROR("exit", "length", "0 or 1 arguments required");
+
+        return nullptr;
+    }
+
+    Program::instance->exit_code = code;
+
+    throw_fmt(ExitError, to_string(code).c_str());
+
+    return nullptr;
 }
 
 Object *builtin_hash(Object *self, Object *args, Object *kwargs) {
