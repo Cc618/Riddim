@@ -116,6 +116,10 @@ Object *Object::doc() {
 
     auto result = type->fn_doc(this);
 
+    if (!result) {
+        return nullptr;
+    }
+
     // Must be Str
     if (result->type != Str::class_type) {
         THROW_TYPE_ERROR_PREF((type->name + "@doc").c_str(), result->type,
@@ -177,6 +181,10 @@ Object *Object::hash() {
     }
 
     auto result = type->fn_hash(this);
+
+    if (!result) {
+        return nullptr;
+    }
 
     if (result->type != Int::class_type) {
         THROW_TYPE_ERROR_PREF((type->name + ".@hash").c_str(), result->type,
