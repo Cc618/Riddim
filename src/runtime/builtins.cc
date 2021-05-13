@@ -61,9 +61,10 @@ Global *enditer = nullptr;
 void init_builtins() {
     auto &global_frame = Program::instance->global_frame;
 
-#define INIT_BUILTIN(NAME, HANDLER)                                            \
+#define INIT_BUILTIN(NAME, HANDLER, DOC, SIGNATURE)                            \
     {                                                                          \
-        auto obj = new (nothrow) Builtin(HANDLER, NAME);                       \
+        auto obj =                                                             \
+            new (nothrow) Builtin(HANDLER, NAME, nullptr, DOC, SIGNATURE);     \
         if (!obj) {                                                            \
             THROW_MEMORY_ERROR;                                                \
             return;                                                            \
@@ -77,18 +78,23 @@ void init_builtins() {
         }                                                                      \
     }
 
+    const str_t assert_doc = "Throws AssertionError if exp is false\n"
+        "- exp, Bool : Expression to test\n"
+        "- [msg], String : Error message";
+    const builtin_signature_t assert_sig = {{"exp", false}, {"msg", true}};
+
     // Functions
-    INIT_BUILTIN("assert", builtin_assert);
-    INIT_BUILTIN("copy", builtin_copy);
-    INIT_BUILTIN("doc", builtin_doc);
-    INIT_BUILTIN("exit", builtin_exit);
-    INIT_BUILTIN("hash", builtin_hash);
-    INIT_BUILTIN("iter", builtin_iter);
-    INIT_BUILTIN("len", builtin_len);
-    INIT_BUILTIN("next", builtin_next);
-    INIT_BUILTIN("print", builtin_print);
-    INIT_BUILTIN("throw", builtin_throw);
-    INIT_BUILTIN("typeof", builtin_typeof);
+    INIT_BUILTIN("assert", builtin_assert, assert_doc, assert_sig);
+    INIT_BUILTIN("copy", builtin_copy, "", {});
+    INIT_BUILTIN("doc", builtin_doc, "", {});
+    INIT_BUILTIN("exit", builtin_exit, "", {});
+    INIT_BUILTIN("hash", builtin_hash, "", {});
+    INIT_BUILTIN("iter", builtin_iter, "", {});
+    INIT_BUILTIN("len", builtin_len, "", {});
+    INIT_BUILTIN("next", builtin_next, "", {});
+    INIT_BUILTIN("print", builtin_print, "", {});
+    INIT_BUILTIN("throw", builtin_throw, "", {});
+    INIT_BUILTIN("typeof", builtin_typeof, "", {});
 
     // Globals
 #define REGISTER_GLOBAL(NAME, ID)                                              \

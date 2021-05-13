@@ -23,6 +23,7 @@ struct AbstractFunction : public Object {
 
 // Built in function
 // Wraps a C++ function
+typedef std::vector<std::pair<str_t, bool>> builtin_signature_t;
 struct Builtin : public AbstractFunction {
     static Type *class_type;
 
@@ -30,11 +31,15 @@ struct Builtin : public AbstractFunction {
     fn_ternary_t data;
     str_t name;
 
+    // Arguments to generate the documentation
+    // { name, isoptional }
+    builtin_signature_t doc_signature;
+
     // Can throw
     static void init_class_type();
 
     Builtin(const fn_ternary_t &data, const str_t &name, Object *self = nullptr,
-            const str_t &doc_str = "");
+            const str_t &doc_str = "", const builtin_signature_t &doc_signature = {});
 };
 
 // A function containing code to interpret

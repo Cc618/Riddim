@@ -11,15 +11,18 @@
 using namespace std;
 
 // --- AbstractFunction ---
-AbstractFunction::AbstractFunction(Type *type, Object *self, const str_t &doc_str)
+AbstractFunction::AbstractFunction(Type *type, Object *self,
+                                   const str_t &doc_str)
     : Object(type), self(self), doc_str(doc_str) {}
 
 // --- Builtin ---
 Type *Builtin::class_type = nullptr;
 
-Builtin::Builtin(const fn_ternary_t &data, const str_t &name, Object *self, const str_t &doc_str)
-    : AbstractFunction(Builtin::class_type, self ? self : null, doc_str), data(data),
-      name(name) {}
+Builtin::Builtin(const fn_ternary_t &data, const str_t &name, Object *self,
+                 const str_t &doc_str,
+                 const builtin_signature_t &doc_signature)
+    : AbstractFunction(Builtin::class_type, self ? self : null, doc_str),
+      data(data), name(name), doc_signature(doc_signature) {}
 
 void Builtin::init_class_type() {
     class_type = new (nothrow) Type("Builtin");
@@ -35,20 +38,6 @@ void Builtin::init_class_type() {
         Builtin *me = reinterpret_cast<Builtin *>(self);
 
         visit(me->self);
-    };
-
-    // @doc
-    class_type->fn_doc = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<Builtin *>(self);
-
-        if (me->doc_str.empty())
-            return null;
-
-        auto doc = Str::New(me->doc_str);
-
-        if (!doc) return nullptr;
-
-        return doc;
     };
 
     // @call
@@ -77,13 +66,60 @@ void Builtin::init_class_type() {
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Builtin *>(self);
 
-        auto result = new (nothrow) Builtin(me->data, me->name, me->self, me->doc_str);
+        auto result =
+            new (nothrow) Builtin(me->data, me->name, me->self, me->doc_str);
 
         if (!result) {
             return nullptr;
         }
 
         return result;
+    };
+
+    // @doc
+    class_type->fn_doc = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Builtin *>(self);
+
+        // Create signature
+        str_t signature = "> " + me->name + "(";
+        if (!me->doc_signature.empty()) {
+            // To avoid boilerplate code, appends the argument to signature
+            auto add_arg = [&signature](const pair<str_t, bool> &arg) {
+                // Optional
+                if (arg.second)
+                    signature += '[';
+
+                signature += arg.first;
+
+                // Optional
+                if (arg.second)
+                    signature += ']';
+            };
+
+            add_arg(me->doc_signature.front());
+
+            for (int i = 1; i < me->doc_signature.size(); ++i) {
+                signature += ", ";
+
+                add_arg(me->doc_signature[i]);
+            }
+        }
+
+        signature += ")";
+
+        str_t doc_full = me->doc_str;
+
+        if (!me->doc_str.empty())
+            doc_full += "\n\n";
+
+        doc_full += signature;
+
+        auto doc = Str::New(doc_full);
+
+        if (!doc)
+            return nullptr;
+
+        return doc;
     };
 
     // @str
@@ -103,7 +139,8 @@ void Builtin::init_class_type() {
 // --- Function ---
 Type *Function::class_type = nullptr;
 
-Function *Function::New(Code *code, const str_t &name, Object *_self, const str_t &doc_str) {
+Function *Function::New(Code *code, const str_t &name, Object *_self,
+                        const str_t &doc_str) {
     auto self = new (nothrow) Function(code, name, _self, doc_str);
 
     if (!self) {
@@ -115,9 +152,10 @@ Function *Function::New(Code *code, const str_t &name, Object *_self, const str_
     return self;
 }
 
-Function::Function(Code *code, const str_t &name, Object *self, const str_t &doc_str)
-    : AbstractFunction(Function::class_type, self ? self : null, doc_str), code(code),
-      name(name) {}
+Function::Function(Code *code, const str_t &name, Object *self,
+                   const str_t &doc_str)
+    : AbstractFunction(Function::class_type, self ? self : null, doc_str),
+      code(code), name(name) {}
 
 void Function::init_class_type() {
     class_type = new (nothrow) Type("Function");
@@ -147,12 +185,44 @@ void Function::init_class_type() {
     class_type->fn_doc = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Function *>(self);
 
-        if (me->doc_str.empty())
-            return null;
+        // Create signature
+        str_t signature = "> " + me->name + "(";
+        if (!me->args.empty()) {
+            // To avoid boilerplate code, appends the argument to signature
+            auto add_arg = [&signature](const pair<str_t, Code *> &arg) {
+                // Optional
+                if (arg.second)
+                    signature += '[';
 
-        auto doc = Str::New(me->doc_str);
+                signature += arg.first;
 
-        if (!doc) return nullptr;
+                // Optional
+                if (arg.second)
+                    signature += ']';
+            };
+
+            add_arg(me->args.front());
+
+            for (int i = 1; i < me->args.size(); ++i) {
+                signature += ", ";
+
+                add_arg(me->args[i]);
+            }
+        }
+
+        signature += ")";
+
+        str_t doc_full = me->doc_str;
+
+        if (!me->doc_str.empty())
+            doc_full += "\n\n";
+
+        doc_full += signature;
+
+        auto doc = Str::New(doc_full);
+
+        if (!doc)
+            return nullptr;
 
         return doc;
     };
