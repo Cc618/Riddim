@@ -707,6 +707,7 @@ DynamicType *DynamicType::New(const str_t &name) {
         }
 
         str_t result;
+        str_t name_data;
 
         {
             auto it = me->attrs.find("!name");
@@ -719,7 +720,8 @@ DynamicType *DynamicType::New(const str_t &name) {
                     return nullptr;
                 }
 
-                result += "# " + reinterpret_cast<Str *>(name)->data + "\n";
+                name_data = reinterpret_cast<Str *>(name)->data;
+                result += "### " + name_data + "\n";
             }
         }
 
@@ -749,8 +751,7 @@ DynamicType *DynamicType::New(const str_t &name) {
                 continue;
             }
 
-            // TODO A
-            result += "# " + k + "\n";
+            result += "#### " + (name_data.empty() ? "" : name_data + ".") + k + "\n";
             result += docdata + "\n\n";
         }
 

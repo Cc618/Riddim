@@ -12,6 +12,7 @@ struct Module : public Object {
     Str *name;
     Code *code;
     Frame *frame;
+
     // Whether it is not fully executed, used to avoid
     // executing 2 times a module already loaded
     bool loaded = false;
