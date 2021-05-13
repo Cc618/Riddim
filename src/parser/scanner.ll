@@ -78,7 +78,6 @@ comment     #.*
 %x MULTI_COMMENT
 
 /* Multi line string states */
-/* TODO A */
 %x MULTI_STRING_SINGLE
 %x MULTI_STRING_DOUBLE
 

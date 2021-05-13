@@ -394,21 +394,23 @@ void Type::init_class_type() {
 
 bool Type::operator==(const Type &other) const { return id == other.id; }
 
+static auto type_default_call(Object *self, Object *args, Object *kwargs)
+    -> Object * {
+    auto me = reinterpret_cast<Type *>(self);
+
+    if (!me->constructor) {
+        throw_fmt(NameError, "Type %s has no constructor", me->name.c_str());
+
+        return nullptr;
+    }
+
+    return me->constructor(self, args, kwargs);
+}
+
 void Type::init_slots(Type *type) {
     // @call
     // Call the constructor
-    type->fn_call = [](Object *self, Object *args, Object *kwargs) -> Object * {
-        auto me = reinterpret_cast<Type *>(self);
-
-        if (!me->constructor) {
-            throw_fmt(NameError, "Type %s has no constructor",
-                      me->name.c_str());
-
-            return nullptr;
-        }
-
-        return me->constructor(self, args, kwargs);
-    };
+    type->fn_call = type_default_call;
 
     // @getattr
     type->fn_getattr = [](Object *self, Object *name) -> Object * {
@@ -465,7 +467,16 @@ void DynamicObject::init(DynamicObject *self) {
         // If function, bind self
         if (newv->type == Builtin::class_type ||
             newv->type == Function::class_type) {
-            auto newv_fun = reinterpret_cast<AbstractFunction *>(newv);
+            auto newv_fun = dynamic_cast<AbstractFunction *>(newv);
+
+            if (!newv_fun) {
+                throw_fmt(
+                    RuntimeError,
+                    "DynamicObject.@new got an invalid function instance");
+
+                return;
+            }
+
             newv_fun->self = self;
         }
 
@@ -1059,89 +1070,18 @@ DynamicType *DynamicType::New(const str_t &name) {
 Type *DynamicType::class_type = nullptr;
 
 void DynamicType::init_class_type() {
-    class_type = new (nothrow) Type("DynamicType");
+    // A dynamic type is a dynamic type
+    class_type = DynamicType::New("DynamicType");
 
     if (!class_type) {
-        THROW_MEMORY_ERROR;
-
         return;
     }
 
-    // TODO A
-    // // A dynamic type is a dynamic type
-    // class_type = DynamicType::New("DynamicType");
-
-    // if (!class_type) {
-    //     // THROW_MEMORY_ERROR;
-    //     return;
-    // }
-
-    // // Was not set
-    // class_type->type = class_type;
+    // Was not set
+    class_type->type = class_type;
 
     // Inherit from super type (Type)
-    Type::init_slots(class_type);
-
-    class_type->fn_traverse_objects = [](Object *self,
-                                         const fn_visit_object_t &visit) {
-        auto me = reinterpret_cast<DynamicType *>(self);
-
-        for (const auto &[k, v] : me->attrs)
-            visit(v);
-    };
-
-    // @getattr
-    class_type->fn_getattr = [](Object *self, Object *key) -> Object * {
-        auto me = reinterpret_cast<DynamicType *>(self);
-
-        if (key->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF((me->type->name + ".@getattr").c_str(),
-                                  key->type, Str::class_type);
-
-            return nullptr;
-        }
-
-        auto attr = reinterpret_cast<Str *>(key)->data;
-
-        // Find target attribute
-        auto result_it = me->attrs.find(attr);
-        if (result_it == me->attrs.end()) {
-            // No such attribute
-            THROW_ATTR_ERROR(Str::class_type, attr);
-
-            return nullptr;
-        }
-
-        Object *result = result_it->second;
-
-        // Check whether the object has been allocated
-        if (!result) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        return result;
-    };
-
-    // @setattr
-    class_type->fn_setattr = [](Object *self, Object *key,
-                                Object *val) -> Object * {
-        auto me = reinterpret_cast<DynamicType *>(self);
-
-        if (key->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF((me->type->name + ".@setattr").c_str(),
-                                  key->type, Str::class_type);
-
-            return nullptr;
-        }
-
-        auto attr = reinterpret_cast<Str *>(key)->data;
-
-        me->attrs[attr] = val;
-
-        return null;
-    };
+    class_type->fn_call = type_default_call;
 }
 
 DynamicType::DynamicType(const str_t &name) : Type(name) {
