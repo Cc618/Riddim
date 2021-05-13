@@ -93,6 +93,9 @@ print doc(fib)
 # prints 'My fib function'
 ```
 
+**Tip** : The !doc attribute variable can be set on most objects,
+it contains the doc string if @doc is not overriden.
+
 <!-- TODO : Help builtin -->
 <!-- TODO doc : Markdown syntax -->
 
