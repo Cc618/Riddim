@@ -199,11 +199,17 @@ protected:
     static void init_slots(Type *type);
 };
 
-// Object with DynamicType as type
-// Methods and static attributes can be set
-struct DynamicObject : public Object {
+// Abstract class for dynamic objects / types
+struct DynamicModel {
     std::unordered_map<str_t, Object*> attrs;
 
+    DynamicModel() = default;
+    virtual ~DynamicModel() = default;
+};
+
+// Object with DynamicType as type
+// Methods and static attributes can be set
+struct DynamicObject : public Object, public DynamicModel {
     DynamicObject(Type *type) : Object(type) {}
 
     // Inits a dynamic object instance
@@ -213,10 +219,8 @@ struct DynamicObject : public Object {
 
 // Type that has attributes within a map
 // Must be bind with a DynamicObject
-struct DynamicType : public Type {
+struct DynamicType : public Type, public DynamicModel {
     static Type *class_type;
-
-    std::unordered_map<str_t, Object*> attrs;
 
     static DynamicType *New(const str_t &name);
 

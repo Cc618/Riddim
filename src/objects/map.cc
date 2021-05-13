@@ -293,6 +293,7 @@ void HashMap::init_class_type() {
         return result_str;
     };
 
+    // @setitem
     class_type->fn_setitem = [](Object *self, Object *key,
                                 Object *value) -> Object * {
         auto me = reinterpret_cast<HashMap *>(self);

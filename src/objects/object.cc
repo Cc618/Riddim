@@ -422,6 +422,7 @@ void Type::init_slots(Type *type) {
 
         auto attr = reinterpret_cast<Str *>(name)->data;
 
+        // TODO : !name
         if (attr == "name") {
             auto result = Str::New(me->name);
 
@@ -475,7 +476,13 @@ void DynamicObject::init(DynamicObject *self) {
 // --- DynamicType ---
 void DynamicType::default_traverse_objects(Object *self,
                                            const fn_visit_object_t &visit) {
-    auto me = reinterpret_cast<DynamicObject *>(self);
+    auto me = dynamic_cast<DynamicModel *>(self);
+
+    if (!me) {
+        throw_fmt(RuntimeError, "DynamicModel.@traverse got an invalid self instance");
+
+        return;
+    }
 
     for (const auto &[k, v] : me->attrs)
         visit(v);
@@ -494,7 +501,13 @@ DynamicType *DynamicType::New(const str_t &name) {
 
     // @add
     me->fn_add = [](Object *self, Object *other) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@add got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@add");
         if (it != me->attrs.end()) {
@@ -507,28 +520,40 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, add);
+        THROW_NOBUILTIN(self->type, add);
 
         return nullptr;
     };
 
     // @call
     me->fn_call = [](Object *self, Object *args, Object *kwargs) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@call got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@call");
         if (it != me->attrs.end()) {
             return it->second->call(args, kwargs);
         }
 
-        THROW_NOBUILTIN(me->type, call);
+        THROW_NOBUILTIN(self->type, call);
 
         return nullptr;
     };
 
     // @cmp
     me->fn_cmp = [](Object *self, Object *other) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@cmp got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@cmp");
         if (it != me->attrs.end()) {
@@ -546,35 +571,53 @@ DynamicType *DynamicType::New(const str_t &name) {
 
     // @copy
     me->fn_copy = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
 
-        unordered_map<str_t, Object *> attrs;
-        for (const auto &[k, v] : me->attrs) {
-            auto newval = v->copy();
-
-            if (!newval) {
-                return nullptr;
-            }
-
-            attrs[k] = newval;
-        }
-
-        auto copy = new (nothrow) DynamicObject(me->type);
-
-        if (!copy) {
-            THROW_MEMORY_ERROR;
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@copy got an invalid self instance");
 
             return nullptr;
         }
 
-        copy->attrs = move(attrs);
+        return self;
 
-        return copy;
+        // TODO A
+        // auto me = reinterpret_cast<DynamicModel *>(self);
+
+        // unordered_map<str_t, Object *> attrs;
+        // for (const auto &[k, v] : me->attrs) {
+        //     auto newval = v->copy();
+
+        //     if (!newval) {
+        //         return nullptr;
+        //     }
+
+        //     attrs[k] = newval;
+        // }
+
+
+        // auto copy = new (nothrow) DynamicObject(self->type);
+
+        // if (!copy) {
+        //     THROW_MEMORY_ERROR;
+
+        //     return nullptr;
+        // }
+
+        // copy->attrs = move(attrs);
+
+        // return copy;
     };
 
     // @div
     me->fn_div = [](Object *self, Object *other) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@div got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@div");
         if (it != me->attrs.end()) {
@@ -587,14 +630,20 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, div);
+        THROW_NOBUILTIN(self->type, div);
 
         return nullptr;
     };
 
     // @doc
     me->fn_doc = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@doc got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@doc");
         if (it != me->attrs.end()) {
@@ -612,10 +661,16 @@ DynamicType *DynamicType::New(const str_t &name) {
 
     // @getattr
     me->fn_getattr = [](Object *self, Object *name) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@getattr got an invalid self instance");
+
+            return nullptr;
+        }
 
         if (name->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF((me->type->name + ".@getattr").c_str(),
+            THROW_TYPE_ERROR_PREF((self->type->name + ".@getattr").c_str(),
                                   name->type, Str::class_type);
 
             return nullptr;
@@ -627,7 +682,7 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto result_it = me->attrs.find(attr);
         if (result_it == me->attrs.end()) {
             // No such attribute
-            THROW_ATTR_ERROR(me->type, attr);
+            THROW_ATTR_ERROR(self->type, attr);
 
             return nullptr;
         }
@@ -646,7 +701,13 @@ DynamicType *DynamicType::New(const str_t &name) {
 
     // @getitem
     me->fn_getitem = [](Object *self, Object *key) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@getitem got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@getitem");
         if (it != me->attrs.end()) {
@@ -659,14 +720,20 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, getitem);
+        THROW_NOBUILTIN(self->type, getitem);
 
         return nullptr;
     };
 
     // @hash
     me->fn_hash = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@hash got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@hash");
         if (it != me->attrs.end()) {
@@ -678,7 +745,13 @@ DynamicType *DynamicType::New(const str_t &name) {
 
     // @in
     me->fn_in = [](Object *self, Object *other) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@in got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@in");
         if (it != me->attrs.end()) {
@@ -691,42 +764,60 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, in);
+        THROW_NOBUILTIN(self->type, in);
 
         return nullptr;
     };
 
     // @iter
     me->fn_iter = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@iter got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@iter");
         if (it != me->attrs.end()) {
             return it->second->call(Vec::empty, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, iter);
+        THROW_NOBUILTIN(self->type, iter);
 
         return nullptr;
     };
 
     // @len
     me->fn_len = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@len got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@len");
         if (it != me->attrs.end()) {
             return it->second->call(Vec::empty, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, len);
+        THROW_NOBUILTIN(self->type, len);
 
         return nullptr;
     };
 
     // @mod
     me->fn_mod = [](Object *self, Object *other) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@mod got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@mod");
         if (it != me->attrs.end()) {
@@ -739,14 +830,20 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, mod);
+        THROW_NOBUILTIN(self->type, mod);
 
         return nullptr;
     };
 
     // @mul
     me->fn_mul = [](Object *self, Object *other) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@mul got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@mul");
         if (it != me->attrs.end()) {
@@ -759,45 +856,63 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, mul);
+        THROW_NOBUILTIN(self->type, mul);
 
         return nullptr;
     };
 
     // @neg
     me->fn_neg = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@neg got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@neg");
         if (it != me->attrs.end()) {
             return it->second->call(Vec::empty, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, neg);
+        THROW_NOBUILTIN(self->type, neg);
 
         return nullptr;
     };
 
     // @next
     me->fn_next = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@next got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@next");
         if (it != me->attrs.end()) {
             return it->second->call(Vec::empty, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, next);
+        THROW_NOBUILTIN(self->type, next);
 
         return nullptr;
     };
 
     // @setattr
     me->fn_setattr = [](Object *self, Object *key, Object *val) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@setattr got an invalid self instance");
+
+            return nullptr;
+        }
 
         if (key->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF((me->type->name + ".@setattr").c_str(),
+            THROW_TYPE_ERROR_PREF((self->type->name + ".@setattr").c_str(),
                                   key->type, Str::class_type);
 
             return nullptr;
@@ -812,7 +927,13 @@ DynamicType *DynamicType::New(const str_t &name) {
 
     // @setitem
     me->fn_setitem = [](Object *self, Object *key, Object *value) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@setitem got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@setitem");
         if (it != me->attrs.end()) {
@@ -825,14 +946,20 @@ DynamicType *DynamicType::New(const str_t &name) {
             return it->second->call(args, HashMap::empty);
         }
 
-        THROW_NOBUILTIN(me->type, setitem);
+        THROW_NOBUILTIN(self->type, setitem);
 
         return nullptr;
     };
 
     // @str
     me->fn_str = [](Object *self) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@str got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@str");
         if (it != me->attrs.end()) {
@@ -840,7 +967,7 @@ DynamicType *DynamicType::New(const str_t &name) {
         }
 
         // Default print
-        str_t result = me->type->name;
+        str_t result = self->type->name;
 
         if (me->attrs.empty()) {
             result += "{}";
@@ -881,7 +1008,13 @@ DynamicType *DynamicType::New(const str_t &name) {
 
     // @sub
     me->fn_sub = [](Object *self, Object *other) -> Object * {
-        auto me = reinterpret_cast<DynamicObject *>(self);
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "DynamicModel.@sub got an invalid self instance");
+
+            return nullptr;
+        }
 
         auto it = me->attrs.find("@sub");
         if (it != me->attrs.end()) {
@@ -903,7 +1036,25 @@ DynamicType *DynamicType::New(const str_t &name) {
 Type *DynamicType::class_type = nullptr;
 
 void DynamicType::init_class_type() {
-    class_type = new Type("DynamicType");
+    class_type = new (nothrow) Type("DynamicType");
+
+    if (!class_type) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    // TODO A
+    // // A dynamic type is a dynamic type
+    // class_type = DynamicType::New("DynamicType");
+
+    // if (!class_type) {
+    //     // THROW_MEMORY_ERROR;
+    //     return;
+    // }
+
+    // // Was not set
+    // class_type->type = class_type;
 
     // Inherit from super type (Type)
     Type::init_slots(class_type);
