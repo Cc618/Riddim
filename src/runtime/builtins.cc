@@ -78,23 +78,49 @@ void init_builtins() {
         }                                                                      \
     }
 
-    const str_t assert_doc = "Throws AssertionError if exp is false\n"
-        "- exp, Bool : Expression to test\n"
-        "- [msg], String : Error message";
+    const str_t assert_doc = "Throws AssertionError if exp is false\n\n"
+                             "- exp, Bool : Expression to test\n"
+                             "- [msg], String : Error message";
     const builtin_signature_t assert_sig = {{"exp", false}, {"msg", true}};
 
+
+    const str_t               copy_doc = "Shallow copies of obj\n\n- obj : Object to copy";
+    const str_t               doc_doc = "Returns the documentation of obj\n\n- obj : Object with documentation";
+    const str_t               exit_doc = "Exits the program\n\n- [code : 0], Int : Exit code";
+    const str_t               hash_doc = "Returns the hash value of obj\n\n- obj : Target";
+    const str_t               iter_doc = "Returns the iterator of iterable (begin position)\n\n- iterable : Object with @iter slot";
+    const str_t               len_doc = "Returns the length of col\n\n- col : Object with @len slot";
+    const str_t               next_doc = "Returns the next element of iterator (or enditer)\n\n- iterator : Object with @next slot";
+    const str_t               print_doc = "Prints to stdout all arguments\n\n- args... : Objects to print";
+    const str_t               throw_doc = "Throws error\n\n- error : Target error";
+    const str_t               typeof_doc = "Returns the type of obj\n\n- obj : Target";
+
+    const builtin_signature_t copy_sig = {{"exp", false}};
+    const builtin_signature_t doc_sig = {{"exp", false}};
+    const builtin_signature_t exit_sig = {{"exp", false}};
+    const builtin_signature_t hash_sig = {{"exp", false}};
+    const builtin_signature_t iter_sig = {{"exp", false}};
+    const builtin_signature_t len_sig = {{"exp", false}};
+    const builtin_signature_t next_sig = {{"exp", false}};
+    const builtin_signature_t print_sig = {{"exp", false}};
+    const builtin_signature_t throw_sig = {{"exp", false}};
+    const builtin_signature_t typeof_sig = {{"exp", false}};
+
     // Functions
-    INIT_BUILTIN("assert", builtin_assert, assert_doc, assert_sig);
-    INIT_BUILTIN("copy", builtin_copy, "", {});
-    INIT_BUILTIN("doc", builtin_doc, "", {});
-    INIT_BUILTIN("exit", builtin_exit, "", {});
-    INIT_BUILTIN("hash", builtin_hash, "", {});
-    INIT_BUILTIN("iter", builtin_iter, "", {});
-    INIT_BUILTIN("len", builtin_len, "", {});
-    INIT_BUILTIN("next", builtin_next, "", {});
-    INIT_BUILTIN("print", builtin_print, "", {});
-    INIT_BUILTIN("throw", builtin_throw, "", {});
-    INIT_BUILTIN("typeof", builtin_typeof, "", {});
+#define FAST_INIT_BUILTIN(NAME) \
+    INIT_BUILTIN(#NAME, builtin_##NAME, NAME##_doc, NAME##_sig);
+
+    FAST_INIT_BUILTIN(assert);
+    FAST_INIT_BUILTIN(copy);
+    FAST_INIT_BUILTIN(doc);
+    FAST_INIT_BUILTIN(exit);
+    FAST_INIT_BUILTIN(hash);
+    FAST_INIT_BUILTIN(iter);
+    FAST_INIT_BUILTIN(len);
+    FAST_INIT_BUILTIN(next);
+    FAST_INIT_BUILTIN(print);
+    FAST_INIT_BUILTIN(throw);
+    FAST_INIT_BUILTIN(typeof);
 
     // Globals
 #define REGISTER_GLOBAL(NAME, ID)                                              \
