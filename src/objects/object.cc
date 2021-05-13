@@ -473,13 +473,43 @@ void DynamicObject::init(DynamicObject *self) {
     }
 }
 
+Object *DynamicObject::dynamic_model_copy() {
+    // To respect the protocol and the style of the project
+    auto self = this;
+    auto me = this;
+
+    unordered_map<str_t, Object *> attrs;
+    for (const auto &[k, v] : me->attrs) {
+        auto newval = v->copy();
+
+        if (!newval) {
+            return nullptr;
+        }
+
+        attrs[k] = newval;
+    }
+
+    auto copy = new (nothrow) DynamicObject(self->type);
+
+    if (!copy) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    copy->attrs = move(attrs);
+
+    return copy;
+}
+
 // --- DynamicType ---
 void DynamicType::default_traverse_objects(Object *self,
                                            const fn_visit_object_t &visit) {
     auto me = dynamic_cast<DynamicModel *>(self);
 
     if (!me) {
-        throw_fmt(RuntimeError, "DynamicModel.@traverse got an invalid self instance");
+        throw_fmt(RuntimeError,
+                  "DynamicModel.@traverse got an invalid self instance");
 
         return;
     }
@@ -504,7 +534,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@add got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@add got an invalid self instance");
 
             return nullptr;
         }
@@ -530,7 +561,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@call got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@call got an invalid self instance");
 
             return nullptr;
         }
@@ -550,7 +582,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@cmp got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@cmp got an invalid self instance");
 
             return nullptr;
         }
@@ -574,39 +607,13 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@copy got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@copy got an invalid self instance");
 
             return nullptr;
         }
 
-        return self;
-
-        // TODO A
-        // auto me = reinterpret_cast<DynamicModel *>(self);
-
-        // unordered_map<str_t, Object *> attrs;
-        // for (const auto &[k, v] : me->attrs) {
-        //     auto newval = v->copy();
-
-        //     if (!newval) {
-        //         return nullptr;
-        //     }
-
-        //     attrs[k] = newval;
-        // }
-
-
-        // auto copy = new (nothrow) DynamicObject(self->type);
-
-        // if (!copy) {
-        //     THROW_MEMORY_ERROR;
-
-        //     return nullptr;
-        // }
-
-        // copy->attrs = move(attrs);
-
-        // return copy;
+        return me->dynamic_model_copy();
     };
 
     // @div
@@ -614,7 +621,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@div got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@div got an invalid self instance");
 
             return nullptr;
         }
@@ -640,7 +648,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@doc got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@doc got an invalid self instance");
 
             return nullptr;
         }
@@ -664,7 +673,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@getattr got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@getattr got an invalid self instance");
 
             return nullptr;
         }
@@ -704,7 +714,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@getitem got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@getitem got an invalid self instance");
 
             return nullptr;
         }
@@ -730,7 +741,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@hash got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@hash got an invalid self instance");
 
             return nullptr;
         }
@@ -748,7 +760,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@in got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@in got an invalid self instance");
 
             return nullptr;
         }
@@ -774,7 +787,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@iter got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@iter got an invalid self instance");
 
             return nullptr;
         }
@@ -794,7 +808,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@len got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@len got an invalid self instance");
 
             return nullptr;
         }
@@ -814,7 +829,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@mod got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@mod got an invalid self instance");
 
             return nullptr;
         }
@@ -840,7 +856,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@mul got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@mul got an invalid self instance");
 
             return nullptr;
         }
@@ -866,7 +883,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@neg got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@neg got an invalid self instance");
 
             return nullptr;
         }
@@ -886,7 +904,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@next got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@next got an invalid self instance");
 
             return nullptr;
         }
@@ -906,7 +925,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@setattr got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@setattr got an invalid self instance");
 
             return nullptr;
         }
@@ -930,7 +950,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@setitem got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@setitem got an invalid self instance");
 
             return nullptr;
         }
@@ -956,7 +977,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@str got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@str got an invalid self instance");
 
             return nullptr;
         }
@@ -1011,7 +1033,8 @@ DynamicType *DynamicType::New(const str_t &name) {
         auto me = dynamic_cast<DynamicModel *>(self);
 
         if (!me) {
-            throw_fmt(RuntimeError, "DynamicModel.@sub got an invalid self instance");
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@sub got an invalid self instance");
 
             return nullptr;
         }
@@ -1125,3 +1148,6 @@ DynamicType::DynamicType(const str_t &name) : Type(name) {
     // Override type
     type = DynamicType::class_type;
 }
+
+// No deep copy
+Object *DynamicType::dynamic_model_copy() { return this; }

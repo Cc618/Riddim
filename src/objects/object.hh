@@ -205,12 +205,17 @@ struct DynamicModel {
 
     DynamicModel() = default;
     virtual ~DynamicModel() = default;
+
+    // Returns a copy of itself (@copy slot)
+    virtual Object *dynamic_model_copy() = 0;
 };
 
 // Object with DynamicType as type
 // Methods and static attributes can be set
 struct DynamicObject : public Object, public DynamicModel {
     DynamicObject(Type *type) : Object(type) {}
+
+    virtual Object *dynamic_model_copy() override;
 
     // Inits a dynamic object instance
     // Can throw
@@ -227,6 +232,8 @@ struct DynamicType : public Type, public DynamicModel {
     static void default_traverse_objects(Object *self, const fn_visit_object_t &visit);
 
     static void init_class_type();
+
+    virtual Object *dynamic_model_copy() override;
 
 private:
     DynamicType(const str_t &name);
