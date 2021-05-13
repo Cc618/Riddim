@@ -538,6 +538,17 @@ DynamicType *DynamicType::New(const str_t &name) {
         return nullptr;
     }
 
+    if (DynamicType::class_type && Str::class_type) {
+        // Set !name
+        auto sname = Str::New(name);
+
+        if (!sname) {
+            return nullptr;
+        }
+
+        me->attrs["!name"] = sname;
+    }
+
     me->fn_traverse_objects = default_traverse_objects;
 
     // @add
@@ -665,18 +676,95 @@ DynamicType *DynamicType::New(const str_t &name) {
             return nullptr;
         }
 
+        Object *current_doc = nullptr;
+
         auto it = me->attrs.find("@doc");
         if (it != me->attrs.end()) {
-            return it->second->call(Vec::empty, HashMap::empty);
+            current_doc = it->second->call(Vec::empty, HashMap::empty);
+
+            if (!current_doc) {
+                return nullptr;
+            }
         }
 
-        // The !doc attribute may contain the documentation
-        auto it2 = me->attrs.find("!doc");
-        if (it2 != me->attrs.end()) {
-            return it2->second;
+        if (!current_doc) {
+            // The !doc attribute may contain the documentation
+            auto it2 = me->attrs.find("!doc");
+            if (it2 != me->attrs.end()) {
+                current_doc = it2->second;
+
+                if (!current_doc) {
+                    return nullptr;
+                }
+            }
         }
 
-        return null;
+        if (current_doc && current_doc->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF((current_doc->type->name + "@str").c_str(),
+                                  current_doc->type, Str::class_type);
+
+            return nullptr;
+        }
+
+        str_t result;
+
+        {
+            auto it = me->attrs.find("!name");
+            if (it != me->attrs.end()) {
+                auto name = it->second;
+
+                if (name->type != Str::class_type) {
+                    THROW_TYPE_ERROR_PREF("!name", name->type, Str::class_type);
+
+                    return nullptr;
+                }
+
+                result += "# " + reinterpret_cast<Str *>(name)->data + "\n";
+            }
+        }
+
+        if (current_doc) {
+            result += reinterpret_cast<Str *>(current_doc)->data + "\n\n";
+        }
+
+        for (const auto &[k, v] : me->attrs) {
+            if (k.empty() || k[0] == '@' || k[0] == '!') {
+                continue;
+            }
+
+            // TODO : Avoid infinite loops
+            auto doc = v->doc();
+
+            if (doc == nullptr) {
+                return nullptr;
+            }
+
+            if (doc == null) {
+                continue;
+            }
+
+            auto docdata = reinterpret_cast<Str *>(doc)->data;
+
+            if (docdata.empty()) {
+                continue;
+            }
+
+            // TODO A
+            result += "# " + k + "\n";
+            result += docdata + "\n\n";
+        }
+
+        if (result.empty()) {
+            return null;
+        }
+
+        auto sresult = Str::New(result);
+
+        if (!sresult) {
+            return nullptr;
+        }
+
+        return sresult;
     };
 
     // @getattr

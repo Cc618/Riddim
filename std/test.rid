@@ -47,7 +47,7 @@ If error, changes the status to error_status
 
 - error, Bool : Whether the assert failed
 - [error_status] : Status on error
-'
+@'
 fn UnitTest.assert_result(error, error_status: -1) {
     if error {
         print me, 'failed'
