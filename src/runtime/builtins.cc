@@ -78,36 +78,75 @@ void init_builtins() {
         }                                                                      \
     }
 
+    // Docs
     const str_t assert_doc = "Throws AssertionError if exp is false\n\n"
                              "- exp, Bool : Expression to test\n"
                              "- [msg], String : Error message";
+
+    const str_t copy_doc = "Shallow copies of obj\n\n"
+                           "- obj : Object to copy\n"
+                           "- return : Copied object";
+
+    const str_t doc_doc = "Returns the documentation of obj\n\n"
+                          "- obj : Object with documentation\n"
+                          "- return, Str : Documentation";
+
+    const str_t exit_doc = "Exits the program\n\n"
+                           "- [code : 0], Int : Exit code";
+
+    const str_t hash_doc = "Returns the hash value of obj\n\n"
+                           "- obj : Target\n"
+                           "- return, Int : Hash";
+
+    const str_t iter_doc =
+        "Returns the iterator of iterable (begin position)\n\n"
+        "- iterable : Object with @iter slot\n"
+        "- return : Iterator like object";
+
+    const str_t len_doc = "Returns the length of col\n\n"
+                          "- col : Object with @len slot\n"
+                          "- return, Int : Length";
+
+    const str_t next_doc =
+        "Returns the next element of iterator (or enditer)\n\n"
+        "- iterator : Object with @next slot\n"
+        "- return : Next object or enditer";
+
+    const str_t print_doc = "Prints to stdout all arguments\n\n"
+                            "- [args...] : Objects to print";
+
+    const str_t throw_doc = "Throws error\n\n"
+                            "- error : Target error";
+
+    const str_t typeof_doc = "Returns the type of obj\n\n"
+                             "- obj : Target\n"
+                             "- return, Type : Type of the object";
+
+    // Signatures
     const builtin_signature_t assert_sig = {{"exp", false}, {"msg", true}};
 
+    const builtin_signature_t copy_sig = {{"obj", false}};
 
-    const str_t               copy_doc = "Shallow copies of obj\n\n- obj : Object to copy";
-    const str_t               doc_doc = "Returns the documentation of obj\n\n- obj : Object with documentation";
-    const str_t               exit_doc = "Exits the program\n\n- [code : 0], Int : Exit code";
-    const str_t               hash_doc = "Returns the hash value of obj\n\n- obj : Target";
-    const str_t               iter_doc = "Returns the iterator of iterable (begin position)\n\n- iterable : Object with @iter slot";
-    const str_t               len_doc = "Returns the length of col\n\n- col : Object with @len slot";
-    const str_t               next_doc = "Returns the next element of iterator (or enditer)\n\n- iterator : Object with @next slot";
-    const str_t               print_doc = "Prints to stdout all arguments\n\n- args... : Objects to print";
-    const str_t               throw_doc = "Throws error\n\n- error : Target error";
-    const str_t               typeof_doc = "Returns the type of obj\n\n- obj : Target";
+    const builtin_signature_t doc_sig = {{"obj", false}};
 
-    const builtin_signature_t copy_sig = {{"exp", false}};
-    const builtin_signature_t doc_sig = {{"exp", false}};
-    const builtin_signature_t exit_sig = {{"exp", false}};
-    const builtin_signature_t hash_sig = {{"exp", false}};
-    const builtin_signature_t iter_sig = {{"exp", false}};
-    const builtin_signature_t len_sig = {{"exp", false}};
-    const builtin_signature_t next_sig = {{"exp", false}};
-    const builtin_signature_t print_sig = {{"exp", false}};
-    const builtin_signature_t throw_sig = {{"exp", false}};
-    const builtin_signature_t typeof_sig = {{"exp", false}};
+    const builtin_signature_t exit_sig = {{"code", true}};
+
+    const builtin_signature_t hash_sig = {{"obj", false}};
+
+    const builtin_signature_t iter_sig = {{"iterable", false}};
+
+    const builtin_signature_t len_sig = {{"col", false}};
+
+    const builtin_signature_t next_sig = {{"iterator", false}};
+
+    const builtin_signature_t print_sig = {{"args...", true}};
+
+    const builtin_signature_t throw_sig = {{"error", false}};
+
+    const builtin_signature_t typeof_sig = {{"obj", false}};
 
     // Functions
-#define FAST_INIT_BUILTIN(NAME) \
+#define FAST_INIT_BUILTIN(NAME)                                                \
     INIT_BUILTIN(#NAME, builtin_##NAME, NAME##_doc, NAME##_sig);
 
     FAST_INIT_BUILTIN(assert);
