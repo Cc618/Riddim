@@ -1,0 +1,86 @@
+@doc'
+A unit test manager.
+
+- name : Identifier of this test
+
+Attributes :
+- name : Identifier
+- section_name : Current section identifier
+- status : Status code (by convention, 0 is success)
+@'
+newtype UnitTest(name: 'Main') {
+    me.name = name
+    me.section_name = 'Global'
+    me.status = 0
+}
+
+fn UnitTest@str() {
+    return me.name + '.' + me.section_name
+}
+
+doc'Starts the test'
+fn UnitTest.start() {
+    print '#####', me.name, '#####'
+}
+
+doc'Stops the test'
+fn UnitTest.stop() {
+    print '\n>>>', me.name, 'done\n'
+    # TODO : Print without anything
+    # print
+}
+
+@doc'
+Start a new section
+
+- section : Section identifier
+@'
+fn UnitTest.section(section) {
+    me.section_name = section
+
+    print '\n---', me, '---'
+}
+
+@doc'
+Displays an assertion result.
+If error, changes the status to error_status
+
+- error, Bool : Whether the assert failed
+- [error_status] : Status on error
+'
+fn UnitTest.assert_result(error, error_status: -1) {
+    if error {
+        print me, 'failed'
+        me.status = error_status
+    } else {
+        print '.'
+    }
+}
+
+@doc'
+Asserts that fun should return true
+
+- fun : Should return true
+@'
+fn UnitTest.assert_true(fun) {
+    error = true
+    try {
+        error = not fun()
+    } catch _ {
+    }
+
+    me.assert_result(error)
+}
+
+# TODO : Remove
+if false {
+    test = UnitTest('Algebra')
+    test.start()
+    test.section('add')
+    test.assert_true(|| 2 + 2 == 4)
+    test.assert_true(|| 2 + 0 == 0)
+    test.section('sub')
+    test.assert_true(|| 2 - 2 == 0)
+    test.assert_true(|| 2 - (-2) == 4)
+    test.stop()
+}
