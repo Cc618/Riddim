@@ -1,5 +1,6 @@
 #include "object.hh"
 #include "bool.hh"
+#include "doc.hh"
 #include "error.hh"
 #include "function.hh"
 #include "hash.hh"
@@ -676,6 +677,7 @@ DynamicType *DynamicType::New(const str_t &name) {
             return nullptr;
         }
 
+        // Str* or Null* guaranteed
         Object *current_doc = nullptr;
 
         auto it = me->attrs.find("@doc");
@@ -721,38 +723,26 @@ DynamicType *DynamicType::New(const str_t &name) {
                 }
 
                 name_data = reinterpret_cast<Str *>(name)->data;
-                result += "### " + name_data + "\n";
             }
         }
 
-        if (current_doc) {
-            result += reinterpret_cast<Str *>(current_doc)->data + "\n\n";
+        // Filter what to document
+        vector<pair<str_t, Object *>> children;
+        for (const auto &[child_name, child] : me->attrs) {
+            if (child_name.size() && child_name[0] != '@' &&
+                child_name[0] != '!') {
+                children.push_back({child_name, child});
+            }
         }
 
-        for (const auto &[k, v] : me->attrs) {
-            if (k.empty() || k[0] == '@' || k[0] == '!') {
-                continue;
-            }
+        result = autodoc(2, name_data,
+                         current_doc == null
+                             ? ""
+                             : reinterpret_cast<Str *>(current_doc)->data,
+                         children);
 
-            // TODO : Avoid infinite loops
-            auto doc = v->doc();
-
-            if (doc == nullptr) {
-                return nullptr;
-            }
-
-            if (doc == null) {
-                continue;
-            }
-
-            auto docdata = reinterpret_cast<Str *>(doc)->data;
-
-            if (docdata.empty()) {
-                continue;
-            }
-
-            result += "#### " + (name_data.empty() ? "" : name_data + ".") + k + "\n";
-            result += docdata + "\n\n";
+        if (on_error()) {
+            return nullptr;
         }
 
         if (result.empty()) {
