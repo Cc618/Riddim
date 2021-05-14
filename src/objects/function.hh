@@ -16,8 +16,9 @@ struct AbstractFunction : public Object {
 
     // Documentation content
     str_t doc_str;
+    str_t name;
 
-    AbstractFunction(Type *type, Object *self = nullptr,
+    AbstractFunction(Type *type, Object *self = nullptr, const str_t &name = "",
                      const str_t &doc_str = "");
 };
 
@@ -29,7 +30,6 @@ struct Builtin : public AbstractFunction {
 
     // (Object *self, Vec *args, HashMap *kwargs) -> Object*
     fn_ternary_t data;
-    str_t name;
 
     // Arguments to generate the documentation
     // { name, isoptional }
@@ -47,7 +47,6 @@ struct Builtin : public AbstractFunction {
 struct Function : public AbstractFunction {
     static Type *class_type;
 
-    str_t name;
     Code *code;
     // Positional args with possibly default values (can be nullptr)
     std::vector<std::pair<str_t, Code *>> args;

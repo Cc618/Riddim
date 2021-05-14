@@ -10,18 +10,63 @@
 
 using namespace std;
 
+static auto default_setattr(Object *self, Object *name, Object *val)
+    -> Object * {
+    auto me = dynamic_cast<AbstractFunction *>(self);
+
+    if (!me) {
+        throw_fmt(RuntimeError,
+                  "AbstractFunction@setattr : Got an invalid AbstractFunction");
+
+        return nullptr;
+    }
+
+    if (name->type != Str::class_type) {
+        THROW_TYPE_ERROR_PREF("Function.@setattr", name->type, Str::class_type);
+
+        return nullptr;
+    }
+
+    auto attr = reinterpret_cast<Str *>(name)->data;
+
+    // Name
+    if (attr == "!name") {
+        if (val->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("Function.@setattr{!name}", val->type,
+                                  Str::class_type);
+
+            return nullptr;
+        }
+
+        me->name = reinterpret_cast<Str *>(val)->data;
+    }
+    // Doc
+    else if (attr == "!doc") {
+        if (val->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("Function.@setattr{!doc}", val->type,
+                                  Str::class_type);
+
+            return nullptr;
+        }
+
+        me->doc_str = reinterpret_cast<Str *>(val)->data;
+    }
+
+    return null;
+}
+
 // --- AbstractFunction ---
-AbstractFunction::AbstractFunction(Type *type, Object *self,
+AbstractFunction::AbstractFunction(Type *type, Object *self, const str_t &name,
                                    const str_t &doc_str)
-    : Object(type), self(self), doc_str(doc_str) {}
+    : Object(type), self(self), name(name), doc_str(doc_str) {}
 
 // --- Builtin ---
 Type *Builtin::class_type = nullptr;
 
 Builtin::Builtin(const fn_ternary_t &data, const str_t &name, Object *self,
                  const str_t &doc_str, const builtin_signature_t &doc_signature)
-    : AbstractFunction(Builtin::class_type, self ? self : null, doc_str),
-      data(data), name(name), doc_signature(doc_signature) {}
+    : AbstractFunction(Builtin::class_type, self ? self : null, name, doc_str),
+      data(data), doc_signature(doc_signature) {}
 
 void Builtin::init_class_type() {
     class_type = new (nothrow) Type("Builtin");
@@ -122,33 +167,7 @@ void Builtin::init_class_type() {
     };
 
     // @setattr
-    class_type->fn_setattr = [](Object *self, Object *name,
-                                Object *val) -> Object * {
-        auto me = reinterpret_cast<Builtin *>(self);
-
-        if (name->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF("Builtin.@setattr", name->type,
-                                  Str::class_type);
-
-            return nullptr;
-        }
-
-        auto attr = reinterpret_cast<Str *>(name)->data;
-
-        // Name
-        if (attr == "!name") {
-            if (val->type != Str::class_type) {
-                THROW_TYPE_ERROR_PREF("Builtin.@setattr{!name}", val->type,
-                                      Str::class_type);
-
-                return nullptr;
-            }
-
-            me->name = reinterpret_cast<Str *>(val)->data;
-        }
-
-        return null;
-    };
+    class_type->fn_setattr = default_setattr;
 
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
@@ -182,8 +201,8 @@ Function *Function::New(Code *code, const str_t &name, Object *_self,
 
 Function::Function(Code *code, const str_t &name, Object *self,
                    const str_t &doc_str)
-    : AbstractFunction(Function::class_type, self ? self : null, doc_str),
-      code(code), name(name) {}
+    : AbstractFunction(Function::class_type, self ? self : null, name, doc_str),
+      code(code) {}
 
 void Function::init_class_type() {
     class_type = new (nothrow) Type("Function");
@@ -406,35 +425,8 @@ void Function::init_class_type() {
     };
 
     // @setattr
-    class_type->fn_setattr = [](Object *self, Object *name,
-                                Object *val) -> Object * {
-        auto me = reinterpret_cast<Function *>(self);
+    class_type->fn_setattr = default_setattr;
 
-        if (name->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF("Function.@setattr", name->type,
-                                  Str::class_type);
-
-            return nullptr;
-        }
-
-        auto attr = reinterpret_cast<Str *>(name)->data;
-
-        // Name
-        if (attr == "!name") {
-            if (val->type != Str::class_type) {
-                THROW_TYPE_ERROR_PREF("Function.@setattr{!name}", val->type,
-                                      Str::class_type);
-
-                return nullptr;
-            }
-
-            me->name = reinterpret_cast<Str *>(val)->data;
-        }
-
-        return null;
-    };
-
-    // @str
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Function *>(self);
 
