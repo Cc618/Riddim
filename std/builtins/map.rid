@@ -1,0 +1,12 @@
+mod!doc = @'
+Map builtins
+@'
+
+# HashMap
+HashMap!name = 'HashMap'
+HashMap!doc = @'
+HashMap data type.
+Creates a mapping between key / value pairs.
+@'
+
+set_default_collection(HashMap)

@@ -7,3 +7,4 @@ Contains built-in variables.
 use builtins.utils.*
 use builtins.str.*
 use builtins.vec.*
+use builtins.map.*
