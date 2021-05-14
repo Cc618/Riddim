@@ -11,6 +11,9 @@
 struct Type;
 struct Object;
 
+// Whether it is a type object
+bool is_type(Object *o);
+
 // Function that calls the visitor on all objects to traverse
 typedef std::function<void(Object *child)> fn_visit_object_t;
 typedef std::function<void(Object *obj, const fn_visit_object_t &visit)>

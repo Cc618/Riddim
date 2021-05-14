@@ -51,6 +51,8 @@ Object *builtin_throw(Object *self, Object *args, Object *kwargs);
 
 Object *builtin_typeof(Object *self, Object *args, Object *kwargs);
 
+Object *builtin_typename(Object *self, Object *args, Object *kwargs);
+
 // --- Utils ---
 // Prints one object to stdout
 // !!! Use it only in debug mode since it is unsafe

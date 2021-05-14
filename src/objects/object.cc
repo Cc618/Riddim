@@ -12,6 +12,10 @@
 
 using namespace std;
 
+bool is_type(Object *o) {
+    return o->type == Type::class_type || o->type == DynamicType::class_type;
+}
+
 bool is_pod_object(Object *o) {
     if (o->type == Int::class_type)
         return true;

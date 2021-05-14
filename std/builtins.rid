@@ -6,3 +6,4 @@ Contains built-in variables.
 # Load and merge each sub module
 use builtins.utils.*
 use builtins.str.*
+use builtins.vec.*

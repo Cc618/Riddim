@@ -5,18 +5,4 @@ Str methods
 Str!doc = 'String data type'
 Str!name = 'Str'
 
-@doc'
-Returns whether it is empty
-- return, Bool
-@'
-fn Str.empty() {
-    return len(me) == 0
-}
-
-@doc'
-Returns whether it is not empty
-- return, Bool
-@'
-fn Str.not_empty() {
-    return len(me) != 0
-}
+set_default_collection(Str)

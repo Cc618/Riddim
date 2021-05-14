@@ -122,6 +122,10 @@ void init_builtins() {
                              "- obj : Target\n"
                              "- return, Type : Type of the object";
 
+    const str_t typename_doc = "Returns the name of type\n\n"
+                             "- type : Target\n"
+                             "- return, Str : Name of type";
+
     // Signatures
     const builtin_signature_t assert_sig = {{"exp", false}, {"msg", true}};
 
@@ -145,6 +149,8 @@ void init_builtins() {
 
     const builtin_signature_t typeof_sig = {{"obj", false}};
 
+    const builtin_signature_t typename_sig = {{"type", false}};
+
     // Functions
 #define FAST_INIT_BUILTIN(NAME)                                                \
     INIT_BUILTIN(#NAME, builtin_##NAME, NAME##_doc, NAME##_sig);
@@ -160,6 +166,7 @@ void init_builtins() {
     FAST_INIT_BUILTIN(print);
     FAST_INIT_BUILTIN(throw);
     FAST_INIT_BUILTIN(typeof);
+    FAST_INIT_BUILTIN(typename);
 
     // Globals
 #define REGISTER_GLOBAL(NAME, ID)                                              \
@@ -367,15 +374,6 @@ Object *builtin_print(Object *self, Object *args, Object *kwargs) {
     return null;
 }
 
-Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
-    INIT_METHOD(Object, "typeof");
-
-    CHECK_ARGSLEN(1, "typeof");
-    CHECK_NOKWARGS("typeof");
-
-    return args_data[0]->type;
-}
-
 Object *builtin_throw(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Object, "throw");
 
@@ -385,4 +383,34 @@ Object *builtin_throw(Object *self, Object *args, Object *kwargs) {
     throw_error(args_data[0]);
 
     return nullptr;
+}
+
+Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "typeof");
+
+    CHECK_ARGSLEN(1, "typeof");
+    CHECK_NOKWARGS("typeof");
+
+    return args_data[0]->type;
+}
+
+Object *builtin_typename(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Object, "typename");
+
+    CHECK_ARGSLEN(1, "typename");
+    CHECK_NOKWARGS("typename");
+
+    if (!is_type(args_data[0])) {
+        THROW_TYPE_ERROR_PREF("typename", args_data[0]->type, Type::class_type);
+
+        return nullptr;
+    }
+
+    auto sname = Str::New(reinterpret_cast<Type*>(args_data[0])->name);
+
+    if (!sname) {
+        return nullptr;
+    }
+
+    return sname;
 }

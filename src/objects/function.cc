@@ -19,8 +19,7 @@ AbstractFunction::AbstractFunction(Type *type, Object *self,
 Type *Builtin::class_type = nullptr;
 
 Builtin::Builtin(const fn_ternary_t &data, const str_t &name, Object *self,
-                 const str_t &doc_str,
-                 const builtin_signature_t &doc_signature)
+                 const str_t &doc_str, const builtin_signature_t &doc_signature)
     : AbstractFunction(Builtin::class_type, self ? self : null, doc_str),
       data(data), name(name), doc_signature(doc_signature) {}
 
@@ -120,6 +119,35 @@ void Builtin::init_class_type() {
             return nullptr;
 
         return doc;
+    };
+
+    // @setattr
+    class_type->fn_setattr = [](Object *self, Object *name,
+                                Object *val) -> Object * {
+        auto me = reinterpret_cast<Builtin *>(self);
+
+        if (name->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("Builtin.@setattr", name->type,
+                                  Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(name)->data;
+
+        // Name
+        if (attr == "!name") {
+            if (val->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("Builtin.@setattr{!name}", val->type,
+                                      Str::class_type);
+
+                return nullptr;
+            }
+
+            me->name = reinterpret_cast<Str *>(val)->data;
+        }
+
+        return null;
     };
 
     // @str
@@ -375,6 +403,35 @@ void Function::init_class_type() {
         result->lambda_frame = me->lambda_frame;
 
         return result;
+    };
+
+    // @setattr
+    class_type->fn_setattr = [](Object *self, Object *name,
+                                Object *val) -> Object * {
+        auto me = reinterpret_cast<Function *>(self);
+
+        if (name->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("Function.@setattr", name->type,
+                                  Str::class_type);
+
+            return nullptr;
+        }
+
+        auto attr = reinterpret_cast<Str *>(name)->data;
+
+        // Name
+        if (attr == "!name") {
+            if (val->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("Function.@setattr{!name}", val->type,
+                                      Str::class_type);
+
+                return nullptr;
+            }
+
+            me->name = reinterpret_cast<Str *>(val)->data;
+        }
+
+        return null;
     };
 
     // @str

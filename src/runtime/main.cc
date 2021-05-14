@@ -56,8 +56,11 @@ int main(int argc, char *argv[]) {
                 res = Program::instance->exit_code;
             } else {
                 // Display as much information as possible
-                if (Program::instance->trace)
+                if (Program::instance->trace) {
                     Program::instance->trace->dump();
+
+                    dump_error();
+                }
                 else if (!Program::instance->errout.str().empty())
                     cerr << Program::instance->errout.str();
                 else

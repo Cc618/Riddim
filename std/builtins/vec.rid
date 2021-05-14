@@ -1,0 +1,11 @@
+mod!doc = @'
+Vec builtins
+@'
+
+Vec!name = 'Vec'
+Vec!doc = @'
+Vector data type.
+Holds items in a contiguous memory space.
+@'
+
+set_default_collection(Vec)

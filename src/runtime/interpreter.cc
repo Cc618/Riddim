@@ -90,9 +90,6 @@ bool interpret_program(Module *main_module) {
                   mod_builtins);
 
         if (on_error()) {
-            throw_fmt(ImportError, "Failed to load std module %sbuiltins%s",
-                      C_BLUE, C_NORMAL);
-
             return false;
         }
 
