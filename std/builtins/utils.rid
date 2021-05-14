@@ -1,0 +1,15 @@
+mod!doc = @'
+Utilities, simple functions
+@'
+
+@doc'
+Prints msg to stderr and exits with exit_code
+- msg : Message to print
+- [exit_code], Int : Program output
+@'
+fn fatal(msg, exit_code: -1) {
+    # TODO : Print to stderr
+    print msg
+
+    exit(exit_code)
+}

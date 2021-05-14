@@ -32,6 +32,9 @@ typedef std::function<Object *(Object *, Object *, Object *)> fn_ternary_t;
 // (Escapes chars...)
 str_t string_repr(const str_t &s);
 
+// Whether it is a special variabel
+bool is_special_var(const str_t &s, bool allow_mod = true);
+
 // Thrown from the lexer
 struct LexerError {
     int begin_line;

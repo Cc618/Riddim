@@ -459,6 +459,11 @@ void DynamicObject::init(DynamicObject *self) {
     // Add attributes and methods
     for (const auto &[k, v] :
          reinterpret_cast<DynamicType *>(self->type)->attrs) {
+        // No special attribute variables
+        if (k.empty() || k[0] == '!') {
+            continue;
+        }
+
         auto newv = v->copy();
 
         if (!newv) {
@@ -729,14 +734,13 @@ DynamicType *DynamicType::New(const str_t &name) {
         // Filter what to document
         vector<pair<str_t, Object *>> children;
         for (const auto &[child_name, child] : me->attrs) {
-            if (child_name.size() && child_name[0] != '@' &&
-                child_name[0] != '!') {
+            if (!is_special_var(child_name, false)) {
                 children.push_back({child_name, child});
             }
         }
 
         result = autodoc(2, name_data,
-                         current_doc == null
+                         !current_doc || current_doc == null
                              ? ""
                              : reinterpret_cast<Str *>(current_doc)->data,
                          children);

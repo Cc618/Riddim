@@ -17,8 +17,7 @@ void merge_frames(Frame *base, Frame *merged) {
         auto name_str = reinterpret_cast<Str *>(name)->data;
 
         // No special names
-        if (name_str.empty() || name_str == "mod" || name_str[0] == '!' ||
-            name_str[0] == '@') {
+        if (is_special_var(name_str, false)) {
             continue;
         }
 
@@ -92,8 +91,7 @@ void Module::init_class_type() {
 
             auto child_name_str = reinterpret_cast<Str *>(child_name)->data;
 
-            if (child_name_str.size() && child_name_str[0] != '@' &&
-                child_name_str[0] != '!' && child_name_str != "mod") {
+            if (!is_special_var(child_name_str, false)) {
                 children.push_back({"", child});
             }
         }

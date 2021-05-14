@@ -3,6 +3,6 @@ Auto imported module.
 Contains built-in variables.
 @'
 
-print('Builtins loaded')
-
-abc = 42
+# Load and merge each sub module
+use builtins.utils.*
+use builtins.str.*
