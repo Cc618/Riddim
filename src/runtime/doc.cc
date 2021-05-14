@@ -19,6 +19,7 @@ str_t autodoc(size_t indent, const str_t &name, const str_t &current_doc,
 
     auto children_header = str_t(indent + 1, '#') + " ";
 
+    size_t i = 0;
     for (const auto &[child_name, child] : children) {
         // TODO A : mod.mod inf loop
         // TODO : Avoid infinite loops
@@ -44,8 +45,17 @@ str_t autodoc(size_t indent, const str_t &name, const str_t &current_doc,
             compound_name = name + "." + child_name;
         }
 
-        doc += children_header + compound_name + "\n";
-        doc += child_docstr + "\n\n";
+        if (child_name.size()) {
+            doc += children_header + compound_name + "\n";
+        }
+
+        doc += child_docstr;
+
+        ++i;
+
+        if (i != children.size()) {
+            doc += "\n\n";
+        }
     }
 
     return doc;

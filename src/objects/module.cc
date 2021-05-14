@@ -1,4 +1,6 @@
 #include "module.hh"
+#include "null.hh"
+#include "doc.hh"
 #include "error.hh"
 #include "program.hh"
 
@@ -25,6 +27,73 @@ void Module::init_class_type() {
         visit(me->name);
         visit(me->code);
         visit(me->frame);
+    };
+
+    // @doc
+    class_type->fn_doc = [](Object *self) -> Object * {
+        auto me = dynamic_cast<Module *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError, "Module.@doc got an invalid self instance");
+
+            return nullptr;
+        }
+
+        str_t current_doc;
+
+        // The !doc attribute may contain the documentation
+        auto docattr = Str::New("!doc");
+        if (!docattr) {
+            return nullptr;
+        }
+
+        auto it = me->frame->fetch(docattr);
+        if (it) {
+            if (it->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("Module!doc", it->type, Str::class_type);
+
+                return nullptr;
+            }
+
+            current_doc = reinterpret_cast<Str *>(it)->data;
+        } else {
+            clear_error();
+        }
+
+        // Filter what to document
+        vector<pair<str_t, Object *>> children;
+        for (const auto &[h, kv] : me->frame->vars->data) {
+            const auto &[child_name, child] = kv;
+
+            if (child_name->type != Str::class_type) {
+                continue;
+            }
+
+            auto child_name_str = reinterpret_cast<Str *>(child_name)->data;
+
+            if (child_name_str.size() && child_name_str[0] != '@' &&
+                child_name_str[0] != '!' && child_name_str != "mod") {
+                children.push_back({"", child});
+            }
+        }
+
+        str_t result = autodoc(1, me->name->data, current_doc, children);
+
+        if (on_error()) {
+            return nullptr;
+        }
+
+        if (result.empty()) {
+            return null;
+        }
+
+        auto sresult = Str::New(result);
+
+        if (!sresult) {
+            return nullptr;
+        }
+
+        return sresult;
     };
 
     // @getattr
