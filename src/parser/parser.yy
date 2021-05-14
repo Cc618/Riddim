@@ -386,6 +386,14 @@ macrostmt: macro_keyword_varargs list_content stop {
 
         $$ = new ExpStmt(call);
     }
+    | macro_keyword_varargs "(" ")" stop {
+        auto call = new CallExp(@1.begin.line);
+        call->fileline = @1.begin.line;
+        call->exp = new Id(@1.begin.line, $1);
+        call->ismacro = true;
+
+        $$ = new ExpStmt(call);
+    }
     | macro_keyword_single exp stop {
         auto call = new CallExp(@1.begin.line);
         call->args = { $2 };

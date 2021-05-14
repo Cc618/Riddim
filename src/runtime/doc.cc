@@ -6,7 +6,7 @@
 using namespace std;
 
 str_t autodoc(size_t indent, const str_t &name, const str_t &current_doc,
-              const std::vector<std::pair<str_t, Object *>> &children) {
+              std::vector<std::pair<str_t, Object *>> children) {
     str_t doc;
 
     if (name.size()) {
@@ -14,10 +14,13 @@ str_t autodoc(size_t indent, const str_t &name, const str_t &current_doc,
     }
 
     if (current_doc.size()) {
-        doc +=  current_doc + "\n\n";
+        doc += current_doc + "\n\n";
     }
 
     auto children_header = str_t(indent + 1, '#') + " ";
+
+    sort(children.begin(), children.end(),
+         [](auto a, auto b) { return a.first < b.first; });
 
     size_t i = 0;
     for (const auto &[child_name, child] : children) {
@@ -32,7 +35,7 @@ str_t autodoc(size_t indent, const str_t &name, const str_t &current_doc,
             continue;
         }
 
-        auto child_docstr = reinterpret_cast<Str*>(child_doc)->data;
+        auto child_docstr = reinterpret_cast<Str *>(child_doc)->data;
 
         if (child_docstr.empty()) {
             continue;
