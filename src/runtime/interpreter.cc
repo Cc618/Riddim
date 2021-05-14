@@ -76,6 +76,29 @@ inline Object *pop_top() {
 bool interpret_program(Module *main_module) {
     Program::instance->main_module = main_module;
 
+    if (!Program::instance->builtins_module) {
+        auto mod_builtins = load_module("builtins", "");
+
+        if (!mod_builtins) {
+            throw_fmt(ImportError, "Cannot find std module %sbuiltins%s",
+                      C_BLUE, C_NORMAL);
+
+            return false;
+        }
+
+        interpret(mod_builtins->code, mod_builtins->name->data, {},
+                  mod_builtins);
+
+        if (on_error()) {
+            throw_fmt(ImportError, "Failed to load std module %sbuiltins%s",
+                      C_BLUE, C_NORMAL);
+
+            return false;
+        }
+
+        Program::instance->builtins_module = mod_builtins;
+    }
+
     interpret(main_module->code, "Module<main>", {}, main_module);
 
     if (on_error()) {
@@ -141,6 +164,12 @@ void interpret(Code *_code, const str_t &id,
     // Recursion error
     if (on_error())
         return;
+
+    // Merge builtins module if necessary
+    if (Program::instance->builtins_module && module) {
+        frame->vars->data.merge(
+            Program::instance->builtins_module->frame->vars->data);
+    }
 
     interpret_fragment(_code, frame->ip);
 

@@ -1,4 +1,3 @@
-# TODO : Update doc
 mod!doc = @'
 Unit testing utilities.
 @'

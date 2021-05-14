@@ -37,6 +37,7 @@ struct Program : public Object {
     // This module must be added via add_module (will be garbage collected
     // otherwise)
     Module *main_module;
+    Module *builtins_module = nullptr;
 
     Object *current_error;
 

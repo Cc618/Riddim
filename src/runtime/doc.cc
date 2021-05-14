@@ -21,7 +21,6 @@ str_t autodoc(size_t indent, const str_t &name, const str_t &current_doc,
 
     size_t i = 0;
     for (const auto &[child_name, child] : children) {
-        // TODO A : mod.mod inf loop
         // TODO : Avoid infinite loops
         auto child_doc = child->doc();
 

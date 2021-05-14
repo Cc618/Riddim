@@ -3,8 +3,8 @@
 #include "program.hh"
 #include "utils.hh"
 #include <algorithm>
-#include <sstream>
 #include <filesystem>
+#include <sstream>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -80,7 +80,7 @@ Module *parse_module(str_t module_path) {
 
         if (msg.empty())
             throw_fmt(ImportError, "%s%s%s: Syntax error", C_BLUE,
-                        module_path.c_str(), C_NORMAL);
+                      module_path.c_str(), C_NORMAL);
         else
             throw_fmt(ImportError, "\n%s", msg.c_str());
 
@@ -101,7 +101,7 @@ Module *parse_module(str_t module_path) {
 
             if (msg.empty())
                 throw_fmt(ImportError, "%s%s%s: Syntax error", C_BLUE,
-                            module_path.c_str(), C_NORMAL);
+                          module_path.c_str(), C_NORMAL);
             else
                 throw_fmt(ImportError, "\n%s", msg.c_str());
 
@@ -121,6 +121,7 @@ Module *parse_module(str_t module_path) {
 Module *load_module(const str_t &name, const str_t &current_path) {
     stringstream name_stream(name);
     vector<str_t> dirs;
+
     // Not really a line but a directory
     str_t line;
     while (getline(name_stream, line, '.')) {
@@ -139,7 +140,7 @@ Module *load_module(const str_t &name, const str_t &current_path) {
     }
 
     // Current directory
-    auto mod_dir = dir_path(current_path);
+    auto mod_dir = current_path.empty() ? "" : dir_path(current_path);
 
     // Std lib modules directory
     auto std_dir = Program::std_path;
@@ -148,7 +149,11 @@ Module *load_module(const str_t &name, const str_t &current_path) {
     // The first one has the highest priority
     // This is similar to PYTHONPATH
     vector<str_t> search_path;
-    search_path.push_back(mod_dir);
+
+    if (mod_dir.size()) {
+        search_path.push_back(mod_dir);
+    }
+
     search_path.push_back(std_dir);
 
     for (auto dir : search_path) {
@@ -159,8 +164,8 @@ Module *load_module(const str_t &name, const str_t &current_path) {
         }
     }
 
-    throw_fmt(ImportError, "Module %s%s%s not found", C_BLUE,
-                name.c_str(), C_NORMAL);
+    throw_fmt(ImportError, "Module %s%s%s not found", C_BLUE, name.c_str(),
+              C_NORMAL);
 
     return nullptr;
 }

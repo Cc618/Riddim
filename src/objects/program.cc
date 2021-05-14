@@ -48,6 +48,7 @@ void Program::init_class_type() {
             visit(child);
 
         visit(program->main_module);
+        visit(program->builtins_module);
         visit(program->global_frame);
         visit(program->top_frame);
         visit(program->trace);
