@@ -7,6 +7,7 @@ HashMap!name = 'HashMap'
 HashMap!doc = @'
 HashMap data type.
 Creates a mapping between key / value pairs.
+This is the object created with the {k: v} syntax.
 @'
 
 set_default_collection(HashMap)

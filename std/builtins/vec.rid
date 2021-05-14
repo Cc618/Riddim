@@ -6,6 +6,7 @@ Vec!name = 'Vec'
 Vec!doc = @'
 Vector data type.
 Holds items in a contiguous memory space.
+This is the object created with the [a, ...] syntax.
 @'
 
 set_default_collection(Vec)

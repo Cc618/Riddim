@@ -32,6 +32,26 @@ fn default_collection_not_empty() {
     return len(me) != 0
 }
 
+# TODO : Use iterator algorithms
+@doc'
+Returns the index of the first occurence of item.
+Returns -1 if not found.
+- item : Item to find
+- return : The index of the item (or -1 if not found)
+@'
+fn default_collection_index(item) {
+    i = 0
+    for e in me {
+        if e == item {
+            return i
+        }
+
+        i += 1
+    }
+
+    return -1
+}
+
 @doc'
 Sets up the collection type with default collection methods
 and attribute variables.
@@ -39,6 +59,10 @@ and attribute variables.
 fn set_default_collection(type) {
     type.empty = copy(default_collection_empty)
     type.empty!name = typename(type) + '.empty'
+
+    type.index = copy(default_collection_index)
+    type.index!name = typename(type) + '.index'
+
     type.not_empty = copy(default_collection_not_empty)
     type.not_empty!name = typename(type) + '.not_empty'
 }
