@@ -5,6 +5,12 @@
 #include "str.hh"
 #include "frame.hh"
 
+struct Module;
+
+// Merges merged's frame into base
+// Special variables like !doc / mod... are not merged
+void merge_frames(Frame *base, Frame *merged);
+
 struct Module : public Object {
     static Type *class_type;
 

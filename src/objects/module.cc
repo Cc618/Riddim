@@ -1,10 +1,31 @@
 #include "module.hh"
-#include "null.hh"
 #include "doc.hh"
 #include "error.hh"
+#include "null.hh"
 #include "program.hh"
 
 using namespace std;
+
+void merge_frames(Frame *base, Frame *merged) {
+    for (const auto &[h, kv] : merged->vars->data) {
+        const auto &[name, value] = kv;
+
+        if (name->type != Str::class_type) {
+            continue;
+        }
+
+        auto name_str = reinterpret_cast<Str *>(name)->data;
+
+        // No special names
+        if (name_str.empty() || name_str == "mod" || name_str[0] == '!' ||
+            name_str[0] == '@') {
+            continue;
+        }
+
+        // Merge this pair
+        base->vars->data[h] = kv;
+    }
+}
 
 Type *Module::class_type = nullptr;
 

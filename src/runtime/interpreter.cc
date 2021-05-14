@@ -167,8 +167,7 @@ void interpret(Code *_code, const str_t &id,
 
     // Merge builtins module if necessary
     if (Program::instance->builtins_module && module) {
-        frame->vars->data.merge(
-            Program::instance->builtins_module->frame->vars->data);
+        merge_frames(frame, Program::instance->builtins_module->frame);
     }
 
     interpret_fragment(_code, frame->ip);
@@ -765,7 +764,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             auto mod = reinterpret_cast<Module *>(tos);
 
-            frame->vars->data.merge(mod->frame->vars->data);
+            merge_frames(frame, mod->frame);
 
             NEXT(0);
         }
