@@ -119,7 +119,9 @@ void Module::init_class_type() {
     class_type->fn_getattr = [](Object *self, Object *key) -> Object * {
         Module *me = reinterpret_cast<Module *>(self);
 
-        return me->frame->getitem(key);
+        auto result = me->frame->getitem(key);
+
+        return result;
     };
 
     // @str

@@ -94,6 +94,7 @@ bool interpret_program(Module *main_module) {
         }
 
         Program::instance->builtins_module = mod_builtins;
+        Program::instance->push_frame(mod_builtins->frame);
     }
 
     interpret(main_module->code, "Module<main>", {}, main_module);
@@ -165,11 +166,6 @@ void interpret(Code *_code, const str_t &id,
     // Recursion error
     if (on_error())
         return;
-
-    // Merge builtins module if necessary
-    if (Program::instance->builtins_module && module) {
-        merge_frames(frame, Program::instance->builtins_module->frame);
-    }
 
     interpret_fragment(_code, frame->ip);
 
