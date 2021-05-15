@@ -61,15 +61,13 @@ struct Builtin;
 // Inits a method in the factory of a dynamic object (self is the object)
 // Call it within init_class_objects
 #define NEW_METHOD(TYPE, NAME)                                                 \
-    {                                                                          \
-        auto method = new Builtin(TYPE::me_##NAME##_handler, #TYPE "." #NAME,  \
-                                  TYPE::class_type);                           \
-        if (!method) {                                                         \
-            THROW_MEMORY_ERROR;                                                \
-            return;                                                            \
-        }                                                                      \
-        TYPE::class_type->attrs[#NAME] = method;                               \
-    }
+    auto method_##NAME = new Builtin(TYPE::me_##NAME##_handler,                \
+                                     #TYPE "." #NAME, TYPE::class_type);       \
+    if (!method_##NAME) {                                                      \
+        THROW_MEMORY_ERROR;                                                    \
+        return;                                                                \
+    }                                                                          \
+    TYPE::class_type->attrs[#NAME] = method_##NAME;
 
 // Declares a new method inside the class of a dynamic object
 // (as an attribute)

@@ -61,7 +61,8 @@ void Vec::init_class_type() {
             auto iter = args_data[0]->iter();
 
             if (!iter) {
-                THROW_ARGUMENT_ERROR("Vec.@new", "iterable", "Requires an iterable object");
+                THROW_ARGUMENT_ERROR("Vec.@new", "iterable",
+                                     "Requires an iterable object");
 
                 return nullptr;
             }
@@ -75,14 +76,16 @@ void Vec::init_class_type() {
                     return nullptr;
                 }
 
-                if (obj == enditer) break;
+                if (obj == enditer)
+                    break;
 
                 collect.push_back(obj);
             }
 
             result = Vec::New(collect);
         } else {
-            THROW_ARGUMENT_ERROR("Vec.@new", "length", "0 or 1 arguments required");
+            THROW_ARGUMENT_ERROR("Vec.@new", "length",
+                                 "0 or 1 arguments required");
         }
 
         // Dispatch error
@@ -538,7 +541,14 @@ void Vec::init_class_objects() {
     class_hash = std::hash<str_t>()("Vec");
 
     NEW_METHOD(Vec, add);
+    method_add->doc_str = "Pushes back an item";
+
     NEW_METHOD(Vec, pop);
+    method_pop->doc_str = "Removes an item at a target index (by default, "
+                          "the last item is popped out)\n\n"
+                          "- [index : -1], Int / Range : Where to pop\n"
+                          "- return : The popped item(s)";
+    method_pop->doc_signature = {{"index", true}};
 }
 
 // --- Methods ---
@@ -553,20 +563,42 @@ Object *Vec::me_add_handler(Object *self, Object *args, Object *kwargs) {
     return null;
 }
 
-// TODO : Pop position
 Object *Vec::me_pop_handler(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Vec, "pop");
 
-    CHECK_NOARGS("Vec.pop");
     CHECK_NOKWARGS("Vec.pop");
 
+    // TODO : Slice
     if (me->data.empty()) {
         throw_str(IndexError, "Can't pop empty collection");
 
         return nullptr;
     }
 
-    me->data.pop_back();
+    if (args_data.empty()) {
+        auto result = me->data.back();
 
-    return null;
+        me->data.pop_back();
+
+        return result;
+    } else {
+        auto index = args_data[0];
+
+        // TODO : Slice
+        if (index->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Vec.pop{index}", index->type,
+                                  Int::class_type);
+
+            return nullptr;
+        }
+
+        int_t i = get_mod_index(reinterpret_cast<Int *>(index)->data,
+                                me->data.size());
+
+        auto result = me->data[i];
+
+        me->data.erase(me->data.begin() + i);
+
+        return result;
+    }
 }
