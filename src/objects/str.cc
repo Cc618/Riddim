@@ -1,5 +1,7 @@
 #include "str.hh"
 #include "error.hh"
+#include "iterator.hh"
+#include "builtins.hh"
 #include "function.hh"
 #include "hash.hh"
 #include "int.hh"
@@ -180,6 +182,39 @@ void Str::init_class_type() {
         }
 
         return result;
+    };
+
+    // @iter
+    class_type->fn_iter = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<Str *>(self);
+
+        auto iter = new (nothrow) Iterator(
+            [](Iterator *it) -> Object * {
+                int_t &i = reinterpret_cast<int_t &>(it->custom_data);
+                Str *me = reinterpret_cast<Str *>(it->collection);
+
+                if (i >= me->data.size())
+                    return enditer;
+
+                auto result = Str::New(str_t(1, me->data[i]));
+
+                if (!result) {
+                    return nullptr;
+                }
+
+                ++i;
+
+                return result;
+            },
+            me, 0);
+
+        if (!iter) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return iter;
     };
 
     // @len

@@ -29,9 +29,9 @@ fn UnitTest.start() {
 
 doc'Stops the test'
 fn UnitTest.stop() {
-    print '\n>>>', me.name, 'done\n'
-    # TODO : Print without anything
-    # print
+    print ()
+    print '>>>', me.name, 'done'
+    print ()
 }
 
 @doc'
@@ -42,7 +42,8 @@ Start a new section
 fn UnitTest.section(section) {
     me.section_name = section
 
-    print '\n---', me, '---'
+    print ()
+    print '---', me, '---'
 }
 
 @doc'
@@ -76,8 +77,8 @@ fn UnitTest.assert_true(fun) {
     me.assert_result(error)
 }
 
-# TODO : Remove
-if false {
+doc'Unit tests this class'
+fn UnitTest.unit_test() {
     test = UnitTest('Algebra')
     test.start()
     test.section('add')
