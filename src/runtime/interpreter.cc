@@ -908,10 +908,11 @@ void interpret_fragment(Code *_code, size_t &ip) {
         }
 
         case Return: {
-            if (obj_stack.size() != obj_stack_start_size + 1) {
+            // Old stack size + return value on the TOS
+            if (obj_stack.size() < obj_stack_start_size + 1) {
                 throw_fmt(InternalError,
                           "Return : Invalid stack size, should be "
-                          "obj_stack_start_size + 1 (%s%d + 1%s) but is %s%d%s",
+                          ">= obj_stack_start_size + 1 (%s%d + 1%s) but is %s%d%s",
                           C_GREEN, obj_stack_start_size, C_NORMAL, C_RED,
                           obj_stack.size(), C_NORMAL);
 
@@ -920,6 +921,9 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             auto &tos = TOP;
             COPY_IF_POD(tos);
+
+            // Remove intermediate objects but not return value
+            obj_stack.erase(obj_stack.begin() + obj_stack_start_size, obj_stack.end() - 1);
 
             gc_step();
 
