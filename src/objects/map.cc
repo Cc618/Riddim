@@ -4,6 +4,7 @@
 #include "error.hh"
 #include "hash.hh"
 #include "int.hh"
+#include "iterator.hh"
 #include "methods.hh"
 #include "null.hh"
 #include "program.hh"
@@ -203,6 +204,46 @@ void HashMap::init_class_type() {
         auto result = me->find(key) != me->data.end();
 
         return result ? istrue : isfalse;
+    };
+
+    // @iter
+    class_type->fn_iter = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<HashMap *>(self);
+
+        auto internal_it = new hmap_t::iterator(me->data.begin());
+
+        auto iter = new (nothrow) Iterator(
+            [](Iterator *it) -> Object * {
+                auto &internal_it =
+                    *reinterpret_cast<hmap_t::iterator *>(it->custom_data);
+                HashMap *me = reinterpret_cast<HashMap *>(it->collection);
+
+                if (internal_it == me->data.end())
+                    return enditer;
+
+                auto result = Vec::New(
+                    {internal_it->second.first, internal_it->second.second});
+
+                if (!result) {
+                    return nullptr;
+                }
+
+                ++internal_it;
+
+                return result;
+            },
+            me, internal_it,
+            [](Iterator *it) {
+                delete reinterpret_cast<hmap_t::iterator *>(it->custom_data);
+            });
+
+        if (!iter) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return iter;
     };
 
     // @getitem
