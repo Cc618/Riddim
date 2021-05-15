@@ -137,6 +137,10 @@ void interpret(Code *_code, const str_t &id,
 
         frame = module->frame;
         frame->previous = Program::instance->top_frame;
+
+        if (!module->loaded) {
+            module->being_loaded = true;
+        }
     } else if (lambda_frame) {
         frame = lambda_frame;
         frame->previous = Program::instance->top_frame;
@@ -173,6 +177,7 @@ void interpret(Code *_code, const str_t &id,
 
     if (module) {
         module->loaded = true;
+        module->being_loaded = false;
     }
 }
 
@@ -665,6 +670,16 @@ void interpret_fragment(Code *_code, size_t &ip) {
             }
 
             if (!result->loaded) {
+                if (result->being_loaded) {
+                    throw_fmt(ImportError,
+                              "Cannot import module %s%s%s (%s), infinite "
+                              "import loop",
+                              C_BLUE, result->name->data.c_str(), C_NORMAL,
+                              result->filepath.c_str());
+
+                    DISPATCH_ERROR;
+                }
+
                 interpret(result->code, result->name->data, {}, result);
 
                 if (on_error()) {
@@ -910,11 +925,12 @@ void interpret_fragment(Code *_code, size_t &ip) {
         case Return: {
             // Old stack size + return value on the TOS
             if (obj_stack.size() < obj_stack_start_size + 1) {
-                throw_fmt(InternalError,
-                          "Return : Invalid stack size, should be "
-                          ">= obj_stack_start_size + 1 (%s%d + 1%s) but is %s%d%s",
-                          C_GREEN, obj_stack_start_size, C_NORMAL, C_RED,
-                          obj_stack.size(), C_NORMAL);
+                throw_fmt(
+                    InternalError,
+                    "Return : Invalid stack size, should be "
+                    ">= obj_stack_start_size + 1 (%s%d + 1%s) but is %s%d%s",
+                    C_GREEN, obj_stack_start_size, C_NORMAL, C_RED,
+                    obj_stack.size(), C_NORMAL);
 
                 DISPATCH_ERROR;
             }
@@ -923,7 +939,8 @@ void interpret_fragment(Code *_code, size_t &ip) {
             COPY_IF_POD(tos);
 
             // Remove intermediate objects but not return value
-            obj_stack.erase(obj_stack.begin() + obj_stack_start_size, obj_stack.end() - 1);
+            obj_stack.erase(obj_stack.begin() + obj_stack_start_size,
+                            obj_stack.end() - 1);
 
             gc_step();
 

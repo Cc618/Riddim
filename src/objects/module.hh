@@ -23,6 +23,9 @@ struct Module : public Object {
     // executing 2 times a module already loaded
     bool loaded = false;
 
+    // To avoid infinite import loop
+    bool being_loaded = false;
+
     static Module *New(const str_t &name, const str_t &filepath);
 
     // Can throw
