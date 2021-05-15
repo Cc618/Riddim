@@ -9,6 +9,7 @@
 #include "methods.hh"
 #include "null.hh"
 #include "program.hh"
+#include "range.hh"
 #include "str.hh"
 #include <algorithm>
 #include <string>
@@ -568,14 +569,13 @@ Object *Vec::me_pop_handler(Object *self, Object *args, Object *kwargs) {
 
     CHECK_NOKWARGS("Vec.pop");
 
-    // TODO : Slice
-    if (me->data.empty()) {
-        throw_str(IndexError, "Can't pop empty collection");
-
-        return nullptr;
-    }
-
     if (args_data.empty()) {
+        if (me->data.empty()) {
+            throw_str(IndexError, "Can't pop empty collection");
+
+            return nullptr;
+        }
+
         auto result = me->data.back();
 
         me->data.pop_back();
@@ -584,21 +584,63 @@ Object *Vec::me_pop_handler(Object *self, Object *args, Object *kwargs) {
     } else {
         auto index = args_data[0];
 
-        // TODO : Slice
-        if (index->type != Int::class_type) {
-            THROW_TYPE_ERROR_PREF("Vec.pop{index}", index->type,
-                                  Int::class_type);
+        if (index->type == Range::class_type) {
+            auto slice = reinterpret_cast<Range *>(index);
+
+            vec_t result;
+            auto start = get_mod_index(slice->start, me->data.size());
+            auto end = get_mod_index(slice->end, me->data.size());
+            auto step = slice->step;
+
+            if (end < me->data.size()) {
+                if (step > 0) {
+                    step = -step;
+                } else {
+                    swap(start, end);
+                }
+
+                int_t i = end;
+
+                if (!slice->inclusive) {
+                    i += step;
+                }
+
+                // Remove from back to front
+                for (; i >= 0; i += step) {
+                    if (i < start) {
+                        break;
+                    }
+
+                    result.push_back(me->data[i]);
+                    me->data.erase(me->data.begin() + i);
+                }
+            }
+
+            reverse(result.begin(), result.end());
+
+            auto oresult = Vec::New(result);
+
+            if (!oresult) {
+                return nullptr;
+            }
+
+            return oresult;
+        } else if (index->type == Int::class_type) {
+            int_t i = get_mod_index(reinterpret_cast<Int *>(index)->data,
+                                    me->data.size());
+
+            auto result = me->data[i];
+
+            me->data.erase(me->data.begin() + i);
+
+            return result;
+        } else {
+            throw_fmt(
+                TypeError,
+                "Vec.pop{index} : Index must be either %sInt%s or %sRange%s",
+                C_BLUE, C_NORMAL, C_BLUE, C_NORMAL);
 
             return nullptr;
         }
-
-        int_t i = get_mod_index(reinterpret_cast<Int *>(index)->data,
-                                me->data.size());
-
-        auto result = me->data[i];
-
-        me->data.erase(me->data.begin() + i);
-
-        return result;
     }
 }
