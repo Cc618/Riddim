@@ -1,5 +1,6 @@
 #include "int.hh"
 #include "error.hh"
+#include "bool.hh"
 #include "float.hh"
 #include "hash.hh"
 #include "map.hh"
@@ -47,10 +48,11 @@ void Int::init_class_type() {
             data = reinterpret_cast<Int *>(args_data[0])->data;
         } else if (args_data[0]->type == Float::class_type) {
             data = reinterpret_cast<Float *>(args_data[0])->data;
-
-            // TODO C : Str
-            // } else if (args_data[0]->type == Int::class_type) {
-            //     data = reinterpret_cast<Int*>(args_data[0])->data;
+        } else if (args_data[0]->type == Bool::class_type) {
+            data = reinterpret_cast<Bool *>(args_data[0])->data;
+        // TODO C
+        // } else if (args_data[0]->type == Str::class_type) {
+        //     data = str_to_int(reinterpret_cast<Str *>(args_data[0])->data);
         } else {
             throw_fmt(TypeError,
                       "Int@new{data} : Data must be either Int, Float or Str");

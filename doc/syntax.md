@@ -34,6 +34,29 @@ Integers can be written in multiple ways :
 0xFF_FF
 ```
 
+### Float
+A floating point or real number is a float.
+```
+3.14
+2.0
+-1.0
+```
+
+There is also the exponential notation :
+```
+3e-6
+314e-2
+1.2e8
+```
+
+Like integers, floats can have separators :
+```
+1_000.0
+1_234.567_890
+1'234.567'890
+1_234e-10
+```
+
 ### String
 Strings can be declared by single or double quotes :
 ```python
@@ -188,6 +211,19 @@ print (if)
 # Or even operators
 (+) = |a, b| a + b
 print (+)(42, 618)
+```
+
+### Casting / conversions
+Like in Python, there is not a dedicated way to convert
+a type to another type.
+By convention, this can be done using the constructor of
+the type :
+```python
+my_int = 42
+my_float = Float(my_int)
+
+print my_int, my_float
+# Prints 42 42.000000
 ```
 
 ## Control Flow

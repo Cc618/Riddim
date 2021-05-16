@@ -14,6 +14,28 @@ str_t string_repr(const str_t &s) {
     return "'" + s + "'";
 }
 
+optional<int_t> str_to_int(const str_t &s) {
+    // TODO C
+    return {};
+}
+
+optional<float_t> str_to_float(const str_t &s) {
+    str_t new_s = s;
+    new_s.erase(remove_if(new_s.begin(), new_s.end(),
+                          [](char c) { return c == '\'' || c == '_'; }),
+                new_s.end());
+
+    // TODO C : Use stream for conversion
+    // TODO C : Check precision
+    try {
+        float_t value = stod(new_s);
+
+        return value;
+    } catch (...) {
+        return {};
+    }
+}
+
 bool is_special_var(const str_t &s, bool allow_mod) {
     if (s.empty() || s[0] == '!' || s[0] == '@') {
         return true;

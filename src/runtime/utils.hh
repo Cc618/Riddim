@@ -33,6 +33,11 @@ typedef std::function<Object *(Object *, Object *, Object *)> fn_ternary_t;
 // (Escapes chars...)
 str_t string_repr(const str_t &s);
 
+// Conversions / formats
+std::optional<int_t> str_to_int(const str_t &s);
+
+std::optional<float_t> str_to_float(const str_t &s);
+
 // Whether it is a special variabel
 bool is_special_var(const str_t &s, bool allow_mod = true);
 

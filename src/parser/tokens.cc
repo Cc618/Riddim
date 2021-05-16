@@ -33,18 +33,16 @@ parser::symbol_type make_INT(const parser::location_type &loc, const str_t &raw,
 
 yy::parser::symbol_type make_FLOAT(const yy::parser::location_type &loc,
                                    const str_t &raw, const std::string &s) {
+    auto value = str_to_float(s);
 
-    string new_s = s;
-    new_s.erase(remove_if(new_s.begin(), new_s.end(),
-                          [](char c) { return c == '\'' || c == '_'; }),
-                new_s.end());
+    // Invalid float
+    if (!value) {
+        lexer_error(loc, str_t("Invalid float: ") + raw);
 
-    // TODO C : Use stream for conversion
-    float_t value = stod(new_s);
+        return parser::make_FLOAT(0, loc);
+    }
 
-    // TODO C : Errors
-    // TODO C : Check exponent...
-    return parser::make_FLOAT(value, loc);
+    return parser::make_FLOAT(value.value(), loc);
 }
 
 parser::symbol_type make_STR(const parser::location_type &loc, const str_t &s,

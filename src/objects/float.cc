@@ -1,6 +1,7 @@
 #include "float.hh"
 #include "error.hh"
 #include "hash.hh"
+#include "bool.hh"
 #include "int.hh"
 #include "map.hh"
 #include "str.hh"
@@ -38,10 +39,20 @@ void Float::init_class_type() {
             data = reinterpret_cast<Int *>(args_data[0])->data;
         } else if (args_data[0]->type == Float::class_type) {
             data = reinterpret_cast<Float *>(args_data[0])->data;
+        } else if (args_data[0]->type == Bool::class_type) {
+            data = reinterpret_cast<Bool *>(args_data[0])->data;
+        } else if (args_data[0]->type == Str::class_type) {
+            auto val = str_to_float(reinterpret_cast<Str *>(args_data[0])->data);
 
-            // TODO C : Str
-            // } else if (args_data[0]->type == Int::class_type) {
-            //     data = reinterpret_cast<Int*>(args_data[0])->data;
+            if (val) {
+                data = val.value();
+            } else {
+                throw_fmt(
+                    ArithmeticError,
+                    "Float@new{data, Str} : Invalid format");
+
+                return nullptr;
+            }
         } else {
             throw_fmt(
                 TypeError,
