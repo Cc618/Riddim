@@ -1,5 +1,6 @@
 #include "codegen.hh"
 #include "bool.hh"
+#include "float.hh"
 #include "code.hh"
 #include "debug.hh"
 #include "error.hh"
@@ -660,6 +661,10 @@ void Const::gen_code(Module *module, Code *_code) {
     switch (type) {
     case Const::Type::Int:
         const_val = new (nothrow)::Int(get<int_t>(val));
+        break;
+
+    case Const::Type::Float:
+        const_val = new (nothrow)::Float(get<float_t>(val));
         break;
 
     case Const::Type::Str:

@@ -13,6 +13,9 @@ yy::parser::symbol_type make_INT(const yy::parser::location_type &loc,
                                  const str_t &raw, const std::string &s,
                                  int base, bool negate = false);
 
+yy::parser::symbol_type make_FLOAT(const yy::parser::location_type &loc,
+                                 const str_t &raw, const std::string &s);
+
 yy::parser::symbol_type make_STR(const yy::parser::location_type &loc,
                                  const std::string &s, bool is_doc_str = false);
 

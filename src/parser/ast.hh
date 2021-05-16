@@ -385,12 +385,13 @@ struct Id : public Exp {
 };
 
 struct Const;
-typedef std::variant<str_t, int_t> const_val_t;
+typedef std::variant<int_t, float_t, str_t> const_val_t;
 
 // Atom literal
 struct Const : public Exp {
     enum Type {
         Int,
+        Float,
         Str,
     } type;
 
@@ -399,6 +400,7 @@ struct Const : public Exp {
     // val is not set for the first constructor
     Const(line_t fileline, Type type, const const_val_t &val = const_val_t());
     Const(line_t fileline, int_t val);
+    Const(line_t fileline, float_t val);
     Const(line_t fileline, const str_t &val);
 
     virtual void debug(int indent = 0) override;

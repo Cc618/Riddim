@@ -31,7 +31,24 @@ parser::symbol_type make_INT(const parser::location_type &loc, const str_t &raw,
     }
 }
 
-parser::symbol_type make_STR(const parser::location_type &loc, const str_t &s, bool is_doc_str) {
+yy::parser::symbol_type make_FLOAT(const yy::parser::location_type &loc,
+                                   const str_t &raw, const std::string &s) {
+
+    string new_s = s;
+    new_s.erase(remove_if(new_s.begin(), new_s.end(),
+                          [](char c) { return c == '\'' || c == '_'; }),
+                new_s.end());
+
+    // TODO C : Use stream for conversion
+    float_t value = stod(new_s);
+
+    // TODO C : Errors
+    // TODO C : Check exponent...
+    return parser::make_FLOAT(value, loc);
+}
+
+parser::symbol_type make_STR(const parser::location_type &loc, const str_t &s,
+                             bool is_doc_str) {
     errno = 0;
 
     str_t result;

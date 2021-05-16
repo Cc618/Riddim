@@ -300,6 +300,9 @@ Const::Const(line_t fileline, Type type, const const_val_t &val)
 Const::Const(line_t fileline, long long val)
     : Exp(fileline), type(Int), val(val) {}
 
+Const::Const(line_t fileline, float_t val)
+    : Exp(fileline), type(Float), val(val) {}
+
 Const::Const(line_t fileline, const str_t &val)
     : Exp(fileline), type(Str), val(val) {}
 

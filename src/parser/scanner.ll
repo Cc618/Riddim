@@ -68,6 +68,10 @@ slot        @({id})
 int_dec     [0-9][0-9_']*
 int_hex     0[xX][0-9a-fA-F][0-9a-fA-F_']*
 int_bin     0[bB][01][01_']*
+float_dec   {int_dec}\.{int_dec}
+float_exp_i {int_dec}e-?{int_dec}
+float_exp_f {float_dec}e-?{int_dec}
+float_exp   ({float_exp_i})|({float_exp_f})
 str_single  '(\\.|[^'])*'
 str_double  \"(\\.|[^\"])*\"
 str         ({str_single})|({str_double})
@@ -112,6 +116,8 @@ comment     #.*
 {int_dec}       return make_INT(loc, yytext, yytext, 10);
 {int_hex}       return make_INT(loc, yytext, yytext + 2, 16);
 {int_bin}       return make_INT(loc, yytext, yytext + 2, 2);
+{float_dec}     return make_FLOAT(loc, yytext, yytext);
+{float_exp}     return make_FLOAT(loc, yytext, yytext);
 {str}           return make_STR(loc, yytext);
 doc{str}        return make_STR(loc, yytext + 3, true);
 

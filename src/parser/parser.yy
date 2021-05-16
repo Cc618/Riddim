@@ -156,6 +156,7 @@
 %token <str_t> ID
 %token <str_t> STR RAWSTR DOCSTR
 %token <int_t> INT
+%token <float_t> FLOAT
 
 // The lower it is declared, the sooner the token will be used
 %right "=" "+=" "-=" "*=" "/=" "%=";
@@ -695,6 +696,7 @@ bilist_content_filled: exp "," exp  { $$ = { $1, $3 }; }
     ;
 
 const: INT { $$ = new Const(@1.begin.line, $1); }
+    | FLOAT { $$ = new Const(@1.begin.line, $1); }
     | const_str { $$ = new Const(@1.begin.line, $1); }
     ;
 
