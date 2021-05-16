@@ -18,6 +18,7 @@ struct Object;
 
 typedef std::string str_t;
 typedef long long int_t;
+typedef double float_t;
 typedef unsigned int line_t;
 
 // To be able to use the :: operator

@@ -6,6 +6,7 @@
 #include "function.hh"
 #include "gc.hh"
 #include "int.hh"
+#include "float.hh"
 #include "map.hh"
 #include "module.hh"
 #include "null.hh"
@@ -60,6 +61,7 @@ static void init_types() {
     INIT_TYPE(DynamicType);
     INIT_TYPE(Str);
     INIT_TYPE(Int);
+    INIT_TYPE(Float);
     INIT_TYPE(Null);
     INIT_TYPE(HashMap);
     INIT_TYPE(AttrObject);
@@ -89,6 +91,11 @@ static void init_objects() {
         return;
 
     Int::init_class_objects();
+
+    if (on_error())
+        return;
+
+    Float::init_class_objects();
 
     if (on_error())
         return;
