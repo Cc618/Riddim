@@ -69,8 +69,8 @@ int_dec     [0-9][0-9_']*
 int_hex     0[xX][0-9a-fA-F][0-9a-fA-F_']*
 int_bin     0[bB][01][01_']*
 float_dec   {int_dec}\.{int_dec}
-float_exp_i {int_dec}e-?{int_dec}
-float_exp_f {float_dec}e-?{int_dec}
+float_exp_i {int_dec}e[-\+]?{int_dec}
+float_exp_f {float_dec}e[-\+]?{int_dec}
 float_exp   ({float_exp_i})|({float_exp_f})
 str_single  '(\\.|[^'])*'
 str_double  \"(\\.|[^\"])*\"

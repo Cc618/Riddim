@@ -6,8 +6,12 @@
 #include "map.hh"
 #include "str.hh"
 #include "vec.hh"
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
+
+#define OUT_PRECISION 16
 
 Type *Float::class_type = nullptr;
 
@@ -252,7 +256,13 @@ void Float::init_class_type() {
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Float *>(self);
 
-        auto result = Str::New(to_string(me->data));
+        std::setprecision(OUT_PRECISION);
+
+        std::ostringstream ss;
+        ss << me->data;
+        std::string repr(ss.str());
+
+        auto result = Str::New(repr);
 
         if (!result) {
             return nullptr;

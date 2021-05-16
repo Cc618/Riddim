@@ -3,6 +3,7 @@
 #include "int.hh"
 #include "program.hh"
 #include <filesystem>
+#include <sstream>
 #include <fstream>
 #include <iostream>
 #include <regex>
@@ -13,7 +14,7 @@ namespace fs = std::filesystem;
 // Do not use without parentheses
 #define REG_INT_DEC R"(([0-9][0-9_']*))"
 #define REG_FLOAT_DEC REG_INT_DEC "\\." REG_INT_DEC
-#define REG_FLOAT_EXP_PREF(PREF) PREF "e-?" REG_INT_DEC
+#define REG_FLOAT_EXP_PREF(PREF) PREF "e[-\\+]?" REG_INT_DEC
 #define REG_FLOAT_EXP                                                          \
     "(" REG_FLOAT_EXP_PREF(REG_INT_DEC) ")|(" REG_FLOAT_EXP_PREF(              \
         REG_FLOAT_DEC) ")"
@@ -87,7 +88,7 @@ optional<float_t> str_to_float(str_t s, bool check_regex) {
 
         // Can be int too
         if (!regex_match(s, float_dec) && !regex_match(s, float_exp) &&
-                !regex_match(s, int_dec)) {
+            !regex_match(s, int_dec)) {
             return {};
         }
     }
@@ -96,7 +97,6 @@ optional<float_t> str_to_float(str_t s, bool check_regex) {
                       [](char c) { return c == '\'' || c == '_'; }),
             s.end());
 
-    // TODO C : Check precision
     try {
         size_t idx;
         float_t value = stod(s, &idx);
