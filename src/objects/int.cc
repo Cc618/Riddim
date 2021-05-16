@@ -1,13 +1,18 @@
 #include "int.hh"
 #include "error.hh"
+#include "float.hh"
 #include "hash.hh"
+#include "map.hh"
 #include "str.hh"
+#include "vec.hh"
 
 using namespace std;
 
 int_t get_mod_index(int_t i, int_t len) {
-    if (i >= 0) return i;
-    if (-i > len) return i;
+    if (i >= 0)
+        return i;
+    if (-i > len)
+        return i;
 
     return len + i;
 }
@@ -27,6 +32,43 @@ void Int::init_class_type() {
 
         return;
     }
+
+    // @new
+    class_type->constructor = [](Object *self, Object *args,
+                                 Object *kwargs) -> Object * {
+        INIT_METHOD(Object, "Int");
+
+        CHECK_ARGSLEN(1, "Int");
+        CHECK_NOKWARGS("Int");
+
+        int_t data;
+
+        if (args_data[0]->type == Int::class_type) {
+            data = reinterpret_cast<Int *>(args_data[0])->data;
+        } else if (args_data[0]->type == Float::class_type) {
+            data = reinterpret_cast<Float *>(args_data[0])->data;
+
+            // TODO C : Str
+            // } else if (args_data[0]->type == Int::class_type) {
+            //     data = reinterpret_cast<Int*>(args_data[0])->data;
+        } else {
+            throw_fmt(TypeError,
+                      "Int@new{data} : Data must be either Int, Float or Str");
+
+            return nullptr;
+        }
+
+        auto result = new (nothrow) Int(data);
+
+        // Dispatch error
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
 
     // @add
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
@@ -107,8 +149,7 @@ void Int::init_class_type() {
             return nullptr;
         }
 
-        auto result =
-            new (nothrow) Int(me->data / odata);
+        auto result = new (nothrow) Int(me->data / odata);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -152,8 +193,7 @@ void Int::init_class_type() {
             return nullptr;
         }
 
-        auto result =
-            new (nothrow) Int(me->data % odata);
+        auto result = new (nothrow) Int(me->data % odata);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -190,8 +230,7 @@ void Int::init_class_type() {
     class_type->fn_neg = [](Object *self) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
 
-        auto result =
-            new (nothrow) Int(-me->data);
+        auto result = new (nothrow) Int(-me->data);
 
         if (!result) {
             THROW_MEMORY_ERROR;

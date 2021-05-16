@@ -27,7 +27,7 @@ void Float::init_class_type() {
     // @new
     class_type->constructor = [](Object *self, Object *args,
                                  Object *kwargs) -> Object * {
-        INIT_METHOD(Float, "Float");
+        INIT_METHOD(Object, "Float");
 
         CHECK_ARGSLEN(1, "Float");
         CHECK_NOKWARGS("Float");
