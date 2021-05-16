@@ -11,7 +11,7 @@ void lexer_error(const yy::parser::location_type &l, const std::string &msg);
 
 yy::parser::symbol_type make_INT(const yy::parser::location_type &loc,
                                  const str_t &raw, const std::string &s,
-                                 int base, bool negate = false);
+                                 int base);
 
 yy::parser::symbol_type make_FLOAT(const yy::parser::location_type &loc,
                                  const str_t &raw, const std::string &s);

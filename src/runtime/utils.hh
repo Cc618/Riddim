@@ -3,8 +3,8 @@
 // Some utility functions and definitions
 
 #include <functional>
-#include <string>
 #include <optional>
+#include <string>
 #include <vector>
 
 #define C_RED "\x1b[1;31m"
@@ -34,9 +34,10 @@ typedef std::function<Object *(Object *, Object *, Object *)> fn_ternary_t;
 str_t string_repr(const str_t &s);
 
 // Conversions / formats
-std::optional<int_t> str_to_int(const str_t &s);
+// - base : If -1, checks with regexes
+std::optional<int_t> str_to_int(str_t s, int base = -1);
 
-std::optional<float_t> str_to_float(const str_t &s);
+std::optional<float_t> str_to_float(str_t s, bool check_regex = true);
 
 // Whether it is a special variabel
 bool is_special_var(const str_t &s, bool allow_mod = true);
@@ -76,4 +77,5 @@ bool is_file(const str_t &path);
 // Tries to collect a range like iterator with values from low (included)
 // to high (excluded)
 // Can throw
-std::vector<int_t> try_collect_int_iterator(Object *iterable, int_t low, int_t high);
+std::vector<int_t> try_collect_int_iterator(Object *iterable, int_t low,
+                                            int_t high);

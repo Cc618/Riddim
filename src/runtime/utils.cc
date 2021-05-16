@@ -5,32 +5,107 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <regex>
 
 using namespace std;
 namespace fs = std::filesystem;
+
+// Do not use without parentheses
+#define REG_INT_DEC R"(([0-9][0-9_']*))"
+#define REG_FLOAT_DEC REG_INT_DEC "\\." REG_INT_DEC
+#define REG_FLOAT_EXP_PREF(PREF) PREF "e-?" REG_INT_DEC
+#define REG_FLOAT_EXP                                                          \
+    "(" REG_FLOAT_EXP_PREF(REG_INT_DEC) ")|(" REG_FLOAT_EXP_PREF(              \
+        REG_FLOAT_DEC) ")"
+
+// Same as in scanner.ll
+static const auto int_dec = regex(REG_INT_DEC);
+static const auto int_hex = regex(R"(0[xX][0-9a-fA-F][0-9a-fA-F_']*)");
+static const auto int_bin = regex(R"(0[bB][01][01_']*)");
+static const auto float_dec = regex(REG_FLOAT_DEC);
+static const auto float_exp = regex(REG_FLOAT_EXP);
 
 str_t string_repr(const str_t &s) {
     // TODO : Escape chars
     return "'" + s + "'";
 }
 
-optional<int_t> str_to_int(const str_t &s) {
-    // TODO C
-    return {};
+optional<int_t> str_to_int(str_t s, int base) {
+    if (s.empty()) {
+        return {};
+    }
+
+    bool negate = false;
+
+    if (base == -1) {
+        // It is possible to have a negative number
+        if (s[0] == '-') {
+            negate = true;
+            s = s.substr(1);
+        }
+
+        if (regex_match(s, int_dec)) {
+            base = 10;
+        } else if (regex_match(s, int_hex)) {
+            base = 16;
+            s = s.substr(2);
+        } else if (regex_match(s, int_bin)) {
+            base = 2;
+            s = s.substr(2);
+        } else {
+            return {};
+        }
+    }
+
+    // Valid
+    s.erase(remove_if(s.begin(), s.end(),
+                      [](char c) { return c == '\'' || c == '_'; }),
+            s.end());
+
+    try {
+        long long n = stoll(s.c_str(), NULL, base);
+
+        return negate ? -n : n;
+    } catch (...) {
+        return {};
+    }
 }
 
-optional<float_t> str_to_float(const str_t &s) {
-    str_t new_s = s;
-    new_s.erase(remove_if(new_s.begin(), new_s.end(),
-                          [](char c) { return c == '\'' || c == '_'; }),
-                new_s.end());
+optional<float_t> str_to_float(str_t s, bool check_regex) {
+    if (s.empty()) {
+        return {};
+    }
 
-    // TODO C : Use stream for conversion
+    bool negate = false;
+
+    if (check_regex) {
+        // Can be negative
+        if (s[0] == '-') {
+            s = s.substr(1);
+            negate = true;
+        }
+
+        // Can be int too
+        if (!regex_match(s, float_dec) && !regex_match(s, float_exp) &&
+                !regex_match(s, int_dec)) {
+            return {};
+        }
+    }
+
+    s.erase(remove_if(s.begin(), s.end(),
+                      [](char c) { return c == '\'' || c == '_'; }),
+            s.end());
+
     // TODO C : Check precision
     try {
-        float_t value = stod(new_s);
+        size_t idx;
+        float_t value = stod(s, &idx);
 
-        return value;
+        if (idx != s.size()) {
+            return {};
+        }
+
+        return negate ? -value : value;
     } catch (...) {
         return {};
     }

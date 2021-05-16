@@ -49,7 +49,7 @@ void Float::init_class_type() {
             } else {
                 throw_fmt(
                     ArithmeticError,
-                    "Float@new{data, Str} : Invalid format");
+                    "Float@new{data: Str} : Invalid format");
 
                 return nullptr;
             }

@@ -13,18 +13,12 @@ void lexer_error(const yy::parser::location_type &loc, const std::string &msg) {
 }
 
 parser::symbol_type make_INT(const parser::location_type &loc, const str_t &raw,
-                             const str_t &s, int base, bool negate) {
-    string new_s = s;
-    new_s.erase(remove_if(new_s.begin(), new_s.end(),
-                          [](char c) { return c == '\'' || c == '_'; }),
-                new_s.end());
+                             const str_t &s, int base) {
+    auto result = str_to_int(s, base);
 
-    try {
-        long long n = stoll(new_s.c_str(), NULL, base);
-
-        return parser::make_INT(negate ? -n : n, loc);
-    } catch (...) {
-        // Out of range
+    if (result) {
+        return parser::make_INT(result.value(), loc);
+    } else {
         lexer_error(loc, str_t("Invalid integer: ") + raw);
 
         return parser::make_INT(0, loc);
@@ -33,7 +27,7 @@ parser::symbol_type make_INT(const parser::location_type &loc, const str_t &raw,
 
 yy::parser::symbol_type make_FLOAT(const yy::parser::location_type &loc,
                                    const str_t &raw, const std::string &s) {
-    auto value = str_to_float(s);
+    auto value = str_to_float(s, false);
 
     // Invalid float
     if (!value) {

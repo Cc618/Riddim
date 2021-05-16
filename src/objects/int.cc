@@ -50,9 +50,18 @@ void Int::init_class_type() {
             data = reinterpret_cast<Float *>(args_data[0])->data;
         } else if (args_data[0]->type == Bool::class_type) {
             data = reinterpret_cast<Bool *>(args_data[0])->data;
-        // TODO C
-        // } else if (args_data[0]->type == Str::class_type) {
-        //     data = str_to_int(reinterpret_cast<Str *>(args_data[0])->data);
+        } else if (args_data[0]->type == Str::class_type) {
+            auto val = str_to_int(reinterpret_cast<Str *>(args_data[0])->data);
+
+            if (val) {
+                data = val.value();
+            } else {
+                throw_fmt(
+                    ArithmeticError,
+                    "Int@new{data: Str} : Invalid format");
+
+                return nullptr;
+            }
         } else {
             throw_fmt(TypeError,
                       "Int@new{data} : Data must be either Int, Float or Str");
