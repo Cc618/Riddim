@@ -9,6 +9,11 @@
 #include <iomanip>
 #include <sstream>
 
+// Avoid typedef conflicts
+#define float_t cmath_float_t
+#include <cmath>
+#undef float_t
+
 using namespace std;
 
 #define OUT_PRECISION 16
@@ -113,21 +118,23 @@ void Float::init_class_type() {
         return result;
     };
 
-    // TODO A
     // @cmp
     class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Float *>(self);
 
-        int_t res;
+        auto val = to_float("Float.@cmp", o);
+        int_t threeway;
 
-        if (o->type != Float::class_type) {
-            res = -1;
+        // Incompatible types : not equal
+        if (on_error()) {
+            clear_error();
+
+            threeway = -1;
         } else {
-            auto other = reinterpret_cast<Float *>(o)->data;
-            res = me->data > other ? 1 : me->data < other ? -1 : 0;
+            threeway = me->data > val ? 1 : me->data < val ? -1 : 0;
         }
 
-        auto result = new (nothrow) Float(res);
+        auto result = new (nothrow) Int(threeway);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -197,26 +204,23 @@ void Float::init_class_type() {
         return result;
     };
 
-    /* TODO C : Modulo
     // @mod
     class_type->fn_mod = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Float *>(self);
 
-        if (o->type != Float::class_type) {
-            THROW_TYPE_ERROR_PREF("Float.@mod", o->type, Float::class_type);
+        auto val = to_float("Float.@mod", o);
 
+        if (on_error()) {
             return nullptr;
         }
 
-        auto odata = reinterpret_cast<Float *>(o)->data;
-
-        if (odata == 0) {
+        if (val == 0.0) {
             THROW_ARITHMETIC_ERROR("%", "Modulo by 0");
 
             return nullptr;
         }
 
-        auto result = new (nothrow) Float(me->data % odata);
+        auto result = new (nothrow) Float(fmod(me->data, val));
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -226,7 +230,6 @@ void Float::init_class_type() {
 
         return result;
     };
-    */
 
     // @mul
     class_type->fn_mul = [](Object *self, Object *o) -> Object * {
