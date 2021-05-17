@@ -5,6 +5,7 @@ Here is the documentation for the riddim language.
 - [Syntax](syntax.md)
 - [Objects](object.md)
 - [Errors](error.md)
-- [Garbage Collector / Memory](gc.md)
+- [Doc Strings](doc_strings.md)
 - [Build / install configuration](config.md)
+- [Garbage Collector / Memory](gc.md)
 - [Parser](parser.md)
