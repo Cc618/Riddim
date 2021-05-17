@@ -1,17 +1,32 @@
 #include "float.hh"
+#include "bool.hh"
 #include "error.hh"
 #include "hash.hh"
-#include "bool.hh"
 #include "int.hh"
 #include "map.hh"
 #include "str.hh"
 #include "vec.hh"
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 
 using namespace std;
 
 #define OUT_PRECISION 16
+
+// Returns the value of the object
+// The object can be an integer
+static float to_float(const str_t &fn_name, Object *o) {
+    if (o->type == Float::class_type) {
+        return reinterpret_cast<Float *>(o)->data;
+    } else if (o->type == Int::class_type) {
+        return reinterpret_cast<Int *>(o)->data;
+    }
+
+    throw_fmt(TypeError,
+              (fn_name + " : Invalid argument, must be a number").c_str());
+
+    return 0;
+}
 
 Type *Float::class_type = nullptr;
 
@@ -46,14 +61,14 @@ void Float::init_class_type() {
         } else if (args_data[0]->type == Bool::class_type) {
             data = reinterpret_cast<Bool *>(args_data[0])->data;
         } else if (args_data[0]->type == Str::class_type) {
-            auto val = str_to_float(reinterpret_cast<Str *>(args_data[0])->data);
+            auto val =
+                str_to_float(reinterpret_cast<Str *>(args_data[0])->data);
 
             if (val) {
                 data = val.value();
             } else {
-                throw_fmt(
-                    ArithmeticError,
-                    "Float@new{data: Str} : Invalid format");
+                throw_fmt(ArithmeticError,
+                          "Float@new{data: Str} : Invalid format");
 
                 return nullptr;
             }
@@ -81,14 +96,13 @@ void Float::init_class_type() {
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Float *>(self);
 
-        if (o->type != Float::class_type) {
-            THROW_TYPE_ERROR_PREF("Float.@add", o->type, Float::class_type);
+        auto val = to_float("Float.@add", o);
 
+        if (on_error()) {
             return nullptr;
         }
 
-        auto result =
-            new (nothrow) Float(me->data + reinterpret_cast<Float *>(o)->data);
+        auto result = new (nothrow) Float(me->data + val);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -99,6 +113,7 @@ void Float::init_class_type() {
         return result;
     };
 
+    // TODO A
     // @cmp
     class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Float *>(self);
@@ -142,21 +157,19 @@ void Float::init_class_type() {
     class_type->fn_div = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Float *>(self);
 
-        if (o->type != Float::class_type) {
-            THROW_TYPE_ERROR_PREF("Float.@div", o->type, Float::class_type);
+        auto val = to_float("Float.@div", o);
 
+        if (on_error()) {
             return nullptr;
         }
 
-        auto odata = reinterpret_cast<Float *>(o)->data;
-
-        if (odata == 0.0) {
+        if (val == 0.0) {
             THROW_ARITHMETIC_ERROR("/", "Division by 0");
 
             return nullptr;
         }
 
-        auto result = new (nothrow) Float(me->data / odata);
+        auto result = new (nothrow) Float(me->data / val);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -219,14 +232,13 @@ void Float::init_class_type() {
     class_type->fn_mul = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Float *>(self);
 
-        if (o->type != Float::class_type) {
-            THROW_TYPE_ERROR_PREF("Float.@mul", o->type, Float::class_type);
+        auto val = to_float("Float.@mul", o);
 
+        if (on_error()) {
             return nullptr;
         }
 
-        auto result =
-            new (nothrow) Float(me->data * reinterpret_cast<Float *>(o)->data);
+        auto result = new (nothrow) Float(me->data * val);
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -275,14 +287,13 @@ void Float::init_class_type() {
     class_type->fn_sub = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Float *>(self);
 
-        if (o->type != Float::class_type) {
-            THROW_TYPE_ERROR_PREF("Float.@sub", o->type, Float::class_type);
+        auto val = to_float("Float.@sub", o);
 
+        if (on_error()) {
             return nullptr;
         }
 
-        auto result =
-            new (nothrow) Float(me->data - reinterpret_cast<Float *>(o)->data);
+        auto result = new (nothrow) Float(me->data - val);
 
         if (!result) {
             THROW_MEMORY_ERROR;
