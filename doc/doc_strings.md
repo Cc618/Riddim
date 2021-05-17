@@ -5,7 +5,7 @@ Please, see [the syntax documentation](syntax.md) for an introduction.
 ## Syntax
 The format is inspired by Markdown.
 
-The basic format for a method is :
+### Basic syntax
 ```markdown
 Method small description.
 
@@ -14,38 +14,47 @@ Method small description.
 - return, ReturnType : Return description
 ```
 
+### Complete syntax
 The complete format is described below.
 *Note that the generator is not implemented as of v0.1, this section is a draft for the future documentation generator.*
+
+#### Text
 ```markdown
-1. Text :
 This is a small description.
-*italic word* **bold word** ***italic and bold word**.
+*italic word* **bold word** ***italic and bold word***.
 <www.url>
 
 Two newlines = new paragraph
 
-1. Headers :
+\> : escaped character (>)
+```
+
+#### Headers
+```markdown
 # Module
 ## Object
 ### Attribute
 #### Custom section
+```
 
-1. Escapes :
-\> : escaped character (>)
-
-1. Lists :
+#### Lists
+```markdown
 + Item 1
 + Item 2
 + Item 3
+```
 
-1. Arguments :
+#### Arguments
+```markdown
 - fun, Functor : The function to test
 - arg, Type : Description
 - [arg], Type : Optional arg
 - [args...], Type : Description
 - return, Type : Description
+```
 
-1. Annotations :
+#### Annotations
+```markdown
 * Note : See also [path.to.mod]
 * Note : Description
 * Warning : Description
@@ -54,7 +63,10 @@ Two newlines = new paragraph
 * Example : `
 test.assert_true(false)
 `
-1. Code sections :
+```
+
+#### Code Listings
+```markdown
 > inline_code()
 
 `
