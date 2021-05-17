@@ -1,6 +1,6 @@
 #include "int.hh"
-#include "error.hh"
 #include "bool.hh"
+#include "error.hh"
 #include "float.hh"
 #include "hash.hh"
 #include "map.hh"
@@ -56,9 +56,8 @@ void Int::init_class_type() {
             if (val) {
                 data = val.value();
             } else {
-                throw_fmt(
-                    ArithmeticError,
-                    "Int@new{data: Str} : Invalid format");
+                throw_fmt(ArithmeticError,
+                          "Int@new{data: Str} : Invalid format");
 
                 return nullptr;
             }
@@ -85,6 +84,19 @@ void Int::init_class_type() {
     class_type->fn_add = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
 
+        // Cast to float
+        if (o->type == Float::class_type) {
+            auto me_float = new (nothrow) Float(me->data);
+
+            if (!me_float) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return me_float->add(o);
+        }
+
         if (o->type != Int::class_type) {
             THROW_TYPE_ERROR_PREF("Int.@add", o->type, Int::class_type);
 
@@ -106,6 +118,19 @@ void Int::init_class_type() {
     // @cmp
     class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
+
+        // Cast to float
+        if (o->type == Float::class_type) {
+            auto me_float = new (nothrow) Float(me->data);
+
+            if (!me_float) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return me_float->cmp(o);
+        }
 
         int_t res;
 
@@ -145,6 +170,19 @@ void Int::init_class_type() {
     // @div
     class_type->fn_div = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
+
+        // Cast to float
+        if (o->type == Float::class_type) {
+            auto me_float = new (nothrow) Float(me->data);
+
+            if (!me_float) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return me_float->div(o);
+        }
 
         if (o->type != Int::class_type) {
             THROW_TYPE_ERROR_PREF("Int.@div", o->type, Int::class_type);
@@ -190,6 +228,19 @@ void Int::init_class_type() {
     class_type->fn_mod = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
 
+        // Cast to float
+        if (o->type == Float::class_type) {
+            auto me_float = new (nothrow) Float(me->data);
+
+            if (!me_float) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return me_float->mod(o);
+        }
+
         if (o->type != Int::class_type) {
             THROW_TYPE_ERROR_PREF("Int.@mod", o->type, Int::class_type);
 
@@ -218,6 +269,19 @@ void Int::init_class_type() {
     // @mul
     class_type->fn_mul = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
+
+        // Cast to float
+        if (o->type == Float::class_type) {
+            auto me_float = new (nothrow) Float(me->data);
+
+            if (!me_float) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return me_float->mul(o);
+        }
 
         if (o->type != Int::class_type) {
             THROW_TYPE_ERROR_PREF("Int.@mul", o->type, Int::class_type);
@@ -269,6 +333,19 @@ void Int::init_class_type() {
     // @sub
     class_type->fn_sub = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
+
+        // Cast to float
+        if (o->type == Float::class_type) {
+            auto me_float = new (nothrow) Float(me->data);
+
+            if (!me_float) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return me_float->sub(o);
+        }
 
         if (o->type != Int::class_type) {
             THROW_TYPE_ERROR_PREF("Int.@sub", o->type, Int::class_type);

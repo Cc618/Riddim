@@ -18,9 +18,7 @@ using namespace std;
 
 #define OUT_PRECISION 16
 
-// Returns the value of the object
-// The object can be an integer
-static float to_float(const str_t &fn_name, Object *o) {
+float_t to_float(const str_t &fn_name, Object *o) {
     if (o->type == Float::class_type) {
         return reinterpret_cast<Float *>(o)->data;
     } else if (o->type == Int::class_type) {

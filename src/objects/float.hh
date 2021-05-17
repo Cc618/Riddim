@@ -4,6 +4,10 @@
 
 #include "object.hh"
 
+// Returns the value of the object
+// The object can be an integer
+float_t to_float(const str_t &fn_name, Object *o);
+
 struct Float : public Object {
     static Type *class_type;
 
