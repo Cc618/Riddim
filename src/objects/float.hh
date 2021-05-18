@@ -6,6 +6,7 @@
 
 // Returns the value of the object
 // The object can be an integer
+// Throws if invalid type
 float_t to_float(const str_t &fn_name, Object *o);
 
 struct Float : public Object {
