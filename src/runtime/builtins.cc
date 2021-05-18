@@ -6,11 +6,11 @@
 #include "int.hh"
 #include "map.hh"
 #include "methods.hh"
+#include "module_math.hh"
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
 #include "vec.hh"
-#include "module_math.hh"
 #include <iostream>
 
 using namespace std;
@@ -62,23 +62,6 @@ Global *enditer = nullptr;
 void init_builtins() {
     auto &global_frame = Program::instance->global_frame;
 
-#define INIT_BUILTIN(NAME, HANDLER, DOC, SIGNATURE)                            \
-    {                                                                          \
-        auto obj =                                                             \
-            new (nothrow) Builtin(HANDLER, NAME, nullptr, DOC, SIGNATURE);     \
-        if (!obj) {                                                            \
-            THROW_MEMORY_ERROR;                                                \
-            return;                                                            \
-        }                                                                      \
-        auto name = Str::New(NAME);                                            \
-        if (!name) {                                                           \
-            return;                                                            \
-        }                                                                      \
-        if (!global_frame->setitem(name, obj)) {                               \
-            return;                                                            \
-        }                                                                      \
-    }
-
     // Docs
     const str_t assert_doc = "Throws AssertionError if exp is false\n\n"
                              "- exp, Bool : Expression to test\n"
@@ -124,8 +107,8 @@ void init_builtins() {
                              "- return, Type : Type of the object";
 
     const str_t typename_doc = "Returns the name of type\n\n"
-                             "- type : Target\n"
-                             "- return, Str : Name of type";
+                               "- type : Target\n"
+                               "- return, Str : Name of type";
 
     // Signatures
     const builtin_signature_t assert_sig = {{"exp", false}, {"msg", true}};
@@ -153,9 +136,6 @@ void init_builtins() {
     const builtin_signature_t typename_sig = {{"type", false}};
 
     // Functions
-#define FAST_INIT_BUILTIN(NAME)                                                \
-    INIT_BUILTIN(#NAME, builtin_##NAME, NAME##_doc, NAME##_sig);
-
     FAST_INIT_BUILTIN(assert);
     FAST_INIT_BUILTIN(copy);
     FAST_INIT_BUILTIN(doc);
@@ -187,7 +167,6 @@ void init_builtins() {
     REGISTER_GLOBAL(null, null);
 
 #undef REGISTER_GLOBAL
-#undef INIT_BUILTIN
 
     // Modules
     Program::instance->builtin_modules["math"] = on_math_loaded;
@@ -410,7 +389,7 @@ Object *builtin_typename(Object *self, Object *args, Object *kwargs) {
         return nullptr;
     }
 
-    auto sname = Str::New(reinterpret_cast<Type*>(args_data[0])->name);
+    auto sname = Str::New(reinterpret_cast<Type *>(args_data[0])->name);
 
     if (!sname) {
         return nullptr;

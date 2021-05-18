@@ -1,1 +1,3 @@
-print 'Math.rid'
+mod!doc = 'Mathematical functions'
+
+# Other functions are defined from C++

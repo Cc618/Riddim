@@ -2,12 +2,38 @@
 
 // Built in functions
 
-#include "object.hh"
-#include "vec.hh"
 #include "map.hh"
 #include "null.hh"
+#include "object.hh"
+#include "vec.hh"
 
 struct Program;
+
+// --- Macros ---
+#define INIT_BUILTIN(NAME, HANDLER, DOC, SIGNATURE)                            \
+    auto HANDLER##_obj =                                                       \
+        new (nothrow) Builtin(HANDLER, NAME, nullptr, DOC, SIGNATURE);         \
+    if (!HANDLER##_obj) {                                                      \
+        THROW_MEMORY_ERROR;                                                    \
+        return;                                                                \
+    }                                                                          \
+    auto HANDLER##_name = Str::New(NAME);                                      \
+    if (!HANDLER##_name) {                                                     \
+        return;                                                                \
+    }                                                                          \
+    if (!global_frame->setitem(HANDLER##_name, HANDLER##_obj)) {               \
+        return;                                                                \
+    }
+
+#define FAST_INIT_BUILTIN(NAME)                                                \
+    INIT_BUILTIN(#NAME, builtin_##NAME, NAME##_doc, NAME##_sig);
+
+#define BUILTIN_HANDLER(MODULE, NAME)                                          \
+    Object *builtin_##MODULE##_##NAME(Object *self, Object *args,              \
+                                      Object *kwargs)
+
+#define FAST_INIT_MODULE_BUILTIN(MODULE, NAME)                                 \
+    INIT_BUILTIN(#NAME, builtin_##MODULE##_##NAME, NAME##_doc, NAME##_sig);
 
 // --- Global Object ---
 // Does not have specific data but is global (ex: enditer)
