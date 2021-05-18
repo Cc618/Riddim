@@ -92,7 +92,7 @@ void Module::init_class_type() {
             auto child_name_str = reinterpret_cast<Str *>(child_name)->data;
 
             if (!is_special_var(child_name_str, false)) {
-                children.push_back({"", child});
+                children.push_back({child_name_str, child});
             }
         }
 
