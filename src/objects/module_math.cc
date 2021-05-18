@@ -10,6 +10,7 @@
 // Avoid typedef conflicts
 #define float_t cmath_float_t
 #include <cmath>
+#include <numeric>
 #undef float_t
 
 using namespace std;
@@ -19,56 +20,38 @@ void on_math_loaded(Module *mod) {
 
     // Docs
     const str_t abs_doc = "Returns the absolute value of x";
-
     const str_t acos_doc = "Returns the arc cosinus of x";
-
     const str_t asin_doc = "Returns the arc sinus of x";
-
     const str_t atan_doc = "Returns the arc tangent of x";
-
     const str_t cos_doc = "Returns the cosinus of x";
-
     const str_t exp_doc = "Returns the exponential of x";
-
     const str_t factorial_doc = "Returns the factorial of Int(x)";
-
+    const str_t gcd_doc = "Returns the greatest common divisor between a and b";
     const str_t isfinite_doc = "Returns whether x is neither inf nor nan";
-
-    const str_t log_doc = "Returns the natural logarithm of x";
-
+    const str_t lcm_doc = "Returns the least common multiple between a and b";
     const str_t log2_doc = "Returns the logarithm (base 2) of x";
-
+    const str_t log_doc = "Returns the natural logarithm of x";
+    const str_t pow_doc = "Returns a power b";
     const str_t sin_doc = "Returns the sinus of x";
-
     const str_t sqrt_doc = "Returns the square root of x";
-
     const str_t tan_doc = "Returns the tangent of x";
 
     // Signatures
     const builtin_signature_t abs_sig = {{"x", false}};
-
     const builtin_signature_t acos_sig = {{"x", false}};
-
     const builtin_signature_t asin_sig = {{"x", false}};
-
     const builtin_signature_t atan_sig = {{"x", false}};
-
     const builtin_signature_t cos_sig = {{"x", false}};
-
     const builtin_signature_t exp_sig = {{"x", false}};
-
     const builtin_signature_t factorial_sig = {{"x", false}};
-
+    const builtin_signature_t gcd_sig = {{"a", false}, {"b", false}};
     const builtin_signature_t isfinite_sig = {{"x", false}};
-
-    const builtin_signature_t log_sig = {{"x", false}};
-
+    const builtin_signature_t lcm_sig = {{"a", false}, {"b", false}};
     const builtin_signature_t log2_sig = {{"x", false}};
-
+    const builtin_signature_t log_sig = {{"x", false}};
+    const builtin_signature_t pow_sig = {{"a", false}, {"b", false}};
     const builtin_signature_t sin_sig = {{"x", false}};
-
     const builtin_signature_t sqrt_sig = {{"x", false}};
-
     const builtin_signature_t tan_sig = {{"x", false}};
 
     // Init
@@ -79,9 +62,12 @@ void on_math_loaded(Module *mod) {
     FAST_INIT_MODULE_BUILTIN(math, cos);
     FAST_INIT_MODULE_BUILTIN(math, exp);
     FAST_INIT_MODULE_BUILTIN(math, factorial);
+    FAST_INIT_MODULE_BUILTIN(math, gcd);
     FAST_INIT_MODULE_BUILTIN(math, isfinite);
+    FAST_INIT_MODULE_BUILTIN(math, lcm);
     FAST_INIT_MODULE_BUILTIN(math, log);
     FAST_INIT_MODULE_BUILTIN(math, log2);
+    FAST_INIT_MODULE_BUILTIN(math, pow);
     FAST_INIT_MODULE_BUILTIN(math, sin);
     FAST_INIT_MODULE_BUILTIN(math, sqrt);
     FAST_INIT_MODULE_BUILTIN(math, tan);
@@ -149,6 +135,15 @@ BUILTIN_HANDLER(math, factorial) {
     RETURN_Y;
 }
 
+// TODO : As ints
+BUILTIN_HANDLER(math, gcd) {
+    INIT_AB_METHOD("gcd");
+
+    int_t y = gcd((int_t)a, (int_t)b);
+
+    RETURN_INIT(Int);
+}
+
 BUILTIN_HANDLER(math, isfinite) {
     // x is the argument
     INIT_X_METHOD("isfinite");
@@ -156,6 +151,14 @@ BUILTIN_HANDLER(math, isfinite) {
     bool y = isfinite(x);
 
     return y ? istrue : isfalse;
+}
+
+BUILTIN_HANDLER(math, lcm) {
+    INIT_AB_METHOD("lcm");
+
+    int_t y = lcm((int_t)a, (int_t)b);
+
+    RETURN_INIT(Int);
 }
 
 BUILTIN_HANDLER(math, log) {
@@ -174,6 +177,14 @@ BUILTIN_HANDLER(math, log2) {
     CHECK_GREATER("log2", x, 0);
 
     TRY_CMATH_FUN(log2);
+}
+
+BUILTIN_HANDLER(math, pow) {
+    INIT_AB_METHOD("pow");
+
+    float_t y = pow(a, b);
+
+    RETURN_Y;
 }
 
 BUILTIN_HANDLER(math, sin) {

@@ -15,6 +15,22 @@
         return nullptr;                                                        \
     }
 
+// Like INIT_X_METHOD but with 2 args : a and b
+#define INIT_AB_METHOD(NAME)                                                   \
+    INIT_METHOD(Object, NAME);                                                 \
+    CHECK_ARGSLEN(2, NAME);                                                    \
+    CHECK_NOKWARGS(NAME);                                                      \
+    auto a_arg = args_data[0];                                                 \
+    float_t a = to_float(NAME, a_arg);                                         \
+    if (on_error()) {                                                          \
+        return nullptr;                                                        \
+    }                                                                          \
+    auto b_arg = args_data[1];                                                 \
+    float_t b = to_float(NAME, b_arg);                                         \
+    if (on_error()) {                                                          \
+        return nullptr;                                                        \
+    }
+
 // Returns y as a new TYPE
 #define RETURN_INIT(TYPE)                                                      \
     auto result = new (nothrow) TYPE(y);                                       \
@@ -70,30 +86,19 @@
 // When math is loaded
 void on_math_loaded(Module *mod);
 
-// TODO A : Domain errors
-
 BUILTIN_HANDLER(math, abs);
-
 BUILTIN_HANDLER(math, acos);
-
 BUILTIN_HANDLER(math, asin);
-
 BUILTIN_HANDLER(math, atan);
-
 BUILTIN_HANDLER(math, cos);
-
 BUILTIN_HANDLER(math, exp);
-
 BUILTIN_HANDLER(math, factorial);
-
+BUILTIN_HANDLER(math, gcd);
 BUILTIN_HANDLER(math, isfinite);
-
+BUILTIN_HANDLER(math, lcm);
 BUILTIN_HANDLER(math, log);
-
 BUILTIN_HANDLER(math, log2);
-
+BUILTIN_HANDLER(math, pow);
 BUILTIN_HANDLER(math, sin);
-
 BUILTIN_HANDLER(math, sqrt);
-
 BUILTIN_HANDLER(math, tan);
