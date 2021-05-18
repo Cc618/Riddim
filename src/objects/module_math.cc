@@ -135,11 +135,27 @@ BUILTIN_HANDLER(math, factorial) {
     RETURN_Y;
 }
 
-// TODO : As ints
 BUILTIN_HANDLER(math, gcd) {
-    INIT_AB_METHOD("gcd");
+    // Init a, b
+    INIT_METHOD(Object, "gcd");
+    CHECK_ARGSLEN(2, "gcd");
+    CHECK_NOKWARGS("gcd");
 
-    int_t y = gcd((int_t)a, (int_t)b);
+    auto a_arg = args_data[0];
+    if (a_arg->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF("gcd", a_arg->type, Int::class_type);
+        return nullptr;
+    }
+    int_t a = reinterpret_cast<Int*>(a_arg)->data;
+
+    auto b_arg = args_data[1];
+    if (b_arg->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF("gcd", b_arg->type, Int::class_type);
+        return nullptr;
+    }
+    int_t b = reinterpret_cast<Int*>(b_arg)->data;
+
+    int_t y = gcd(a, b);
 
     RETURN_INIT(Int);
 }
@@ -154,9 +170,26 @@ BUILTIN_HANDLER(math, isfinite) {
 }
 
 BUILTIN_HANDLER(math, lcm) {
-    INIT_AB_METHOD("lcm");
+    // Init a, b
+    INIT_METHOD(Object, "lcm");
+    CHECK_ARGSLEN(2, "lcm");
+    CHECK_NOKWARGS("lcm");
 
-    int_t y = lcm((int_t)a, (int_t)b);
+    auto a_arg = args_data[0];
+    if (a_arg->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF("lcm", a_arg->type, Int::class_type);
+        return nullptr;
+    }
+    int_t a = reinterpret_cast<Int*>(a_arg)->data;
+
+    auto b_arg = args_data[1];
+    if (b_arg->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF("lcm", b_arg->type, Int::class_type);
+        return nullptr;
+    }
+    int_t b = reinterpret_cast<Int*>(b_arg)->data;
+
+    int_t y = lcm(a, b);
 
     RETURN_INIT(Int);
 }
