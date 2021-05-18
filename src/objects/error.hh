@@ -111,8 +111,8 @@ void internal_error(const str_t &msg);
 // Invalid argument
 static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
                                         const str_t &MSG) {
-    throw_fmt(ArgumentError, "%s : Argument %s%s%s : %s",
-        FUNC.c_str(), C_BLUE, ARG.c_str(), C_NORMAL, MSG.c_str());
+    throw_fmt(ArgumentError, "%s : Argument %s%s%s : %s", FUNC.c_str(), C_BLUE,
+              ARG.c_str(), C_NORMAL, MSG.c_str());
 }
 
 #define THROW_MEMORY_ERROR throw_str(MemoryError, "Failed to allocate memory");
@@ -146,6 +146,12 @@ static inline void THROW_ARGUMENT_ERROR(const str_t &FUNC, const str_t &ARG,
 #define THROW_ARITHMETIC_ERROR(OP, MSG)                                        \
     throw_fmt(ArithmeticError, "Operator %s%s%s : %s", C_BLUE, (OP), C_NORMAL, \
               (MSG))
+
+// Arithmetic error
+#define THROW_DOMAIN_ERROR(FUN, MSG)                                           \
+    throw_fmt(ArithmeticError,                                                 \
+              "%s" FUN "%s : Domain error, not defined because %s", C_BLUE,    \
+              C_NORMAL, (MSG))
 
 // Throws a NameError that says no such builtin method
 // TYPE is a type while METHOD is stringified

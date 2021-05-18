@@ -1,3 +1,14 @@
-mod!doc = 'Mathematical functions'
+mod!doc = @'
+Mathematical functions
+
+### Constants
++ e = 2.718281828459045
++ pi = 3.141592653589793
++ tau = 6.283185307179586
+@'
 
 # Other functions are defined from C++
+
+e = 2.718281828459045
+pi = 3.141592653589793
+tau = 6.283185307179586

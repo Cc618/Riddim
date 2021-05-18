@@ -17,14 +17,178 @@ using namespace std;
 void on_math_loaded(Module *mod) {
     auto &global_frame = Program::instance->global_frame;
 
-    const str_t sqrt_doc = "Returns the name of type\n\n"
-                           "- type : Target\n"
-                           "- return, Str : Name of type";
+    // Docs
+    const str_t abs_doc = "Returns the absolute value of x";
+
+    const str_t acos_doc = "Returns the arc cosinus of x";
+
+    const str_t asin_doc = "Returns the arc sinus of x";
+
+    const str_t atan_doc = "Returns the arc tangent of x";
+
+    const str_t cos_doc = "Returns the cosinus of x";
+
+    const str_t exp_doc = "Returns the exponential of x";
+
+    const str_t factorial_doc = "Returns the factorial of x";
+
+    const str_t isfinite_doc = "Returns whether x is neither inf nor nan";
+
+    const str_t log_doc = "Returns the natural logarithm of x";
+
+    const str_t log2_doc = "Returns the logarithm (base 2) of x";
+
+    const str_t sin_doc = "Returns the sinus of x";
+
+    const str_t sqrt_doc = "Returns the square root of x";
+
+    const str_t tan_doc = "Returns the tangent of x";
 
     // Signatures
-    const builtin_signature_t sqrt_sig = {{"exp", false}, {"msg", true}};
+    const builtin_signature_t abs_sig = {{"x", false}};
 
+    const builtin_signature_t acos_sig = {{"x", false}};
+
+    const builtin_signature_t asin_sig = {{"x", false}};
+
+    const builtin_signature_t atan_sig = {{"x", false}};
+
+    const builtin_signature_t cos_sig = {{"x", false}};
+
+    const builtin_signature_t exp_sig = {{"x", false}};
+
+    const builtin_signature_t factorial_sig = {{"x", false}};
+
+    const builtin_signature_t isfinite_sig = {{"x", false}};
+
+    const builtin_signature_t log_sig = {{"x", false}};
+
+    const builtin_signature_t log2_sig = {{"x", false}};
+
+    const builtin_signature_t sin_sig = {{"x", false}};
+
+    const builtin_signature_t sqrt_sig = {{"x", false}};
+
+    const builtin_signature_t tan_sig = {{"x", false}};
+
+    // Init
+    FAST_INIT_MODULE_BUILTIN(math, abs);
+    FAST_INIT_MODULE_BUILTIN(math, acos);
+    FAST_INIT_MODULE_BUILTIN(math, asin);
+    FAST_INIT_MODULE_BUILTIN(math, atan);
+    FAST_INIT_MODULE_BUILTIN(math, cos);
+    FAST_INIT_MODULE_BUILTIN(math, exp);
+    FAST_INIT_MODULE_BUILTIN(math, factorial);
+    FAST_INIT_MODULE_BUILTIN(math, isfinite);
+    FAST_INIT_MODULE_BUILTIN(math, log);
+    FAST_INIT_MODULE_BUILTIN(math, log2);
+    FAST_INIT_MODULE_BUILTIN(math, sin);
     FAST_INIT_MODULE_BUILTIN(math, sqrt);
+    FAST_INIT_MODULE_BUILTIN(math, tan);
+}
+
+BUILTIN_HANDLER(math, abs) {
+    // x is the argument
+    INIT_X_METHOD("abs");
+
+    float_t y = fabs(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, acos) {
+    // x is the argument
+    INIT_X_METHOD("acos");
+
+    float_t y = acos(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, asin) {
+    // x is the argument
+    INIT_X_METHOD("asin");
+
+    float_t y = asin(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, atan) {
+    // x is the argument
+    INIT_X_METHOD("atan");
+
+    float_t y = atan(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, cos) {
+    // x is the argument
+    INIT_X_METHOD("cos");
+
+    float_t y = cos(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, exp) {
+    // x is the argument
+    INIT_X_METHOD("exp");
+
+    float_t y = exp(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, factorial) {
+    // x is the argument
+    INIT_X_METHOD("factorial");
+
+    CHECK_GREATEREQ("factorial", x, 0);
+
+    float_t y = 1;
+    for (int_t i = 1; i <= (int_t)x; ++i) {
+        y *= i;
+    }
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, isfinite) {
+    // x is the argument
+    INIT_X_METHOD("isfinite");
+
+    bool y = isfinite(x);
+
+    return y ? istrue : isfalse;
+}
+
+BUILTIN_HANDLER(math, log) {
+    // x is the argument
+    INIT_X_METHOD("log");
+
+    float_t y = log(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, log2) {
+    // x is the argument
+    INIT_X_METHOD("log2");
+
+    float_t y = log2(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, sin) {
+    // x is the argument
+    INIT_X_METHOD("sin");
+
+    float_t y = sin(x);
+
+    RETURN_Y;
 }
 
 BUILTIN_HANDLER(math, sqrt) {
@@ -32,6 +196,15 @@ BUILTIN_HANDLER(math, sqrt) {
     INIT_X_METHOD("sqrt");
 
     float_t y = sqrt(x);
+
+    RETURN_Y;
+}
+
+BUILTIN_HANDLER(math, tan) {
+    // x is the argument
+    INIT_X_METHOD("tan");
+
+    float_t y = tan(x);
 
     RETURN_Y;
 }

@@ -10,7 +10,7 @@
 struct Program;
 
 // --- Macros ---
-#define INIT_BUILTIN(NAME, HANDLER, DOC, SIGNATURE)                            \
+#define INIT_BUILTIN(NAME, HANDLER, DOC, SIGNATURE, GLOBAL)                    \
     auto HANDLER##_obj =                                                       \
         new (nothrow) Builtin(HANDLER, NAME, nullptr, DOC, SIGNATURE);         \
     if (!HANDLER##_obj) {                                                      \
@@ -21,19 +21,24 @@ struct Program;
     if (!HANDLER##_name) {                                                     \
         return;                                                                \
     }                                                                          \
-    if (!global_frame->setitem(HANDLER##_name, HANDLER##_obj)) {               \
+    if (GLOBAL && !global_frame->setitem(HANDLER##_name, HANDLER##_obj)) {     \
         return;                                                                \
     }
 
 #define FAST_INIT_BUILTIN(NAME)                                                \
-    INIT_BUILTIN(#NAME, builtin_##NAME, NAME##_doc, NAME##_sig);
+    INIT_BUILTIN(#NAME, builtin_##NAME, NAME##_doc, NAME##_sig, true);
+
+#define FAST_INIT_MODULE_BUILTIN(MODULE, NAME)                                 \
+    INIT_BUILTIN(#NAME, builtin_##MODULE##_##NAME, NAME##_doc, NAME##_sig,     \
+                 false);                                                       \
+    if (!mod->setattr(builtin_##MODULE##_##NAME##_name,                        \
+                      builtin_##MODULE##_##NAME##_obj)) {                      \
+        return;                                                                \
+    }
 
 #define BUILTIN_HANDLER(MODULE, NAME)                                          \
     Object *builtin_##MODULE##_##NAME(Object *self, Object *args,              \
                                       Object *kwargs)
-
-#define FAST_INIT_MODULE_BUILTIN(MODULE, NAME)                                 \
-    INIT_BUILTIN(#NAME, builtin_##MODULE##_##NAME, NAME##_doc, NAME##_sig);
 
 // --- Global Object ---
 // Does not have specific data but is global (ex: enditer)
