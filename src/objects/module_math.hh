@@ -16,7 +16,7 @@
     }
 
 // Returns y as a new TYPE
-#define RETURN_INIT(TYPE)                                                    \
+#define RETURN_INIT(TYPE)                                                      \
     auto result = new (nothrow) TYPE(y);                                       \
     if (!result) {                                                             \
         THROW_MEMORY_ERROR;                                                    \
@@ -25,12 +25,28 @@
     return result;
 
 // Returns y as a new Float
-#define RETURN_Y                                                               \
-    RETURN_INIT(Float)
+#define RETURN_Y RETURN_INIT(Float)
+
+// Tries to apply the cmath defined function FUN
+#define TRY_CMATH_FUN(FUN)                                                     \
+    try {                                                                      \
+        float_t y = FUN(x);                                                    \
+        RETURN_Y;                                                              \
+    } catch (...) {                                                            \
+        THROW_DOMAIN_ERROR(                                                    \
+            #FUN, (#FUN "(" + to_string(x) + ") is undefined").c_str());       \
+        return nullptr;                                                        \
+    }
 
 #define CHECK_GREATEREQ(FUN, X, LIMIT)                                         \
     if (X < LIMIT) {                                                           \
         THROW_DOMAIN_ERROR(FUN, #X " < " #LIMIT);                              \
+        return nullptr;                                                        \
+    }
+
+#define CHECK_GREATER(FUN, X, LIMIT)                                           \
+    if (X <= LIMIT) {                                                          \
+        THROW_DOMAIN_ERROR(FUN, #X " <= " #LIMIT);                             \
         return nullptr;                                                        \
     }
 
@@ -39,6 +55,17 @@
         THROW_DOMAIN_ERROR(FUN, #X " > " #LIMIT);                              \
         return nullptr;                                                        \
     }
+
+#define CHECK_LESSER(FUN, X, LIMIT)                                            \
+    if (X >= LIMIT) {                                                          \
+        THROW_DOMAIN_ERROR(FUN, #X " >= " #LIMIT);                             \
+        return nullptr;                                                        \
+    }
+
+// Within inclusive range
+#define CHECK_WITHINEQ(FUN, X, LOW, HIGH)                                      \
+    CHECK_GREATEREQ(FUN, X, LOW);                                              \
+    CHECK_LESSEREQ(FUN, X, HIGH);
 
 // When math is loaded
 void on_math_loaded(Module *mod);

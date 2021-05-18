@@ -30,7 +30,7 @@ void on_math_loaded(Module *mod) {
 
     const str_t exp_doc = "Returns the exponential of x";
 
-    const str_t factorial_doc = "Returns the factorial of x";
+    const str_t factorial_doc = "Returns the factorial of Int(x)";
 
     const str_t isfinite_doc = "Returns whether x is neither inf nor nan";
 
@@ -100,45 +100,39 @@ BUILTIN_HANDLER(math, acos) {
     // x is the argument
     INIT_X_METHOD("acos");
 
-    float_t y = acos(x);
+    CHECK_WITHINEQ("acos", x, -1, 1);
 
-    RETURN_Y;
+    TRY_CMATH_FUN(acos);
 }
 
 BUILTIN_HANDLER(math, asin) {
     // x is the argument
     INIT_X_METHOD("asin");
 
-    float_t y = asin(x);
+    CHECK_WITHINEQ("asin", x, -1, 1);
 
-    RETURN_Y;
+    TRY_CMATH_FUN(asin);
 }
 
 BUILTIN_HANDLER(math, atan) {
     // x is the argument
     INIT_X_METHOD("atan");
 
-    float_t y = atan(x);
-
-    RETURN_Y;
+    TRY_CMATH_FUN(atan);
 }
 
 BUILTIN_HANDLER(math, cos) {
     // x is the argument
     INIT_X_METHOD("cos");
 
-    float_t y = cos(x);
-
-    RETURN_Y;
+    TRY_CMATH_FUN(cos);
 }
 
 BUILTIN_HANDLER(math, exp) {
     // x is the argument
     INIT_X_METHOD("exp");
 
-    float_t y = exp(x);
-
-    RETURN_Y;
+    TRY_CMATH_FUN(exp);
 }
 
 BUILTIN_HANDLER(math, factorial) {
@@ -168,43 +162,39 @@ BUILTIN_HANDLER(math, log) {
     // x is the argument
     INIT_X_METHOD("log");
 
-    float_t y = log(x);
+    CHECK_GREATER("log", x, 0);
 
-    RETURN_Y;
+    TRY_CMATH_FUN(log);
 }
 
 BUILTIN_HANDLER(math, log2) {
     // x is the argument
     INIT_X_METHOD("log2");
 
-    float_t y = log2(x);
+    CHECK_GREATER("log2", x, 0);
 
-    RETURN_Y;
+    TRY_CMATH_FUN(log2);
 }
 
 BUILTIN_HANDLER(math, sin) {
     // x is the argument
     INIT_X_METHOD("sin");
 
-    float_t y = sin(x);
-
-    RETURN_Y;
+    TRY_CMATH_FUN(sin);
 }
 
 BUILTIN_HANDLER(math, sqrt) {
     // x is the argument
     INIT_X_METHOD("sqrt");
 
-    float_t y = sqrt(x);
+    CHECK_GREATEREQ("sqrt", x, 0);
 
-    RETURN_Y;
+    TRY_CMATH_FUN(sqrt);
 }
 
 BUILTIN_HANDLER(math, tan) {
     // x is the argument
     INIT_X_METHOD("tan");
 
-    float_t y = tan(x);
-
-    RETURN_Y;
+    TRY_CMATH_FUN(tan);
 }
