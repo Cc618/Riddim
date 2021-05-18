@@ -52,7 +52,7 @@ Module *gen_module(Driver &driver) {
     return module;
 }
 
-Module *parse_module(str_t module_path) {
+Module *parse_module(str_t module_path, const str_t &module_name, bool isbuiltin) {
     auto new_module_path = abs_path(module_path);
 
     if (!is_file(new_module_path)) {
@@ -110,6 +110,14 @@ Module *parse_module(str_t module_path) {
 
         Program::add_module(module);
 
+        if (isbuiltin) {
+            Program::on_std_module_loaded(module_name, module);
+
+            if (on_error()) {
+                return nullptr;
+            }
+        }
+
         return module;
     } catch (...) {
         throw_str(InternalError, "Internal error");
@@ -150,18 +158,22 @@ Module *load_module(const str_t &name, const str_t &current_path) {
     // This is similar to PYTHONPATH
     vector<str_t> search_path;
 
-    if (mod_dir.size()) {
+    if (!mod_dir.empty()) {
         search_path.push_back(mod_dir);
     }
 
+    auto std_dir_index = search_path.size();
     search_path.push_back(std_dir);
 
+    int i = 0;
     for (auto dir : search_path) {
         str_t path = dir + parsed_path + ".rid";
 
         if (is_file(path)) {
-            return parse_module(path);
+            return parse_module(path, name, i == std_dir_index);
         }
+
+        ++i;
     }
 
     throw_fmt(ImportError, "Module %s%s%s not found", C_BLUE, name.c_str(),

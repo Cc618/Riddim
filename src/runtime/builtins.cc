@@ -10,6 +10,7 @@
 #include "program.hh"
 #include "str.hh"
 #include "vec.hh"
+#include "module_math.hh"
 #include <iostream>
 
 using namespace std;
@@ -187,6 +188,9 @@ void init_builtins() {
 
 #undef REGISTER_GLOBAL
 #undef INIT_BUILTIN
+
+    // Modules
+    Program::instance->builtin_modules["math"] = on_math_loaded;
 }
 
 // --- Functions ---

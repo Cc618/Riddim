@@ -12,7 +12,7 @@
 Module *gen_module(Driver &driver);
 
 // Parses a source file, returns its module object
-Module *parse_module(str_t module_path);
+Module *parse_module(str_t module_path, const str_t &module_name = "", bool isbuiltin = false);
 
 // Loads a module from its special name (path.to.mod -> /path/to/mod.rid)
 // - current_path : The path of the module that loads the new module (where

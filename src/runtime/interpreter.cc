@@ -665,7 +665,9 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
+            // Interpret it if not loaded
             if (!result->loaded) {
+                // Infinite import
                 if (result->being_loaded) {
                     throw_fmt(ImportError,
                               "Cannot import module %s%s%s (%s), infinite "
@@ -680,6 +682,14 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
                 if (on_error()) {
                     DISPATCH_ERROR;
+                }
+
+                if (result->on_loaded) {
+                    result->on_loaded(result);
+
+                    if (on_error()) {
+                        DISPATCH_ERROR;
+                    }
                 }
 
                 // Pop the return value of the module

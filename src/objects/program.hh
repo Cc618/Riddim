@@ -39,6 +39,9 @@ struct Program : public Object {
     Module *main_module;
     Module *builtins_module = nullptr;
 
+    // Modules written in C++
+    std::unordered_map<str_t, module_callback_t> builtin_modules;
+
     Object *current_error;
 
     // Saved current_error in a catch block
@@ -88,6 +91,9 @@ struct Program : public Object {
     // Outputs to cerr the errout stream
     // The stream is cleared
     static void output_errout();
+
+    // - path_name : a.b.c
+    static void on_std_module_loaded(const str_t &path_name, Module *mod);
 
     // Init attributes that were impossible to init in New
     // - filename : Main module file path

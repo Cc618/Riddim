@@ -138,6 +138,13 @@ void Program::output_errout() {
     Program::instance->errout.clear();
 }
 
+void Program::on_std_module_loaded(const str_t &path_name, Module *mod) {
+    auto it = Program::instance->builtin_modules.find(path_name);
+    if (it != Program::instance->builtin_modules.end()) {
+        mod->on_loaded = it->second;
+    }
+}
+
 void Program::register_type(Type *type) {
     auto type_id = Str::New(type->name);
 

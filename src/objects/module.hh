@@ -11,6 +11,8 @@ struct Module;
 // Special variables like !doc / mod... are not merged
 void merge_frames(Frame *base, Frame *merged);
 
+typedef std::function<void (Module*)> module_callback_t;
+
 struct Module : public Object {
     static Type *class_type;
 
@@ -18,6 +20,8 @@ struct Module : public Object {
     Str *name;
     Code *code;
     Frame *frame;
+
+    module_callback_t on_loaded;
 
     // Whether it is not fully executed, used to avoid
     // executing 2 times a module already loaded

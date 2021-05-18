@@ -10,13 +10,14 @@ The format is inspired by Markdown.
 Method small description.
 
 - Arg1, Arg1Type (if necessary) : Arg1 description
-- [OptionalArg2, Arg2Type] : Arg2 description
+- [OptionalArg2], Arg2Type : Arg2 description
 - return, ReturnType : Return description
 ```
 
 ### Complete syntax
 The complete format is described below.
-*Note that the generator is not implemented as of v0.1, this section is a draft for the future documentation generator.*
+
+*Note that the generator is not implemented for version v0.1, this section is a draft for the future documentation generator.*
 
 #### Text
 ```markdown
