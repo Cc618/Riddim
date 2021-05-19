@@ -4,6 +4,12 @@
 
 #include "object.hh"
 
+struct Float;
+
+extern Float *float_inf;
+
+extern Float *float_nan;
+
 // Returns the value of the object
 // The object can be an integer
 // Throws if invalid type

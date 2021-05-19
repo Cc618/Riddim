@@ -18,6 +18,10 @@ using namespace std;
 
 #define OUT_PRECISION 16
 
+Float *float_inf = nullptr;
+
+Float *float_nan = nullptr;
+
 float_t to_float(const str_t &fn_name, Object *o) {
     if (o->type == Float::class_type) {
         return reinterpret_cast<Float *>(o)->data;
@@ -318,6 +322,22 @@ void Float::init_class_objects() {
     one = new (nothrow) Float(1);
 
     if (!one) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    float_inf = new (nothrow) Float(INFINITY);
+
+    if (!float_inf) {
+        THROW_MEMORY_ERROR;
+
+        return;
+    }
+
+    float_nan = new (nothrow) Float(NAN);
+
+    if (!float_nan) {
         THROW_MEMORY_ERROR;
 
         return;

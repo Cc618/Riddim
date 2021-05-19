@@ -1,6 +1,7 @@
 #include "builtins.hh"
 #include "bool.hh"
 #include "error.hh"
+#include "float.hh"
 #include "frame.hh"
 #include "function.hh"
 #include "int.hh"
@@ -165,6 +166,8 @@ void init_builtins() {
     REGISTER_GLOBAL(true, istrue);
     REGISTER_GLOBAL(false, isfalse);
     REGISTER_GLOBAL(null, null);
+    REGISTER_GLOBAL(inf, float_inf);
+    REGISTER_GLOBAL(nan, float_nan);
 
 #undef REGISTER_GLOBAL
 
