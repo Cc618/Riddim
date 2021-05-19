@@ -59,6 +59,7 @@ extern Global *enditer;
 void init_builtins();
 
 // --- Functions ---
+BUILTIN_HANDLER(builtins, abs);
 BUILTIN_HANDLER(builtins, argmax);
 BUILTIN_HANDLER(builtins, argmin);
 BUILTIN_HANDLER(builtins, argminmax);

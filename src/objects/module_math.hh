@@ -86,7 +86,6 @@
 // When math is loaded
 void on_math_loaded(Module *mod);
 
-BUILTIN_HANDLER(math, abs);
 BUILTIN_HANDLER(math, acos);
 BUILTIN_HANDLER(math, asin);
 BUILTIN_HANDLER(math, atan);

@@ -19,7 +19,6 @@ void on_math_loaded(Module *mod) {
     auto &global_frame = Program::instance->global_frame;
 
     // Docs
-    const str_t abs_doc = "Returns the absolute value of x";
     const str_t acos_doc = "Returns the arc cosinus of x";
     const str_t asin_doc = "Returns the arc sinus of x";
     const str_t atan_doc = "Returns the arc tangent of x";
@@ -37,7 +36,6 @@ void on_math_loaded(Module *mod) {
     const str_t tan_doc = "Returns the tangent of x";
 
     // Signatures
-    const builtin_signature_t abs_sig = {{"x", false}};
     const builtin_signature_t acos_sig = {{"x", false}};
     const builtin_signature_t asin_sig = {{"x", false}};
     const builtin_signature_t atan_sig = {{"x", false}};
@@ -55,7 +53,6 @@ void on_math_loaded(Module *mod) {
     const builtin_signature_t tan_sig = {{"x", false}};
 
     // Init
-    FAST_INIT_BUILTIN(math, abs);
     FAST_INIT_BUILTIN(math, acos);
     FAST_INIT_BUILTIN(math, asin);
     FAST_INIT_BUILTIN(math, atan);
@@ -71,15 +68,6 @@ void on_math_loaded(Module *mod) {
     FAST_INIT_BUILTIN(math, sin);
     FAST_INIT_BUILTIN(math, sqrt);
     FAST_INIT_BUILTIN(math, tan);
-}
-
-BUILTIN_HANDLER(math, abs) {
-    // x is the argument
-    INIT_X_METHOD("abs");
-
-    float_t y = fabs(x);
-
-    RETURN_Y;
 }
 
 BUILTIN_HANDLER(math, acos) {

@@ -44,7 +44,7 @@ static Object *print_object(Object *o) {
 // Returns the indices of the min / the max and their value
 // Can throw
 // amin, amax, min, max
-static tuple<int_t, int_t, Object*, Object*> argminmax_wrapper(Object *col) {
+static tuple<int_t, int_t, Object *, Object *> argminmax_wrapper(Object *col) {
     auto iter = col->iter();
     if (!iter) {
         return {0, 0, nullptr, nullptr};
@@ -130,6 +130,8 @@ void init_builtins() {
     auto &global_frame = Program::instance->global_frame;
 
     // Docs
+    const str_t abs_doc = "Returns the absolute value of x";
+
     const str_t argmin_doc =
         "Returns the index pointing at the minimum of col\n\n"
         "- col : Collection\n"
@@ -206,6 +208,7 @@ void init_builtins() {
                                "- return, Str : Name of type";
 
     // Signatures
+    const builtin_signature_t abs_sig = {{"x", false}};
     const builtin_signature_t argmax_sig = {{"col", false}};
     const builtin_signature_t argmin_sig = {{"col", false}};
     const builtin_signature_t argminmax_sig = {{"col", false}};
@@ -226,6 +229,7 @@ void init_builtins() {
     const builtin_signature_t typeof_sig = {{"obj", false}};
 
     // Functions
+    FAST_INIT_SINGLE_BUILTIN(abs);
     FAST_INIT_SINGLE_BUILTIN(argmax);
     FAST_INIT_SINGLE_BUILTIN(argmin);
     FAST_INIT_SINGLE_BUILTIN(argminmax);
@@ -271,6 +275,43 @@ void init_builtins() {
 }
 
 // --- Functions ---
+BUILTIN_HANDLER(builtins, abs) {
+    INIT_METHOD(Object, "abs");
+
+    CHECK_ARGSLEN(1, "abs");
+    CHECK_NOKWARGS("abs");
+
+    auto x = args_data[0];
+
+    if (x->type == Int::class_type) {
+        auto result = new (nothrow) Int(abs(reinterpret_cast<Int *>(x)->data));
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    } else if (x->type == Float::class_type) {
+        auto result =
+            new (nothrow) Float(abs(reinterpret_cast<Float *>(x)->data));
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    } else {
+        throw_fmt(TypeError, "Expected numeric type, got %s%s%s", C_BLUE,
+                  x->type->name.c_str(), C_NORMAL);
+
+        return nullptr;
+    }
+}
+
 BUILTIN_HANDLER(builtins, argmax) {
     INIT_METHOD(Object, "argmax");
 
