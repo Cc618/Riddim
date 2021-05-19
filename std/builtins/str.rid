@@ -6,3 +6,31 @@ Str!doc = 'String data type'
 Str!name = 'Str'
 
 set_default_collection(Str)
+
+@doc'
+Replaces all occurences of old by new
+
+- old : What to search for
+- new : What to replace
+@'
+fn Str.replace(old, new) {
+    old_len = len(old)
+
+    # Iterate backwards
+    for i in len(me) - old_len ->= 0 .. -1 {
+        if me[i -> i + old_len] == old {
+            me[i -> i + old_len] = new
+        }
+    }
+}
+
+@doc'
+Removes all occurences of target
+
+- target : Pattern to remove
+
+* Note : equivalent to `replace(target, '')`
+@'
+fn Str.erase(target) {
+    me.replace(target, '')
+}
