@@ -41,6 +41,72 @@ static Object *print_object(Object *o) {
     return null;
 }
 
+// Returns the indices of the min / the max and their value
+// Can throw
+// amin, amax, min, max
+static tuple<int_t, int_t, Object*, Object*> argminmax_wrapper(Object *col) {
+    auto iter = col->iter();
+    if (!iter) {
+        return {0, 0, nullptr, nullptr};
+    }
+
+    Object *current = iter->next();
+    Object *min_object = current;
+    Object *max_object = current;
+
+    int_t max_index = 0;
+    int_t min_index = 0;
+    int_t index = 0;
+
+    // Empty
+    if (current == enditer) {
+        throw_fmt(IndexError, "Min / max function with empty iterator");
+
+        return {0, 0, nullptr, nullptr};
+    }
+
+    while (true) {
+        if (!current) {
+            return {0, 0, nullptr, nullptr};
+        }
+
+        if (current == enditer) {
+            break;
+        }
+
+        // min <=> current
+        auto min_threeway = min_object->cmp(current);
+
+        if (!min_threeway) {
+            return {0, 0, nullptr, nullptr};
+        }
+
+        // min > current
+        if (reinterpret_cast<Int *>(min_threeway)->data > 0) {
+            min_object = current;
+            min_index = index;
+        }
+
+        // max <=> current
+        auto max_threeway = max_object->cmp(current);
+
+        if (!max_threeway) {
+            return {0, 0, nullptr, nullptr};
+        }
+
+        // max < current
+        if (reinterpret_cast<Int *>(max_threeway)->data < 0) {
+            max_object = current;
+            max_index = index;
+        }
+
+        current = iter->next();
+        ++index;
+    }
+
+    return {min_index, max_index, min_object, max_object};
+}
+
 // --- Global Object ---
 Type *Global::class_type = nullptr;
 
@@ -64,6 +130,21 @@ void init_builtins() {
     auto &global_frame = Program::instance->global_frame;
 
     // Docs
+    const str_t argmin_doc =
+        "Returns the index pointing at the minimum of col\n\n"
+        "- col : Collection\n"
+        "- return, Int : Index of the minimum";
+
+    const str_t argmax_doc =
+        "Returns the index pointing at the maximum of col\n\n"
+        "- col : Collection\n"
+        "- return, Int : Index of the maximum";
+
+    const str_t argminmax_doc =
+        "Returns the index pointing at the minimum and the maximum of col\n\n"
+        "- col : Collection\n"
+        "- return, Vec{Int} : Indices of the minimum and the maximum";
+
     const str_t assert_doc = "Throws AssertionError if exp is false\n\n"
                              "- exp, Bool : Expression to test\n"
                              "- [msg], String : Error message";
@@ -92,6 +173,19 @@ void init_builtins() {
                           "- col : Object with @len slot\n"
                           "- return, Int : Length";
 
+    const str_t min_doc = "Returns the minimum value within col\n\n"
+                          "- col : Collection\n"
+                          "- return : Minimum";
+
+    const str_t max_doc = "Returns the maximum value within col\n\n"
+                          "- col : Collection\n"
+                          "- return : Maximum";
+
+    const str_t minmax_doc =
+        "Returns the minimum and the maximum values within col\n\n"
+        "- col : Collection\n"
+        "- return, Vec : Minimum and maximum values";
+
     const str_t next_doc =
         "Returns the next element of iterator (or enditer)\n\n"
         "- iterator : Object with @next slot\n"
@@ -112,43 +206,44 @@ void init_builtins() {
                                "- return, Str : Name of type";
 
     // Signatures
+    const builtin_signature_t argmax_sig = {{"col", false}};
+    const builtin_signature_t argmin_sig = {{"col", false}};
+    const builtin_signature_t argminmax_sig = {{"col", false}};
     const builtin_signature_t assert_sig = {{"exp", false}, {"msg", true}};
-
     const builtin_signature_t copy_sig = {{"obj", false}};
-
     const builtin_signature_t doc_sig = {{"obj", false}};
-
     const builtin_signature_t exit_sig = {{"code", true}};
-
     const builtin_signature_t hash_sig = {{"obj", false}};
-
     const builtin_signature_t iter_sig = {{"iterable", false}};
-
     const builtin_signature_t len_sig = {{"col", false}};
-
+    const builtin_signature_t max_sig = {{"col", false}};
+    const builtin_signature_t min_sig = {{"col", false}};
+    const builtin_signature_t minmax_sig = {{"col", false}};
     const builtin_signature_t next_sig = {{"iterator", false}};
-
     const builtin_signature_t print_sig = {{"args...", true}};
-
     const builtin_signature_t throw_sig = {{"error", false}};
-
+    const builtin_signature_t typename_sig = {{"type", false}};
     const builtin_signature_t typeof_sig = {{"obj", false}};
 
-    const builtin_signature_t typename_sig = {{"type", false}};
-
     // Functions
-    FAST_INIT_BUILTIN(assert);
-    FAST_INIT_BUILTIN(copy);
-    FAST_INIT_BUILTIN(doc);
-    FAST_INIT_BUILTIN(exit);
-    FAST_INIT_BUILTIN(hash);
-    FAST_INIT_BUILTIN(iter);
-    FAST_INIT_BUILTIN(len);
-    FAST_INIT_BUILTIN(next);
-    FAST_INIT_BUILTIN(print);
-    FAST_INIT_BUILTIN(throw);
-    FAST_INIT_BUILTIN(typeof);
-    FAST_INIT_BUILTIN(typename);
+    FAST_INIT_SINGLE_BUILTIN(argmax);
+    FAST_INIT_SINGLE_BUILTIN(argmin);
+    FAST_INIT_SINGLE_BUILTIN(argminmax);
+    FAST_INIT_SINGLE_BUILTIN(assert);
+    FAST_INIT_SINGLE_BUILTIN(copy);
+    FAST_INIT_SINGLE_BUILTIN(doc);
+    FAST_INIT_SINGLE_BUILTIN(exit);
+    FAST_INIT_SINGLE_BUILTIN(hash);
+    FAST_INIT_SINGLE_BUILTIN(iter);
+    FAST_INIT_SINGLE_BUILTIN(len);
+    FAST_INIT_SINGLE_BUILTIN(max);
+    FAST_INIT_SINGLE_BUILTIN(min);
+    FAST_INIT_SINGLE_BUILTIN(minmax);
+    FAST_INIT_SINGLE_BUILTIN(next);
+    FAST_INIT_SINGLE_BUILTIN(print);
+    FAST_INIT_SINGLE_BUILTIN(throw);
+    FAST_INIT_SINGLE_BUILTIN(typeof);
+    FAST_INIT_SINGLE_BUILTIN(typename);
 
     // Globals
 #define REGISTER_GLOBAL(NAME, ID)                                              \
@@ -176,7 +271,99 @@ void init_builtins() {
 }
 
 // --- Functions ---
-Object *builtin_assert(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, argmax) {
+    INIT_METHOD(Object, "argmax");
+
+    CHECK_ARGSLEN(1, "argmax");
+    CHECK_NOKWARGS("argmax");
+
+    auto col = args_data[0];
+
+    // amin, amax, min, max
+    auto vals = argminmax_wrapper(col);
+
+    if (on_error()) {
+        return nullptr;
+    }
+
+    auto result = new (nothrow) Int(get<1>(vals));
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
+}
+
+BUILTIN_HANDLER(builtins, argmin) {
+    INIT_METHOD(Object, "argmin");
+
+    CHECK_ARGSLEN(1, "argmin");
+    CHECK_NOKWARGS("argmin");
+
+    auto col = args_data[0];
+
+    // amin, amax, min, max
+    auto vals = argminmax_wrapper(col);
+
+    if (on_error()) {
+        return nullptr;
+    }
+
+    auto result = new (nothrow) Int(get<0>(vals));
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
+}
+
+BUILTIN_HANDLER(builtins, argminmax) {
+    INIT_METHOD(Object, "argminmax");
+
+    CHECK_ARGSLEN(1, "argminmax");
+    CHECK_NOKWARGS("argminmax");
+
+    auto col = args_data[0];
+
+    // amin, amax, min, max
+    auto vals = argminmax_wrapper(col);
+
+    if (on_error()) {
+        return nullptr;
+    }
+
+    auto amin = new (nothrow) Int(get<0>(vals));
+
+    if (!amin) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    auto amax = new (nothrow) Int(get<1>(vals));
+
+    if (!amax) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    auto result = Vec::New({amin, amax});
+
+    if (!result) {
+        return nullptr;
+    }
+
+    return result;
+}
+
+BUILTIN_HANDLER(builtins, assert) {
     INIT_METHOD(Object, "assert");
 
     CHECK_NOKWARGS("assert");
@@ -219,7 +406,7 @@ Object *builtin_assert(Object *self, Object *args, Object *kwargs) {
     return null;
 }
 
-Object *builtin_copy(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, copy) {
     INIT_METHOD(Object, "copy");
 
     CHECK_ARGSLEN(1, "copy");
@@ -234,7 +421,7 @@ Object *builtin_copy(Object *self, Object *args, Object *kwargs) {
     return result;
 }
 
-Object *builtin_doc(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, doc) {
     INIT_METHOD(Object, "doc");
 
     CHECK_ARGSLEN(1, "doc");
@@ -243,7 +430,7 @@ Object *builtin_doc(Object *self, Object *args, Object *kwargs) {
     return args_data[0]->doc();
 }
 
-Object *builtin_exit(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, exit) {
     INIT_METHOD(Object, "exit");
 
     CHECK_NOKWARGS("exit");
@@ -273,7 +460,7 @@ Object *builtin_exit(Object *self, Object *args, Object *kwargs) {
     return nullptr;
 }
 
-Object *builtin_hash(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, hash) {
     INIT_METHOD(Object, "hash");
 
     CHECK_NOKWARGS("hash");
@@ -295,7 +482,7 @@ Object *builtin_hash(Object *self, Object *args, Object *kwargs) {
     return result;
 }
 
-Object *builtin_iter(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, iter) {
     INIT_METHOD(Object, "iter");
 
     CHECK_ARGSLEN(1, "iter");
@@ -304,7 +491,7 @@ Object *builtin_iter(Object *self, Object *args, Object *kwargs) {
     return args_data[0]->iter();
 }
 
-Object *builtin_len(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, len) {
     INIT_METHOD(Object, "len");
 
     CHECK_NOKWARGS("len");
@@ -326,7 +513,71 @@ Object *builtin_len(Object *self, Object *args, Object *kwargs) {
     return result;
 }
 
-Object *builtin_next(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, max) {
+    INIT_METHOD(Object, "max");
+
+    CHECK_ARGSLEN(1, "max");
+    CHECK_NOKWARGS("max");
+
+    auto col = args_data[0];
+
+    // amin, amax, min, max
+    auto vals = argminmax_wrapper(col);
+
+    if (on_error()) {
+        return nullptr;
+    }
+
+    auto result = get<3>(vals);
+
+    return result;
+}
+
+BUILTIN_HANDLER(builtins, min) {
+    INIT_METHOD(Object, "min");
+
+    CHECK_ARGSLEN(1, "min");
+    CHECK_NOKWARGS("min");
+
+    auto col = args_data[0];
+
+    // amin, amax, min, max
+    auto vals = argminmax_wrapper(col);
+
+    if (on_error()) {
+        return nullptr;
+    }
+
+    auto result = get<2>(vals);
+
+    return result;
+}
+
+BUILTIN_HANDLER(builtins, minmax) {
+    INIT_METHOD(Object, "minmax");
+
+    CHECK_ARGSLEN(1, "minmax");
+    CHECK_NOKWARGS("minmax");
+
+    auto col = args_data[0];
+
+    // amin, amax, min, max
+    auto vals = argminmax_wrapper(col);
+
+    if (on_error()) {
+        return nullptr;
+    }
+
+    auto result = Vec::New({get<2>(vals), get<3>(vals)});
+
+    if (!result) {
+        return nullptr;
+    }
+
+    return result;
+}
+
+BUILTIN_HANDLER(builtins, next) {
     INIT_METHOD(Object, "next");
 
     CHECK_ARGSLEN(1, "next");
@@ -336,7 +587,7 @@ Object *builtin_next(Object *self, Object *args, Object *kwargs) {
 }
 
 // Print
-Object *builtin_print(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, print) {
     INIT_METHOD(Object, "print");
 
     CHECK_NOKWARGS("print");
@@ -360,7 +611,7 @@ Object *builtin_print(Object *self, Object *args, Object *kwargs) {
     return null;
 }
 
-Object *builtin_throw(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, throw) {
     INIT_METHOD(Object, "throw");
 
     CHECK_ARGSLEN(1, "throw");
@@ -371,7 +622,7 @@ Object *builtin_throw(Object *self, Object *args, Object *kwargs) {
     return nullptr;
 }
 
-Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, typeof) {
     INIT_METHOD(Object, "typeof");
 
     CHECK_ARGSLEN(1, "typeof");
@@ -380,7 +631,7 @@ Object *builtin_typeof(Object *self, Object *args, Object *kwargs) {
     return args_data[0]->type;
 }
 
-Object *builtin_typename(Object *self, Object *args, Object *kwargs) {
+BUILTIN_HANDLER(builtins, typename) {
     INIT_METHOD(Object, "typename");
 
     CHECK_ARGSLEN(1, "typename");

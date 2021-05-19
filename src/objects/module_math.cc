@@ -55,22 +55,22 @@ void on_math_loaded(Module *mod) {
     const builtin_signature_t tan_sig = {{"x", false}};
 
     // Init
-    FAST_INIT_MODULE_BUILTIN(math, abs);
-    FAST_INIT_MODULE_BUILTIN(math, acos);
-    FAST_INIT_MODULE_BUILTIN(math, asin);
-    FAST_INIT_MODULE_BUILTIN(math, atan);
-    FAST_INIT_MODULE_BUILTIN(math, cos);
-    FAST_INIT_MODULE_BUILTIN(math, exp);
-    FAST_INIT_MODULE_BUILTIN(math, factorial);
-    FAST_INIT_MODULE_BUILTIN(math, gcd);
-    FAST_INIT_MODULE_BUILTIN(math, isfinite);
-    FAST_INIT_MODULE_BUILTIN(math, lcm);
-    FAST_INIT_MODULE_BUILTIN(math, log);
-    FAST_INIT_MODULE_BUILTIN(math, log2);
-    FAST_INIT_MODULE_BUILTIN(math, pow);
-    FAST_INIT_MODULE_BUILTIN(math, sin);
-    FAST_INIT_MODULE_BUILTIN(math, sqrt);
-    FAST_INIT_MODULE_BUILTIN(math, tan);
+    FAST_INIT_BUILTIN(math, abs);
+    FAST_INIT_BUILTIN(math, acos);
+    FAST_INIT_BUILTIN(math, asin);
+    FAST_INIT_BUILTIN(math, atan);
+    FAST_INIT_BUILTIN(math, cos);
+    FAST_INIT_BUILTIN(math, exp);
+    FAST_INIT_BUILTIN(math, factorial);
+    FAST_INIT_BUILTIN(math, gcd);
+    FAST_INIT_BUILTIN(math, isfinite);
+    FAST_INIT_BUILTIN(math, lcm);
+    FAST_INIT_BUILTIN(math, log);
+    FAST_INIT_BUILTIN(math, log2);
+    FAST_INIT_BUILTIN(math, pow);
+    FAST_INIT_BUILTIN(math, sin);
+    FAST_INIT_BUILTIN(math, sqrt);
+    FAST_INIT_BUILTIN(math, tan);
 }
 
 BUILTIN_HANDLER(math, abs) {
