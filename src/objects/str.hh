@@ -21,6 +21,8 @@ struct Str : public DynamicObject {
     static void init_class_objects();
 
     // Methods
+    DECL_METHOD(add);
+
     // Returns the index of the first occurence of a string
     // Returns -1 if not found
     DECL_METHOD(index);

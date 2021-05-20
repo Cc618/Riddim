@@ -374,9 +374,30 @@ void Str::init_class_type() {
 void Str::init_class_objects() {
     // Init methods
     NEW_METHOD(Str, index);
+
+    NEW_METHOD(Str, add);
+    method_add->doc_str = "Appends the other string\n\n- s, Str : String to append";
+    method_add->doc_signature = {{"s", false}};
 }
 
 // --- Methods ---
+Object *Str::me_add_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Str, "add");
+
+    CHECK_ARGSLEN(1, "Str.add");
+    CHECK_NOKWARGS("Str.add");
+
+    if (args_data[0]->type != Str::class_type) {
+        THROW_TYPE_ERROR_PREF("Str.add", args_data[0]->type, Str::class_type);
+
+        return nullptr;
+    }
+
+    me->data += reinterpret_cast<Str*>(args_data[0])->data;
+
+    return null;
+}
+
 Object *Str::me_index_handler(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Str, "index");
 

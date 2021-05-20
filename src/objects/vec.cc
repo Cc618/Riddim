@@ -552,6 +552,7 @@ void Vec::init_class_objects() {
 
     NEW_METHOD(Vec, add);
     method_add->doc_str = "Pushes back an item";
+    method_add->doc_signature = {{"item", false}};
 
     NEW_METHOD(Vec, pop);
     method_pop->doc_str = "Removes an item at a target index (by default, "
