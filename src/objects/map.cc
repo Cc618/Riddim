@@ -144,6 +144,73 @@ void HashMap::init_class_type() {
         }
     };
 
+    // @cmp
+    class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<HashMap *>(self);
+
+        int_t res = 0;
+
+        if (o->type != HashMap::class_type) {
+            res = -1;
+        } else {
+            auto other = reinterpret_cast<HashMap *>(o)->data;
+
+            if (me->data.size() != other.size()) {
+                res = -1;
+            } else {
+                for (const auto &[h, kv] : me->data) {
+                    auto &[mek, mev] = kv;
+
+                    // Key not found, different
+                    auto other_it = other.find(h);
+                    if (other_it == other.end()) {
+                        res = -1;
+                        break;
+                    }
+
+                    auto &[otherh, otherkv] = *other_it;
+                    auto &[otherk, otherv] = otherkv;
+
+                    // Int type verified
+                    auto cmp = mev->cmp(otherv);
+
+                    // Error
+                    if (!cmp) {
+                        return nullptr;
+                    }
+
+                    if (cmp) {
+                        res = reinterpret_cast<Int *>(cmp)->data;
+                        break;
+                    }
+
+                    // Int type verified
+                    cmp = mek->cmp(otherk);
+
+                    // Error
+                    if (!cmp) {
+                        return nullptr;
+                    }
+
+                    if (cmp) {
+                        res = reinterpret_cast<Int *>(cmp)->data;
+                        break;
+                    }
+                }
+            }
+        }
+
+        auto result = new (nothrow) Int(res);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashMap *>(self);
