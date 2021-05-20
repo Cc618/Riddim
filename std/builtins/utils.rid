@@ -15,6 +15,7 @@ fn fatal(msg, exit_code: -1) {
 }
 
 # --- Default functions ---
+# - Size -
 # Used to avoid boilerplate code
 @doc'
 Returns whether it is empty
@@ -26,12 +27,14 @@ fn default_collection_empty() {
 
 @doc'
 Returns whether it is not empty
+
 - return, Bool
 @'
 fn default_collection_not_empty() {
     return len(me) != 0
 }
 
+# - Searching -
 # TODO : Use iterator algorithms
 @doc'
 Returns the index of the first occurence of item.
@@ -52,17 +55,84 @@ fn default_collection_index(item) {
     return -1
 }
 
+# - Functional -
+@doc'
+Returns a collection with all values mapped
+by f
+
+- f : Functor
+- [init] : The collection to use
+@'
+fn default_collection_map(f, init: []) {
+    result = init
+
+    for i in 0 -> len(me) {
+        result.add(f(me[i]))
+    }
+
+    return result
+}
+
+@doc'
+Returns a collection with all values that
+matches the predicate f
+
+- f : Predicate
+- [init] : The collection to use
+@'
+fn default_collection_filter(f, init: []) {
+    result = init
+
+    for i in 0 -> len(me) {
+        if f(me[i]) {
+            result.add(me[i])
+        }
+    }
+
+    return result
+}
+
+@doc'
+Returns the cumulative application of f
+to all elements starting by (init, first element)
+
+- f : Functor of 2 parameters
+- [init] : The collection to use
+@'
+fn default_collection_reduce(f, init: null) {
+    result = init
+
+    for i in 0 -> len(me) {
+        result = f(result, me[i])
+    }
+
+    return result
+}
+
+# --- Defaults ---
 @doc'
 Sets up the collection type with default collection methods
 and attribute variables.
 @'
 fn set_default_collection(type) {
+    # Size
     type.empty = copy(default_collection_empty)
     type.empty!name = typename(type) + '.empty'
 
+    type.not_empty = copy(default_collection_not_empty)
+    type.not_empty!name = typename(type) + '.not_empty'
+
+    # Searching
     type.index = copy(default_collection_index)
     type.index!name = typename(type) + '.index'
 
-    type.not_empty = copy(default_collection_not_empty)
-    type.not_empty!name = typename(type) + '.not_empty'
+    # Functional
+    type.map = copy(default_collection_map)
+    type.map!name = typename(type) + '.map'
+
+    type.filter = copy(default_collection_filter)
+    type.filter!name = typename(type) + '.filter'
+
+    type.reduce = copy(default_collection_reduce)
+    type.reduce!name = typename(type) + '.reduce'
 }
