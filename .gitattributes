@@ -1,0 +1,2 @@
+# To have syntax highlighting on Riddim files
+*.rid linguist-language=Python
