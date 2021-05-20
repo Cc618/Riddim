@@ -47,6 +47,9 @@ void Program::init_class_type() {
         for (auto child : program->obj_stack)
             visit(child);
 
+        for (auto child : program->tmp_stack)
+            visit(child);
+
         visit(program->main_module);
         visit(program->builtins_module);
         visit(program->global_frame);

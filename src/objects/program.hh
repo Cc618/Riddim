@@ -34,6 +34,10 @@ struct Program : public Object {
     std::vector<Object *> globals;
     std::vector<Object *> obj_stack;
 
+    // To avoid objects to be freed, holds objects being processed
+    // in C++
+    std::vector<Object *> tmp_stack;
+
     // This module must be added via add_module (will be garbage collected
     // otherwise)
     Module *main_module;

@@ -8,7 +8,7 @@
 using namespace std;
 
 // Number of minimum alive objects to execute a garbage collection
-constexpr size_t GC_COUNT_THRESHOLD = 1000;
+constexpr size_t GC_COUNT_THRESHOLD = 10000;
 
 // Number of calls to gc_step to garbage collect if necessary
 constexpr size_t GC_PERIOD = 10;

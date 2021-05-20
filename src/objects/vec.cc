@@ -68,7 +68,15 @@ void Vec::init_class_type() {
                 return nullptr;
             }
 
-            vector<Object *> collect;
+            auto vec = Vec::New({});
+            if (!vec) {
+                return nullptr;
+            }
+
+            // To avoid it being freed
+            Program::instance->tmp_stack.push_back(vec);
+            auto &collect = vec->data;
+
             Object *obj = nullptr;
             while (1) {
                 obj = iter->next();
@@ -83,7 +91,8 @@ void Vec::init_class_type() {
                 collect.push_back(obj);
             }
 
-            result = Vec::New(collect);
+            result = vec;
+            Program::instance->tmp_stack.pop_back();
         } else {
             THROW_ARGUMENT_ERROR("Vec.@new", "length",
                                  "0 or 1 arguments required");
