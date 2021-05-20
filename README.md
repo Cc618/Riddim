@@ -2,6 +2,10 @@
 Riddim is an interpreted language designed for algorithms and data structures.
 Riddim is written in C++ and uses Flex / Bison tools.
 
+## Overview
+- Look at some [examples](examples/README.md).
+- Take a look at [Riddim's syntax](doc/syntax.md).
+
 ## Configure / build / install
 Here is the single command to install Riddim :
 ```sh
