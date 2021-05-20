@@ -148,7 +148,7 @@
 %nterm <std::vector<std::pair<ast::Exp *, ast::Exp *>>> map_content map_content_filled
 %nterm <std::vector<ast::Exp*>> vec_content vec_content_filled list_content list_content_filled bilist_content bilist_content_filled
 %nterm <ast::Const*> const
-%nterm <str_t> const_str
+%nterm <str_t> const_str raw_id
 
 // Tokens
 %nterm stop lcurly rcurly lparen rparen lbrack rbrack
@@ -202,13 +202,13 @@ fndecl_target: fndecl_idtarget { $$ = $1; }
     | fndecl_slottarget { $$ = $1; }
     ;
 
-fndecl_attrtarget: ID "." ID {
+fndecl_attrtarget: raw_id "." raw_id {
         $$ = new AttrTarget(
             new Attr(@1.begin.line,
                 new Id(@1.begin.line, $1), $3));
         $$->repr = $1 + "." + $3;
     }
-    | fndecl_attrtarget "." ID {
+    | fndecl_attrtarget "." raw_id {
         $$ = $1;
         auto newattr = new Attr(@1.begin.line, $1->attr, $3);
         $1->attr = newattr;
@@ -217,7 +217,7 @@ fndecl_attrtarget: ID "." ID {
     ;
 
 // Type@slot
-fndecl_slottarget: ID[left] "@" ID[right] {
+fndecl_slottarget: raw_id[left] "@" raw_id[right] {
         $$ = new AttrTarget(
             new Attr(@left.begin.line,
                 new Id(@left.begin.line, $left), "@" + $right));
@@ -225,7 +225,7 @@ fndecl_slottarget: ID[left] "@" ID[right] {
     }
     ;
 
-fndecl_idtarget: ID { $$ = new IdTarget(@1.begin.line, new Id(@1.begin.line, $1)); }
+fndecl_idtarget: raw_id { $$ = new IdTarget(@1.begin.line, new Id(@1.begin.line, $1)); }
     ;
 
 // kwargs are arguments with default values
@@ -704,8 +704,11 @@ const_str: STR
     | RAWSTR
     ;
 
-id: ID { $$ = new Id(@1.begin.line, $1); }
-    | "(" macro_keyword ")" { $$ = new Id(@1.begin.line, $2); }
+id: raw_id { $$ = new Id(@1.begin.line, $raw_id); }
+    ;
+
+raw_id: ID { $$ = $ID; }
+    | "(" macro_keyword ")" { $$ = $macro_keyword; }
     ;
 
 // --- Tokens ---

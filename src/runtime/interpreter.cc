@@ -314,7 +314,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
             POPTOP(tos1);
 
             // Verify type
-            if (tos->type != Type::class_type) {
+            if (!is_type(tos->type)) {
                 THROW_TYPE_ERROR_PREF("is", tos->type, Type::class_type);
 
                 DISPATCH_ERROR;
@@ -459,7 +459,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
             // Avoid exit error issues
             Program::instance->exit_code = 0;
 
-            if (error_type != null && error_type->type != Type::class_type) {
+            if (error_type != null && !is_type(error_type->type)) {
                 THROW_TYPE_ERROR_PREF("catch", error_type->type,
                                       Type::class_type);
 

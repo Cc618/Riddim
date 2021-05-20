@@ -5,6 +5,26 @@ Str methods
 Str!doc = 'String data type'
 Str!name = 'Str'
 
+fn Str@(in)(item) {
+    if item is not Str {
+        return false
+    }
+
+    item_len = len(item)
+    me_len = len(me)
+    if item_len > me_len {
+        return false
+    }
+
+    for i in 0 ->= me_len - item_len {
+        if me[i -> i + item_len] == item {
+            return true
+        }
+    }
+
+    return false
+}
+
 set_default_collection(Str)
 
 @doc'

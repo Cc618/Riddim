@@ -552,6 +552,14 @@ print -a # -314!
 print a - b # 10!
 ```
 
+Note that it is possible to use the raw keyword syntax to declare methods :
+```py
+# Won't compile without parentheses
+fn Number@(in)(item) {
+    return false
+}
+```
+
 To have a list and a description of all slots, see [the object/Slots documentation](object.md).
 Note that not all slots are allowed to be overloaded.
 
