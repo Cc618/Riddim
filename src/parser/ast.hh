@@ -452,6 +452,7 @@ struct BinExp : public Exp {
         Greater,
         LesserEqual,
         GreaterEqual,
+        ThreeWay,
         Sub,
         Add,
         Div,

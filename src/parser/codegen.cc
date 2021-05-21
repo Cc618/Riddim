@@ -796,6 +796,10 @@ void gen_binexp(Module *module, Code *_code, BinExp::Op op, int fileline) {
         PUSH_CODE((opcode_t)CmpOp::GreaterEqual);
         break;
 
+    case BinExp::ThreeWay:
+        PUSH_CODE(BinThreeWay);
+        break;
+
     case BinExp::Add:
         PUSH_CODE(BinAdd);
         break;

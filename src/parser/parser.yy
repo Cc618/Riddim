@@ -62,6 +62,7 @@
     LE          "<="
     GE          ">="
     LESSER      "<"
+    THREEWAY    "<=>"
     GREATER     ">"
     PIPE        "|"
     MINUS       "-"
@@ -166,7 +167,7 @@
 %left "or";
 %left "and";
 %left "not";
-%left "==" "<=" ">=" "<" ">" "is" "in";
+%left "==" "<=" ">=" "<" ">" "<=>" "is" "in";
 %left "+" "-";
 %left "*" "/" "%";
 %left ".";
@@ -429,6 +430,7 @@ macro_keyword: macro_keyword_varargs { $$ = $1; }
     | "/" { $$ = "/"; }
     | "%" { $$ = "%"; }
     | "=" { $$ = "="; }
+    | "<=>" { $$ = "<=>"; }
     | "<" { $$ = "<"; }
     | ">" { $$ = ">"; }
     | "<=" { $$ = "<="; }
@@ -568,6 +570,7 @@ comparison: binary { $$ = $1; }
     | comparison "!=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::NotEqual, $3); }
     | comparison "<=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::LesserEqual, $3); }
     | comparison ">=" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::GreaterEqual, $3); }
+    | comparison "<=>" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::ThreeWay, $3); }
     | comparison "<" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Lesser, $3); }
     | comparison ">" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::Greater, $3); }
     | comparison "in" binary { $$ = new BinExp(@1.begin.line, $1, BinExp::In, $3); }

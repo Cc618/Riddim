@@ -182,6 +182,7 @@ doc{str}        return make_STR(loc, yytext + 3, true);
 "<="            return yy::parser::make_LE(loc);
 ">"             return yy::parser::make_GREATER(loc);
 "<"             return yy::parser::make_LESSER(loc);
+"<=>"           return yy::parser::make_THREEWAY(loc);
 "|"             return yy::parser::make_PIPE(loc);
 "and"           return yy::parser::make_AND(loc);
 "or"            return yy::parser::make_OR(loc);

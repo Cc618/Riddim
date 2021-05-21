@@ -382,13 +382,30 @@ void interpret_fragment(Code *_code, size_t &ip) {
             POPTOP(tos);
             POPTOP(tos1);
 
-            auto prod = tos1->sub(tos);
+            auto result = tos1->sub(tos);
 
-            if (!prod) {
+            if (!result) {
                 DISPATCH_ERROR;
             }
 
-            PUSH(prod);
+            PUSH(result);
+
+            NEXT(0);
+        }
+
+        case BinThreeWay: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            auto result = tos1->cmp(tos);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
 
             NEXT(0);
         }
