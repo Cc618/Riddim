@@ -167,6 +167,22 @@ impostor = (print)
 impostor('I am not print')
 ```
 
+### Three way / space ship operator
+Riddim has the three way operator <=>.
+It returns the result of a@cmp(b) for a <=> b.
+The result is always an Int, if it is negative,
+a < b, if positive, a > b and a == b if null.
+
+It is useful for a custom sorting algorithm :
+```python
+x = [2, 1, 3, 9, -1]
+print sort(x, |a, b| -(a <=> b))
+```
+
+```python
+>>> [9, 3, 2, 1, -1]
+```
+
 ### Macros
 Macros are normal functions, only the syntax is different.
 There is no parenthesis and every argument is passed on the same line.
@@ -653,7 +669,7 @@ The precedence is similar to Python.
 | or |
 | and |
 | not |
-| == <= >= < > is in |
+| == <= >= < > <=> is in |
 | \+ - |
 | \* / % |
 | Attribute reference |
