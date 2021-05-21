@@ -176,7 +176,7 @@ a < b, if positive, a > b and a == b if null.
 It is useful for a custom sorting algorithm :
 ```python
 x = [2, 1, 3, 9, -1]
-print sort(x, |a, b| -(a <=> b))
+print x.sort(|a, b| -(a <=> b))
 ```
 
 ```python
