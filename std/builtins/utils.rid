@@ -109,12 +109,26 @@ fn default_collection_reduce(f, init: null) {
     return result
 }
 
+@doc'
+Sorts the collection inplace
+
+- [cmp] : Custom compare, returns a <=> b, by default a@cmp is used
+- return : Returns col
+@'
+fn default_collection_sort(cmp: null) {
+    if cmp is Null {
+        return sort(me)
+    } else {
+        return sort(me, cmp)
+    }
+}
+
 # --- Defaults ---
 @doc'
 Sets up the collection type with default collection methods
 and attribute variables.
 @'
-fn set_default_collection(type) {
+fn set_default_collection(type, is_random_access: false) {
     # Size
     type.empty = copy(default_collection_empty)
     type.empty!name = typename(type) + '.empty'
@@ -135,4 +149,9 @@ fn set_default_collection(type) {
 
     type.reduce = copy(default_collection_reduce)
     type.reduce!name = typename(type) + '.reduce'
+
+    if is_random_access {
+        type.sort = copy(default_collection_sort)
+        type.sort!name = typename(type) + '.sort'
+    }
 }

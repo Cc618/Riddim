@@ -10,4 +10,7 @@ Creates a mapping between key / value pairs.
 This is the object created with the {k: v} syntax.
 @'
 
-set_default_collection(HashMap)
+set_default_collection(
+    HashMap,
+    is_random_access: false,
+)

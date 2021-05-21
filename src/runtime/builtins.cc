@@ -715,7 +715,7 @@ BUILTIN_HANDLER(builtins, sort) {
         return nullptr;
     }
 
-    // TODO : tmp_stack for ints etc.
+    // TODO A : tmp_stack for ints etc.
 
     auto col = args_data[0];
     auto len = col->len();
@@ -738,7 +738,7 @@ BUILTIN_HANDLER(builtins, sort) {
         }
     }
 
-    // TODO : Quick sort
+    // TODO A : Quick sort
     for (int_t i = 0; i < size; ++i) {
         for (int_t j = 1; j < size; ++j) {
             auto a = col->getitem(indices[j - 1]);
