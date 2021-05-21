@@ -198,6 +198,7 @@ void init_builtins() {
 
     const str_t sort_doc = "Sorts the collection inplace\n\n"
                            "- col : Random access collection\n"
+                           "- [cmp] : Custom compare, returns a <=> b, by default a@cmp is used\n"
                            "- return : Returns col";
 
     const str_t throw_doc = "Throws error\n\n"
@@ -231,7 +232,7 @@ void init_builtins() {
     const builtin_signature_t sort_sig = {{"col", false}};
     const builtin_signature_t throw_sig = {{"error", false}};
     const builtin_signature_t typename_sig = {{"type", false}};
-    const builtin_signature_t typeof_sig = {{"obj", false}};
+    const builtin_signature_t typeof_sig = {{"obj", false}, {"cmp", true}};
 
     // Functions
     FAST_INIT_SINGLE_BUILTIN(abs);
@@ -702,8 +703,17 @@ BUILTIN_HANDLER(builtins, typename) {
 BUILTIN_HANDLER(builtins, sort) {
     INIT_METHOD(Object, "sort");
 
-    CHECK_ARGSLEN(1, "sort");
     CHECK_NOKWARGS("sort");
+
+    Object *custom_cmp = nullptr;
+
+    if (args_data.size() == 2) {
+        custom_cmp = args_data[1];
+    } else if (args_data.size() != 1) {
+        THROW_ARGUMENT_ERROR("sort", "length", "1 or 2 arguments required");
+
+        return nullptr;
+    }
 
     // TODO : tmp_stack for ints etc.
 
@@ -741,8 +751,19 @@ BUILTIN_HANDLER(builtins, sort) {
                 return nullptr;
             }
 
-            // TODO : Key
-            auto cmp = a->cmp(b);
+            // Custom compare
+            Object *cmp;
+            if (custom_cmp) {
+                auto callargs = Vec::New({a, b});
+                if (!callargs) {
+                    return nullptr;
+                }
+
+                cmp = custom_cmp->call(callargs, HashMap::empty);
+            } else {
+                cmp = a->cmp(b);
+            }
+
             if (!cmp) {
                 return nullptr;
             }
