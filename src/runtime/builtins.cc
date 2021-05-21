@@ -196,6 +196,10 @@ void init_builtins() {
     const str_t print_doc = "Prints to stdout all arguments\n\n"
                             "- [args...] : Objects to print";
 
+    const str_t sort_doc = "Sorts the collection inplace\n\n"
+                           "- col : Random access collection\n"
+                           "- return : Returns col";
+
     const str_t throw_doc = "Throws error\n\n"
                             "- error : Target error";
 
@@ -224,6 +228,7 @@ void init_builtins() {
     const builtin_signature_t minmax_sig = {{"col", false}};
     const builtin_signature_t next_sig = {{"iterator", false}};
     const builtin_signature_t print_sig = {{"args...", true}};
+    const builtin_signature_t sort_sig = {{"col", false}};
     const builtin_signature_t throw_sig = {{"error", false}};
     const builtin_signature_t typename_sig = {{"type", false}};
     const builtin_signature_t typeof_sig = {{"obj", false}};
@@ -245,6 +250,7 @@ void init_builtins() {
     FAST_INIT_SINGLE_BUILTIN(minmax);
     FAST_INIT_SINGLE_BUILTIN(next);
     FAST_INIT_SINGLE_BUILTIN(print);
+    FAST_INIT_SINGLE_BUILTIN(sort);
     FAST_INIT_SINGLE_BUILTIN(throw);
     FAST_INIT_SINGLE_BUILTIN(typeof);
     FAST_INIT_SINGLE_BUILTIN(typename);
@@ -691,4 +697,69 @@ BUILTIN_HANDLER(builtins, typename) {
     }
 
     return sname;
+}
+
+BUILTIN_HANDLER(builtins, sort) {
+    INIT_METHOD(Object, "sort");
+
+    CHECK_ARGSLEN(1, "sort");
+    CHECK_NOKWARGS("sort");
+
+    // TODO : tmp_stack for ints etc.
+
+    auto col = args_data[0];
+    auto len = col->len();
+    if (!len) {
+        return nullptr;
+    }
+
+    // Int guaranted
+    auto size = reinterpret_cast<Int *>(len)->data;
+
+    // Generate indices
+    vector<Int *> indices(size);
+    for (int_t i = 0; i < size; ++i) {
+        indices[i] = new Int(i);
+
+        if (!indices[i]) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+    }
+
+    // TODO : Quick sort
+    for (int_t i = 0; i < size; ++i) {
+        for (int_t j = 1; j < size; ++j) {
+            auto a = col->getitem(indices[j - 1]);
+            if (!a) {
+                return nullptr;
+            }
+
+            auto b = col->getitem(indices[j]);
+            if (!b) {
+                return nullptr;
+            }
+
+            // TODO : Key
+            auto cmp = a->cmp(b);
+            if (!cmp) {
+                return nullptr;
+            }
+
+            // a > b
+            if (reinterpret_cast<Int *>(cmp)->data > 0) {
+                // Swap
+                if (!col->setitem(indices[j - 1], b)) {
+                    return nullptr;
+                }
+
+                if (!col->setitem(indices[j], a)) {
+                    return nullptr;
+                }
+            }
+        }
+    }
+
+    return col;
 }
