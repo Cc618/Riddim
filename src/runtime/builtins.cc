@@ -196,10 +196,11 @@ void init_builtins() {
     const str_t print_doc = "Prints to stdout all arguments\n\n"
                             "- [args...] : Objects to print";
 
-    const str_t sort_doc = "Sorts the collection inplace\n\n"
-                           "- col : Random access collection\n"
-                           "- [cmp] : Custom compare, returns a <=> b, by default a@cmp is used\n"
-                           "- return : Returns col";
+    const str_t sort_doc =
+        "Sorts the collection inplace\n\n"
+        "- col : Random access collection\n"
+        "- [cmp] : Custom compare, returns a <=> b, by default a@cmp is used\n"
+        "- return : Returns col";
 
     const str_t throw_doc = "Throws error\n\n"
                             "- error : Target error";
@@ -714,14 +715,17 @@ BUILTIN_HANDLER(builtins, sort) {
 
         return nullptr;
     }
-
-    // TODO A : tmp_stack for ints etc.
-
     auto col = args_data[0];
     auto len = col->len();
     if (!len) {
         return nullptr;
     }
+
+    // Keep track of temporaries
+    auto tmp_stack_old_size = Program::instance->tmp_stack.size();
+
+#define KEEP_TRACK(OBJ)                                                        \
+    Program::instance->tmp_stack.push_back(OBJ);
 
     // Int guaranted
     auto size = reinterpret_cast<Int *>(len)->data;
@@ -730,11 +734,12 @@ BUILTIN_HANDLER(builtins, sort) {
     vector<Int *> indices(size);
     for (int_t i = 0; i < size; ++i) {
         indices[i] = new Int(i);
+        KEEP_TRACK(indices[i]);
 
         if (!indices[i]) {
             THROW_MEMORY_ERROR;
 
-            return nullptr;
+            goto error;
         }
     }
 
@@ -743,12 +748,12 @@ BUILTIN_HANDLER(builtins, sort) {
         for (int_t j = 1; j < size; ++j) {
             auto a = col->getitem(indices[j - 1]);
             if (!a) {
-                return nullptr;
+                goto error;
             }
 
             auto b = col->getitem(indices[j]);
             if (!b) {
-                return nullptr;
+                goto error;
             }
 
             // Custom compare
@@ -756,7 +761,7 @@ BUILTIN_HANDLER(builtins, sort) {
             if (custom_cmp) {
                 auto callargs = Vec::New({a, b});
                 if (!callargs) {
-                    return nullptr;
+                    goto error;
                 }
 
                 cmp = custom_cmp->call(callargs, HashMap::empty);
@@ -765,22 +770,29 @@ BUILTIN_HANDLER(builtins, sort) {
             }
 
             if (!cmp) {
-                return nullptr;
+                goto error;
             }
 
             // a > b
             if (reinterpret_cast<Int *>(cmp)->data > 0) {
                 // Swap
                 if (!col->setitem(indices[j - 1], b)) {
-                    return nullptr;
+                    goto error;
                 }
 
                 if (!col->setitem(indices[j], a)) {
-                    return nullptr;
+                    goto error;
                 }
             }
         }
     }
 
+    Program::instance->tmp_stack.resize(tmp_stack_old_size);
+
     return col;
+
+error:
+    Program::instance->tmp_stack.resize(tmp_stack_old_size);
+
+    return nullptr;
 }
