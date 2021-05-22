@@ -19,6 +19,7 @@
 #include "vec.hh"
 #include "range.hh"
 #include "usertype.hh"
+#include "deque.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -76,6 +77,7 @@ static void init_types() {
     INIT_TYPE(Global);
     INIT_TYPE(Iterator);
     INIT_TYPE(Range);
+    INIT_TYPE(Deque);
 
 #undef INIT_TYPE
 
@@ -121,6 +123,11 @@ static void init_objects() {
         return;
 
     AttrObject::init_class_objects();
+
+    if (on_error())
+        return;
+
+    Deque::init_class_objects();
 
     if (on_error())
         return;

@@ -1,0 +1,24 @@
+mod!doc = @'
+Deque builtins
+@'
+
+Deque!name = 'Deque'
+Deque!doc = @'
+Double ended queue data type.
+A queue supporting front / back operations
+@'
+
+set_default_collection(
+    Deque,
+    is_random_access: true
+)
+
+@doc'
+Removes the first item and returns it.
+It is an alias for pop(0)
+
+- return : Popped item
+@'
+fn Deque.pop_front() {
+    return me.pop(0)
+}
