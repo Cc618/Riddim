@@ -35,10 +35,10 @@ fn default_collection_not_empty() {
 }
 
 # - Searching -
-# TODO : Use iterator algorithms
 @doc'
 Returns the index of the first occurence of item.
 Returns -1 if not found.
+
 - item : Item to find
 - return : The index of the item (or -1 if not found)
 @'
@@ -50,6 +50,23 @@ fn default_collection_index(item) {
         }
 
         i += 1
+    }
+
+    return -1
+}
+
+@doc'
+Returns the index of the last occurence of item.
+Returns -1 if not found.
+
+- item : Item to find
+- return : The index of the item (or -1 if not found)
+@'
+fn default_collection_last_index(item) {
+    for i in len(me) - 1 ->= 0 .. -1 {
+        if me[i] == item {
+            return i
+        }
     }
 
     return -1
@@ -139,6 +156,9 @@ fn set_default_collection(type, is_random_access: false) {
     # Searching
     type.index = copy(default_collection_index)
     type.index!name = typename(type) + '.index'
+
+    type.last_index = copy(default_collection_last_index)
+    type.last_index!name = typename(type) + '.last_index'
 
     # Functional
     type.map = copy(default_collection_map)
