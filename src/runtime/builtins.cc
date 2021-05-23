@@ -107,6 +107,90 @@ static tuple<int_t, int_t, Object *, Object *> argminmax_wrapper(Object *col) {
     return {min_index, max_index, min_object, max_object};
 }
 
+// Partitions the array, returns the pivot index
+// Returns -1 on error
+static int_t quick_sort_partition(Object *col, int_t start, int_t end,
+                                  vector<Int *> &indices, Object *custom_cmp) {
+    auto pivot = col->getitem(indices[end - 1]);
+
+    if (!pivot) {
+        return -1;
+    }
+
+    // The last element is the pivot
+    // Index where the first element >= pivot is (upper bound)
+    int_t upper = start;
+    for (int i = start; i < end; ++i) {
+        auto obj = col->getitem(indices[i]);
+        if (!obj) {
+            return -1;
+        }
+
+        Object *cmp;
+        if (custom_cmp) {
+            auto callargs = Vec::New({obj, pivot});
+            if (!callargs) {
+                return -1;
+            }
+
+            cmp = custom_cmp->call(callargs, HashMap::empty);
+        } else {
+            cmp = obj->cmp(pivot);
+        }
+
+        if (!cmp) {
+            return -1;
+        }
+
+        // if (col[i] < col[end - 1])
+        if (reinterpret_cast<Int *>(cmp)->data < 0) {
+            // swap(col[i], col[upper]);
+            auto upper_obj = col->getitem(indices[upper]);
+            if (!upper_obj) {
+                return -1;
+            }
+
+            if (!col->setitem(indices[i], upper_obj) ||
+                !col->setitem(indices[upper], obj)) {
+                return -1;
+            }
+
+            ++upper;
+        }
+    }
+
+    // swap(col[upper], col[end - 1]);
+    auto upper_obj = col->getitem(indices[upper]);
+    if (!upper_obj) {
+        return -1;
+    }
+
+    if (!col->setitem(indices[end - 1], upper_obj) ||
+        !col->setitem(indices[upper], pivot)) {
+        return -1;
+    }
+
+    return upper;
+}
+
+// Returns false on error
+static bool quick_sort(Object *col, int_t start, int_t end,
+                       vector<Int *> &indices, Object *custom_cmp) {
+    if (start < end) {
+        int_t pivot =
+            quick_sort_partition(col, start, end, indices, custom_cmp);
+
+        // Sort parts
+        if (pivot == -1 ||
+            !quick_sort(col, start, pivot, indices, custom_cmp) ||
+            !quick_sort(col, pivot + 1, end, indices, custom_cmp)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // --- Global Object ---
 Type *Global::class_type = nullptr;
 
@@ -724,8 +808,7 @@ BUILTIN_HANDLER(builtins, sort) {
     // Keep track of temporaries
     auto tmp_stack_old_size = Program::instance->tmp_stack.size();
 
-#define KEEP_TRACK(OBJ)                                                        \
-    Program::instance->tmp_stack.push_back(OBJ);
+#define KEEP_TRACK(OBJ) Program::instance->tmp_stack.push_back(OBJ);
 
     // Int guaranted
     auto size = reinterpret_cast<Int *>(len)->data;
@@ -743,48 +826,8 @@ BUILTIN_HANDLER(builtins, sort) {
         }
     }
 
-    // TODO A : Quick sort
-    for (int_t i = 0; i < size; ++i) {
-        for (int_t j = 1; j < size; ++j) {
-            auto a = col->getitem(indices[j - 1]);
-            if (!a) {
-                goto error;
-            }
-
-            auto b = col->getitem(indices[j]);
-            if (!b) {
-                goto error;
-            }
-
-            // Custom compare
-            Object *cmp;
-            if (custom_cmp) {
-                auto callargs = Vec::New({a, b});
-                if (!callargs) {
-                    goto error;
-                }
-
-                cmp = custom_cmp->call(callargs, HashMap::empty);
-            } else {
-                cmp = a->cmp(b);
-            }
-
-            if (!cmp) {
-                goto error;
-            }
-
-            // a > b
-            if (reinterpret_cast<Int *>(cmp)->data > 0) {
-                // Swap
-                if (!col->setitem(indices[j - 1], b)) {
-                    goto error;
-                }
-
-                if (!col->setitem(indices[j], a)) {
-                    goto error;
-                }
-            }
-        }
+    if (!quick_sort(col, 0, size, indices, custom_cmp)) {
+        goto error;
     }
 
     Program::instance->tmp_stack.resize(tmp_stack_old_size);
