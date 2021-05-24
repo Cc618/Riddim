@@ -16,8 +16,6 @@
 using namespace std;
 
 void on_math_loaded(Module *mod) {
-    auto &global_frame = Program::instance->global_frame;
-
     // Docs
     const str_t acos_doc = "Returns the arc cosinus of x";
     const str_t asin_doc = "Returns the arc sinus of x";

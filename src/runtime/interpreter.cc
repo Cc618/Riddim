@@ -76,6 +76,7 @@ inline Object *pop_top() {
 bool interpret_program(Module *main_module) {
     Program::instance->main_module = main_module;
 
+    // Interpret builtins first
     if (!Program::instance->builtins_module) {
         auto mod_builtins = load_module("builtins", "");
 
@@ -83,6 +84,12 @@ bool interpret_program(Module *main_module) {
             throw_fmt(ImportError, "Cannot find std module %sbuiltins%s",
                       C_BLUE, C_NORMAL);
 
+            return false;
+        }
+
+        on_builtins_loaded(mod_builtins);
+
+        if (on_error()) {
             return false;
         }
 
@@ -94,6 +101,9 @@ bool interpret_program(Module *main_module) {
         }
 
         Program::instance->builtins_module = mod_builtins;
+
+        // Push this frame to have full access of every member of
+        // builtins without namespace
         Program::instance->push_frame(mod_builtins->frame);
     }
 

@@ -10,7 +10,7 @@
 struct Program;
 
 // --- Macros ---
-#define INIT_BUILTIN(NAME, HANDLER, DOC, SIGNATURE, GLOBAL)                    \
+#define INIT_BUILTIN(NAME, HANDLER, DOC, SIGNATURE)                            \
     auto HANDLER##_obj =                                                       \
         new (nothrow) Builtin(HANDLER, NAME, nullptr, DOC, SIGNATURE);         \
     if (!HANDLER##_obj) {                                                      \
@@ -20,17 +20,10 @@ struct Program;
     auto HANDLER##_name = Str::New(NAME);                                      \
     if (!HANDLER##_name) {                                                     \
         return;                                                                \
-    }                                                                          \
-    if (GLOBAL && !global_frame->setitem(HANDLER##_name, HANDLER##_obj)) {     \
-        return;                                                                \
     }
 
-#define FAST_INIT_SINGLE_BUILTIN(NAME)                                         \
-    INIT_BUILTIN(#NAME, builtin_builtins_##NAME, NAME##_doc, NAME##_sig, true);
-
 #define FAST_INIT_BUILTIN(MODULE, NAME)                                        \
-    INIT_BUILTIN(#NAME, builtin_##MODULE##_##NAME, NAME##_doc, NAME##_sig,     \
-                 false);                                                       \
+    INIT_BUILTIN(#NAME, builtin_##MODULE##_##NAME, NAME##_doc, NAME##_sig);    \
     if (!mod->setattr(builtin_##MODULE##_##NAME##_name,                        \
                       builtin_##MODULE##_##NAME##_obj)) {                      \
         return;                                                                \
@@ -55,6 +48,13 @@ struct Global : public Object {
 extern Global *enditer;
 
 // --- Init ---
+struct Module;
+
+// Handler when the builtins module is loaded
+// Note that in comparison to other module handlers,
+// this one is called before the riddim module is loaded
+void on_builtins_loaded(Module *mod);
+
 // Inits builtins and add them in the program's global frame
 void init_builtins();
 

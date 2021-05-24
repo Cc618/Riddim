@@ -210,9 +210,7 @@ void Global::init_class_type() {
 Global *enditer = nullptr;
 
 // --- Init ---
-void init_builtins() {
-    auto &global_frame = Program::instance->global_frame;
-
+void on_builtins_loaded(Module *mod) {
     // Docs
     const str_t abs_doc = "Returns the absolute value of x";
 
@@ -320,33 +318,33 @@ void init_builtins() {
     const builtin_signature_t typeof_sig = {{"obj", false}, {"cmp", true}};
 
     // Functions
-    FAST_INIT_SINGLE_BUILTIN(abs);
-    FAST_INIT_SINGLE_BUILTIN(argmax);
-    FAST_INIT_SINGLE_BUILTIN(argmin);
-    FAST_INIT_SINGLE_BUILTIN(argminmax);
-    FAST_INIT_SINGLE_BUILTIN(assert);
-    FAST_INIT_SINGLE_BUILTIN(copy);
-    FAST_INIT_SINGLE_BUILTIN(doc);
-    FAST_INIT_SINGLE_BUILTIN(exit);
-    FAST_INIT_SINGLE_BUILTIN(hash);
-    FAST_INIT_SINGLE_BUILTIN(iter);
-    FAST_INIT_SINGLE_BUILTIN(len);
-    FAST_INIT_SINGLE_BUILTIN(max);
-    FAST_INIT_SINGLE_BUILTIN(min);
-    FAST_INIT_SINGLE_BUILTIN(minmax);
-    FAST_INIT_SINGLE_BUILTIN(next);
-    FAST_INIT_SINGLE_BUILTIN(print);
-    FAST_INIT_SINGLE_BUILTIN(sort);
-    FAST_INIT_SINGLE_BUILTIN(throw);
-    FAST_INIT_SINGLE_BUILTIN(typeof);
-    FAST_INIT_SINGLE_BUILTIN(typename);
+    FAST_INIT_BUILTIN(builtins, abs);
+    FAST_INIT_BUILTIN(builtins, argmax);
+    FAST_INIT_BUILTIN(builtins, argmin);
+    FAST_INIT_BUILTIN(builtins, argminmax);
+    FAST_INIT_BUILTIN(builtins, assert);
+    FAST_INIT_BUILTIN(builtins, copy);
+    FAST_INIT_BUILTIN(builtins, doc);
+    FAST_INIT_BUILTIN(builtins, exit);
+    FAST_INIT_BUILTIN(builtins, hash);
+    FAST_INIT_BUILTIN(builtins, iter);
+    FAST_INIT_BUILTIN(builtins, len);
+    FAST_INIT_BUILTIN(builtins, max);
+    FAST_INIT_BUILTIN(builtins, min);
+    FAST_INIT_BUILTIN(builtins, minmax);
+    FAST_INIT_BUILTIN(builtins, next);
+    FAST_INIT_BUILTIN(builtins, print);
+    FAST_INIT_BUILTIN(builtins, sort);
+    FAST_INIT_BUILTIN(builtins, throw);
+    FAST_INIT_BUILTIN(builtins, typeof);
+    FAST_INIT_BUILTIN(builtins, typename);
 
     // Globals
 #define REGISTER_GLOBAL(NAME, ID)                                              \
     auto NAME##_str = Str::New(#NAME);                                         \
     if (!NAME##_str)                                                           \
         return;                                                                \
-    Program::instance->global_frame->setitem(NAME##_str, ID);
+    mod->setattr(NAME##_str, ID);
 
     // enditer
     enditer = new (nothrow) Global();
@@ -361,7 +359,9 @@ void init_builtins() {
     REGISTER_GLOBAL(nan, float_nan);
 
 #undef REGISTER_GLOBAL
+}
 
+void init_builtins() {
     // Modules
     Program::instance->builtin_modules["math"] = on_math_loaded;
 }
