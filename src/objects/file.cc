@@ -170,7 +170,8 @@ void File::init_class_objects() {
     method_close->doc_signature = {};
 
     NEW_METHOD(File, read);
-    method_read->doc_str = "Reads the content of the file";
+    method_read->doc_str = "Reads the content of the file\n\n"
+        "- return, Str (text mode) or Vec{Int} (binary mode) : Content";
     method_read->doc_signature = {};
 
     NEW_METHOD(File, write);
