@@ -6,6 +6,18 @@ File!name = 'File'
 File!doc = @'
 A file stream.
 Can be material or virtual
+
+- path : Path (relative or absolute) to the target file
+- [mode, Str] : Opening mode, string describing how to open the
+    file, see details below. 'r' by default
+
+* Opening modes :
++ r : Read only
++ w : Write only
++ rw : Read and write
++ rb : Read only (binary mode)
++ wb : Write only (binary mode)
++ rwb : Read and write (binary mode)
 @'
 
 File.stdin!doc = @'
