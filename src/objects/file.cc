@@ -170,7 +170,8 @@ void File::init_class_objects() {
     method_close->doc_signature = {};
 
     NEW_METHOD(File, read);
-    method_read->doc_str = "Reads the content of the file\n\n"
+    method_read->doc_str =
+        "Reads the content of the file\n\n"
         "- return, Str (text mode) or Vec{Int} (binary mode) : Content";
     method_read->doc_signature = {};
 
@@ -284,9 +285,12 @@ Object *File::me_read_handler(Object *self, Object *args, Object *kwargs) {
 
             str_t content;
             str_t sline;
+            auto &stream = me->kind == File::Data ? me->data : cin;
+            while (getline(stream, sline)) {
+                content += sline;
 
-            while (getline(me->kind == File::Data ? me->data : cin, sline)) {
-                content += sline + '\n';
+                if (!stream.eof())
+                    content += '\n';
             }
 
             auto result = Str::New(content);

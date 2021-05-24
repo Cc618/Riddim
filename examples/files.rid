@@ -1,0 +1,42 @@
+# Shows how files work with Riddim
+
+path = 'testfile.txt'
+
+# Writing text
+f = File(path, 'w')
+f.write('Hello world, this file has been created by Riddim')
+
+# Note that all files are closed at the end of
+# the program but it is necessary to close it
+# now if we want to open it again in another mode
+f.close()
+print 'Written'
+
+# Reading text
+f = File(path)
+content = f.read()
+print 'Read', content
+
+f.close()
+
+# Writing binary content
+f = File(path, 'wb')
+f.write([0x43, 0x0A, 0x63])
+f.close()
+
+# Reading binary content
+f = File(path, 'rb')
+print f.read()
+f.close()
+
+# Special (virtual) files
+# Standard output
+File.stdout.write('I am printing without line feed')
+print ' (this text is not written but printed)'
+
+# Standard error output
+File.stderr.write('This message is on stderr\n')
+
+# Standard input
+# You can pipe an output and try `print File.stdin.read()`
+print File.stdin
