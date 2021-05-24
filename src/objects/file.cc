@@ -86,6 +86,7 @@ void File::init_class_type() {
             return nullptr;
 
         result->path = reinterpret_cast<Str *>(args_data[0])->data;
+        result->kind = File::Data;
 
         // Open mode
         if (open_mode == "r") {
@@ -255,7 +256,7 @@ Object *File::me_read_handler(Object *self, Object *args, Object *kwargs) {
             str_t sline;
 
             while (getline(me->kind == File::Data ? me->data : cin, sline)) {
-                content += sline;
+                content += sline + '\n';
             }
 
             auto result = Str::New(content);
@@ -289,7 +290,41 @@ Object *File::me_write_handler(Object *self, Object *args, Object *kwargs) {
                 return nullptr;
             }
 
-            // TODO A :
+            // Construct from iterable
+            auto iter = args_data[0]->iter();
+
+            if (!iter) {
+                THROW_ARGUMENT_ERROR("File.write", "iterable",
+                                     "Requires an iterable object");
+
+                return nullptr;
+            }
+
+            Object *obj = nullptr;
+            while (1) {
+                // Fetch next byte
+                obj = iter->next();
+
+                if (!obj) {
+                    return nullptr;
+                }
+
+                if (obj == enditer)
+                    break;
+
+                if (obj->type != Int::class_type) {
+                    THROW_TYPE_ERROR_PREF("File.write", obj->type, Int::class_type);
+
+                    return nullptr;
+                }
+
+                // Write byte
+                char byte = reinterpret_cast<Int*>(obj)->data;
+
+                me->data.write(&byte, 1);
+            }
+
+            return null;
         } else {
             if (args_data[0]->type != Str::class_type) {
                 THROW_TYPE_ERROR_PREF("File.write", args_data[0]->type,
