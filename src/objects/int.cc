@@ -167,46 +167,21 @@ void Int::init_class_type() {
         return result;
     };
 
+    // Always casts to float
     // @div
     class_type->fn_div = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Int *>(self);
 
         // Cast to float
-        if (o->type == Float::class_type) {
-            auto me_float = new (nothrow) Float(me->data);
+        auto me_float = new (nothrow) Float(me->data);
 
-            if (!me_float) {
-                THROW_MEMORY_ERROR;
-
-                return nullptr;
-            }
-
-            return me_float->div(o);
-        }
-
-        if (o->type != Int::class_type) {
-            THROW_TYPE_ERROR_PREF("Int.@div", o->type, Int::class_type);
-
-            return nullptr;
-        }
-
-        auto odata = reinterpret_cast<Int *>(o)->data;
-
-        if (odata == 0) {
-            THROW_ARITHMETIC_ERROR("/", "Division by 0");
-
-            return nullptr;
-        }
-
-        auto result = new (nothrow) Int(me->data / odata);
-
-        if (!result) {
+        if (!me_float) {
             THROW_MEMORY_ERROR;
 
             return nullptr;
         }
 
-        return result;
+        return me_float->div(o);
     };
 
     // @hash
