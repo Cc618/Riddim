@@ -58,9 +58,19 @@ void File::init_class_type() {
                                  Object *kwargs) -> Object * {
         INIT_METHOD(File, "File");
 
-        // TODO A : Open mode
-        CHECK_ARGSLEN(1, "File");
         CHECK_NOKWARGS("File");
+
+        str_t open_mode = "r";
+        if (args_data.size() == 2) {
+            if (args_data[1]->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("File.@new{mode}", args_data[1]->type,
+                                      Str::class_type);
+
+                return nullptr;
+            }
+
+            open_mode = reinterpret_cast<Str *>(args_data[1])->data;
+        }
 
         if (args_data[0]->type != Str::class_type) {
             THROW_TYPE_ERROR_PREF("File.@new{path}", args_data[0]->type,
@@ -77,18 +87,56 @@ void File::init_class_type() {
 
         result->path = reinterpret_cast<Str *>(args_data[0])->data;
 
-        // TODO : rw mode
-        result->mode_read = true;
-        result->mode_write = false;
-        result->mode_binary = false;
+        // Open mode
+        if (open_mode == "r") {
+            result->mode_read = true;
+            result->mode_write = false;
+            result->mode_binary = false;
+        } else if (open_mode == "w") {
+            result->mode_read = false;
+            result->mode_write = true;
+            result->mode_binary = false;
+        } else if (open_mode == "rb") {
+            result->mode_read = true;
+            result->mode_write = false;
+            result->mode_binary = true;
+        } else if (open_mode == "wb") {
+            result->mode_read = false;
+            result->mode_write = true;
+            result->mode_binary = true;
+        } else if (open_mode == "rw") {
+            result->mode_read = true;
+            result->mode_write = true;
+            result->mode_binary = false;
+        } else if (open_mode == "rwb") {
+            result->mode_read = true;
+            result->mode_write = true;
+            result->mode_binary = true;
+        } else {
+            throw_fmt(FileError, "Invalid open mode %s%s%s", C_RED, open_mode,
+                      C_NORMAL);
+
+            return nullptr;
+        }
+
+        ios_base::openmode mode = static_cast<ios_base::openmode>(0);
+
+        if (result->mode_read && result->mode_write) {
+            mode |= fstream::in;
+            mode |= fstream::out;
+        } else if (result->mode_write) {
+            mode |= fstream::out;
+            mode |= fstream::trunc;
+        } else if (result->mode_read) {
+            mode |= fstream::in;
+        }
+
+        if (result->mode_binary) {
+            mode |= fstream::binary;
+        }
 
         // Open file
-        result->data.open(
-            result->path,
-            static_cast<ios_base::openmode>(
-                (result->mode_read ? fstream::in : 0) |
-                (result->mode_write ? fstream::out | fstream::trunc : 0) |
-                (result->mode_binary ? fstream::binary : 0)));
+        result->data.open(result->path, mode);
 
         if (!result->data.is_open()) {
             throw_fmt(FileError, "File %s%s%s failed to opened", C_BLUE,
@@ -193,6 +241,10 @@ Object *File::me_write_handler(Object *self, Object *args, Object *kwargs) {
 
             return nullptr;
         }
+
+        auto data = reinterpret_cast<Str*>(args_data[0])->data;
+
+        me->data << data;
 
         return null;
     }
