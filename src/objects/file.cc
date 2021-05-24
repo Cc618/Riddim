@@ -244,7 +244,36 @@ Object *File::me_read_handler(Object *self, Object *args, Object *kwargs) {
     // String content
     if (me->kind == File::Stdin || me->data.is_open()) {
         if (me->mode_binary) {
-            // TODO A : Binary mode
+            if (me->kind != File::Data) {
+                throw_fmt(FileError, "File.read : Got invalid file");
+
+                return nullptr;
+            }
+
+            Vec *result = Vec::New();
+
+            if (!result) {
+                return nullptr;
+            }
+
+            int byte;
+            while (1) {
+                byte = me->data.get();
+                if (byte == EOF) {
+                    break;
+                }
+
+                auto o = new (nothrow) Int(byte);
+                if (!o) {
+                    THROW_MEMORY_ERROR;
+
+                    return nullptr;
+                }
+
+                result->data.push_back(o);
+            }
+
+            return result;
         } else {
             if (me->kind != File::Data && me->kind != File::Stdin) {
                 throw_fmt(FileError, "File.read : Got invalid file");
@@ -313,13 +342,14 @@ Object *File::me_write_handler(Object *self, Object *args, Object *kwargs) {
                     break;
 
                 if (obj->type != Int::class_type) {
-                    THROW_TYPE_ERROR_PREF("File.write", obj->type, Int::class_type);
+                    THROW_TYPE_ERROR_PREF("File.write", obj->type,
+                                          Int::class_type);
 
                     return nullptr;
                 }
 
                 // Write byte
-                char byte = reinterpret_cast<Int*>(obj)->data;
+                char byte = reinterpret_cast<Int *>(obj)->data;
 
                 me->data.write(&byte, 1);
             }
