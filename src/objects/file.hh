@@ -3,6 +3,7 @@
 // File handler
 
 #include <fstream>
+#include <iostream>
 #include "object.hh"
 #include "methods.hh"
 
@@ -13,12 +14,22 @@ struct File : public DynamicObject {
     static Object *stdout;
     static Object *stderr;
 
+    // Kind of file since cin / cout / cerr are not fstreams
+    enum FileKind {
+        Empty,
+        // Default, normal file
+        Data,
+        Stdin,
+        Stdout,
+        Stderr,
+    } kind = FileKind::Empty;
+
     std::fstream data;
 
     // Path or id
     str_t path;
-    bool mode_read = true;
-    bool mode_write = true;
+    bool mode_read = false;
+    bool mode_write = false;
     bool mode_binary = false;
 
     virtual ~File();

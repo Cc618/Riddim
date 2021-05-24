@@ -163,9 +163,7 @@ void File::init_class_type() {
 }
 
 void File::init_class_objects() {
-    // TODO A : stdin, stderr, stdout + global
-
-    // Init methods
+    // --- Init methods ---
     NEW_METHOD(File, close);
     method_close->doc_str = "Closes the file";
     method_close->doc_signature = {};
@@ -179,6 +177,49 @@ void File::init_class_objects() {
         "Writes the textual / binary content to the file\n\n- s, Str (text "
         "mode) or Iterable of Int (binary mode) : Content";
     method_write->doc_signature = {{"s", false}};
+
+    // --- Init statics ---
+    {
+        auto f = File::New();
+        if (!f) {
+            return;
+        }
+        f->mode_read = true;
+        f->mode_write = false;
+        f->mode_binary = false;
+        f->path = "<stdin>";
+        f->kind = File::Stdin;
+        class_type->attrs["stdin"] = f;
+        File::stdin = f;
+    }
+
+    {
+        auto f = File::New();
+        if (!f) {
+            return;
+        }
+        f->mode_read = false;
+        f->mode_write = true;
+        f->mode_binary = false;
+        f->path = "<stdout>";
+        f->kind = File::Stdout;
+        class_type->attrs["stdout"] = f;
+        File::stdout = f;
+    }
+
+    {
+        auto f = File::New();
+        if (!f) {
+            return;
+        }
+        f->mode_read = false;
+        f->mode_write = true;
+        f->mode_binary = false;
+        f->path = "<stderr>";
+        f->kind = File::Stderr;
+        class_type->attrs["stderr"] = f;
+        File::stdout = f;
+    }
 }
 
 // --- Methods ---
@@ -200,13 +241,20 @@ Object *File::me_read_handler(Object *self, Object *args, Object *kwargs) {
     CHECK_NOKWARGS("File.read");
 
     // String content
-    if (me->data.is_open()) {
+    if (me->kind == File::Stdin || me->data.is_open()) {
         if (me->mode_binary) {
             // TODO A : Binary mode
         } else {
+            if (me->kind != File::Data && me->kind != File::Stdin) {
+                throw_fmt(FileError, "File.read : Got invalid file");
+
+                return nullptr;
+            }
+
             str_t content;
             str_t sline;
-            while (getline(me->data, sline)) {
+
+            while (getline(me->kind == File::Data ? me->data : cin, sline)) {
                 content += sline;
             }
 
@@ -232,22 +280,50 @@ Object *File::me_write_handler(Object *self, Object *args, Object *kwargs) {
     CHECK_ARGSLEN(1, "File.write");
     CHECK_NOKWARGS("File.write");
 
-    if (me->mode_binary) {
-        // TODO A :
-    } else {
-        if (args_data[0]->type != Str::class_type) {
-            THROW_TYPE_ERROR_PREF("File.write", args_data[0]->type,
-                                  Str::class_type);
+    if (me->kind == File::Stdout || me->kind == File::Stderr ||
+        me->data.is_open()) {
+        if (me->mode_binary) {
+            if (me->kind != File::Data) {
+                throw_fmt(FileError, "File.write : Got invalid file");
 
-            return nullptr;
+                return nullptr;
+            }
+
+            // TODO A :
+        } else {
+            if (args_data[0]->type != Str::class_type) {
+                THROW_TYPE_ERROR_PREF("File.write", args_data[0]->type,
+                                      Str::class_type);
+
+                return nullptr;
+            }
+
+            auto data = reinterpret_cast<Str *>(args_data[0])->data;
+
+            switch (me->kind) {
+            case File::Data:
+                me->data << data;
+                break;
+
+            case File::Stdout:
+                cout << data;
+                break;
+
+            case File::Stderr:
+                cerr << data;
+                break;
+
+            default:
+                throw_fmt(FileError, "File.write : Got invalid file");
+                return nullptr;
+            }
+
+            return null;
         }
-
-        auto data = reinterpret_cast<Str*>(args_data[0])->data;
-
-        me->data << data;
-
-        return null;
     }
+
+    throw_fmt(FileError, "File %s%s%s not opened", C_BLUE, me->path.c_str(),
+              C_NORMAL);
 
     return nullptr;
 }
