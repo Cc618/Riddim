@@ -34,7 +34,6 @@ struct File : public DynamicObject {
     DECL_METHOD(close);
     DECL_METHOD(read);
     DECL_METHOD(write);
-    DECL_METHOD(write_binary);
 
 protected:
     File();

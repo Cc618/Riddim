@@ -43,6 +43,9 @@ NEW_ERROR(AssertError);
 // Used by exit builtin
 NEW_ERROR(ExitError);
 
+// File IO error
+NEW_ERROR(FileError);
+
 // Import not found
 NEW_ERROR(ImportError);
 

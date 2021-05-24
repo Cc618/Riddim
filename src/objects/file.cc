@@ -77,18 +77,25 @@ void File::init_class_type() {
 
         result->path = reinterpret_cast<Str *>(args_data[0])->data;
 
+        // TODO : rw mode
         result->mode_read = true;
         result->mode_write = false;
         result->mode_binary = false;
 
         // Open file
-        result->data.open(result->path,
-                          static_cast<ios_base::openmode>(
-                              (result->mode_read ? fstream::in : 0) |
-                              (result->mode_write ? fstream::out | fstream::trunc : 0) |
-                              (result->mode_binary ? fstream::binary : 0)));
-        // TODO A : File errors
-        auto a = result->data.is_open();
+        result->data.open(
+            result->path,
+            static_cast<ios_base::openmode>(
+                (result->mode_read ? fstream::in : 0) |
+                (result->mode_write ? fstream::out | fstream::trunc : 0) |
+                (result->mode_binary ? fstream::binary : 0)));
+
+        if (!result->data.is_open()) {
+            throw_fmt(FileError, "File %s%s%s failed to opened", C_BLUE,
+                      result->path.c_str(), C_NORMAL);
+
+            return nullptr;
+        }
 
         return result;
     };
@@ -121,13 +128,9 @@ void File::init_class_objects() {
 
     NEW_METHOD(File, write);
     method_write->doc_str =
-        "Writes the textual content to the file\n\n- s, Str : Content";
+        "Writes the textual / binary content to the file\n\n- s, Str (text "
+        "mode) or Iterable of Int (binary mode) : Content";
     method_write->doc_signature = {{"s", false}};
-
-    NEW_METHOD(File, write_binary);
-    method_write_binary->doc_str = "Writes the binary content to the file\n\n- "
-                                   "b, Iterable of Int : Binary buffer";
-    method_write_binary->doc_signature = {{"s", false}};
 }
 
 // --- Methods ---
@@ -137,7 +140,6 @@ Object *File::me_close_handler(Object *self, Object *args, Object *kwargs) {
     CHECK_NOARGS("File.close");
     CHECK_NOKWARGS("File.close");
 
-    // TODO A :
     me->data.close();
 
     return null;
@@ -149,12 +151,10 @@ Object *File::me_read_handler(Object *self, Object *args, Object *kwargs) {
     CHECK_NOARGS("File.read");
     CHECK_NOKWARGS("File.read");
 
-    // TODO A : me->mode_open
-
     // String content
     if (me->data.is_open()) {
         if (me->mode_binary) {
-            // TODO : Binary mode
+            // TODO A : Binary mode
         } else {
             str_t content;
             str_t sline;
@@ -171,7 +171,9 @@ Object *File::me_read_handler(Object *self, Object *args, Object *kwargs) {
             return result;
         }
     }
-    // TODO : Error otherwise
+
+    throw_fmt(FileError, "File %s%s%s not opened", C_BLUE, me->path.c_str(),
+              C_NORMAL);
 
     return nullptr;
 }
@@ -182,26 +184,18 @@ Object *File::me_write_handler(Object *self, Object *args, Object *kwargs) {
     CHECK_ARGSLEN(1, "File.write");
     CHECK_NOKWARGS("File.write");
 
-    if (args_data[0]->type != Str::class_type) {
-        THROW_TYPE_ERROR_PREF("File.write", args_data[0]->type,
-                              Str::class_type);
+    if (me->mode_binary) {
+        // TODO A :
+    } else {
+        if (args_data[0]->type != Str::class_type) {
+            THROW_TYPE_ERROR_PREF("File.write", args_data[0]->type,
+                                  Str::class_type);
 
-        return nullptr;
+            return nullptr;
+        }
+
+        return null;
     }
 
-    // TODO A :
-
-    return null;
-}
-
-Object *File::me_write_binary_handler(Object *self, Object *args,
-                                      Object *kwargs) {
-    INIT_METHOD(File, "write_binary");
-
-    CHECK_ARGSLEN(1, "File.write_binary");
-    CHECK_NOKWARGS("File.write_binary");
-
-    // TODO A :
-
-    return null;
+    return nullptr;
 }
