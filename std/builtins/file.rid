@@ -1,0 +1,21 @@
+mod!doc = @'
+File builtins
+@'
+
+File!name = 'File'
+File!doc = @'
+A file stream.
+Can be material or virtual
+@'
+
+File.stdin!doc = @'
+Standard input stream
+@'
+
+File.stdout!doc = @'
+Standard output stream
+@'
+
+File.stderr!doc = @'
+Standard error output stream
+@'
