@@ -20,6 +20,7 @@
 #include "range.hh"
 #include "usertype.hh"
 #include "deque.hh"
+#include "file.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -78,6 +79,7 @@ static void init_types() {
     INIT_TYPE(Iterator);
     INIT_TYPE(Range);
     INIT_TYPE(Deque);
+    INIT_TYPE(File);
 
 #undef INIT_TYPE
 
@@ -128,6 +130,11 @@ static void init_objects() {
         return;
 
     Deque::init_class_objects();
+
+    if (on_error())
+        return;
+
+    File::init_class_objects();
 
     if (on_error())
         return;
