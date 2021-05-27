@@ -468,7 +468,7 @@ return
 b = 2
 ```
 
-#### Lambas
+#### Lambdas
 Lambdas (or closures) have a syntax similar to Rust's closures :
 ```rust
 expression_lambda = |x, y| x + y
