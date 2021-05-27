@@ -44,6 +44,7 @@ struct File : public DynamicObject {
     // Methods
     DECL_METHOD(close);
     DECL_METHOD(read);
+    DECL_METHOD(read_line);
     DECL_METHOD(write);
 
 protected:

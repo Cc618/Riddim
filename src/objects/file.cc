@@ -175,6 +175,13 @@ void File::init_class_objects() {
         "- return, Str (text mode) or Vec{Int} (binary mode) : Content";
     method_read->doc_signature = {};
 
+    NEW_METHOD(File, read_line);
+    method_read_line->doc_str =
+        "Reads the next line of the file\n\n"
+        "- return, Str or Null : Line or null if end of file\n"
+        "* Mode must be textual";
+    method_read_line->doc_signature = {};
+
     NEW_METHOD(File, write);
     method_write->doc_str =
         "Writes the textual / binary content to the file\n\n- s, Str (text "
@@ -294,6 +301,51 @@ Object *File::me_read_handler(Object *self, Object *args, Object *kwargs) {
             }
 
             auto result = Str::New(content);
+
+            if (!result) {
+                return nullptr;
+            }
+
+            return result;
+        }
+    }
+
+    throw_fmt(FileError, "File %s%s%s not opened", C_BLUE, me->path.c_str(),
+              C_NORMAL);
+
+    return nullptr;
+}
+
+Object *File::me_read_line_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(File, "read_line");
+
+    CHECK_NOARGS("File.read_line");
+    CHECK_NOKWARGS("File.read_line");
+
+    // String content
+    if (me->kind == File::Stdin || me->data.is_open()) {
+        if (me->mode_binary) {
+            throw_fmt(FileError, "File.read_line : Got invalid file mode (must be textual)");
+
+            return nullptr;
+        } else {
+            if (me->kind != File::Data && me->kind != File::Stdin) {
+                throw_fmt(FileError, "File.read : Got invalid file");
+
+                return nullptr;
+            }
+
+            str_t sline;
+            auto &stream = me->kind == File::Data ? me->data : cin;
+            if (getline(stream, sline)) {
+                if (!stream.eof())
+                    sline += '\n';
+            } else {
+                // End of file
+                return null;
+            }
+
+            auto result = Str::New(sline);
 
             if (!result) {
                 return nullptr;
