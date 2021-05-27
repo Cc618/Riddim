@@ -7,6 +7,9 @@
 #include "object.hh"
 #include <unordered_map>
 
+// Max value for a character
+#define STR_CHAR_MAX 255
+
 struct Str : public DynamicObject {
     static DynamicType *class_type;
 
@@ -23,9 +26,13 @@ struct Str : public DynamicObject {
     // Methods
     DECL_METHOD(add);
 
+    DECL_METHOD(chr);
+
     // Returns the index of the first occurence of a string
     // Returns -1 if not found
     DECL_METHOD(index);
+
+    DECL_METHOD(ord);
 
 protected:
     Str(const str_t &data);

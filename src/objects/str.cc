@@ -373,11 +373,19 @@ void Str::init_class_type() {
 
 void Str::init_class_objects() {
     // Init methods
-    NEW_METHOD(Str, index);
-
     NEW_METHOD(Str, add);
     method_add->doc_str = "Appends the other string\n\n- s, Str : String to append";
     method_add->doc_signature = {{"s", false}};
+
+    NEW_METHOD(Str, chr);
+    method_chr->doc_str = "Returns the character associated to the code";
+    method_chr->doc_signature = {{"code", false}};
+
+    NEW_METHOD(Str, index);
+
+    NEW_METHOD(Str, ord);
+    method_ord->doc_str = "Returns the code associated to the character";
+    method_ord->doc_signature = {{"char", false}};
 }
 
 // --- Methods ---
@@ -398,6 +406,37 @@ Object *Str::me_add_handler(Object *self, Object *args, Object *kwargs) {
     return null;
 }
 
+Object *Str::me_chr_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Str, "chr");
+
+    CHECK_ARGSLEN(1, "Str.chr");
+    CHECK_NOKWARGS("Str.chr");
+
+    if (args_data[0]->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF("Str.chr", args_data[0]->type, Int::class_type);
+
+        return nullptr;
+    }
+
+    auto ord = reinterpret_cast<Int*>(args_data[0])->data;
+
+    if (ord <= 0 || ord > STR_CHAR_MAX) {
+        throw_fmt(RuntimeError, "Str.chr : Invalid character code (outside of character set)");
+
+        return nullptr;
+    }
+
+    auto result = new (nothrow) Str(str_t(1, (char)ord));
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
+}
+
 Object *Str::me_index_handler(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Str, "index");
 
@@ -416,6 +455,37 @@ Object *Str::me_index_handler(Object *self, Object *args, Object *kwargs) {
         idx = -1;
 
     auto result = new (nothrow) Int(idx);
+
+    if (!result) {
+        THROW_MEMORY_ERROR;
+
+        return nullptr;
+    }
+
+    return result;
+}
+
+Object *Str::me_ord_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Str, "ord");
+
+    CHECK_ARGSLEN(1, "Str.ord");
+    CHECK_NOKWARGS("Str.ord");
+
+    if (args_data[0]->type != Str::class_type) {
+        THROW_TYPE_ERROR_PREF("Str.ord", args_data[0]->type, Str::class_type);
+
+        return nullptr;
+    }
+
+    auto chr = reinterpret_cast<Str*>(args_data[0])->data;
+
+    if (chr.size() > 1) {
+        throw_fmt(RuntimeError, "Str.ord : Got multiple characters");
+
+        return nullptr;
+    }
+
+    auto result = new (nothrow) Int(chr.front());
 
     if (!result) {
         THROW_MEMORY_ERROR;
