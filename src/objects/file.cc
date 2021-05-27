@@ -175,6 +175,13 @@ void File::init_class_objects() {
         "- return, Str (text mode) or Vec{Int} (binary mode) : Content";
     method_read->doc_signature = {};
 
+    NEW_METHOD(File, read_char);
+    method_read_char->doc_str =
+        "Reads the next character (or byte) of the file\n\n"
+        "- return, Str (text mode) or Int (binary mode) or null : Character / "
+        "byte, null if end of file";
+    method_read_char->doc_signature = {};
+
     NEW_METHOD(File, read_line);
     method_read_line->doc_str =
         "Reads the next line of the file\n\n"
@@ -316,6 +323,64 @@ Object *File::me_read_handler(Object *self, Object *args, Object *kwargs) {
     return nullptr;
 }
 
+Object *File::me_read_char_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(File, "read_char");
+
+    CHECK_NOARGS("File.read_char");
+    CHECK_NOKWARGS("File.read_char");
+
+    // String content
+    if (me->kind == File::Stdin || me->data.is_open()) {
+        if (me->mode_binary) {
+            if (me->kind != File::Data) {
+                throw_fmt(FileError, "File.read_char : Got invalid file");
+
+                return nullptr;
+            }
+
+            auto byte = me->data.get();
+            if (byte == EOF) {
+                return null;
+            }
+
+            auto result = new (nothrow) Int(byte);
+            if (!result) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            return result;
+        } else {
+            if (me->kind != File::Data && me->kind != File::Stdin) {
+                throw_fmt(FileError, "File.read_char : Got invalid file");
+
+                return nullptr;
+            }
+
+            auto &stream = me->kind == File::Data ? me->data : cin;
+            auto chr = stream.get();
+
+            if (chr == EOF) {
+                return null;
+            }
+
+            auto result = Str::New(str_t(1, chr));
+
+            if (!result) {
+                return nullptr;
+            }
+
+            return result;
+        }
+    }
+
+    throw_fmt(FileError, "File %s%s%s not opened", C_BLUE, me->path.c_str(),
+              C_NORMAL);
+
+    return nullptr;
+}
+
 Object *File::me_read_line_handler(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(File, "read_line");
 
@@ -325,7 +390,9 @@ Object *File::me_read_line_handler(Object *self, Object *args, Object *kwargs) {
     // String content
     if (me->kind == File::Stdin || me->data.is_open()) {
         if (me->mode_binary) {
-            throw_fmt(FileError, "File.read_line : Got invalid file mode (must be textual)");
+            throw_fmt(
+                FileError,
+                "File.read_line : Got invalid file mode (must be textual)");
 
             return nullptr;
         } else {
