@@ -4,7 +4,7 @@ path = 'testfile.txt'
 
 # Writing text
 f = File(path, 'w')
-f.write('Hello world, this file has been created by Riddim')
+f.write('Hello world !\nThis file has been created by Riddim')
 
 # Note that all files are closed at the end of
 # the program but it is necessary to close it
@@ -40,3 +40,14 @@ File.stderr.write('This message is on stderr\n')
 # Standard input
 # You can pipe an output and try `print File.stdin.read()`
 print File.stdin
+
+# Reading next line / character
+f = File(path, 'w')
+f.write('Hello world !\nThis file has been created by Riddim')
+f.close()
+
+f = File(path)
+# These methods return null on end of file
+print f.read_char() # H
+print f.read_line() # ello world!
+f.close()

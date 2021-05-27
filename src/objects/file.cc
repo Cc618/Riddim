@@ -404,10 +404,7 @@ Object *File::me_read_line_handler(Object *self, Object *args, Object *kwargs) {
 
             str_t sline;
             auto &stream = me->kind == File::Data ? me->data : cin;
-            if (getline(stream, sline)) {
-                if (!stream.eof())
-                    sline += '\n';
-            } else {
+            if (!getline(stream, sline)) {
                 // End of file
                 return null;
             }
