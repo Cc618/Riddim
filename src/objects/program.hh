@@ -40,7 +40,7 @@ struct Program : public Object {
 
     // This module must be added via add_module (will be garbage collected
     // otherwise)
-    Module *main_module;
+    Module *main_module = nullptr;
     Module *builtins_module = nullptr;
 
     // Modules written in C++

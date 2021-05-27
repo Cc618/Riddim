@@ -98,8 +98,6 @@ struct Object {
     Object *sub(Object *o);
 };
 
-struct UserTypeType;
-
 // Every type must have a unique instance of this class
 struct Type : public Object {
     static Type *class_type;

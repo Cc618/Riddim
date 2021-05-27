@@ -5,6 +5,11 @@ Str methods
 Str!doc = 'String data type'
 Str!name = 'Str'
 
+set_default_collection(
+    Str,
+    is_random_access: true
+)
+
 fn Str@(in)(item) {
     if item is not Str {
         return false
@@ -53,7 +58,37 @@ fn Str.erase(target) {
     me.replace(target, '')
 }
 
-set_default_collection(
-    Str,
-    is_random_access: true
-)
+@doc'
+Splits the string into substrings delimited by
+delim.
+
+- [delim, Str] : Every delimiters (' \n') will split
+    spaces and new lines
+- return, Vec{Str} : Substrings
+@'
+fn Str.split(delim: ' ') {
+    words = []
+    word_start = 0
+    for i in 0 -> len(me) {
+        # The char at index i is a delimiter
+        if me[i] in delim {
+            # Empty word, discard
+            if word_start == i {
+                word_start += 1
+
+                continue
+            }
+
+            # Register this word and start next word
+            words.add(me[word_start -> i])
+            word_start = i + 1
+        }
+    }
+
+    # Add last word
+    if word_start != len(me) {
+        words.add(me[word_start -> len(me)])
+    }
+
+    return words
+}

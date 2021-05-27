@@ -11,7 +11,7 @@ using namespace std;
 constexpr size_t GC_COUNT_THRESHOLD = 10000;
 
 // Number of calls to gc_step to garbage collect if necessary
-constexpr size_t GC_PERIOD = 10;
+constexpr size_t GC_PERIOD = 32;
 
 static size_t gc_step_counter = 0;
 
@@ -55,8 +55,11 @@ void garbage_collect(Object *parent) {
                 }
             };
 
-            if (!obj->type->gc_data.alive)
+            if (!obj->type->gc_data.alive) {
+                obj->type->gc_data.alive = true;
+
                 visit_object(obj->type);
+            }
 
             // Add all objects that can be accessed from obj
             obj->traverse_objects(visit_object);

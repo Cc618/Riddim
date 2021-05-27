@@ -529,8 +529,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
 
             auto offset = ARG(1);
 
-            gc_step();
-
             JMP(offset);
         }
 
@@ -565,6 +563,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 auto offset = ARG(1);
 
                 gc_step();
+
                 JMP(offset);
             }
 

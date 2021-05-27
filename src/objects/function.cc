@@ -363,6 +363,12 @@ void Function::init_class_type() {
             vars[key] = v;
         }
 
+        Object *ret = nullptr;
+
+        auto old_tmp_stack_size = Program::instance->tmp_stack.size();
+
+        Program::instance->tmp_stack.push_back(me);
+
         // Evaluate default arguments
         for (const auto &[arg_name, arg_default] : me->args) {
             // This argument is not set
@@ -371,7 +377,7 @@ void Function::init_class_type() {
                     THROW_ARGUMENT_ERROR(me->name, arg_name,
                                          "Argument not set but required");
 
-                    return nullptr;
+                    goto error;
                 }
 
                 // Evaluate the default value
@@ -380,13 +386,16 @@ void Function::init_class_type() {
 
                 // Evaluation error
                 if (on_error()) {
-                    return nullptr;
+                    goto error;
                 }
 
                 // Retrieve value and set it
                 auto default_value = Program::instance->obj_stack.back();
-                Program::instance->obj_stack.pop_back();
                 vars[arg_name] = default_value;
+
+                // Avoid gc collect
+                Program::instance->tmp_stack.push_back(default_value);
+                Program::instance->obj_stack.pop_back();
             }
         }
 
@@ -397,14 +406,22 @@ void Function::init_class_type() {
         interpret(me->code, "Function<" + me->name + ">", vars, nullptr,
                   me->lambda_frame);
 
-        if (on_error())
-            return nullptr;
+        if (on_error()) {
+            goto error;
+        }
 
         // The return value is the TOS
-        auto ret = Program::instance->obj_stack.back();
+        ret = Program::instance->obj_stack.back();
         Program::instance->obj_stack.pop_back();
 
+        Program::instance->tmp_stack.resize(old_tmp_stack_size);
+
         return ret;
+
+    error:;
+        Program::instance->tmp_stack.resize(old_tmp_stack_size);
+
+        return nullptr;
     };
 
     // @copy
