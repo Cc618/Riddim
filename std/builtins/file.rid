@@ -34,13 +34,13 @@ Standard error output stream
 
 @doc'
 Reads the next line of stdin.
-Throws a FileError if end of file found
+Throws a RuntimeError if end of file found
 @'
 fn input() {
     ln = File.stdin.read_line()
 
     if ln == null {
-        throw FileError('End of file for stdin input')
+        throw RuntimeError('End of file for stdin input')
     }
 
     return ln

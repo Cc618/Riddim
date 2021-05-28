@@ -11,4 +11,6 @@ print 'Hello, world !'
 Programs are ordered by difficulty, the first program is
 the easiest.
 
-- [Primes](primes.rid) : Displays a list of prime numbers
+1. [IO](io.rid) : Learn how to use print / input / scan functions
+1. [Primes](primes.rid) : Displays a list of prime numbers
+1. [Files](files.rid) : Learn to read / write files

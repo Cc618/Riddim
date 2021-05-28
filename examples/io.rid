@@ -1,0 +1,33 @@
+# --- Print ---
+# Displays Hello world ! to stdout
+# Do not put parentheses like in Python
+print 'Hello world !'
+
+# You can print variables and multiple values at once
+# Note that a space and a new line is added
+x = 42
+print 'x =', x
+
+# --- Input ---
+# To read the next line on stdin
+line = input()
+print 'You typed :', line
+
+# A runtime error is thrown if there is no more content in stdin
+# (try by hitting Ctrl + D)
+try {
+    line = input()
+    print 'Stdin was not empty !'
+} catch RuntimeError as _ {
+    print 'End of stdin file'
+}
+
+# --- Scan ---
+# Can be also input()
+s = '1 2.2 true Riddim'
+
+# Can be assigned to a vector too
+let int, float, bool, str = scan(s, Int, Float, Bool, Str)
+
+# Prints 1 2.2 true Riddim
+print int, float, bool, str
