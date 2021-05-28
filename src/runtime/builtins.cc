@@ -13,6 +13,7 @@
 #include "str.hh"
 #include "vec.hh"
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -278,6 +279,12 @@ void on_builtins_loaded(Module *mod) {
     const str_t print_doc = "Prints to stdout all arguments\n\n"
                             "- [args...] : Objects to print";
 
+    const str_t scan_doc =
+        "Scans the string content\n\n"
+        "- content : What to scan\n"
+        "- [args..., Type] : How to scan, can be one of Int, Float, Bool, Str\n"
+        "- return, Vec : Scanned values";
+
     const str_t sort_doc =
         "Sorts the collection inplace\n\n"
         "- col : Random access collection\n"
@@ -313,6 +320,8 @@ void on_builtins_loaded(Module *mod) {
     const builtin_signature_t next_sig = {{"iterator", false}};
     const builtin_signature_t print_sig = {{"args...", true}};
     const builtin_signature_t sort_sig = {{"col", false}};
+    const builtin_signature_t scan_sig = {{"content", false},
+                                          {"args...", true}};
     const builtin_signature_t throw_sig = {{"error", false}};
     const builtin_signature_t typename_sig = {{"type", false}};
     const builtin_signature_t typeof_sig = {{"obj", false}, {"cmp", true}};
@@ -334,6 +343,7 @@ void on_builtins_loaded(Module *mod) {
     FAST_INIT_BUILTIN(builtins, minmax);
     FAST_INIT_BUILTIN(builtins, next);
     FAST_INIT_BUILTIN(builtins, print);
+    FAST_INIT_BUILTIN(builtins, scan);
     FAST_INIT_BUILTIN(builtins, sort);
     FAST_INIT_BUILTIN(builtins, throw);
     FAST_INIT_BUILTIN(builtins, typeof);
@@ -783,6 +793,155 @@ BUILTIN_HANDLER(builtins, typename) {
     }
 
     return sname;
+}
+
+BUILTIN_HANDLER(builtins, scan) {
+    INIT_METHOD(Object, "scan");
+
+    CHECK_NOKWARGS("scan");
+
+    if (args_data.empty()) {
+        THROW_ARGUMENT_ERROR("scan", "length",
+                             "At least one argument required");
+
+        return nullptr;
+    }
+
+    if (args_data.front()->type != Str::class_type) {
+        THROW_TYPE_ERROR_PREF("scan", args_data.front()->type, Str::class_type);
+
+        return nullptr;
+    }
+
+    stringstream content(reinterpret_cast<Str *>(args_data.front())->data);
+    auto result = Vec::New();
+
+    if (!result) {
+        return nullptr;
+    }
+
+    for (int i = 1; i < args_data.size(); ++i) {
+        auto arg = args_data[i];
+        if (!is_type(arg->type)) {
+            THROW_TYPE_ERROR_PREF(("scan{arg #" + to_string(i) + "}").c_str(),
+                                  arg->type, Type::class_type);
+
+            return nullptr;
+        }
+
+        if (arg == Int::class_type) {
+            int_t val;
+            content >> val;
+
+            if (content.fail()) {
+                if (content.eof()) {
+                    throw_fmt(RuntimeError, "End of content");
+
+                    return nullptr;
+                }
+
+                throw_fmt(RuntimeError, "Failed to parse %sInt%s", C_BLUE,
+                          C_NORMAL);
+
+                return nullptr;
+            }
+
+            auto item = new (nothrow) Int(val);
+            if (!item) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            result->data.push_back(item);
+        } else if (arg == Float::class_type) {
+            float_t val;
+            content >> val;
+
+            if (content.fail()) {
+                if (content.eof()) {
+                    throw_fmt(RuntimeError, "End of content");
+
+                    return nullptr;
+                }
+
+                throw_fmt(RuntimeError, "Failed to parse %sFloat%s", C_BLUE,
+                          C_NORMAL);
+
+                return nullptr;
+            }
+
+            auto item = new (nothrow) Float(val);
+            if (!item) {
+                THROW_MEMORY_ERROR;
+
+                return nullptr;
+            }
+
+            result->data.push_back(item);
+        } else if (arg == Bool::class_type) {
+            str_t sval;
+            content >> sval;
+
+            if (content.fail()) {
+                if (content.eof()) {
+                    throw_fmt(RuntimeError, "End of content");
+
+                    return nullptr;
+                }
+
+                throw_fmt(RuntimeError, "Failed to parse %sBool%s", C_BLUE,
+                          C_NORMAL);
+
+                return nullptr;
+            }
+
+            bool val;
+            if (sval == "true" || sval == "1") {
+                val = true;
+            } else if (sval == "false" || sval == "0") {
+                val = false;
+            } else {
+                throw_fmt(RuntimeError, "Failed to parse Bool");
+
+                return nullptr;
+            }
+
+            auto item = val ? istrue : isfalse;
+
+            result->data.push_back(item);
+        } else if (arg == Str::class_type) {
+            str_t val;
+            content >> val;
+
+            if (content.fail()) {
+                if (content.eof()) {
+                    throw_fmt(RuntimeError, "End of content");
+
+                    return nullptr;
+                }
+
+                throw_fmt(RuntimeError, "Failed to parse %sStr%s", C_BLUE,
+                          C_NORMAL);
+
+                return nullptr;
+            }
+
+            auto item = Str::New(val);
+            if (!item) {
+                return nullptr;
+            }
+
+            result->data.push_back(item);
+        } else {
+            THROW_ARGUMENT_ERROR("scan", "#" + to_string(i),
+                                 "Unsupported type");
+
+            return nullptr;
+        }
+    }
+
+    return result;
 }
 
 BUILTIN_HANDLER(builtins, sort) {

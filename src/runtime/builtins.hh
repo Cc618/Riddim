@@ -75,6 +75,7 @@ BUILTIN_HANDLER(builtins, min);
 BUILTIN_HANDLER(builtins, minmax);
 BUILTIN_HANDLER(builtins, next);
 BUILTIN_HANDLER(builtins, print);
+BUILTIN_HANDLER(builtins, scan);
 BUILTIN_HANDLER(builtins, sort);
 BUILTIN_HANDLER(builtins, throw);
 BUILTIN_HANDLER(builtins, typename);
