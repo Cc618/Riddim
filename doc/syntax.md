@@ -91,6 +91,8 @@ Note that you can't escape characters like \n
 ```
 
 #### Doc strings
+For doc strings syntax and documentation generator details, see the [Documentation Generator / Doc strings documentation page](documentation.md)
+
 It is possible to document your functions / types using doc strings :
 ```python
 # Functions
@@ -110,16 +112,7 @@ fn MyType.fac() {
 }
 ```
 
-To display this documentation, use the **doc** builtin :
-```
-print doc(fib)
-# prints 'My fib function'
-```
-
-**Tip** : The !doc attribute variable can be set on most objects,
-it contains the doc string if @doc is not overriden.
-
-<!-- TODO doc : Markdown syntax -->
+This can be used to generate documentation using autodoc or along the **doc** builtin function.
 
 ## Primary expressions
 ### Attributes

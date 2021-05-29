@@ -2,7 +2,36 @@
 This page describes the format of a doc string.
 Please, see [the syntax documentation](syntax.md) for an introduction.
 
-## Syntax
+## Doc string syntax
+It is possible to document your functions / types using doc strings :
+```python
+# Functions
+doc'My fib function'
+fn fib() {
+}
+
+# Types
+doc"My type"
+newtype MyType
+
+# Methods
+@doc'
+You can use raw strings too
+@'
+fn MyType.fac() {
+}
+```
+
+To display this documentation, use the **doc** builtin :
+```python
+print doc(fib)
+# prints 'My fib function'
+```
+
+**Tip** : The !doc attribute variable can be set on most objects,
+it contains the doc string if @doc is not overriden.
+
+## Documentation syntax
 The format is inspired by Markdown.
 
 ### Basic syntax
@@ -75,3 +104,24 @@ line1()
 line2()
 `
 ```
+
+## Documentation Generator (autodoc)
+A documentation generator is provided with Riddim.
+The builtin function autodoc generates documentation for all provided modules :
+```python
+modules = {
+    'Builtins': builtins,
+    'Math': math,
+}
+
+notes = {
+    'Version': 'v0.0.1a',
+}
+
+autodoc('tests/autodoc', modules, notes: notes, lowercase_filenames: true)
+```
+
+This example generates these files :
+- tests/autodoc/builtins.md : Builtins module documentation
+- tests/autodoc/math.md : Math module documentation
+- tests/autodoc/README.md : Summary with notes
