@@ -41,7 +41,7 @@ modules = {
 
 # Extra notes to add at the bottom of the README
 notes = {
-    'Version': 'v0.0.1a',
+    'Version': version,
 }
 
 # Generate in the folder autodoc (must be created)
