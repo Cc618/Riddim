@@ -12,6 +12,10 @@
 #include "program.hh"
 #include "str.hh"
 #include "vec.hh"
+#include "iterator.hh"
+#include "range.hh"
+#include "file.hh"
+#include "deque.hh"
 #include <iostream>
 #include <sstream>
 
@@ -367,6 +371,26 @@ void on_builtins_loaded(Module *mod) {
     REGISTER_GLOBAL(null, null);
     REGISTER_GLOBAL(inf, float_inf);
     REGISTER_GLOBAL(nan, float_nan);
+
+    // Register all type that can be accessed via Riddim
+    REGISTER_GLOBAL(Type, Type::class_type);
+    REGISTER_GLOBAL(Object, Object::class_type);
+    REGISTER_GLOBAL(Error, Error::class_type);
+    REGISTER_GLOBAL(DynamicType, DynamicType::class_type);
+    REGISTER_GLOBAL(Str, Str::class_type);
+    REGISTER_GLOBAL(Int, Int::class_type);
+    REGISTER_GLOBAL(Float, Float::class_type);
+    REGISTER_GLOBAL(Null, Null::class_type);
+    REGISTER_GLOBAL(HashMap, HashMap::class_type);
+    REGISTER_GLOBAL(AttrObject, AttrObject::class_type);
+    REGISTER_GLOBAL(Bool, Bool::class_type);
+    REGISTER_GLOBAL(Module, Module::class_type);
+    REGISTER_GLOBAL(Vec, Vec::class_type);
+    REGISTER_GLOBAL(Builtin, Builtin::class_type);
+    REGISTER_GLOBAL(Function, Function::class_type);
+    REGISTER_GLOBAL(Range, Range::class_type);
+    REGISTER_GLOBAL(Deque, Deque::class_type);
+    REGISTER_GLOBAL(File, File::class_type);
 
 #undef REGISTER_GLOBAL
 }
