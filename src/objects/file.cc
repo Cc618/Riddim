@@ -140,7 +140,7 @@ void File::init_class_type() {
         result->data.open(result->path, mode);
 
         if (!result->data.is_open()) {
-            throw_fmt(FileError, "File %s%s%s failed to opened", C_BLUE,
+            throw_fmt(FileError, "File %s%s%s failed to open", C_BLUE,
                       result->path.c_str(), C_NORMAL);
 
             return nullptr;

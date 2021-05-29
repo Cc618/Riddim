@@ -1,0 +1,48 @@
+# See doc/documentation.md for further details
+
+# --- Doc strings ---
+# Inline doc string
+doc'Prints its name'
+fn my_function() {
+    print 'my_function()'
+}
+
+# Multiline one
+@doc'
+Returns ~ pi
+- return, Float : 3.1415
+@'
+fn gimme_pi() {
+    return 3.1415
+}
+
+# --- doc() ---
+# doc is used to generate the documentation of an object
+documentation = doc(my_function)
+print documentation
+
+print '\n2nd function documentation :'
+print doc(gimme_pi)
+
+# The object can be a function, a module, a type...
+print '\nVec documentation :'
+print doc(Vec)
+
+# --- Autodoc ---
+# Import modules to document
+use builtins
+use math
+
+# Name / content
+modules = {
+    'Builtins': builtins,
+    'Math': math,
+}
+
+# Extra notes to add at the bottom of the README
+notes = {
+    'Version': 'v0.0.1a',
+}
+
+# Generate in the folder autodoc (must be created)
+autodoc('autodoc', modules, notes: notes, lowercase_filenames: true)

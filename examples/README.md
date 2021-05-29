@@ -14,3 +14,4 @@ the easiest.
 1. [IO](io.rid) : Learn how to use print / input / scan functions
 1. [Primes](primes.rid) : Displays a list of prime numbers
 1. [Files](files.rid) : Learn to read / write files
+1. [Documentation](doc.rid) : Learn how to document your code and generate documentation pages using autodoc
