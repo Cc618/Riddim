@@ -371,6 +371,7 @@ void on_builtins_loaded(Module *mod) {
     REGISTER_GLOBAL(null, null);
     REGISTER_GLOBAL(inf, float_inf);
     REGISTER_GLOBAL(nan, float_nan);
+    REGISTER_GLOBAL(version, version);
 
     // Register all type that can be accessed via Riddim
     REGISTER_GLOBAL(Type, Type::class_type);

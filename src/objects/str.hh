@@ -10,6 +10,10 @@
 // Max value for a character
 #define STR_CHAR_MAX 255
 
+struct Str;
+
+extern Str *version;
+
 struct Str : public DynamicObject {
     static DynamicType *class_type;
 

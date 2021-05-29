@@ -1,7 +1,9 @@
 # CMake flags (see the debug section in the documentation for more details)
 set(DEBUG_PARSER_CONFLICTS 1)
 
-# # C flags (see the debug section in the documentation for more details)
+# C flags (see the debug section in the documentation for more details)
+add_compile_definitions(RID_VERSION="v0.1a")
+
 if (DEFINED ENV{RID_DEBUG})
     add_compile_definitions(DEBUG)
 endif()

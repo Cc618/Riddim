@@ -13,6 +13,8 @@
 
 using namespace std;
 
+Str *version = nullptr;
+
 DynamicType *Str::class_type = nullptr;
 
 Str *Str::New(str_t data) {
@@ -394,6 +396,12 @@ void Str::init_class_objects() {
     NEW_METHOD(Str, upper);
     method_upper->doc_str = "Transforms the string in upper case characters (inplace)";
     method_upper->doc_signature = {};
+
+    // Init objects
+    version = Str::New(RID_VERSION);
+    if (!version) {
+        return;
+    }
 }
 
 // --- Methods ---
