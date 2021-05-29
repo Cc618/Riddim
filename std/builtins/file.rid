@@ -117,3 +117,30 @@ fn autodoc(dirpath, modules, verbose: true, notes: {},
         print 'Written', readme_path
     }
 }
+
+@doc'
+Generates the Riddim documentation
+
+- dirpath, Str : Directory where the documentation is generated to
+@'
+fn autodoc_std(dirpath) {
+    # Import modules to document
+    use builtins
+    use math
+
+    # TODO : Use tree map
+    # Name / content
+    modules = {
+        'Builtins': builtins,
+        'Math': math,
+    }
+
+    # Extra notes to add at the bottom of the README
+    # TODO A : Version
+    notes = {
+        'Version': 'v0.0.1a',
+    }
+
+    # Generate
+    autodoc(dirpath, modules, notes: notes, lowercase_filenames: true)
+}
