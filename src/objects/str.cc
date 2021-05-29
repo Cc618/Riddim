@@ -381,11 +381,19 @@ void Str::init_class_objects() {
     method_chr->doc_str = "Returns the character associated to the code";
     method_chr->doc_signature = {{"code", false}};
 
+    NEW_METHOD(Str, lower);
+    method_lower->doc_str = "Transforms the string in lower case characters (inplace)";
+    method_lower->doc_signature = {};
+
     NEW_METHOD(Str, index);
 
     NEW_METHOD(Str, ord);
     method_ord->doc_str = "Returns the code associated to the character";
     method_ord->doc_signature = {{"char", false}};
+
+    NEW_METHOD(Str, upper);
+    method_upper->doc_str = "Transforms the string in upper case characters (inplace)";
+    method_upper->doc_signature = {};
 }
 
 // --- Methods ---
@@ -465,6 +473,19 @@ Object *Str::me_index_handler(Object *self, Object *args, Object *kwargs) {
     return result;
 }
 
+Object *Str::me_lower_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Str, "lower");
+
+    CHECK_NOARGS("Str.lower");
+    CHECK_NOKWARGS("Str.lower");
+
+    transform(me->data.begin(), me->data.end(), me->data.begin(), [](char c) {
+        return tolower(c);
+    });
+
+    return null;
+}
+
 Object *Str::me_ord_handler(Object *self, Object *args, Object *kwargs) {
     INIT_METHOD(Str, "ord");
 
@@ -495,3 +516,17 @@ Object *Str::me_ord_handler(Object *self, Object *args, Object *kwargs) {
 
     return result;
 }
+
+Object *Str::me_upper_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(Str, "upper");
+
+    CHECK_NOARGS("Str.upper");
+    CHECK_NOKWARGS("Str.upper");
+
+    transform(me->data.begin(), me->data.end(), me->data.begin(), [](char c) {
+        return toupper(c);
+    });
+
+    return null;
+}
+

@@ -32,7 +32,11 @@ struct Str : public DynamicObject {
     // Returns -1 if not found
     DECL_METHOD(index);
 
+    DECL_METHOD(lower);
+
     DECL_METHOD(ord);
+
+    DECL_METHOD(upper);
 
 protected:
     Str(const str_t &data);
