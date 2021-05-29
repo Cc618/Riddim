@@ -45,3 +45,75 @@ fn input() {
 
     return ln
 }
+
+@doc'
+Generates the auto documentation for multiple modules in
+a specified directory
+
+- dirpath, Str : Path to the target directory
+- modules, HashMap : [module_name, module_content] pairs to document
+- [verbose, Bool] : If true, displays written files
+- [notes, HashMap] : [note_name, note_content] pairs, notes added at
+    the bottom of the README
+- [lowercase_filenames, Bool] : Whether markdown files are lower cased
+@'
+fn autodoc(dirpath, modules, verbose: true, notes: {},
+        lowercase_filenames: true) {
+    # Returns the relative / absolute path of the module documentation
+    get_path = |name, relative, lower| -> {
+        suffix = name + '.md'
+
+        if lower {
+            suffix = copy(suffix)
+            suffix.lower()
+        }
+
+        if relative {
+            return suffix
+        } else {
+            return dirpath + '/' + suffix
+        }
+    }
+
+    # Generate modules
+    for let mod_name, mod_content in modules {
+        path = get_path(mod_name, false, lowercase_filenames)
+
+        f = File(path, 'w')
+
+        documentation = "[Summary](README.md)\n\n"
+        documentation += doc(mod_content)
+
+        f.write(documentation)
+        f.close()
+
+        if verbose {
+            print 'Written', path
+        }
+    }
+
+    readme_path = get_path('README', false, false)
+
+    f = File(readme_path, 'w')
+    f.write('# Modules\n')
+
+    # Generate summary
+    for let mod_name, _ in modules {
+        path = get_path(mod_name, true, lowercase_filenames)
+        line = '- [' + mod_name + '](' + path + ')'
+        f.write(line + '\n')
+    }
+
+    # Add notes such as version
+    if len(notes) > 0 {
+        f.write('\n## Notes\n')
+        for let name, content in notes {
+            f.write('- ' + name + ' : ' + content + '\n')
+        }
+    }
+
+    f.close()
+    if verbose {
+        print 'Written', readme_path
+    }
+}
