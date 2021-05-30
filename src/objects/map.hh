@@ -45,6 +45,49 @@ private:
     static size_t class_hash;
 };
 
+struct TreeMapCompare {
+    bool operator()(Object *x, Object *y) const;
+};
+
+// Internal TreeMap
+typedef std::map<Object *, Object *, TreeMapCompare> tmap_t;
+
+// A TreeMap, stores key / value pairs in an ordered way (BST)
+struct TreeMap : public DynamicObject {
+    static DynamicType *class_type;
+
+    // An treemap without objects, do not modify
+    static TreeMap *empty;
+
+    tmap_t data;
+
+    /* TODO A
+    // Returns the iterator associated to the key
+    // Can throw (returns data.end() on error)
+    tmap_t::iterator find(Object *key);
+
+    // Like getitem
+    // Can throw
+    Object *get(Object *key);
+
+    // Like setitem
+    // Can throw
+    void set(Object *key, Object *value);
+    */
+
+    static TreeMap *New(const tmap_t &data = {});
+
+    // Can throw
+    static void init_class_type();
+    static void init_class_objects();
+
+protected:
+    TreeMap(const tmap_t &data = {});
+
+private:
+    static size_t class_hash;
+};
+
 // An object that can contain attributes
 struct AttrObject : public Object {
     static Type *class_type;

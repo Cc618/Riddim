@@ -66,6 +66,7 @@ static void init_types() {
     INIT_TYPE(Float);
     INIT_TYPE(Null);
     INIT_TYPE(HashMap);
+    INIT_TYPE(TreeMap);
     INIT_TYPE(AttrObject);
     INIT_TYPE(Frame);
     INIT_TYPE(Bool);
