@@ -21,6 +21,7 @@
 #include "usertype.hh"
 #include "deque.hh"
 #include "file.hh"
+#include "set.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -68,6 +69,8 @@ static void init_types() {
     INIT_TYPE(HashMap);
     INIT_TYPE(TreeMap);
     INIT_TYPE(AttrObject);
+    INIT_TYPE(HashSet);
+    // TODO A : INIT_TYPE(TreeSet);
     INIT_TYPE(Frame);
     INIT_TYPE(Bool);
     INIT_TYPE(Module);
@@ -125,10 +128,27 @@ static void init_objects() {
     if (on_error())
         return;
 
+    TreeMap::init_class_objects();
+
+    if (on_error())
+        return;
+
     AttrObject::init_class_objects();
 
     if (on_error())
         return;
+
+    HashSet::init_class_objects();
+
+    if (on_error())
+        return;
+
+    /* TODO A :
+    TreeSet::init_class_objects();
+
+    if (on_error())
+        return;
+    */
 
     Deque::init_class_objects();
 

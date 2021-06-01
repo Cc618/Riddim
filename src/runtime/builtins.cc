@@ -16,6 +16,7 @@
 #include "range.hh"
 #include "file.hh"
 #include "deque.hh"
+#include "set.hh"
 #include <iostream>
 #include <sstream>
 
@@ -385,6 +386,8 @@ void on_builtins_loaded(Module *mod) {
     REGISTER_GLOBAL(HashMap, HashMap::class_type);
     REGISTER_GLOBAL(TreeMap, TreeMap::class_type);
     REGISTER_GLOBAL(AttrObject, AttrObject::class_type);
+    REGISTER_GLOBAL(HashSet, HashSet::class_type);
+    // TODO A : REGISTER_GLOBAL(TreeSet, TreeSet::class_type);
     REGISTER_GLOBAL(Bool, Bool::class_type);
     REGISTER_GLOBAL(Module, Module::class_type);
     REGISTER_GLOBAL(Vec, Vec::class_type);
