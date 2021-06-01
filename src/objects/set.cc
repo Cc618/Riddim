@@ -289,16 +289,16 @@ void HashSet::init_class_type() {
 
         return result;
     };
+    */
 
     // @in
     class_type->fn_in = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
 
-        auto result = me->find(key) != me->data.end();
-
-        return result ? istrue : isfalse;
+        return me->data->in(key);
     };
 
+    /* TODO A :
     // @iter
     class_type->fn_iter = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
@@ -371,7 +371,47 @@ void HashSet::init_class_type() {
     class_type->fn_str = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
 
-        return me->data->str();
+        string result;
+
+        if (me->data->data.empty())
+            result = "{}";
+        else {
+            result = "{";
+            bool isfirst = true;
+            for (const auto &[h, kv] : me->data->data) {
+                const auto &[k, v] = kv;
+
+                if (isfirst)
+                    isfirst = false;
+                else
+                    result += ", ";
+
+                auto k_str = k->str();
+
+                // Error
+                if (!k_str)
+                    return nullptr;
+
+                // Check type
+                if (k_str->type != Str::class_type) {
+                    THROW_TYPE_ERROR_PREF("@str", k_str->type, Str::class_type);
+
+                    return nullptr;
+                }
+
+                result += reinterpret_cast<Str *>(k_str)->data;
+            }
+
+            result += "}";
+        }
+
+        auto result_str = Str::New(result);
+
+        if (!result_str) {
+            return nullptr;
+        }
+
+        return result_str;
     };
 
     /* TODO A
