@@ -689,7 +689,6 @@ void TreeMap::init_class_type() {
         }
     };
 
-    /* TODO A
     // @cmp
     class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<TreeMap *>(self);
@@ -704,18 +703,15 @@ void TreeMap::init_class_type() {
             if (me->data.size() != other.size()) {
                 res = -1;
             } else {
-                for (const auto &[h, kv] : me->data) {
-                    auto &[mek, mev] = kv;
-
+                for (const auto &[mek, mev] : me->data) {
                     // Key not found, different
-                    auto other_it = other.find(h);
+                    auto other_it = other.find(mek);
                     if (other_it == other.end()) {
                         res = -1;
                         break;
                     }
 
-                    auto &[otherh, otherkv] = *other_it;
-                    auto &[otherk, otherv] = otherkv;
+                    auto &[otherk, otherv] = *other_it;
 
                     // Int type verified
                     auto cmp = mev->cmp(otherv);
@@ -756,7 +752,6 @@ void TreeMap::init_class_type() {
 
         return result;
     };
-    */
 
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
