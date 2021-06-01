@@ -128,15 +128,13 @@ fn autodoc_std(dirpath) {
     use builtins
     use math
 
-    # TODO : Use tree map
     # Name / content
-    modules = {
+    modules = TreeMap({
         'Builtins': builtins,
         'Math': math,
-    }
+    })
 
     # Extra notes to add at the bottom of the README
-    # TODO A : Version
     notes = {
         'Version': version,
     }
