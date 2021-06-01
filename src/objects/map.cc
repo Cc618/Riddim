@@ -77,13 +77,19 @@ void HashMap::init_class_type() {
                 return nullptr;
             }
 
+            auto old_tmp_stack_size = Program::instance->tmp_stack.size();
+
+            Program::instance->tmp_stack.push_back(result);
+            Program::instance->tmp_stack.push_back(iter);
+
             Object *obj = nullptr;
             int i = 0;
             while (1) {
                 obj = iter->next();
 
                 if (!obj) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
 
                 if (obj == enditer)
@@ -92,7 +98,8 @@ void HashMap::init_class_type() {
                 auto len = obj->len();
 
                 if (!len) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
 
                 if (reinterpret_cast<Int *>(len)->data != 2) {
@@ -100,24 +107,42 @@ void HashMap::init_class_type() {
                                          "iterable[" + to_string(i) + "]",
                                          "Must contain 2 items");
 
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
+
+                Program::instance->tmp_stack.push_back(obj);
 
                 auto k = obj->getitem(Int::zero);
 
                 if (!k) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
+
+                Program::instance->tmp_stack.push_back(k);
 
                 auto v = obj->getitem(Int::one);
 
                 if (!v) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
 
+                Program::instance->tmp_stack.push_back(v);
+
                 result->set(k, v);
+
+                if (on_error()) {
+                    result = nullptr;
+                    goto tmp_stack_unlock;
+                }
+
                 ++i;
             }
+
+        tmp_stack_unlock:;
+            Program::instance->tmp_stack.resize(old_tmp_stack_size);
         } else {
             THROW_ARGUMENT_ERROR("HashMap.@new", "length",
                                  "0 or 1 arguments required");
@@ -574,14 +599,19 @@ void TreeMap::init_class_type() {
                 return nullptr;
             }
 
-            // TODO A : result in tmp stack ?
+            auto old_tmp_stack_size = Program::instance->tmp_stack.size();
+
+            Program::instance->tmp_stack.push_back(result);
+            Program::instance->tmp_stack.push_back(iter);
+
             Object *obj = nullptr;
             int i = 0;
             while (1) {
                 obj = iter->next();
 
                 if (!obj) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
 
                 if (obj == enditer)
@@ -590,7 +620,8 @@ void TreeMap::init_class_type() {
                 auto len = obj->len();
 
                 if (!len) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
 
                 if (reinterpret_cast<Int *>(len)->data != 2) {
@@ -598,29 +629,42 @@ void TreeMap::init_class_type() {
                                          "iterable[" + to_string(i) + "]",
                                          "Must contain 2 items");
 
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
+
+                Program::instance->tmp_stack.push_back(obj);
 
                 auto k = obj->getitem(Int::zero);
 
                 if (!k) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
+
+                Program::instance->tmp_stack.push_back(k);
 
                 auto v = obj->getitem(Int::one);
 
                 if (!v) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
+
+                Program::instance->tmp_stack.push_back(v);
 
                 result->data[k] = v;
 
                 if (on_error()) {
-                    return nullptr;
+                    result = nullptr;
+                    goto tmp_stack_unlock;
                 }
 
                 ++i;
             }
+
+        tmp_stack_unlock:;
+            Program::instance->tmp_stack.resize(old_tmp_stack_size);
         } else {
             THROW_ARGUMENT_ERROR("TreeMap.@new", "length",
                                  "0 or 1 arguments required");
