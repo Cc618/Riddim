@@ -2,16 +2,16 @@
 
 // Sets are just maps with a dummy value (null)
 
-#include "object.hh"
-#include "methods.hh"
 #include "map.hh"
+#include "methods.hh"
+#include "object.hh"
 
 struct HashSet : public DynamicObject {
     static DynamicType *class_type;
 
     HashMap *data;
 
-    static HashSet *New();
+    static HashSet *New(HashMap *data = nullptr, bool create_data = true);
 
     // Can throw
     static void init_class_type();
@@ -24,7 +24,7 @@ struct HashSet : public DynamicObject {
     DECL_METHOD(pop);
 
 protected:
-    HashSet();
+    HashSet(HashMap *data);
 
 private:
     static size_t class_hash;

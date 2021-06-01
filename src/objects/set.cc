@@ -1,8 +1,8 @@
 #include "set.hh"
 #include "bool.hh"
 #include "builtins.hh"
-#include "function.hh"
 #include "error.hh"
+#include "function.hh"
 #include "hash.hh"
 #include "int.hh"
 #include "iterator.hh"
@@ -19,8 +19,8 @@ DynamicType *HashSet::class_type = nullptr;
 
 size_t HashSet::class_hash = 0;
 
-HashSet *HashSet::New() {
-    auto self = new (nothrow) HashSet();
+HashSet *HashSet::New(HashMap *data, bool create_data) {
+    auto self = new (nothrow) HashSet(data);
 
     if (!self) {
         THROW_MEMORY_ERROR;
@@ -28,10 +28,12 @@ HashSet *HashSet::New() {
         return nullptr;
     }
 
-    self->data = HashMap::New();
+    if (create_data && data == nullptr) {
+        self->data = HashMap::New();
 
-    if (!self->data) {
-        return nullptr;
+        if (!self->data) {
+            return nullptr;
+        }
     }
 
     DynamicObject::init(self);
@@ -42,8 +44,8 @@ HashSet *HashSet::New() {
     return self;
 }
 
-HashSet::HashSet()
-    : DynamicObject(HashSet::class_type) {}
+HashSet::HashSet(HashMap *data)
+    : DynamicObject(HashSet::class_type), data(data) {}
 
 void HashSet::init_class_type() {
     class_type = DynamicType::New("HashSet");
@@ -148,7 +150,8 @@ void HashSet::init_class_type() {
 
         tmp_stack_unlock:;
             Program::instance->tmp_stack.resize(old_tmp_stack_size);
-        } */ else {
+        } */
+        else {
             THROW_ARGUMENT_ERROR("HashSet.@new", "length",
                                  "0 or 1 arguments required");
         }
@@ -236,12 +239,19 @@ void HashSet::init_class_type() {
 
         return result;
     };
+    */
 
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
 
-        auto result = HashSet::New(me->data);
+        auto newdata = me->data->copy();
+
+        if (!newdata) {
+            return nullptr;
+        }
+
+        auto result = HashSet::New(reinterpret_cast<HashMap *>(newdata), false);
 
         if (!result) {
             return nullptr;
@@ -254,32 +264,7 @@ void HashSet::init_class_type() {
     class_type->fn_hash = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
 
-        int_t h = class_hash;
-
-        for (const auto &[kh, kv] : me->data) {
-            const auto &[k, v] = kv;
-
-            // Value hash
-            auto item_hash = v->hash();
-            if (!item_hash) {
-                return nullptr;
-            }
-
-            if (item_hash->type != Int::class_type) {
-                THROW_TYPE_ERROR_PREF(v->type->name + ".@hash", item_hash->type,
-                                      Int::class_type);
-
-                return nullptr;
-            }
-
-            // Combine key
-            h = hash_combine(h, kh);
-
-            // Combine value
-            h = hash_combine(h, reinterpret_cast<Int *>(item_hash)->data);
-        }
-
-        auto result = new (nothrow) Int(h);
+        auto result = reinterpret_cast<Int*>(me->data->hash());
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -287,9 +272,11 @@ void HashSet::init_class_type() {
             return nullptr;
         }
 
+        // Combine the set hash
+        result->data = hash_combine(class_hash, result->data);
+
         return result;
     };
-    */
 
     // @in
     class_type->fn_in = [](Object *self, Object *key) -> Object * {
@@ -350,22 +337,14 @@ void HashSet::init_class_type() {
 
         return result;
     };
+    */
 
     // @len
     class_type->fn_len = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
 
-        auto result = new (nothrow) Int(me->data.size());
-
-        if (!result) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        return result;
+        return me->data->len();
     };
-    */
 
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
@@ -459,4 +438,3 @@ Object *HashSet::me_pop_handler(Object *self, Object *args, Object *kwargs) {
     // TODO A
     return nullptr;
 }
-
