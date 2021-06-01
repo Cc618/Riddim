@@ -67,7 +67,7 @@ void HashSet::init_class_type() {
             // Dispatch error
             if (!result)
                 return nullptr;
-        } /* TODO A : else if (args_data.size() == 1) {
+        } else if (args_data.size() == 1) {
             result = HashSet::New();
 
             // Dispatch error
@@ -102,43 +102,7 @@ void HashSet::init_class_type() {
                 if (obj == enditer)
                     break;
 
-                auto len = obj->len();
-
-                if (!len) {
-                    result = nullptr;
-                    goto tmp_stack_unlock;
-                }
-
-                if (reinterpret_cast<Int *>(len)->data != 2) {
-                    THROW_ARGUMENT_ERROR("HashSet.@new",
-                                         "iterable[" + to_string(i) + "]",
-                                         "Must contain 2 items");
-
-                    result = nullptr;
-                    goto tmp_stack_unlock;
-                }
-
-                Program::instance->tmp_stack.push_back(obj);
-
-                auto k = obj->getitem(Int::zero);
-
-                if (!k) {
-                    result = nullptr;
-                    goto tmp_stack_unlock;
-                }
-
-                Program::instance->tmp_stack.push_back(k);
-
-                auto v = obj->getitem(Int::one);
-
-                if (!v) {
-                    result = nullptr;
-                    goto tmp_stack_unlock;
-                }
-
-                Program::instance->tmp_stack.push_back(v);
-
-                result->set(k, v);
+                result->data->set(obj, null);
 
                 if (on_error()) {
                     result = nullptr;
@@ -150,7 +114,7 @@ void HashSet::init_class_type() {
 
         tmp_stack_unlock:;
             Program::instance->tmp_stack.resize(old_tmp_stack_size);
-        } */
+        }
         else {
             THROW_ARGUMENT_ERROR("HashSet.@new", "length",
                                  "0 or 1 arguments required");
