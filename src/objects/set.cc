@@ -114,8 +114,7 @@ void HashSet::init_class_type() {
 
         tmp_stack_unlock:;
             Program::instance->tmp_stack.resize(old_tmp_stack_size);
-        }
-        else {
+        } else {
             THROW_ARGUMENT_ERROR("HashSet.@new", "length",
                                  "0 or 1 arguments required");
         }
@@ -151,7 +150,7 @@ void HashSet::init_class_type() {
 
             return result;
         } else {
-            return me->data->cmp(reinterpret_cast<HashSet*>(o)->data);
+            return me->data->cmp(reinterpret_cast<HashSet *>(o)->data);
         }
     };
 
@@ -319,6 +318,14 @@ Object *HashSet::me_add_handler(Object *self, Object *args, Object *kwargs) {
 }
 
 Object *HashSet::me_pop_handler(Object *self, Object *args, Object *kwargs) {
-    // TODO A
-    return nullptr;
+    INIT_METHOD(HashSet, "pop");
+
+    CHECK_ARGSLEN(1, "HashSet.pop");
+    CHECK_NOKWARGS("HashSet.pop");
+
+    if (!me->data->me_pop_handler(me->data, args, kwargs)) {
+        return nullptr;
+    }
+
+    return null;
 }

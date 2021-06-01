@@ -9,6 +9,7 @@
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
+#include "function.hh"
 #include <string>
 
 using namespace std;
@@ -450,6 +451,12 @@ void HashMap::init_class_objects() {
     Program::add_global(empty);
 
     class_hash = std::hash<str_t>()("HashMap");
+
+    NEW_METHOD(HashMap, pop);
+    method_pop->doc_str = "Removes a mapping by key\n\n"
+                          "- key : Key associated to mapping to pop\n"
+                          "- return : The popped item(s)";
+    method_pop->doc_signature = {{"key", false}};
 }
 
 Object *HashMap::get(Object *key) {
@@ -518,6 +525,31 @@ hmap_t::iterator HashMap::find(Object *key) {
     }
 
     return data.find(h_key);
+}
+
+Object *HashMap::me_pop_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(HashMap, "pop");
+
+    CHECK_ARGSLEN(1, "HashMap.pop");
+    CHECK_NOKWARGS("HashMap.pop");
+
+    auto it = me->find(args_data[0]);
+
+    if (on_error()) {
+        return nullptr;
+    }
+
+    if (it == me->data.end()) {
+        throw_fmt(IndexError, "HashMap.pop : Key not found");
+
+        return nullptr;
+    }
+
+    auto result = it->second.second;
+
+    me->data.erase(it);
+
+    return result;
 }
 
 // --- TreeMap ---

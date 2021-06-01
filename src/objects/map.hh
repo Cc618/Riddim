@@ -5,6 +5,7 @@
 // HashMap)
 
 #include "object.hh"
+#include "methods.hh"
 #include <map>
 
 // Internal HashMap (stores hash, key / value pair)
@@ -37,6 +38,9 @@ struct HashMap : public DynamicObject {
     // Can throw
     static void init_class_type();
     static void init_class_objects();
+
+    // Removes a mapping by key
+    DECL_METHOD(pop);
 
 protected:
     HashMap(const hmap_t &data = {});
