@@ -774,12 +774,15 @@ void TreeMap::init_class_type() {
         return result;
     };
 
-    /* TODO A
     // @in
     class_type->fn_in = [](Object *self, Object *key) -> Object * {
         auto me = reinterpret_cast<TreeMap *>(self);
 
-        auto result = me->find(key) != me->data.end();
+        auto result = me->data.find(key) != me->data.end();
+
+        if (on_error()) {
+            return nullptr;
+        }
 
         return result ? istrue : isfalse;
     };
@@ -799,14 +802,18 @@ void TreeMap::init_class_type() {
                 if (internal_it == me->data.end())
                     return enditer;
 
-                auto result = Vec::New(
-                    {internal_it->second.first, internal_it->second.second});
+                auto result =
+                    Vec::New({internal_it->first, internal_it->second});
 
                 if (!result) {
                     return nullptr;
                 }
 
                 ++internal_it;
+
+                if (on_error()) {
+                    return nullptr;
+                }
 
                 return result;
             },
@@ -823,7 +830,6 @@ void TreeMap::init_class_type() {
 
         return iter;
     };
-    */
 
     // @getitem
     class_type->fn_getitem = [](Object *self, Object *key) -> Object * {

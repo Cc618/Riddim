@@ -383,6 +383,7 @@ void on_builtins_loaded(Module *mod) {
     REGISTER_GLOBAL(Float, Float::class_type);
     REGISTER_GLOBAL(Null, Null::class_type);
     REGISTER_GLOBAL(HashMap, HashMap::class_type);
+    REGISTER_GLOBAL(TreeMap, TreeMap::class_type);
     REGISTER_GLOBAL(AttrObject, AttrObject::class_type);
     REGISTER_GLOBAL(Bool, Bool::class_type);
     REGISTER_GLOBAL(Module, Module::class_type);

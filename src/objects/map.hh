@@ -61,20 +61,6 @@ struct TreeMap : public DynamicObject {
 
     tmap_t data;
 
-    /* TODO A
-    // Returns the iterator associated to the key
-    // Can throw (returns data.end() on error)
-    tmap_t::iterator find(Object *key);
-
-    // Like getitem
-    // Can throw
-    Object *get(Object *key);
-
-    // Like setitem
-    // Can throw
-    void set(Object *key, Object *value);
-    */
-
     static TreeMap *New(const tmap_t &data = {});
 
     // Can throw
