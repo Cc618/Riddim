@@ -172,74 +172,24 @@ void HashSet::init_class_type() {
         visit(me->data);
     };
 
-    /* TODO A
     // @cmp
     class_type->fn_cmp = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
 
-        int_t res = 0;
-
         if (o->type != HashSet::class_type) {
-            res = -1;
-        } else {
-            auto other = reinterpret_cast<HashSet *>(o)->data;
+            auto result = new (nothrow) Int(-1);
 
-            if (me->data.size() != other.size()) {
-                res = -1;
-            } else {
-                for (const auto &[h, kv] : me->data) {
-                    auto &[mek, mev] = kv;
+            if (!result) {
+                THROW_MEMORY_ERROR;
 
-                    // Key not found, different
-                    auto other_it = other.find(h);
-                    if (other_it == other.end()) {
-                        res = -1;
-                        break;
-                    }
-
-                    auto &[otherh, otherkv] = *other_it;
-                    auto &[otherk, otherv] = otherkv;
-
-                    // Int type verified
-                    auto cmp = mev->cmp(otherv);
-
-                    // Error
-                    if (!cmp) {
-                        return nullptr;
-                    }
-
-                    if (cmp) {
-                        res = reinterpret_cast<Int *>(cmp)->data;
-                        break;
-                    }
-
-                    // Int type verified
-                    cmp = mek->cmp(otherk);
-
-                    // Error
-                    if (!cmp) {
-                        return nullptr;
-                    }
-
-                    if (cmp) {
-                        res = reinterpret_cast<Int *>(cmp)->data;
-                        break;
-                    }
-                }
+                return nullptr;
             }
+
+            return result;
+        } else {
+            return me->data->cmp(reinterpret_cast<HashSet*>(o)->data);
         }
-
-        auto result = new (nothrow) Int(res);
-
-        if (!result) {
-            THROW_MEMORY_ERROR;
-
-            return nullptr;
-        }
-
-        return result;
     };
-    */
 
     // @copy
     class_type->fn_copy = [](Object *self) -> Object * {
@@ -264,7 +214,7 @@ void HashSet::init_class_type() {
     class_type->fn_hash = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
 
-        auto result = reinterpret_cast<Int*>(me->data->hash());
+        auto result = reinterpret_cast<Int *>(me->data->hash());
 
         if (!result) {
             THROW_MEMORY_ERROR;
@@ -285,12 +235,11 @@ void HashSet::init_class_type() {
         return me->data->in(key);
     };
 
-    /* TODO A :
     // @iter
     class_type->fn_iter = [](Object *self) -> Object * {
         auto me = reinterpret_cast<HashSet *>(self);
 
-        auto internal_it = new hmap_t::iterator(me->data.begin());
+        auto internal_it = new hmap_t::iterator(me->data->data.begin());
 
         auto iter = new (nothrow) Iterator(
             [](Iterator *it) -> Object * {
@@ -298,11 +247,10 @@ void HashSet::init_class_type() {
                     *reinterpret_cast<hmap_t::iterator *>(it->custom_data);
                 HashSet *me = reinterpret_cast<HashSet *>(it->collection);
 
-                if (internal_it == me->data.end())
+                if (internal_it == me->data->data.end())
                     return enditer;
 
-                auto result = Vec::New(
-                    {internal_it->second.first, internal_it->second.second});
+                auto result = internal_it->second.first;
 
                 if (!result) {
                     return nullptr;
@@ -325,19 +273,6 @@ void HashSet::init_class_type() {
 
         return iter;
     };
-
-    // @getitem
-    class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
-        auto me = reinterpret_cast<HashSet *>(self);
-
-        auto result = me->get(key);
-
-        if (!result)
-            return nullptr;
-
-        return result;
-    };
-    */
 
     // @len
     class_type->fn_len = [](Object *self) -> Object * {
@@ -392,21 +327,6 @@ void HashSet::init_class_type() {
 
         return result_str;
     };
-
-    /* TODO A
-    // @setitem
-    class_type->fn_setitem = [](Object *self, Object *key,
-                                Object *value) -> Object * {
-        auto me = reinterpret_cast<HashSet *>(self);
-
-        me->set(key, value);
-
-        if (on_error())
-            return nullptr;
-
-        return null;
-    };
-    */
 }
 
 void HashSet::init_class_objects() {
