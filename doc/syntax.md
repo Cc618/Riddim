@@ -181,9 +181,10 @@ Macros are normal functions, only the syntax is different.
 There is no parenthesis and every argument is passed on the same line.
 
 ```python
-macro_keyword
 macro_keyword arg1
 macro_keyword arg1, arg2, etc
+# Without arguments :
+macro_keyword ()
 ```
 
 Here is the list of all macros :
