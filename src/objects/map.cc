@@ -455,7 +455,7 @@ void HashMap::init_class_objects() {
     NEW_METHOD(HashMap, pop);
     method_pop->doc_str = "Removes a mapping by key\n\n"
                           "- key : Key associated to mapping to pop\n"
-                          "- return : The popped item(s)";
+                          "- return : The popped value";
     method_pop->doc_signature = {{"key", false}};
 }
 
@@ -1048,6 +1048,33 @@ void TreeMap::init_class_objects() {
     Program::add_global(empty);
 
     class_hash = std::hash<str_t>()("TreeMap");
+
+    NEW_METHOD(TreeMap, pop);
+    method_pop->doc_str = "Removes a mapping by key\n\n"
+                          "- key : Key associated to mapping to pop\n"
+                          "- return : The popped value";
+    method_pop->doc_signature = {{"key", false}};
+}
+
+Object *TreeMap::me_pop_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(TreeMap, "pop");
+
+    CHECK_ARGSLEN(1, "TreeMap.pop");
+    CHECK_NOKWARGS("TreeMap.pop");
+
+    auto it = me->data.find(args_data[0]);
+
+    if (it == me->data.end()) {
+        throw_fmt(IndexError, "TreeMap.pop : Key not found");
+
+        return nullptr;
+    }
+
+    auto result = it->second;
+
+    me->data.erase(it);
+
+    return result;
 }
 
 // --- AttrObject ---

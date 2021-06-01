@@ -71,6 +71,9 @@ struct TreeMap : public DynamicObject {
     static void init_class_type();
     static void init_class_objects();
 
+    // Removes a mapping by key
+    DECL_METHOD(pop);
+
 protected:
     TreeMap(const tmap_t &data = {});
 
