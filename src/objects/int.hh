@@ -13,8 +13,8 @@ int_t get_mod_index(int_t i, int_t len);
 struct Int : public Object {
     static Type *class_type;
 
-    static Object *zero;
-    static Object *one;
+    static Int *zero;
+    static Int *one;
 
     int_t data;
 

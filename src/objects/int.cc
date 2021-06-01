@@ -6,6 +6,7 @@
 #include "map.hh"
 #include "str.hh"
 #include "vec.hh"
+#include "program.hh"
 
 using namespace std;
 
@@ -20,8 +21,8 @@ int_t get_mod_index(int_t i, int_t len) {
 
 Type *Int::class_type = nullptr;
 
-Object *Int::zero = nullptr;
-Object *Int::one = nullptr;
+Int *Int::zero = nullptr;
+Int *Int::one = nullptr;
 
 Int::Int(const int_t &data) : Object(Int::class_type), data(data) {}
 
@@ -350,6 +351,8 @@ void Int::init_class_objects() {
         return;
     }
 
+    Program::instance->add_global(zero);
+
     one = new (nothrow) Int(1);
 
     if (!one) {
@@ -357,4 +360,6 @@ void Int::init_class_objects() {
 
         return;
     }
+
+    Program::instance->add_global(one);
 }

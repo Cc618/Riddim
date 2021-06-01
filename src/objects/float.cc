@@ -6,6 +6,7 @@
 #include "map.hh"
 #include "str.hh"
 #include "vec.hh"
+#include "program.hh"
 #include <iomanip>
 #include <sstream>
 
@@ -342,4 +343,9 @@ void Float::init_class_objects() {
 
         return;
     }
+
+    Program::add_global(zero);
+    Program::add_global(one);
+    Program::add_global(float_inf);
+    Program::add_global(float_nan);
 }

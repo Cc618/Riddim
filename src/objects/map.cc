@@ -557,8 +557,7 @@ void TreeMap::init_class_type() {
             // Dispatch error
             if (!result)
                 return nullptr;
-        } /* TODO A
-        else if (args_data.size() == 1) {
+        } else if (args_data.size() == 1) {
             result = TreeMap::New();
 
             // Dispatch error
@@ -575,6 +574,7 @@ void TreeMap::init_class_type() {
                 return nullptr;
             }
 
+            // TODO A : result in tmp stack ?
             Object *obj = nullptr;
             int i = 0;
             while (1) {
@@ -613,11 +613,15 @@ void TreeMap::init_class_type() {
                     return nullptr;
                 }
 
-                result->set(k, v);
+                result->data[k] = v;
+
+                if (on_error()) {
+                    return nullptr;
+                }
+
                 ++i;
             }
-        } */
-        else {
+        } else {
             THROW_ARGUMENT_ERROR("TreeMap.@new", "length",
                                  "0 or 1 arguments required");
         }
@@ -974,76 +978,6 @@ void TreeMap::init_class_objects() {
 
     class_hash = std::hash<str_t>()("TreeMap");
 }
-
-/* TODO A
-Object *TreeMap::get(Object *key) {
-    auto it = find(key);
-
-    if (it == data.end()) {
-        // Not found
-        if (!on_error()) {
-            // Fetch string representation of the key
-            auto k_name = key->str();
-            str_t k_name_str;
-
-            if (!k_name || k_name->type != Str::class_type) {
-                clear_error();
-
-                k_name_str = key->type->name + "()";
-            } else
-                k_name_str = reinterpret_cast<Str *>(k_name)->data;
-
-            throw_fmt(IndexError, "Key %s not found", k_name_str.c_str());
-        }
-
-        return nullptr;
-    }
-
-    return (*it).second.second;
-}
-
-void TreeMap::set(Object *key, Object *value) {
-    auto h = key->hash();
-
-    // Error
-    if (!h)
-        return;
-
-    auto typeh = key->type->hash();
-
-    if (!typeh)
-        return;
-
-    size_t h_key = hash_sz(hash_combine(reinterpret_cast<Int *>(h)->data,
-                                        reinterpret_cast<Int *>(typeh)->data));
-
-    data[h_key] = {key, value};
-}
-
-tmap_t::iterator TreeMap::find(Object *key) {
-    auto h = key->hash();
-
-    // Error
-    if (!h)
-        return data.end();
-
-    auto typeh = key->type->hash();
-
-    if (!typeh)
-        return data.end();
-
-    size_t h_key = hash_sz(hash_combine(reinterpret_cast<Int *>(h)->data,
-                                        reinterpret_cast<Int *>(typeh)->data));
-
-    auto it = data.begin();
-    for (; it != data.end(); ++it) {
-        if ((*it).first == h_key && (*it).second.first->type == key->type)
-            return it;
-    }
-
-    return data.find(h_key);
-}
-*/
 
 // --- AttrObject ---
 Type *AttrObject::class_type = nullptr;
