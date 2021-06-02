@@ -70,7 +70,7 @@ static void init_types() {
     INIT_TYPE(TreeMap);
     INIT_TYPE(AttrObject);
     INIT_TYPE(HashSet);
-    // TODO A : INIT_TYPE(TreeSet);
+    INIT_TYPE(TreeSet);
     INIT_TYPE(Frame);
     INIT_TYPE(Bool);
     INIT_TYPE(Module);
@@ -143,12 +143,10 @@ static void init_objects() {
     if (on_error())
         return;
 
-    /* TODO A :
     TreeSet::init_class_objects();
 
     if (on_error())
         return;
-    */
 
     Deque::init_class_objects();
 

@@ -30,45 +30,26 @@ private:
     static size_t class_hash;
 };
 
-// TODO A
-// // A TreeSet, stores key / value pairs in an ordered way (BST)
-// struct TreeSet : public DynamicObject {
-//     static DynamicType *class_type;
+struct TreeSet : public DynamicObject {
+    static DynamicType *class_type;
 
-//     // An treemap without objects, do not modify
-//     static TreeSet *empty;
+    TreeMap *data;
 
-//     tmap_t data;
+    static TreeSet *New(TreeMap *data = nullptr, bool create_data = true);
 
-//     static TreeSet *New(const tmap_t &data = {});
+    // Can throw
+    static void init_class_type();
+    static void init_class_objects();
 
-//     // Can throw
-//     static void init_class_type();
-//     static void init_class_objects();
+    // Inserts a new object
+    DECL_METHOD(add);
 
-// protected:
-//     TreeSet(const tmap_t &data = {});
+    // Removes an object
+    DECL_METHOD(pop);
 
-// private:
-//     static size_t class_hash;
-// };
+protected:
+    TreeSet(TreeMap *data);
 
-// // An object that can contain attributes
-// struct AttrObject : public Object {
-//     static Type *class_type;
-
-//     HashSet *data;
-
-//     // Constructor
-//     static AttrObject *New();
-
-//     // Can throw
-//     static void init_class_type();
-//     static void init_class_objects();
-
-// protected:
-//     AttrObject(HashSet *data = nullptr);
-
-// private:
-//     static size_t class_hash;
-// };
+private:
+    static size_t class_hash;
+};
