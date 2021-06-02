@@ -74,6 +74,17 @@ fn default_collection_last_index(item) {
 
 # - Functional -
 @doc'
+Applies f to every item of the collection
+
+- f : Functor
+@'
+fn default_collection_for_each(f) {
+    for i in me {
+        f(i)
+    }
+}
+
+@doc'
 Returns a collection with all values mapped
 by f
 
@@ -161,6 +172,9 @@ fn set_default_collection(type, is_random_access: false) {
     type.last_index!name = typename(type) + '.last_index'
 
     # Functional
+    type.for_each = copy(default_collection_for_each)
+    type.for_each!name = typename(type) + '.for_each'
+
     type.map = copy(default_collection_map)
     type.map!name = typename(type) + '.map'
 
