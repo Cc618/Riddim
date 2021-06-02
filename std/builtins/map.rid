@@ -14,3 +14,16 @@ set_default_collection(
     HashMap,
     is_random_access: false,
 )
+
+# TreeMap
+TreeMap!name = 'TreeMap'
+TreeMap!doc = @'
+TreeMap data type.
+Creates a mapping between key / value pairs.
+Keys must be comparable since they are ordered (a BST is used).
+@'
+
+set_default_collection(
+    TreeMap,
+    is_random_access: false,
+)
