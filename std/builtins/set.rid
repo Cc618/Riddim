@@ -1,0 +1,27 @@
+mod!doc = @'
+Set builtins
+@'
+
+# HashSet
+HashSet!name = 'HashSet'
+HashSet!doc = @'
+HashSet data type.
+Set with O(1) time to insert an item (best case).
+@'
+
+set_default_collection(
+    HashSet,
+    is_random_access: false,
+)
+
+# TreeSet
+TreeSet!name = 'TreeSet'
+TreeSet!doc = @'
+TreeSet data type.
+Set with O(log N) insert time, all values are ordered (and must be comparable).
+@'
+
+set_default_collection(
+    TreeSet,
+    is_random_access: false,
+)

@@ -8,5 +8,6 @@ use builtins.utils.*
 use builtins.str.*
 use builtins.vec.*
 use builtins.map.*
+use builtins.set.*
 use builtins.deque.*
 use builtins.file.*
