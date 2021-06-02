@@ -1,0 +1,156 @@
+# This example shows standard collections
+# with their methods
+
+print '--- Str ---'
+# Str is the most simple collection
+# It gathers only characters :
+str = 'Hello'
+print str
+
+# We can access an item of a collection with
+# its index (Riddim is 0 based)
+print 'First char :', str[0]
+print 'Last char :', str[-1]
+
+# Str supports slices
+print '2nd to 4th char (included - excluded) :', str[1 -> 5]
+print str[1 ->= 5], str[0 -> 42 .. 2], str[len(str) - 1 ->= 0 .. -1]
+
+# Str provides chr and ord like in Python
+print Str.chr(0x41)
+print Str.ord('A')
+
+print 'Hello' + ' ' + 'world'
+
+print ()
+print '--- Vec ---'
+# Vec is a dynamic array, all items are stored
+# in a contiguous memory space
+vec = [1, 2, 3, 5]
+print vec
+
+# Add / pop (push back / pop back)
+vec.add(8)
+print vec
+# Returns the removed item
+print vec.pop()
+print vec
+vec.pop(0)
+print vec
+
+vec[1 -> 3] = 42
+print vec
+
+# Tuple like binding
+vec = ['A', 'B']
+let a, b = vec
+print a, b
+
+# It is possible to iterate through any collection
+vec = [1, 2, 3]
+mysum = 0
+for item in vec {
+    mysum += item
+}
+
+print 'mysum:', mysum
+
+print [1, 2] + [3, 4]
+
+print ()
+print '--- HashMap ---'
+# Maps provide a mapping between keys and values
+map = {1: 2, 'a': 'b', [0]: [1]}
+print map
+
+print map[1]
+print map.pop('a')
+
+print ()
+print '--- TreeMap ---'
+# This map contains only comparable keys
+# (usually of the same type)
+# All keys are sorted
+map = TreeMap({1: 2, 4: -8, 8: 64, -16: -2})
+
+# Iterate with structured binding
+for let key, value in map {
+    print key, '->', value
+}
+
+print ()
+print '--- HashSet ---'
+# Sets are just maps with dummy keys internally
+# HashSet is like an HashMap but some methods / slots
+# are removed
+set = HashSet([1, 2, 1, 4, 'Hello', 'Hallo', 'Hallo'])
+print set
+print 'Is Hello in this set ?', 'Hello' in set
+print 'Is Hullo in this set ?', 'Hullo' in set
+
+print ()
+print '--- TreeSet ---'
+# Like TreeMap, items are ordered
+set = TreeSet([1, 2, 1, 4])
+for e in set {
+    print '-', e
+}
+
+print ()
+print '--- Deque ---'
+# A Deque (double ended queue) is like a Vec but is optimized to
+# add / pop items also in the front of the collection
+q = Deque([1, 2, 3])
+
+# Push back
+q.add(4)
+q.add(5)
+
+# Pop back
+print q.pop()
+
+# Push front
+q.add_front(0)
+q.add_front(-1)
+
+# Pop front
+print q.pop_front()
+
+print q
+
+print ()
+print '--- Methods ---'
+# Default collections provides multiple methods
+str = 'Hey'
+vec = [1, 2, 3, 4, 3, 2, 1]
+set = TreeSet(vec)
+
+# Size
+print 'len:', len(vec)
+print 'empty:', vec.empty(), [].empty(), vec.not_empty()
+
+# Searching
+print 'index:', vec.index(3), vec.index(0), vec.last_index(3)
+
+# Functional
+# (print) refers to the print method (not the macro keyword)
+myprint = (print)
+set.for_each(myprint)
+
+sorted = []
+set.for_each(sorted.add)
+print 'sorted:', sorted
+
+print 'map:', vec.map(|x| 2 * x)
+print 'filter:', vec.filter(|x| x >= 3)
+print 'reduce:', vec.reduce(|a, b| a + b, init: 0), vec.reduce(|a, b| a * b, init: 1)
+print 'chain', vec.filter(|x| x >= 3).map(|x| -x)
+
+# This is done inplace
+vec.sort()
+print 'sort:', vec
+
+# Remember that str is a collection
+str = 'Hello'
+str.sort()
+print str
