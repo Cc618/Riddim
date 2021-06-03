@@ -138,10 +138,41 @@ matches the predicate f
 fn default_collection_filter(f, init: []) {
     result = init
 
+    # TODO A : Use iterator
     for i in 0 -> len(me) {
         if f(me[i]) {
             result.add(me[i])
         }
+    }
+
+    return result
+}
+
+@doc'
+Returns the sum of all items.
+Returns empty_result if the collection is empty
+
+- empty_result : Result to return if the collection is empty
+- return : The sum of all items
+@'
+fn default_collection_sum(empty_result: null) {
+    it = iter(me)
+    item = next(it)
+
+    if item == enditer {
+        return empty_result
+    }
+
+    result = item
+
+    while true {
+        item = next(it)
+
+        if item == enditer {
+            break
+        }
+
+        result += item
     }
 
     return result
@@ -215,6 +246,9 @@ fn set_default_collection(type, is_random_access: false) {
 
     type.reduce = copy(default_collection_reduce)
     type.reduce!name = typename(type) + '.reduce'
+
+    type.sum = copy(default_collection_sum)
+    type.sum!name = typename(type) + '.sum'
 
     if is_random_access {
         type.sort = copy(default_collection_sort)
