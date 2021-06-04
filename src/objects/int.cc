@@ -200,6 +200,35 @@ void Int::init_class_type() {
         return result;
     };
 
+    // @idiv
+    class_type->fn_idiv = [](Object *self, Object *o) -> Object * {
+        auto me = reinterpret_cast<Int *>(self);
+
+        if (o->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("Int.@idiv", o->type, Int::class_type);
+
+            return nullptr;
+        }
+
+        auto odata = reinterpret_cast<Int *>(o)->data;
+
+        if (odata == 0) {
+            THROW_ARITHMETIC_ERROR("//", "Division by 0");
+
+            return nullptr;
+        }
+
+        auto result = new (nothrow) Int(me->data / odata);
+
+        if (!result) {
+            THROW_MEMORY_ERROR;
+
+            return nullptr;
+        }
+
+        return result;
+    };
+
     // @mod
     class_type->fn_mod = [](Object *self, Object *o) -> Object * {
         auto me = reinterpret_cast<Int *>(self);

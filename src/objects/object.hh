@@ -72,6 +72,8 @@ struct Object {
     // Returns the reference if there is no custom handler
     Object *hash();
 
+    Object *idiv(Object *o);
+
     Object *in(Object *value);
 
     Object *iter();
@@ -150,6 +152,9 @@ struct Type : public Object {
     // Used for hash tables etc...
     // Returns an Int
     fn_unary_t fn_hash;
+
+    // Integer / operator, returns the integer quotient
+    fn_binary_t fn_idiv;
 
     // Whether an object is within a collection
     // Returns a Bool

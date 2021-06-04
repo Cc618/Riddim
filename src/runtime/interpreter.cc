@@ -323,8 +323,7 @@ void interpret_fragment(Code *_code, size_t &ip) {
             POPTOP(tos);
             POPTOP(tos1);
 
-            // TODO A : Idiv
-            auto result = tos1->div(tos);
+            auto result = tos1->idiv(tos);
 
             if (!result) {
                 DISPATCH_ERROR;

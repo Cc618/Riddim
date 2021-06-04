@@ -201,6 +201,16 @@ Object *Object::hash() {
     return result;
 }
 
+Object *Object::idiv(Object *o) {
+    if (!type->fn_idiv) {
+        THROW_NOBUILTIN(this->type, idiv);
+
+        return nullptr;
+    }
+
+    return type->fn_idiv(this, o);
+}
+
 Object *Object::in(Object *val) {
     if (!type->fn_in) {
         THROW_NOBUILTIN(this->type, in);
