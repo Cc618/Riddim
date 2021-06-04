@@ -69,6 +69,7 @@
     PLUS        "+"
     WILDCARD    "*"
     SLASH       "/"
+    IDIV        "//"
     MOD         "%"
     LPAREN      "("
     RPAREN      ")"
@@ -169,7 +170,7 @@
 %left "not";
 %left "==" "<=" ">=" "<" ">" "<=>" "is" "in";
 %left "+" "-";
-%left "*" "/" "%";
+%left "*" "/" "%" "//";
 %left ".";
 %left "[";
 %left "{";
@@ -428,6 +429,7 @@ macro_keyword: macro_keyword_varargs { $$ = $1; }
     | "-" { $$ = "-"; }
     | "*" { $$ = "*"; }
     | "/" { $$ = "/"; }
+    | "//" { $$ = "//"; }
     | "%" { $$ = "%"; }
     | "=" { $$ = "="; }
     | "<=>" { $$ = "<=>"; }
@@ -596,6 +598,7 @@ binary : unary { $$ = $1; }
     | binary "-" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
     | binary "*" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
     | binary "/" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
+    | binary "//" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Idiv, $3); }
     | binary "%" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
     ;
 

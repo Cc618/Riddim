@@ -163,6 +163,7 @@ doc{str}        return make_STR(loc, yytext + 3, true);
 "-"             return yy::parser::make_MINUS(loc);
 "*"             return yy::parser::make_WILDCARD(loc);
 "/"             return yy::parser::make_SLASH(loc);
+"//"            return yy::parser::make_IDIV(loc);
 "%"             return yy::parser::make_MOD(loc);
 "("             return yy::parser::make_LPAREN(loc);
 ")"             return yy::parser::make_RPAREN(loc);

@@ -317,6 +317,24 @@ void interpret_fragment(Code *_code, size_t &ip) {
             NEXT(0);
         }
 
+        case BinIdiv: {
+            CHECK_STACKLEN(2);
+
+            POPTOP(tos);
+            POPTOP(tos1);
+
+            // TODO A : Idiv
+            auto result = tos1->div(tos);
+
+            if (!result) {
+                DISPATCH_ERROR;
+            }
+
+            PUSH(result);
+
+            NEXT(0);
+        }
+
         case BinIs: {
             CHECK_STACKLEN(2);
 

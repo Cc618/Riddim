@@ -28,6 +28,9 @@ enum OpCode : opcode_t {
     // - pop 2
     // - push TOS1 / TOS
     BinDiv,
+    // - pop 2
+    // - push TOS1 // TOS
+    BinIdiv,
     // Checks whether an item is within a collection
     // - pop 2
     // - push TOS1 in TOS

@@ -820,6 +820,10 @@ void gen_binexp(Module *module, Code *_code, BinExp::Op op, int fileline) {
         PUSH_CODE(BinMod);
         break;
 
+    case BinExp::Idiv:
+        PUSH_CODE(BinIdiv);
+        break;
+
     case BinExp::Is:
         PUSH_CODE(BinIs);
         break;
