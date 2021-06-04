@@ -100,13 +100,16 @@ fn default_collection_bin_search(item) {
 }
 
 # - Functional -
+# TODO A : Update examples (map used)
+
 @doc'
 Applies f to every item of the collection
 
+- col : Iterable
 - f : Functor
 @'
-fn default_collection_for_each(f) {
-    for i in me {
+fn for_each(col, f) {
+    for i in col {
         f(i)
     }
 }
@@ -115,14 +118,15 @@ fn default_collection_for_each(f) {
 Returns a collection with all values mapped
 by f
 
+- col : Iterable
 - f : Functor
 - [init] : The collection to use
 @'
-fn default_collection_map(f, init: []) {
+fn map(col, f, init: []) {
     result = init
 
-    for i in 0 -> len(me) {
-        result.add(f(me[i]))
+    for e in col {
+        result.add(f(e))
     }
 
     return result
@@ -132,16 +136,16 @@ fn default_collection_map(f, init: []) {
 Returns a collection with all values that
 matches the predicate f
 
+- col : Iterable
 - f : Predicate
 - [init] : The collection to use
 @'
-fn default_collection_filter(f, init: []) {
+fn filter(col, f, init: []) {
     result = init
 
-    # TODO A : Use iterator
-    for i in 0 -> len(me) {
-        if f(me[i]) {
-            result.add(me[i])
+    for e in col {
+        if f(e) {
+            result.add(e)
         }
     }
 
@@ -152,11 +156,12 @@ fn default_collection_filter(f, init: []) {
 Returns the sum of all items.
 Returns empty_result if the collection is empty
 
+- col : Iterable
 - empty_result : Result to return if the collection is empty
 - return : The sum of all items
 @'
-fn default_collection_sum(empty_result: null) {
-    it = iter(me)
+fn sum(col, empty_result: null) {
+    it = iter(col)
     item = next(it)
 
     if item == enditer {
@@ -182,17 +187,72 @@ fn default_collection_sum(empty_result: null) {
 Returns the cumulative application of f
 to all elements starting by (init, first element)
 
+- col : Iterable
+- f : Functor of 2 parameters
+- [init] : The collection to use
+@'
+fn reduce(col, f, init: null) {
+    result = init
+
+    for e in col {
+        result = f(result, e)
+    }
+
+    return result
+}
+
+# - Functional (collection default methods) -
+@doc'
+Applies f to every item of the collection
+
+- f : Functor
+@'
+fn default_collection_for_each(f) {
+    return for_each(me, f)
+}
+
+@doc'
+Returns a collection with all values mapped
+by f
+
+- f : Functor
+- [init] : The collection to use
+@'
+fn default_collection_map(f, init: []) {
+    return map(me, f, init)
+}
+
+@doc'
+Returns a collection with all values that
+matches the predicate f
+
+- f : Predicate
+- [init] : The collection to use
+@'
+fn default_collection_filter(f, init: []) {
+    return filter(me, f, init)
+}
+
+@doc'
+Returns the sum of all items.
+Returns empty_result if the collection is empty
+
+- empty_result : Result to return if the collection is empty
+- return : The sum of all items
+@'
+fn default_collection_sum(empty_result: null) {
+    return sum(me, empty_result)
+}
+
+@doc'
+Returns the cumulative application of f
+to all elements starting by (init, first element)
+
 - f : Functor of 2 parameters
 - [init] : The collection to use
 @'
 fn default_collection_reduce(f, init: null) {
-    result = init
-
-    for i in 0 -> len(me) {
-        result = f(result, me[i])
-    }
-
-    return result
+    return reduce(me, f, init)
 }
 
 @doc'
