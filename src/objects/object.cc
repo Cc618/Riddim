@@ -863,6 +863,33 @@ DynamicType *DynamicType::New(const str_t &name) {
         return default_hash(self);
     };
 
+    // @idiv
+    me->fn_idiv = [](Object *self, Object *other) -> Object * {
+        auto me = dynamic_cast<DynamicModel *>(self);
+
+        if (!me) {
+            throw_fmt(RuntimeError,
+                      "DynamicModel.@idiv got an invalid self instance");
+
+            return nullptr;
+        }
+
+        auto it = me->attrs.find("@idiv");
+        if (it != me->attrs.end()) {
+            auto args = Vec::New({other});
+
+            if (!args) {
+                return nullptr;
+            }
+
+            return it->second->call(args, HashMap::empty);
+        }
+
+        THROW_NOBUILTIN(self->type, idiv);
+
+        return nullptr;
+    };
+
     // @in
     me->fn_in = [](Object *self, Object *other) -> Object * {
         auto me = dynamic_cast<DynamicModel *>(self);
