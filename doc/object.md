@@ -37,6 +37,7 @@ like the . operator).
 | @getattr | Get map attribute (not a read only attribute) | | a.foo which is a.@getattr('foo') | No |
 | @getitem | Index / subscript getter | | a[42] which is a.@getitem(42) | Yes |
 | @hash | Hash representation (by default, the address of the reference is returned) | Int | | Yes |
+| @idiv | // operator | Int | 3 // 2 | Yes |
 | @in | Whether an item is within a collection | Bool | 1 in [1, 2, 3] == true | Yes |
 | @iter | Returns an iterator that iterates from the start of the object | Iterator-like (has @next method) | | Yes |
 | @mod | % operator | | 2 % 2 | Yes |

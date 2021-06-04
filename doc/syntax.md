@@ -665,6 +665,6 @@ The precedence is similar to Python.
 | not |
 | == <= >= < > <=> is in |
 | \+ - |
-| \* / % |
+| \* / % // |
 | Attribute reference |
 | Indexing |
