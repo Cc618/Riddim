@@ -312,6 +312,11 @@ void Function::init_class_type() {
             return nullptr;
         }
 
+        Object *ret = nullptr;
+
+        auto old_tmp_stack_size = Program::instance->tmp_stack.size();
+        Program::instance->tmp_stack.push_back(me);
+
         auto kwargs_data = reinterpret_cast<HashMap *>(kwargs)->data;
 
         // Bind positional arguments
@@ -329,7 +334,7 @@ void Function::init_class_type() {
                 THROW_TYPE_ERROR_PREF("Function.@call", k->type,
                                       Str::class_type);
 
-                return nullptr;
+                goto error;
             }
 
             str_t key = reinterpret_cast<Str *>(k)->data;
@@ -339,7 +344,7 @@ void Function::init_class_type() {
                 THROW_ARGUMENT_ERROR(
                     me->name, key, "This argument has been set multiple times");
 
-                return nullptr;
+                goto error;
             }
 
             // Check whether this argument exists
@@ -356,18 +361,12 @@ void Function::init_class_type() {
                 THROW_ARGUMENT_ERROR(me->name, key,
                                      "This argument doesn't exist");
 
-                return nullptr;
+                goto error;
             }
 
             // Set
             vars[key] = v;
         }
-
-        Object *ret = nullptr;
-
-        auto old_tmp_stack_size = Program::instance->tmp_stack.size();
-
-        Program::instance->tmp_stack.push_back(me);
 
         // Evaluate default arguments
         for (const auto &[arg_name, arg_default] : me->args) {

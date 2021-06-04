@@ -60,21 +60,21 @@ print [1, 2] + [3, 4]
 print ()
 print '--- HashMap ---'
 # Maps provide a mapping between keys and values
-map = {1: 2, 'a': 'b', [0]: [1]}
-print map
+mymap = {1: 2, 'a': 'b', [0]: [1]}
+print mymap
 
-print map[1]
-print map.pop('a')
+print mymap[1]
+print mymap.pop('a')
 
 print ()
 print '--- TreeMap ---'
 # This map contains only comparable keys
 # (usually of the same type)
 # All keys are sorted
-map = TreeMap({1: 2, 4: -8, 8: 64, -16: -2})
+mymap = TreeMap({1: 2, 4: -8, 8: 64, -16: -2})
 
 # Iterate with structured binding
-for let key, value in map {
+for let key, value in mymap {
     print key, '->', value
 }
 
@@ -148,7 +148,7 @@ print 'sorted:', sorted
 print 'map:', vec.map(|x| 2 * x)
 print 'filter:', vec.filter(|x| x >= 3)
 print 'reduce:', vec.reduce(|a, b| a + b, init: 0), vec.reduce(|a, b| a * b, init: 1)
-print 'chain:', vec.filter(|x| x >= 3).map(|x| -x)
+print 'chain:', vec.map(|x| -x).filter(|x| x <= -3)
 
 # This is done inplace
 vec.sort()
@@ -166,3 +166,6 @@ a = ['h', 'e', 'l', 'l', 'o']
 print 'sum:', a.sum()
 a = [[1, 2], [3, 4]]
 print 'sum:', a.sum()
+
+# Note that every functional method has its corresponding function
+print map(1 ->= 10, |x| 2 * x)
