@@ -135,7 +135,10 @@
 %nterm <str_t> macro_keyword macro_keyword_single macro_keyword_varargs
 
 // Expressions
-%nterm <ast::Exp*> exp /* TODO B : cascade */ boolean comparison binary binary_factor unary primary set lambda
+%nterm <ast::Exp*> exp /* TODO B : cascade */
+    boolean boolean_or boolean_and
+    comparison binary binary_factor
+    unary primary set lambda
 %nterm <ast::Target*> target target_simple target_id target_indexing target_attr target_multi
 %nterm <ast::CallExp*> call call_args call_args_filled
 %nterm <ast::Indexing*> indexing
@@ -561,10 +564,16 @@ lambda: "|" option_fndecl_args "|" "->" block {
     }
     ;
 
-boolean: comparison { $$ = $1; }
-    | "not" comparison { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
-    | boolean "or" comparison { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
-    | boolean "and" comparison { $$ = new BinExp(@1.begin.line, $1, BinExp::And, $3); }
+boolean: boolean_or { $$ = $1; }
+    | "not" boolean_or { $$ = new UnaExp(@1.begin.line, $2, UnaExp::Not); }
+    ;
+
+boolean_or: boolean_and { $$ = $1; }
+    | boolean_or "or" boolean_and { $$ = new BinExp(@1.begin.line, $1, BinExp::Or, $3); }
+    ;
+
+boolean_and: comparison { $$ = $1; }
+    | boolean_and "and" comparison { $$ = new BinExp(@1.begin.line, $1, BinExp::And, $3); }
     ;
 
 comparison: binary { $$ = $1; }
