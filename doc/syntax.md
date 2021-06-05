@@ -658,7 +658,6 @@ use super.super.mod
 ## Operator precedence
 The precedence is similar to Python.
 | Operator |
-| - |
 | = |
 | or |
 | and |
@@ -666,5 +665,6 @@ The precedence is similar to Python.
 | == <= >= < > <=> is in |
 | \+ - |
 | \* / % // |
+| - |
 | Attribute reference |
 | Indexing |
