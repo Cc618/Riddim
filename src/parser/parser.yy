@@ -592,6 +592,7 @@ comparison: binary { $$ = $1; }
 //     | "is" binary
 //     | "is" "not" binary
 
+// TODO A
 // Binary arithmetic
 binary : unary { $$ = $1; }
     | binary "+" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }

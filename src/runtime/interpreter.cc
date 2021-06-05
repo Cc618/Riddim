@@ -65,13 +65,8 @@ inline Object *pop_top() {
         DISPATCH_ERROR;                                                        \
     }
 
-#define COPY_IF_POD(VAR)                                                       \
-    if (is_pod_object(VAR)) {                                                  \
-        (VAR) = (VAR)->copy();                                                 \
-        if (!(VAR)) {                                                          \
-            DISPATCH_ERROR;                                                    \
-        }                                                                      \
-    }
+// TODO A : Remove
+#define COPY_IF_POD(VAR)
 
 bool interpret_program(Module *main_module) {
     Program::instance->main_module = main_module;
