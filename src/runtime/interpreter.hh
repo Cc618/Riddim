@@ -96,17 +96,14 @@ enum OpCode : opcode_t {
     // TOS become TOS.name
     // - name : Offset of the name of the attribute
     // - pop 1
-    // * Copies PODs
     LoadAttr,
     // Loads a const value on the TOS
     // - const_offset : The const object offset
     // - push 1
-    // * Copies PODs
     LoadConst,
     // Loads indexed (or key mapped) value given as subscript
     // - pop 2
     // - push TOS1[TOS]
-    // * Copies PODs
     LoadIndex,
     // Loads a module to the TOS
     // - modname : Module's name
@@ -114,7 +111,6 @@ enum OpCode : opcode_t {
     // Loads a variable (object associated to a symbol) on the TOS
     // - id_offset : Offset of the name of the symbol (constant)
     // - push 1
-    // * Copies PODs
     LoadVar,
     // Makes a range object
     // - inclusive : Boolean, whether end is inclusive or exclusive
@@ -137,13 +133,11 @@ enum OpCode : opcode_t {
     // - pop 'count'
     // - push a Vec of all variables to pack
     // * Element are stored in a LIFO order
-    // * Copies PODs
     Pack,
     // Packs 'count' key-value pairs ('count' * 2 total variables) in a HashMap
     // The key is the first pushed value on the stack
     // - pop 'count' * 2
     // - push a HashMap of all key value pairs to pack
-    // * Copies PODs
     PackMap,
     // Pops the TOS
     // - pop 1
@@ -158,7 +152,6 @@ enum OpCode : opcode_t {
     // Returns from the function (or exit the module)
     // The TOS is the return value, it must be set (can be null for "void"
     // functions)
-    // * Copies PODs
     Return,
     // TOS.name = TOS1
     // - name : Offset of the name of the attribute

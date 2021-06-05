@@ -65,9 +65,6 @@ inline Object *pop_top() {
         DISPATCH_ERROR;                                                        \
     }
 
-// TODO A : Remove
-#define COPY_IF_POD(VAR)
-
 bool interpret_program(Module *main_module) {
     Program::instance->main_module = main_module;
 
@@ -637,8 +634,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
                 DISPATCH_ERROR;
             }
 
-            COPY_IF_POD(result);
-
             PUSH(result);
 
             NEXT(1);
@@ -670,8 +665,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
             if (!newtos) {
                 DISPATCH_ERROR;
             }
-
-            COPY_IF_POD(newtos);
 
             PUSH(newtos);
 
@@ -755,8 +748,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
             if (!result) {
                 DISPATCH_ERROR;
             }
-
-            COPY_IF_POD(result);
 
             PUSH(result);
 
@@ -879,11 +870,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
             vector<Object *> data(obj_stack.end() - count, obj_stack.end());
             obj_stack.resize(obj_stack.size() - count);
 
-            // Copy PODs
-            for (auto &arg : data) {
-                COPY_IF_POD(arg);
-            }
-
             // Build result
             auto result = Vec::New(data);
 
@@ -912,9 +898,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
             for (size_t i = 0; i < count; ++i) {
                 auto key = obj_stack[obj_stack.size() - count * 2 + i * 2];
                 auto val = obj_stack[obj_stack.size() - count * 2 + i * 2 + 1];
-
-                COPY_IF_POD(key);
-                COPY_IF_POD(val);
 
                 if (!result->setitem(key, val)) {
                     DISPATCH_ERROR;
@@ -980,7 +963,6 @@ void interpret_fragment(Code *_code, size_t &ip) {
             }
 
             auto &tos = TOP;
-            COPY_IF_POD(tos);
 
             // Remove intermediate objects but not return value
             obj_stack.erase(obj_stack.begin() + obj_stack_start_size,

@@ -23,7 +23,7 @@ struct Object;
 
 // Returns whether this object is a Plain Old Data type,
 // that is, it must be copied on various operations
-bool is_pod_object(Object *o);
+constexpr bool is_pod_object(Object *o) { return false; }
 
 struct Object {
     // This attribute describes the type of this object

@@ -16,11 +16,6 @@ bool is_type(Object *o) {
     return o->type == Type::class_type || o->type == DynamicType::class_type;
 }
 
-// No more pod objects
-bool is_pod_object(Object *o) {
-    return false;
-}
-
 // --- Object ---
 Type *Object::class_type = nullptr;
 
