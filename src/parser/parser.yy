@@ -135,7 +135,7 @@
 %nterm <str_t> macro_keyword macro_keyword_single macro_keyword_varargs
 
 // Expressions
-%nterm <ast::Exp*> exp /* TODO B : cascade */ boolean comparison binary unary primary set lambda
+%nterm <ast::Exp*> exp /* TODO B : cascade */ boolean comparison binary binary_factor unary primary set lambda
 %nterm <ast::Target*> target target_simple target_id target_indexing target_attr target_multi
 %nterm <ast::CallExp*> call call_args call_args_filled
 %nterm <ast::Indexing*> indexing
@@ -592,15 +592,17 @@ comparison: binary { $$ = $1; }
 //     | "is" binary
 //     | "is" "not" binary
 
-// TODO A
 // Binary arithmetic
-binary : unary { $$ = $1; }
-    | binary "+" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
-    | binary "-" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
-    | binary "*" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
-    | binary "/" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
-    | binary "//" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Idiv, $3); }
-    | binary "%" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
+binary: binary_factor { $$ = $1; }
+    | binary "+" binary_factor { $$ = new BinExp(@1.begin.line, $1, BinExp::Add, $3); }
+    | binary "-" binary_factor { $$ = new BinExp(@1.begin.line, $1, BinExp::Sub, $3); }
+    ;
+
+binary_factor: unary { $$ = $1; }
+    | binary_factor "*" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mul, $3); }
+    | binary_factor "/" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Div, $3); }
+    | binary_factor "//" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Idiv, $3); }
+    | binary_factor "%" unary { $$ = new BinExp(@1.begin.line, $1, BinExp::Mod, $3); }
     ;
 
 // Unaries
