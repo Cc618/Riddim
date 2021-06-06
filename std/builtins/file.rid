@@ -52,13 +52,15 @@ a specified directory
 
 - dirpath, Str : Path to the target directory
 - modules, HashMap : [module_name, module_content] pairs to document
+- title, Str : Header of the README
+- [description, Str] : Description added just after the header in the README
 - [verbose, Bool] : If true, displays written files
 - [notes, HashMap] : [note_name, note_content] pairs, notes added at
     the bottom of the README
 - [lowercase_filenames, Bool] : Whether markdown files are lower cased
 @'
-fn autodoc(dirpath, modules, verbose: true, notes: {},
-        lowercase_filenames: true) {
+fn autodoc(dirpath, modules, title, description: null,
+        verbose: true, notes: {}, lowercase_filenames: true) {
     # Returns the relative / absolute path of the module documentation
     get_path = |name, relative, lower| -> {
         suffix = name + '.md'
@@ -81,7 +83,7 @@ fn autodoc(dirpath, modules, verbose: true, notes: {},
 
         f = File(path, 'w')
 
-        documentation = "[Summary](README.md)\n\n"
+        documentation = '[Summary](README.md)\n\n'
         documentation += doc(mod_content)
 
         f.write(documentation)
@@ -95,7 +97,12 @@ fn autodoc(dirpath, modules, verbose: true, notes: {},
     readme_path = get_path('README', false, false)
 
     f = File(readme_path, 'w')
-    f.write('# Modules\n')
+    f.write('# ' + title + '\n')
+    if description != null {
+        f.write(description + '\n\n')
+    }
+
+    f.write('## Modules\n')
 
     # Generate summary
     for let mod_name, _ in modules {
@@ -124,6 +131,18 @@ Generates the Riddim documentation
 - dirpath, Str : Directory where the documentation is generated to
 @'
 fn autodoc_std(dirpath) {
+    title = 'Riddim Standard Library Documentation'
+
+    # TODO J : See it online ...
+    description = 'This folder contains the auto-generated'
+    description += 'documentation of the **Riddim Standard Library** '
+    description += '(' + version + ')'
+
+    # Extra notes to add at the bottom of the README
+    notes = {
+        'Version': version,
+    }
+
     # Import modules to document
     use builtins
     use math
@@ -134,11 +153,7 @@ fn autodoc_std(dirpath) {
         'Math': math,
     })
 
-    # Extra notes to add at the bottom of the README
-    notes = {
-        'Version': version,
-    }
-
     # Generate
-    autodoc(dirpath, modules, notes: notes, lowercase_filenames: true)
+    autodoc(dirpath, modules, title, description,
+        notes: notes, lowercase_filenames: true)
 }
