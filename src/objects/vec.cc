@@ -406,9 +406,15 @@ void Vec::init_class_type() {
 
         string result;
 
-        if (me->data.size() == 0)
+        if (printed_collections.find(me) != printed_collections.end()) {
+            // Already printed
+            result = "[...]";
+        } else if (me->data.size() == 0) {
             result = "[]";
-        else {
+        } else {
+            // To avoid infinite loops
+            printed_collections.insert(me);
+
             result = "[";
             bool isfirst = true;
             for (auto item : me->data) {

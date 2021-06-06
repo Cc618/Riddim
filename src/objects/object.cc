@@ -8,6 +8,7 @@
 #include "null.hh"
 #include "program.hh"
 #include "str.hh"
+#include "builtins.hh"
 #include <iostream>
 
 using namespace std;
@@ -1117,9 +1118,15 @@ DynamicType *DynamicType::New(const str_t &name) {
         // Default print
         str_t result = self->type->name;
 
-        if (me->attrs.empty()) {
-            result += "{}";
+        if (printed_collections.find(self) != printed_collections.end()) {
+            // Already printed
+            result = "{...}";
+        } else if (me->attrs.empty()) {
+            result = "{}";
         } else {
+            // To avoid infinite loops
+            printed_collections.insert(self);
+
             result += "{";
             bool isfirst = true;
             for (const auto &[k, v] : me->attrs) {

@@ -6,8 +6,14 @@
 #include "null.hh"
 #include "object.hh"
 #include "vec.hh"
+#include <unordered_set>
 
 struct Program;
+
+// --- Globals ---
+// To avoid infinite print loops, this set gathers all printed collections
+// for the current call (cleared at each print ending)
+extern std::unordered_set<Object *> printed_collections;
 
 // --- Macros ---
 #define INIT_BUILTIN(NAME, HANDLER, DOC, SIGNATURE)                            \

@@ -22,6 +22,9 @@
 
 using namespace std;
 
+// --- Globals ---
+std::unordered_set<Object *> printed_collections;
+
 // --- Static ---
 static Object *print_object(Object *o) {
     if (!o) {
@@ -779,6 +782,8 @@ BUILTIN_HANDLER(builtins, print) {
     }
 
     cout << endl;
+
+    printed_collections.clear();
 
     return null;
 }
