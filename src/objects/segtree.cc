@@ -212,61 +212,56 @@ void SegTree::init_class_type() {
         return result;
     };
 
-    // TODO A (only leaves)
-    // class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
-    //     auto me = reinterpret_cast<SegTree *>(self);
+    class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
+        auto me = reinterpret_cast<SegTree *>(self);
 
-    //     if (key->type == Int::class_type) {
-    //         auto len = me->data.size();
-    //         auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data,
-    //         len);
+        auto len = me->data.size() / 2;
 
-    //         // Out of bounds
-    //         if (idx < 0 || idx >= len) {
-    //             THROW_OUT_OF_BOUNDS(me->data.size(), idx);
+        if (key->type == Int::class_type) {
+            auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data, len);
 
-    //             return nullptr;
-    //         }
+            // Out of bounds
+            if (idx < 0 || idx >= len) {
+                THROW_OUT_OF_BOUNDS(len, idx);
 
-    //         auto result = me->data[idx];
+                return nullptr;
+            }
 
-    //         return result;
-    //     } else {
-    //         // Slice
-    //         // Collect indices
-    //         auto collect = try_collect_int_iterator(key, -me->data.size(),
-    //                                                 me->data.size());
+            auto result = me->data[len + idx];
 
-    //         if (on_error()) {
-    //             clear_error();
+            return result;
+        } else {
+            // Slice
+            // Collect indices
+            auto collect = try_collect_int_iterator(key, -len, len);
 
-    //             // Rethrow another one
-    //             throw_fmt(
-    //                 TypeError,
-    //                 "Invalid type '%s' to index SegTree (must be Int or an "
-    //                 "iterable)",
-    //                 key->type->name.c_str());
+            if (on_error()) {
+                clear_error();
 
-    //             return nullptr;
-    //         }
+                // Rethrow another one
+                throw_fmt(
+                    TypeError,
+                    "Invalid type '%s' to index SegTree (must be Int or an "
+                    "iterable)",
+                    key->type->name.c_str());
 
-    //         vector<Object *> result;
-    //         for (auto i : collect) {
-    //             result.push_back(me->data[get_mod_index(i,
-    //             me->data.size())]);
-    //         }
+                return nullptr;
+            }
 
-    //         auto ret = new (nothrow) SegTree(result);
+            vector<Object *> result;
+            for (auto i : collect) {
+                result.push_back(me->data[len + get_mod_index(i, len)]);
+            }
 
-    //         if (!ret) {
-    //             THROW_MEMORY_ERROR;
+            auto ret = Vec::New(result);
 
-    //             return nullptr;
-    //         }
+            if (!ret) {
+                return nullptr;
+            }
 
-    //         return ret;
-    //     }
-    // };
+            return ret;
+        }
+    };
 
     // @str
     class_type->fn_str = [](Object *self) -> Object * {
@@ -432,7 +427,8 @@ void SegTree::init_class_objects() {
         "- return : The application of the functor on this range\n\n"
         "* Note : It is equivalent to functor(data[start -> end]) "
         "but with log N time complexity";
-    method_query->doc_signature = {{"start", false}, {"end", false}, {"init_val : 0", true}};
+    method_query->doc_signature = {
+        {"start", false}, {"end", false}, {"init_val : 0", true}};
 }
 
 // --- Methods ---
