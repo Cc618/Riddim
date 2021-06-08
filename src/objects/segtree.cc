@@ -150,14 +150,14 @@ void SegTree::init_class_type() {
         visit(me->init_val);
     };
 
-    // TODO A
     // @hash
     class_type->fn_hash = [](Object *self) -> Object * {
         auto me = reinterpret_cast<SegTree *>(self);
 
         int_t h = class_hash;
 
-        for (auto o : me->data) {
+        for (int i = me->data.size() / 2; i < me->data.size(); ++i) {
+            auto o = me->data[i];
             auto item_hash = o->hash();
             if (!item_hash) {
                 return nullptr;
@@ -199,19 +199,18 @@ void SegTree::init_class_type() {
         return result;
     };
 
-    // TODO A
-    // // @copy
-    // class_type->fn_copy = [](Object *self) -> Object * {
-    //     auto me = reinterpret_cast<SegTree *>(self);
+    // @copy
+    class_type->fn_copy = [](Object *self) -> Object * {
+        auto me = reinterpret_cast<SegTree *>(self);
 
-    //     auto result = SegTree::New(me->data);
+        auto result = SegTree::New(me->data, me->functor, me->init_val);
 
-    //     if (!result) {
-    //         return nullptr;
-    //     }
+        if (!result) {
+            return nullptr;
+        }
 
-    //     return result;
-    // };
+        return result;
+    };
 
     // TODO A (only leaves)
     // class_type->fn_getitem = [](Object *self, Object *key) -> Object * {
