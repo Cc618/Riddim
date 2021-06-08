@@ -316,101 +316,42 @@ void SegTree::init_class_type() {
         return result_str;
     };
 
-    // TODO A : Update
-    // // @setitem
-    // class_type->fn_setitem = [](Object *self, Object *key,
-    //                             Object *value) -> Object * {
-    //     auto me = reinterpret_cast<SegTree *>(self);
+    // @setitem
+    class_type->fn_setitem = [](Object *self, Object *key,
+                                Object *value) -> Object * {
+        auto me = reinterpret_cast<SegTree *>(self);
 
-    //     if (key->type == Int::class_type) {
-    //         auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data,
-    //                                  me->data.size());
+        if (key->type != Int::class_type) {
+            THROW_TYPE_ERROR_PREF("SegTree.@setitem", key->type,
+                                  Int::class_type);
 
-    //         // Out of bounds
-    //         if (idx < 0 || idx >= me->data.size()) {
-    //             THROW_OUT_OF_BOUNDS(me->data.size(), idx);
+            return nullptr;
+        }
 
-    //             return nullptr;
-    //         }
+        auto idx =
+            get_mod_index(reinterpret_cast<Int *>(key)->data, me->data.size());
 
-    //         me->data[idx] = value;
+        // Out of bounds
+        if (idx < 0 || idx >= me->data.size()) {
+            THROW_OUT_OF_BOUNDS(me->data.size(), idx);
 
-    //         return null;
-    //     } else {
-    //         // Slice
-    //         // Collect indices
-    //         auto collect = try_collect_int_iterator(key, -me->data.size(),
-    //                                                 me->data.size());
+            return nullptr;
+        }
 
-    //         if (on_error()) {
-    //             clear_error();
+        idx += me->data.size() / 2;
+        me->data[idx] = value;
 
-    //             // Rethrow another one
-    //             throw_fmt(
-    //                 TypeError,
-    //                 "Invalid type '%s' to index SegTree (must be Int or an "
-    //                 "iterable)",
-    //                 key->type->name.c_str());
+        do {
+            idx /= 2;
+            me->data[idx] = me->data[idx * 2]->add(me->data[idx * 2 + 1]);
 
-    //             return nullptr;
-    //         }
+            if (!me->data[idx]) {
+                return nullptr;
+            }
+        } while (idx > 1);
 
-    //         // Map modular index to use only positive indinces
-    //         for (auto &i : collect) {
-    //             i = get_mod_index(i, me->data.size());
-    //         }
-
-    //         // Verify |step| is 1
-    //         for (int i = 1; i < collect.size(); ++i) {
-    //             int prev = collect[i - 1];
-    //             int current = collect[i];
-
-    //             if (abs(prev - current) != 1) {
-    //                 throw_fmt(
-    //                     IndexError,
-    //                     "Invalid slice for %sSegTree.@setitem%s, the step "
-    //                     "size must be %s1%s or %s-1%s",
-    //                     C_GREEN, C_NORMAL, C_BLUE, C_NORMAL, C_BLUE,
-    //                     C_NORMAL);
-
-    //                 return nullptr;
-    //             }
-    //         }
-
-    //         const auto &[mn_it, mx_it] =
-    //             minmax_element(collect.begin(), collect.end());
-
-    //         if (mn_it == collect.end() || mx_it == collect.end()) {
-    //             // Rethrow another one
-    //             throw_fmt(
-    //                 TypeError,
-    //                 "Invalid type '%s' to index SegTree (must be Int or an "
-    //                 "iterable)",
-    //                 key->type->name.c_str());
-
-    //             return nullptr;
-    //         }
-
-    //         int_t mn = *mn_it;
-    //         int_t mx = *mx_it;
-
-    //         str_t val;
-
-    //         vector<Object *> newdata;
-
-    //         for (int i = 0; i < mn; ++i)
-    //             newdata.push_back(me->data[i]);
-
-    //         newdata.push_back(value);
-
-    //         for (int i = mx + 1; i < me->data.size(); ++i)
-    //             newdata.push_back(me->data[i]);
-
-    //         me->data = newdata;
-
-    //         return null;
-    //     }
-    // };
+        return null;
+    };
 }
 
 void SegTree::init_class_objects() {
