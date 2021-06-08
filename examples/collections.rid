@@ -119,6 +119,32 @@ print q.pop_front()
 print q
 
 print ()
+print '--- SegTree ---'
+# A Segment Tree is useful to query function
+# applications over a data range like the
+# sum / min / max function...
+# Optionally, you can add the init value (0 by default for sums etc.)
+seg = SegTree([1, 3, 4, 2, 3, 4], sum)
+
+print 'Sum SegTree :'
+print seg
+
+# Every operation takes O(log N) time
+print seg.query(0, 2) # 1 + 3 = 4
+print seg.query(3, 6) # 2 + 3 + 4 = 9
+print seg.query(0, 0) # 0
+
+seg[3] = -1
+print seg # [1, 3, 4, -1, 3, 4]
+print seg.query(3, 6) # -1 + 3 + 4 = 6
+
+print 'Min SegTree :'
+
+# inf is used to avoid having 0 at each query
+seg = SegTree([1, 3, 4, 2], min, inf)
+print seg.query(0, len(seg)) # 1
+
+print ()
 print '--- Methods ---'
 # Default collections provides multiple methods
 str = 'Hey'
