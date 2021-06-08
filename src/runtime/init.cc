@@ -22,6 +22,7 @@
 #include "deque.hh"
 #include "file.hh"
 #include "set.hh"
+#include "segtree.hh"
 
 // --- Init ---
 // Inits all built in types
@@ -84,6 +85,7 @@ static void init_types() {
     INIT_TYPE(Range);
     INIT_TYPE(Deque);
     INIT_TYPE(File);
+    INIT_TYPE(SegTree);
 
 #undef INIT_TYPE
 
@@ -154,6 +156,11 @@ static void init_objects() {
         return;
 
     File::init_class_objects();
+
+    if (on_error())
+        return;
+
+    SegTree::init_class_objects();
 
     if (on_error())
         return;

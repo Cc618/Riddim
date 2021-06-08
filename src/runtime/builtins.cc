@@ -17,6 +17,7 @@
 #include "file.hh"
 #include "deque.hh"
 #include "set.hh"
+#include "segtree.hh"
 #include <iostream>
 #include <sstream>
 
@@ -399,6 +400,7 @@ void on_builtins_loaded(Module *mod) {
     REGISTER_GLOBAL(Range, Range::class_type);
     REGISTER_GLOBAL(Deque, Deque::class_type);
     REGISTER_GLOBAL(File, File::class_type);
+    REGISTER_GLOBAL(SegTree, SegTree::class_type);
 
 #undef REGISTER_GLOBAL
 }
