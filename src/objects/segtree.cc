@@ -113,9 +113,18 @@ void SegTree::init_class_type() {
         }
 
         // Init the segment tree
-        // TODO A : Functor
         for (int_t i = length - 1; i > 0; --i) {
-            result->data[i] = result->data[i * 2]->add(result->data[i * 2 + 1]);
+            auto functor_arg = Vec::New({result->data[i * 2], result->data[i * 2 + 1]});
+            if (!functor_arg) {
+                goto error;
+            }
+
+            auto functor_args = Vec::New({functor_arg});
+            if (!functor_args) {
+                goto error;
+            }
+
+            result->data[i] = result->functor->call(functor_args, HashMap::empty);
 
             if (!result->data[i]) {
                 goto error;
@@ -343,7 +352,18 @@ void SegTree::init_class_type() {
 
         do {
             idx /= 2;
-            me->data[idx] = me->data[idx * 2]->add(me->data[idx * 2 + 1]);
+
+            auto functor_arg = Vec::New({me->data[idx * 2], me->data[idx * 2 + 1]});
+            if (!functor_arg) {
+                return nullptr;
+            }
+
+            auto functor_args = Vec::New({functor_arg});
+            if (!functor_args) {
+                return nullptr;
+            }
+
+            me->data[idx] = me->functor->call(functor_args, HashMap::empty);
 
             if (!me->data[idx]) {
                 return nullptr;
@@ -423,7 +443,18 @@ Object *SegTree::me_query_handler(Object *self, Object *args, Object *kwargs) {
 
     while (start < end && start != 0) {
         if (start % 2 == 1) {
-            result = result->add(me->data[start++]);
+            auto functor_arg = Vec::New({result, me->data[start++]});
+            if (!functor_arg) {
+                goto error;
+            }
+
+            auto functor_args = Vec::New({functor_arg});
+            if (!functor_args) {
+                goto error;
+            }
+
+            result = me->functor->call(functor_args, HashMap::empty);
+
             Program::instance->tmp_stack.push_back(result);
 
             if (!result) {
@@ -432,7 +463,18 @@ Object *SegTree::me_query_handler(Object *self, Object *args, Object *kwargs) {
         }
 
         if (end % 2 == 1) {
-            result = result->add(me->data[--end]);
+            auto functor_arg = Vec::New({result, me->data[--end]});
+            if (!functor_arg) {
+                goto error;
+            }
+
+            auto functor_args = Vec::New({functor_arg});
+            if (!functor_args) {
+                goto error;
+            }
+
+            result = me->functor->call(functor_args, HashMap::empty);
+
             Program::instance->tmp_stack.push_back(result);
 
             if (!result) {
