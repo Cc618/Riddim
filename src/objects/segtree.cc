@@ -38,7 +38,8 @@ SegTree *SegTree::New(const vec_t &data, Object *functor, Object *init_val) {
 }
 
 SegTree::SegTree(const vec_t &data, Object *functor, Object *init_val)
-    : DynamicObject(SegTree::class_type), data(data), functor(functor), init_val(init_val) {}
+    : DynamicObject(SegTree::class_type), data(data), functor(functor),
+      init_val(init_val) {}
 
 void SegTree::init_class_type() {
     class_type = DynamicType::New("SegTree");
@@ -53,10 +54,9 @@ void SegTree::init_class_type() {
 
         CHECK_NOKWARGS("SegTree");
 
-        // TODO A : Init val optional + update method doc / sig
-        if (args_data.size() != 3) {
+        if (args_data.size() != 2 && args_data.size() != 3) {
             THROW_ARGUMENT_ERROR("SegTree.@new", "length",
-                                 "3 arguments required");
+                                 "2 or 3 arguments required");
 
             return nullptr;
         }
@@ -82,7 +82,9 @@ void SegTree::init_class_type() {
 
         int_t length = reinterpret_cast<Int *>(len)->data;
 
-        auto result = SegTree::New(vec_t(length * 2), args_data[1], args_data[2]);
+        auto result =
+            SegTree::New(vec_t(length * 2), args_data[1],
+                         args_data.size() == 2 ? Int::zero : args_data[2]);
 
         if (!result) {
             return nullptr;
@@ -426,10 +428,12 @@ void SegTree::init_class_objects() {
         " to end (excluded)\n\n"
         "- start, Int : First index (included)\n"
         "- end, Int : Last index (excluded)\n"
+        "- [init_val, Int] : The default value when the range is empty "
+        "(initializes the query)\n"
         "- return : The application of the functor on this range\n\n"
         "* Note : It is equivalent to functor(data[start -> end]) "
-        "but with log N complexity";
-    method_query->doc_signature = {{"start", false}, {"end", false}};
+        "but with log N time complexity";
+    method_query->doc_signature = {{"start", false}, {"end", false}, {"init_val : 0", true}};
 }
 
 // --- Methods ---
