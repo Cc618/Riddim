@@ -20,8 +20,8 @@ DynamicType *SegTree::class_type = nullptr;
 
 size_t SegTree::class_hash = 0;
 
-SegTree *SegTree::New(const vec_t &data, Object *functor) {
-    auto self = new (nothrow) SegTree(data, functor);
+SegTree *SegTree::New(const vec_t &data, Object *functor, Object *init_val) {
+    auto self = new (nothrow) SegTree(data, functor, init_val);
 
     if (!self) {
         THROW_MEMORY_ERROR;
@@ -37,9 +37,8 @@ SegTree *SegTree::New(const vec_t &data, Object *functor) {
     return self;
 }
 
-// TODO A
-SegTree::SegTree(const vec_t &data, Object *functor)
-    : DynamicObject(SegTree::class_type), data(data), functor(functor) {}
+SegTree::SegTree(const vec_t &data, Object *functor, Object *init_val)
+    : DynamicObject(SegTree::class_type), data(data), functor(functor), init_val(init_val) {}
 
 void SegTree::init_class_type() {
     class_type = DynamicType::New("SegTree");
@@ -54,14 +53,13 @@ void SegTree::init_class_type() {
 
         CHECK_NOKWARGS("SegTree");
 
-        if (args_data.size() != 2) {
+        // TODO A : Init val optional + update method doc / sig
+        if (args_data.size() != 3) {
             THROW_ARGUMENT_ERROR("SegTree.@new", "length",
-                                 "2 arguments required");
+                                 "3 arguments required");
 
             return nullptr;
         }
-
-        SegTree *result = nullptr;
 
         // Construct from iterable
         auto iter = args_data[0]->iter();
@@ -84,15 +82,15 @@ void SegTree::init_class_type() {
 
         int_t length = reinterpret_cast<Int *>(len)->data;
 
-        auto vec = SegTree::New(vec_t(length * 2), args_data[1]);
+        auto result = SegTree::New(vec_t(length * 2), args_data[1], args_data[2]);
 
-        if (!vec) {
+        if (!result) {
             return nullptr;
         }
 
         // To avoid it being freed
-        Program::instance->tmp_stack.push_back(vec);
-        auto &collect = vec->data;
+        Program::instance->tmp_stack.push_back(result);
+        auto &collect = result->data;
 
         for (int i = 0; i < length; ++i) {
             Object *obj = iter->next();
@@ -112,9 +110,16 @@ void SegTree::init_class_type() {
             collect[length + i] = obj;
         }
 
-        // TODO A : Process segtree (only leaves set)
+        // Init the segment tree
+        // TODO A : Functor
+        for (int_t i = length - 1; i > 0; --i) {
+            result->data[i] = result->data[i * 2]->add(result->data[i * 2 + 1]);
 
-        result = vec;
+            if (!result->data[i]) {
+                goto error;
+            }
+        }
+
         Program::instance->tmp_stack.pop_back();
 
         return result;
@@ -140,6 +145,7 @@ void SegTree::init_class_type() {
         }
 
         visit(me->functor);
+        visit(me->init_val);
     };
 
     // TODO A
@@ -211,7 +217,8 @@ void SegTree::init_class_type() {
 
     //     if (key->type == Int::class_type) {
     //         auto len = me->data.size();
-    //         auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data, len);
+    //         auto idx = get_mod_index(reinterpret_cast<Int *>(key)->data,
+    //         len);
 
     //         // Out of bounds
     //         if (idx < 0 || idx >= len) {
@@ -244,7 +251,8 @@ void SegTree::init_class_type() {
 
     //         vector<Object *> result;
     //         for (auto i : collect) {
-    //             result.push_back(me->data[get_mod_index(i, me->data.size())]);
+    //             result.push_back(me->data[get_mod_index(i,
+    //             me->data.size())]);
     //         }
 
     //         auto ret = new (nothrow) SegTree(result);
@@ -366,7 +374,8 @@ void SegTree::init_class_type() {
     //                     IndexError,
     //                     "Invalid slice for %sSegTree.@setitem%s, the step "
     //                     "size must be %s1%s or %s-1%s",
-    //                     C_GREEN, C_NORMAL, C_BLUE, C_NORMAL, C_BLUE, C_NORMAL);
+    //                     C_GREEN, C_NORMAL, C_BLUE, C_NORMAL, C_BLUE,
+    //                     C_NORMAL);
 
     //                 return nullptr;
     //             }
@@ -410,4 +419,97 @@ void SegTree::init_class_type() {
 
 void SegTree::init_class_objects() {
     class_hash = std::hash<str_t>()("SegTree");
+
+    NEW_METHOD(SegTree, query);
+    method_query->doc_str =
+        "Queries the segment tree from start (included)"
+        " to end (excluded)\n\n"
+        "- start, Int : First index (included)\n"
+        "- end, Int : Last index (excluded)\n"
+        "- return : The application of the functor on this range\n\n"
+        "* Note : It is equivalent to functor(data[start -> end]) "
+        "but with log N complexity";
+    method_query->doc_signature = {{"start", false}, {"end", false}};
+}
+
+// --- Methods ---
+Object *SegTree::me_query_handler(Object *self, Object *args, Object *kwargs) {
+    INIT_METHOD(SegTree, "query");
+
+    CHECK_NOKWARGS("SegTree.query");
+
+    if (args_data.size() != 2) {
+        THROW_ARGUMENT_ERROR("SegTree.query", "length", "2 arguments required");
+
+        return nullptr;
+    }
+
+    if (args_data[0]->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF("SegTree.query{start}", args_data[0]->type,
+                              Int::class_type);
+
+        return nullptr;
+    }
+
+    if (args_data[1]->type != Int::class_type) {
+        THROW_TYPE_ERROR_PREF("SegTree.query{end}", args_data[1]->type,
+                              Int::class_type);
+
+        return nullptr;
+    }
+
+    auto start = reinterpret_cast<Int *>(args_data[0])->data;
+    auto end = reinterpret_cast<Int *>(args_data[1])->data;
+
+    const auto n = me->data.size() / 2;
+
+    if (end > n) {
+        THROW_OUT_OF_BOUNDS(n, end);
+
+        return nullptr;
+    }
+
+    if (start < 0 || start > end) {
+        THROW_OUT_OF_BOUNDS(0, start);
+
+        return nullptr;
+    }
+
+    start += n;
+    end += n;
+    Object *result = me->init_val;
+
+    auto old_tmp_stack_size = Program::instance->tmp_stack.size();
+
+    while (start < end && start != 0) {
+        if (start % 2 == 1) {
+            result = result->add(me->data[start++]);
+            Program::instance->tmp_stack.push_back(result);
+
+            if (!result) {
+                goto error;
+            }
+        }
+
+        if (end % 2 == 1) {
+            result = result->add(me->data[--end]);
+            Program::instance->tmp_stack.push_back(result);
+
+            if (!result) {
+                goto error;
+            }
+        }
+
+        start /= 2;
+        end /= 2;
+    }
+
+    Program::instance->tmp_stack.resize(old_tmp_stack_size);
+
+    return result;
+
+error:
+    Program::instance->tmp_stack.resize(old_tmp_stack_size);
+
+    return nullptr;
 }

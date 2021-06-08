@@ -14,17 +14,22 @@ struct SegTree : public DynamicObject {
 
     vec_t data;
     Object *functor = nullptr;
+    // Value for empty range
+    Object *init_val = nullptr;
 
-    // data are leaves of the segment tree
-    static SegTree *New(const vec_t &data, Object *functor);
+    // Methods
+    DECL_METHOD(query);
+
+    // data is NOT only the leaves of the segment tree
+    static SegTree *New(const vec_t &data, Object *functor, Object *init_val);
 
     // Can throw
     static void init_class_type();
     static void init_class_objects();
 
 protected:
-    // data are leaves of the segment tree
-    SegTree(const vec_t &data, Object *functor);
+    // data is NOT only the leaves of the segment tree
+    SegTree(const vec_t &data, Object *functor, Object *init_val);
 
 private:
     static size_t class_hash;
