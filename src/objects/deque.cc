@@ -54,10 +54,17 @@ void Deque::init_class_type() {
 
         CHECK_NOKWARGS("Deque");
 
-        Deque *result = nullptr;
-        if (args_data.empty()) {
-            result = Deque::New();
-        } else if (args_data.size() == 1) {
+        auto old_tmp_stack_size = Program::instance->tmp_stack.size();
+
+        Deque *result = Deque::New();
+        Program::instance->tmp_stack.push_back(result);
+
+        // Dispatch error
+        if (!result) {
+            goto error;
+        }
+
+        if (args_data.size() == 1) {
             // Construct from iterable
             auto iter = args_data[0]->iter();
 
@@ -65,24 +72,18 @@ void Deque::init_class_type() {
                 THROW_ARGUMENT_ERROR("Deque.@new", "iterable",
                                      "Requires an iterable object");
 
-                return nullptr;
-            }
-
-            auto vec = Deque::New({});
-            if (!vec) {
-                return nullptr;
+                goto error;
             }
 
             // To avoid it being freed
-            Program::instance->tmp_stack.push_back(vec);
-            auto &collect = vec->data;
+            auto &collect = result->data;
 
             Object *obj = nullptr;
             while (1) {
                 obj = iter->next();
 
                 if (!obj) {
-                    return nullptr;
+                    goto error;
                 }
 
                 if (obj == enditer)
@@ -90,19 +91,21 @@ void Deque::init_class_type() {
 
                 collect.push_back(obj);
             }
-
-            result = vec;
-            Program::instance->tmp_stack.pop_back();
-        } else {
+        } else if (!args_data.empty()) {
             THROW_ARGUMENT_ERROR("Deque.@new", "length",
                                  "0 or 1 arguments required");
+
+            goto error;
         }
 
-        // Dispatch error
-        if (!result)
-            return nullptr;
+        Program::instance->tmp_stack.pop_back();
 
         return result;
+
+    error:;
+        Program::instance->tmp_stack.pop_back();
+
+        return nullptr;
     };
 
     class_type->fn_traverse_objects = [](Object *self,
