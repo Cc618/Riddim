@@ -1,6 +1,5 @@
 #pragma once
 
-// TODO C : Update examples + documentation
 // Segment tree, used to compute range queries in O(log N) time
 
 #include "object.hh"

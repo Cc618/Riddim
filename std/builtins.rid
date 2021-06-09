@@ -10,4 +10,5 @@ use builtins.vec.*
 use builtins.map.*
 use builtins.set.*
 use builtins.deque.*
+use builtins.segtree.*
 use builtins.file.*

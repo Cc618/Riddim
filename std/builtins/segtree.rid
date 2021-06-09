@@ -1,0 +1,14 @@
+mod!doc = @'
+SegTree builtins
+@'
+
+SegTree!name = 'SegTree'
+SegTree!doc = @'
+Segment Tree, used to compute range queries
+in O(log N) time
+@'
+
+set_default_collection(
+    SegTree,
+    is_random_access: true
+)
