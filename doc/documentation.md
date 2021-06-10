@@ -115,7 +115,7 @@ modules = {
 }
 
 notes = {
-    'Version': 'v0.0.1a',
+    'Version': 'v1.0a',
 }
 
 autodoc('tests/autodoc', modules, notes: notes, lowercase_filenames: true)
