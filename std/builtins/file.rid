@@ -133,7 +133,6 @@ Generates the Riddim documentation
 fn autodoc_std(dirpath) {
     title = 'Riddim Standard Library Documentation'
 
-    # TODO J : See it online ...
     description = 'This folder contains the auto-generated '
     description += 'documentation of the **Riddim Standard Library** '
     description += '(' + version + ')'

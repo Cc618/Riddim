@@ -5,9 +5,11 @@ It provides also a standard library written in both C++ and Riddim.
 Furthermore, it includes a documentation generator fully written in Riddim.
 
 ## Overview
+<!-- TODO : Abstract (inspired by / useful for...) -->
+
 - Look at some [examples](examples/README.md).
-- Take a look at [Riddim's syntax](docs/riddim/syntax.md).
-<!-- TODO : Link to auto doc + doc website -->
+- Take a look at [Riddim's syntax specification](docs/riddim/syntax.md).
+- [Online Documentation](https://cc618.github.io/Riddim).
 
 <!-- TODO : Code snippet / image -->
 
@@ -18,7 +20,7 @@ Here is the single command to install Riddim :
 ```
 
 ### Configuration
-For more details about the configure script, check the [config documentation](doc/config.md).
+For more details about the configure script, check the [config documentation](docs/riddim/config.md).
 
 The [configure.sh](configure.sh) script can be modified for a custom config
 (to install riddim in a custom directory / build in debug mode for example) :
@@ -61,7 +63,6 @@ sudo scripts/uninstall.sh
 ```
 
 ## Documentation
-The documentation can be found [HERE](docs).
-<!-- TODO J : Online link -->
+The documentation can be seen on [Github](docs) or via the [Documentation Website](https://cc618.github.io/Riddim).
 
 <!-- TODO : Features section -->
