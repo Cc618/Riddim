@@ -63,3 +63,5 @@ sudo scripts/uninstall.sh
 ## Documentation
 The documentation can be found [HERE](docs).
 <!-- TODO J : Online link -->
+
+<!-- TODO : Features section -->
