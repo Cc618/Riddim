@@ -657,14 +657,16 @@ use super.super.mod
 
 ## Operator precedence
 The precedence is similar to Python.
-| Operator |
-| = |
-| or |
-| and |
-| not |
-| == <= >= < > <=> is in |
-| \+ - |
-| \* / % // |
-| - |
-| Attribute reference |
-| Indexing |
+
+| Operator | Precedence |
+| -------- | ---------- |
+| = | 10 |
+| or | 9 |
+| and | 8 |
+| not | 7 |
+| == <= >= < > <=> is in | 6 |
+| \+ - | 5 |
+| \* / % // | 4 |
+| - | 3 |
+| Attribute reference | 2 |
+| Indexing | 1 |
