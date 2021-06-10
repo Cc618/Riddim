@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# * Execute this script from Riddim's root directory
 # Script that generates Riddim's Standard Library documentation
 # Riddim must be built (or installed)
 
