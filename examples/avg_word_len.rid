@@ -1,0 +1,49 @@
+# This example shows how to use standard library functional methods
+# such as map and filter.
+# Str methods are also used.
+# * Prerequisites :
+# collections examples 'Str' and 'Functional' sections
+# * Statement :
+# Given a string containing ASCII characters, find the average word length.
+# A compound word (multiple words separated by a '-') must be handled :
+# well-defined has a length of 4 + 1 + 7 = 12 (not 4, 7)
+
+# Given text
+text = @'
+In mathematics and computer science, an algorithm is a finite sequence of
+well-defined, computer-implementable instructions, typically to solve a class
+of specific problems or to perform a computation.
+@'
+
+# 1. Create the allow list containing every character a word can have
+lower_letters = ''.join(map(
+    # Lower case ascii codes
+    Str.ord('a') ->= Str.ord('z'),
+    # Convert to char (default method)
+    Str.chr))
+
+upper_letters = ''.join(map(
+    # Upper case ascii codes
+    Str.ord('A') ->= Str.ord('Z'),
+    # Convert to char (lambda method)
+    |ascii| Str.chr(ascii)))
+
+allowed_chars = lower_letters + upper_letters + '-'
+allowed_char_codes = allowed_chars.map(|c| Str.ord(c))
+not_allowed_chars = ''.join(map(
+    # All char codes not in allowed_char_codes
+    filter(1 -> 128, |code| code not in allowed_char_codes),
+    # Stringify
+    Str.chr))
+
+print 'Allowed chars :', allowed_chars
+
+# 2. Split text into words
+words = text.split(not_allowed_chars)
+
+print 'Words :', words
+
+# 3. Compute the average word length
+avg_len = sum(map(words, len)) / len(words)
+
+print 'Average word length :', avg_len
