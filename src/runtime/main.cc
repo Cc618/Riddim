@@ -12,17 +12,37 @@
 
 using namespace std;
 
+void help(ostream &os = cout) {
+    os << "usage:" << endl;
+    os << "riddim <FILE>        Execute <FILE>" << endl;
+    os << "riddim --help        Shows this help" << endl;
+    os << "riddim --version     Displays current Riddim version" << endl;
+}
+
 int main(int argc, char *argv[]) {
     int res = 0;
 
     // Invalid arguments
     if (argc != 2) {
-        cerr << "usage: ./riddim <FILE>" << endl;
+        help(cerr);
 
         return -1;
     }
 
-    string main_module_path = abs_path(argv[1]);
+    string arg1 = argv[1];
+
+    // Special commands
+    if (arg1 == "--version") {
+        cout << "Riddim " << RID_VERSION << endl;
+
+        return 0;
+    } else if (arg1 == "--help") {
+        help();
+
+        return 0;
+    }
+
+    string main_module_path = abs_path(arg1);
 
     // Init VM
     init_program();
