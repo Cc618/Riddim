@@ -92,3 +92,24 @@ fn Str.split(delim: ' ') {
 
     return words
 }
+
+@doc'
+Concatenates every item of the iterable into a string, the current
+string separates every item.
+
+- iterable : Iterable of elements containing a string representation
+- return, Str : Concatenation of all items with 'me' as separator
+@'
+fn Str.join(iterable) {
+    result = ''
+    for i in iterable {
+        result += Str(i) + me
+    }
+
+    # Remove last suffix
+    if len(result) >= len(me) {
+        return result[0 -> len(result) - len(me)]
+    } else {
+        return ''
+    }
+}
