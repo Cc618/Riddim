@@ -43,3 +43,4 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set_property(TARGET riddim PROPERTY CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
