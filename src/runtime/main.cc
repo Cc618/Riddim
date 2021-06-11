@@ -16,6 +16,8 @@ void help(ostream &os = cout) {
     os << "usage:" << endl;
     os << "riddim <FILE>        Execute <FILE>" << endl;
     os << "riddim --help        Shows this help" << endl;
+    os << "riddim --info        Prints Riddim installation configuration"
+       << endl;
     os << "riddim --version     Displays current Riddim version" << endl;
 }
 
@@ -38,6 +40,11 @@ int main(int argc, char *argv[]) {
         return 0;
     } else if (arg1 == "--help") {
         help();
+
+        return 0;
+    } else if (arg1 == "--info") {
+        cout << "version: " << RID_VERSION << endl;
+        cout << "std_path: " << RID_STD_PATH << endl;
 
         return 0;
     }
@@ -80,8 +87,7 @@ int main(int argc, char *argv[]) {
                     Program::instance->trace->dump();
 
                     dump_error();
-                }
-                else if (!Program::instance->errout.str().empty())
+                } else if (!Program::instance->errout.str().empty())
                     cerr << Program::instance->errout.str();
                 else
                     dump_error();
