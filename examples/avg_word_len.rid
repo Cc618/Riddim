@@ -10,7 +10,7 @@ A compound word (multiple words separated by a '-') must be handled :
 well-defined has a length of 4 + 1 + 7 = 12 (not 4, 7)
 @#
 
-# Given text
+# Given text (from https://en.wikipedia.org/wiki/Algorithm)
 text = @'
 In mathematics and computer science, an algorithm is a finite sequence of
 well-defined, computer-implementable instructions, typically to solve a class
