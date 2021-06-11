@@ -46,6 +46,15 @@ int main(int argc, char *argv[]) {
         cout << "version: " << RID_VERSION << endl;
         cout << "std_path: " << RID_STD_PATH << endl;
 
+        cout << "debug: "
+             <<
+#ifdef DEBUG
+            "true"
+#else
+            "false"
+#endif
+             << endl;
+
         return 0;
     }
 
