@@ -66,3 +66,6 @@ sudo scripts/uninstall.sh
 The documentation can be seen on [Github](docs) or via the [Documentation Website](https://cc618.github.io/Riddim).
 
 <!-- TODO : Features section -->
+
+## License
+Riddim is licensed under the [MIT License](LICENSE)
