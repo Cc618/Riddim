@@ -13,6 +13,17 @@ Furthermore, it includes a documentation generator fully written in Riddim.
 
 <!-- TODO : Code snippet / image -->
 
+## Features
+Riddim is designed for algorithms, the goal is to provide an easy and readable code.
+
+- It provides a modular **standard library** with powerful collections (vectors, maps, segment trees...) and algorithms (map, reduce, binary search...)
+- An **auto documentation** tool is included
+- **Garbage collection** is used for memory management
+- **Error handling** is easy with try / catch blocks
+- **Lambdas** can be used instead of functions
+- **Internals** like garbage collection / interpreter are inspired by Python
+- The **syntax** is inspired by multiple C-like languages (with a pinch of Python)
+
 ## Configure / build / install
 Here is the single command to install Riddim :
 ```sh
