@@ -1,0 +1,14 @@
+# Recursive fibonacci function
+
+doc'Fibonacci sequence, computes its ith term'
+fn fib(i) {
+    if i <= 1 {
+        return 1
+    }
+
+    return fib(i - 2) + fib(i - 1)
+}
+
+for i in 0 -> 10 {
+    print fib(i)
+}
