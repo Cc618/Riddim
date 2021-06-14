@@ -6,6 +6,13 @@ Riddim is written in C++ and uses Flex / Bison for parsing.
 It provides also a standard library written in both C++ and Riddim.
 Furthermore, it includes a documentation generator fully written in Riddim.
 
+## Summary
+- [⭐ Overview](#Overview)
+- [☘️ Features](#Features)
+- [🔌 Installation & Usage](#installation)
+- [📚 Documentation](#Documentation)
+- [⚖ License](#License)
+
 ## Overview
 <!-- TODO : Abstract (inspired by / useful for...) -->
 
@@ -26,7 +33,7 @@ Riddim is designed for algorithms, the goal is to provide an easy and readable c
 - **Internals** like garbage collection / interpreter are inspired by Python
 - The **syntax** is inspired by multiple C-like languages (with a pinch of Python)
 
-## Configure / build / install
+## <span id="installation">Configure / build / install</span>
 Here is the single command to install Riddim :
 ```sh
 ./configure.sh && sudo scripts/install.sh
