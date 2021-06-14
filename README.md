@@ -16,7 +16,7 @@ Furthermore, it includes a documentation generator fully written in Riddim.
 ## Features
 Riddim is designed for algorithms, the goal is to provide an easy and readable code.
 
-- It provides a modular **standard library** with powerful collections (vectors, maps, segment trees...) and algorithms (map, reduce, binary search...)
+- It provides a modular **standard library** with powerful collections (vectors, maps, iterators, segment trees...) and algorithms (map, reduce, binary search...)
 - An **auto documentation** tool is included
 - **Garbage collection** is used for memory management
 - **Error handling** is easy with try / catch blocks

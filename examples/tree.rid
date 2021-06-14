@@ -1,0 +1,61 @@
+newtype Tree(val, l: null, r: null) {
+    me.val = val
+    me.left = l
+    me.right = r
+}
+
+doc'Performs a breadth first traversal of the tree'
+fn Tree.bft() {
+    result = ''
+
+    # Create a queue with this node, null separates levels
+    q = Deque()
+    q.add(me)
+    q.add(null)
+
+    while true {
+        # Get next node of the queue
+        node = q.pop_front()
+
+        # New level
+        if node == null {
+            if q.empty() {
+                break
+            }
+
+            # Print a separator
+            result += '\n'
+
+            q.add(null)
+            continue
+        }
+
+        # Do whatever you want (here display the node)
+        result += Str(node.val) + ' '
+
+        # Add children
+        if node.left != null {
+            q.add(node.left)
+        }
+
+        if node.right != null {
+            q.add(node.right)
+        }
+    }
+
+    print result
+}
+
+@# Create the tree :
+    A
+  B   D
+   C E
+@#
+tree = Tree('A',
+    l: Tree('B',
+        r: Tree('C')),
+    r: Tree('D',
+        l: Tree('E')))
+
+# This will print each node level by level
+tree.bft()

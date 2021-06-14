@@ -16,6 +16,7 @@ the easiest.
 1. [Collections](collections.rid) : Learn which default collections / data structures and methods are available
 1. [Primes](primes.rid) : Displays a list of prime numbers
 1. [Documentation](doc.rid) : Learn how to document your code and generate documentation pages using autodoc
+1. [Trees](tree.rid) : Implement a binary tree type with breadth first traversal algorithm
 1. [Files](files.rid) : Learn to read / write files
 1. [Average Word Length](avg_word_len.rid) : Given a text, compute the average word length.
     Functional methods provided by the standard library are used.
