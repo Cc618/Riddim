@@ -1,3 +1,5 @@
+<p align="center"><img src="res/riddim.png" width="192" height="192" /></p>
+
 # Riddim
 Riddim is an interpreted language designed for algorithms and data structures.
 Riddim is written in C++ and uses Flex / Bison for parsing.
@@ -11,7 +13,7 @@ Furthermore, it includes a documentation generator fully written in Riddim.
 - Take a look at [Riddim's syntax specification](docs/riddim/syntax.md).
 - [Online Documentation](https://cc618.github.io/Riddim).
 
-<!-- TODO : Code snippet / image -->
+[![Breadth First Traversal example](res/readme_example.png)](examples/tree.rid)
 
 ## Features
 Riddim is designed for algorithms, the goal is to provide an easy and readable code.
@@ -75,8 +77,6 @@ sudo scripts/uninstall.sh
 
 ## Documentation
 The documentation can be seen on [Github](docs) or via the [Documentation Website](https://cc618.github.io/Riddim).
-
-<!-- TODO : Features section -->
 
 ## License
 Riddim is licensed under the [MIT License](LICENSE)
