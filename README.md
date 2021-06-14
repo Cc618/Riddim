@@ -1,4 +1,4 @@
-<p align="center"><img src="res/riddim.png" width="192" height="192" /></p>
+<p align="center"><img src="res/riddim.svg" /></p>
 
 # Riddim
 Riddim is an interpreted language designed for algorithms and data structures.
