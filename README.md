@@ -1,4 +1,8 @@
-<p align="center"><img src="res/riddim.svg" /></p>
+<a href="https://github.com/Cc618/Riddim">
+<p align="center">
+<img src="res/riddim.svg" />
+</p>
+</a>
 
 # Riddim
 Riddim is an interpreted language designed for algorithms and data structures.
@@ -19,7 +23,11 @@ Furthermore, it includes a documentation generator fully written in Riddim.
 - Take a look at [Riddim's syntax specification](docs/riddim/syntax.md)
 - [Online Documentation](https://cc618.github.io/Riddim)
 
-[![Breadth First Traversal example](res/readme_example.png)](examples/tree.rid)
+<a href="examples/tree.rid">
+<p align="center">
+<img src="res/readme_example.png" />
+</p>
+</a>
 
 ## Features
 Riddim is designed for algorithms, the goal is to provide an easy and readable code.
