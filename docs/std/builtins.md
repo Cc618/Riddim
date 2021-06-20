@@ -784,6 +784,15 @@ Returns -1 if not found.
 
 > Str.index(item)
 
+### Str.join
+Concatenates every item of the iterable into a string, the current
+string separates every item.
+
+- iterable : Iterable of elements containing a string representation
+- return, Str : Concatenation of all items with 'me' as separator
+
+> Str.join(iterable)
+
 ### Str.last_index
 Returns the index of the last occurence of item.
 Returns -1 if not found.
