@@ -29,6 +29,12 @@ Furthermore, it includes a documentation generator fully written in Riddim.
 </p>
 </a>
 
+<a href="examples/collections.rid">
+<p align="center">
+<img src="res/snippet.png" />
+</p>
+</a>
+
 ## Features
 Riddim is designed for algorithms, the goal is to provide an easy and readable code.
 
