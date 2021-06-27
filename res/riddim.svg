@@ -26,6 +26,13 @@
           animation-duration: 5s;
           animation-iteration-count: infinite;
         }
+
+        @media print {
+          img {
+            animation: none !important;
+            transform: translate(0) rotate(0deg) scale(1);
+          }
+        }
       </style>
 
       <!-- Base64 because Github prevents XSS attacks -->
